@@ -1,0 +1,18 @@
+C:\Users\Rico's Gaming PC\dev\tools-paratext-plugin\translation_validation_framework\bin\Debug\translation_validation_framework.pdb
+C:\Users\Rico's Gaming PC\dev\tools-paratext-plugin\translation_validation_framework\bin\Debug\AddInViews.dll
+C:\Users\Rico's Gaming PC\dev\tools-paratext-plugin\translation_validation_framework\bin\Debug\AddInViews.pdb
+C:\Users\Rico's Gaming PC\dev\tools-paratext-plugin\translation_validation_framework\bin\Debug\translation_validation_framework.dll.config
+C:\Users\Rico's Gaming PC\dev\tools-paratext-plugin\translation_validation_framework\bin\Debug\translation_validation_framework.dll
+C:\Program Files (x86)\Paratext 8\plugins\Translation Validation\translation_validation_framework.dll.config
+C:\Program Files (x86)\Paratext 8\plugins\Translation Validation\translation_validation_framework.dll
+C:\Program Files (x86)\Paratext 8\plugins\Translation Validation\translation_validation_framework.pdb
+C:\Users\Rico's Gaming PC\dev\tools-paratext-plugin\translation_validation_framework\obj\Debug\translation_validation_framework.FormTest.resources
+C:\Users\Rico's Gaming PC\dev\tools-paratext-plugin\translation_validation_framework\obj\Debug\translation_validation_framework.csproj.GenerateResource.cache
+C:\Users\Rico's Gaming PC\dev\tools-paratext-plugin\translation_validation_framework\obj\Debug\translation_validation_framework.csproj.CoreCompileInputs.cache
+C:\Users\Rico's Gaming PC\dev\tools-paratext-plugin\translation_validation_framework\obj\Debug\translation_validation_framework.dll
+C:\Users\Rico's Gaming PC\dev\tools-paratext-plugin\translation_validation_framework\obj\Debug\translation_validation_framework.pdb
+C:\Users\Rico's Gaming PC\dev\tools-paratext-plugin\translation_validation_framework\obj\Debug\translation_validation_framework.csprojAssemblyReference.cache
+E:\Projects\Work\Biblica\tools-paratext-plugin\translation_validation_framework\obj\Debug\translation_validation_framework.FormTest.resources
+E:\Projects\Work\Biblica\tools-paratext-plugin\translation_validation_framework\obj\Debug\translation_validation_framework.csproj.GenerateResource.cache
+E:\Projects\Work\Biblica\tools-paratext-plugin\translation_validation_framework\obj\Debug\translation_validation_framework.dll
+E:\Projects\Work\Biblica\tools-paratext-plugin\translation_validation_framework\obj\Debug\translation_validation_framework.pdb
