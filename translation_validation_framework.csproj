@@ -82,6 +82,12 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="form\IgnoreList.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="form\IgnoreList.Designer.cs">
+      <DependentUpon>IgnoreList.cs</DependentUpon>
+    </Compile>
     <Compile Include="form\ProgressForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -107,6 +113,9 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="form\IgnoreList.resx">
+      <DependentUpon>IgnoreList.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="form\ProgressForm.resx">
       <DependentUpon>ProgressForm.cs</DependentUpon>
     </EmbeddedResource>
