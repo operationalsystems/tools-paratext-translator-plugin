@@ -147,5 +147,25 @@ namespace translation_validation_framework
         {
 
         }
+
+        private void FileToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void Button1_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void PunctuationToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void DataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+
+        }
     }
 }
