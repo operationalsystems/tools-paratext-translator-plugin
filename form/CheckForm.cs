@@ -155,7 +155,8 @@ namespace translation_validation_framework
 
         private void Button1_Click(object sender, EventArgs e)
         {
-
+            var ignoreList = new IgnoreList();
+            ignoreList.Show();
         }
 
         private void PunctuationToolStripMenuItem_Click(object sender, EventArgs e)
