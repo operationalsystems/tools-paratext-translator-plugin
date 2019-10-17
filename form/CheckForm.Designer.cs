@@ -32,9 +32,6 @@
             this.runCheck = new System.Windows.Forms.Button();
             this.txtData = new System.Windows.Forms.TextBox();
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
-            this.bcv = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.error = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Action = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator = new System.Windows.Forms.ToolStripSeparator();
@@ -53,6 +50,9 @@
             this.actionToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.ignoreList = new System.Windows.Forms.Button();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
+            this.bcv = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.error = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Action = new System.Windows.Forms.DataGridViewTextBoxColumn();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.menuStrip1.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
@@ -87,31 +87,17 @@
             this.dataGridView1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.dataGridView1.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
             this.dataGridView1.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.bcv,
             this.error,
             this.Action});
             this.dataGridView1.Location = new System.Drawing.Point(3, 3);
+            this.dataGridView1.MultiSelect = false;
             this.dataGridView1.Name = "dataGridView1";
+            this.dataGridView1.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
             this.dataGridView1.Size = new System.Drawing.Size(756, 204);
             this.dataGridView1.TabIndex = 2;
             this.dataGridView1.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.DataGridView1_CellContentClick);
-            // 
-            // bcv
-            // 
-            this.bcv.HeaderText = "BCV";
-            this.bcv.Name = "bcv";
-            // 
-            // error
-            // 
-            this.error.HeaderText = "Error";
-            this.error.Name = "error";
-            // 
-            // Action
-            // 
-            this.Action.HeaderText = "Actions";
-            this.Action.Name = "Action";
             // 
             // menuStrip1
             // 
@@ -265,6 +251,26 @@
             this.tableLayoutPanel1.Size = new System.Drawing.Size(762, 393);
             this.tableLayoutPanel1.TabIndex = 5;
             // 
+            // bcv
+            // 
+            this.bcv.HeaderText = "BCV";
+            this.bcv.Name = "bcv";
+            this.bcv.ReadOnly = true;
+            this.bcv.Width = 238;
+            // 
+            // error
+            // 
+            this.error.HeaderText = "Error";
+            this.error.Name = "error";
+            this.error.ReadOnly = true;
+            this.error.Width = 237;
+            // 
+            // Action
+            // 
+            this.Action.HeaderText = "Actions";
+            this.Action.Name = "Action";
+            this.Action.Width = 238;
+            // 
             // FormTest
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -310,11 +316,11 @@
         private System.Windows.Forms.ToolStripMenuItem errorToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem actionToolStripMenuItem;
         private System.Windows.Forms.Button ignoreList;
-        private System.Windows.Forms.DataGridViewTextBoxColumn bcv;
-        private System.Windows.Forms.DataGridViewTextBoxColumn error;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Action;
         private System.Windows.Forms.ToolStripMenuItem biblicalWordListToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem ignoreListToolStripMenuItem;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
+        private System.Windows.Forms.DataGridViewTextBoxColumn bcv;
+        private System.Windows.Forms.DataGridViewTextBoxColumn error;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Action;
     }
 }

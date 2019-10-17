@@ -9,6 +9,7 @@ using System.Text;
 using System.Windows.Forms;
 using System.Windows.Threading;
 using translation_validation_framework.form;
+using translation_validation_framework.util;
 
 /*
  * This is the main form for the Translation Validation Plugin and will be the base for the UI work.
@@ -90,7 +91,8 @@ namespace translation_validation_framework
                         text += item.ToString();
                         text += Environment.NewLine;
 
-                        // this.dataGridView1.Rows.Add(new string[] { $"{item.BookNum}", $"{item.ChapterNum}", $"{item.VerseNum}", $"{item.ErrorText}" });
+                        this.dataGridView1.Rows.Add(new string[] { $"{MainConsts.BOOK_NAMES[item.BookNum - 1] + " " + item.ChapterNum + ":" + item.VerseNum}", $"{item.ErrorText}" });
+  
                     }
 
                     this.SetText(text);
