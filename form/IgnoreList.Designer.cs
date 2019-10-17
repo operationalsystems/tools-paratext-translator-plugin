@@ -71,16 +71,15 @@
             // 
             this.flowLayoutPanel1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.flowLayoutPanel1.Controls.Add(this.dataGridView1);
-            this.flowLayoutPanel1.Controls.Add(this.btnClose);
             this.flowLayoutPanel1.Location = new System.Drawing.Point(12, 12);
             this.flowLayoutPanel1.Name = "flowLayoutPanel1";
-            this.flowLayoutPanel1.Size = new System.Drawing.Size(423, 426);
+            this.flowLayoutPanel1.Size = new System.Drawing.Size(423, 397);
             this.flowLayoutPanel1.TabIndex = 0;
             // 
             // btnClose
             // 
             this.btnClose.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnClose.Location = new System.Drawing.Point(3, 164);
+            this.btnClose.Location = new System.Drawing.Point(360, 415);
             this.btnClose.Name = "btnClose";
             this.btnClose.Size = new System.Drawing.Size(75, 23);
             this.btnClose.TabIndex = 1;
@@ -94,6 +93,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(447, 450);
             this.Controls.Add(this.flowLayoutPanel1);
+            this.Controls.Add(this.btnClose);
             this.Name = "IgnoreList";
             this.Text = "Ignore List";
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
