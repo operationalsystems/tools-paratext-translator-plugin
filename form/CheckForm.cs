@@ -85,17 +85,11 @@ namespace translation_validation_framework
                 {
                     this.HideProgress();
 
-                    string text = "";
                     foreach (ResultItem item in chkResult.ResultItems)
                     {
-                        text += item.ToString();
-                        text += Environment.NewLine;
-
                         this.dataGridView1.Rows.Add(new string[] { $"{MainConsts.BOOK_NAMES[item.BookNum - 1] + " " + item.ChapterNum + ":" + item.VerseNum}", $"{item.ErrorText}" });
-  
                     }
 
-                    this.SetText(text);
                     Application.DoEvents();
                 }
                 catch (Exception ex)
@@ -103,16 +97,6 @@ namespace translation_validation_framework
                     ErrorUtil.ReportError(ex);
                 }
             });
-        }
-
-        private void TextBox1_TextChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        public void SetText(string inputText)
-        {
-            this.txtData.Text = inputText;
         }
 
         private void ShowProgress()
@@ -169,6 +153,29 @@ namespace translation_validation_framework
         private void DataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
 
+        }
+
+        private void FormTest_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            switch (MessageBox.Show(this,
+                                    "Are you sure you want to close this plugin?",
+                                     ".FormTest_FormClosing",
+                                    MessageBoxButtons.YesNo, MessageBoxIcon.Question))
+            {
+
+                // ---- *)  if No keep the application alive 
+                //----  *)  else close the application
+                case DialogResult.No:
+                    e.Cancel = true;
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        private void FormTest_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            
         }
     }
 }
