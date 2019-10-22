@@ -48,6 +48,7 @@ namespace translation_validation_framework
                             frmCheck = new FormTest(this, host, activeProjectName);
                         }
                         frmCheck.ShowDialog();
+                        Environment.Exit(0);
                     });
 
                     mainUIThread.Name = pluginName;
