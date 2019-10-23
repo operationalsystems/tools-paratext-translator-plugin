@@ -216,14 +216,14 @@ namespace translation_validation_framework
                 punctuationToolStripMenuItem.CheckState = CheckState.Unchecked;
                 punctuationToolStripMenuItem.Checked = false;
 
-                // TODO: Add code required to disable this filter.
+                MessageBox.Show("Punctuation Check Unselected.");
             }
             else
             {
                 punctuationToolStripMenuItem.CheckState = CheckState.Checked;
                 punctuationToolStripMenuItem.Checked = true;
 
-                // TODO: Add code required to enable this filter.
+                MessageBox.Show("Punctuation Check Selected.");
             }
         }
 
@@ -234,14 +234,14 @@ namespace translation_validation_framework
                 bCVToolStripMenuItem.CheckState = CheckState.Unchecked;
                 bCVToolStripMenuItem.Checked = false;
 
-                // TODO: Add code required to disable this filter.
+                
             }
             else
             {
                 bCVToolStripMenuItem.CheckState = CheckState.Checked;
                 bCVToolStripMenuItem.Checked = true;
 
-                // TODO: Add code required to enable this filter.
+                
             }
         }
 
@@ -259,7 +259,7 @@ namespace translation_validation_framework
                 errorToolStripMenuItem.CheckState = CheckState.Checked;
                 errorToolStripMenuItem.Checked = true;
 
-                // TODO: Add code required to enable this filter.
+                
             }
         }
 
@@ -270,14 +270,14 @@ namespace translation_validation_framework
                 notesToolStripMenuItem.CheckState = CheckState.Unchecked;
                 notesToolStripMenuItem.Checked = false;
 
-                // TODO: Add code required to disable this filter.
+                
             }
             else
             {
                 notesToolStripMenuItem.CheckState = CheckState.Checked;
                 notesToolStripMenuItem.Checked = true;
 
-                // TODO: Add code required to enable this filter.
+                
             }
         }
 
@@ -288,14 +288,14 @@ namespace translation_validation_framework
                 actionToolStripMenuItem.CheckState = CheckState.Unchecked;
                 actionToolStripMenuItem.Checked = false;
 
-                // TODO: Add code required to disable this filter.
+                
             }
             else
             {
                 actionToolStripMenuItem.CheckState = CheckState.Checked;
                 actionToolStripMenuItem.Checked = true;
 
-                // TODO: Add code required to enable this filter.
+                
             }
         }
 

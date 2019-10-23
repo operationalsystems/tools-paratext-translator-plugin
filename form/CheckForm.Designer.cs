@@ -31,10 +31,6 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormTest));
             this.runCheck = new System.Windows.Forms.Button();
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
-            this.bcv = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.error = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.notes = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Action = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator = new System.Windows.Forms.ToolStripSeparator();
@@ -54,6 +50,10 @@
             this.ignoreList = new System.Windows.Forms.Button();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.notesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.bcv = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.error = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.notes = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Action = new System.Windows.Forms.DataGridViewTextBoxColumn();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.menuStrip1.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
@@ -88,27 +88,6 @@
             this.dataGridView1.Size = new System.Drawing.Size(756, 388);
             this.dataGridView1.TabIndex = 2;
             this.dataGridView1.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.DataGridView1_CellContentClick);
-            // 
-            // bcv
-            // 
-            this.bcv.HeaderText = "BCV";
-            this.bcv.Name = "bcv";
-            this.bcv.ReadOnly = true;
-            // 
-            // error
-            // 
-            this.error.HeaderText = "Error";
-            this.error.Name = "error";
-            this.error.ReadOnly = true;
-            // 
-            // notes
-            // 
-            this.notes.Name = "notes";
-            // 
-            // Action
-            // 
-            this.Action.HeaderText = "Actions";
-            this.Action.Name = "Action";
             // 
             // menuStrip1
             // 
@@ -274,6 +253,28 @@
             this.notesToolStripMenuItem.Text = "Notes";
             this.notesToolStripMenuItem.Click += new System.EventHandler(this.notesToolStripMenuItem_Click);
             // 
+            // bcv
+            // 
+            this.bcv.HeaderText = "BCV";
+            this.bcv.Name = "bcv";
+            this.bcv.ReadOnly = true;
+            // 
+            // error
+            // 
+            this.error.HeaderText = "Error";
+            this.error.Name = "error";
+            this.error.ReadOnly = true;
+            // 
+            // notes
+            // 
+            this.notes.HeaderText = "Notes";
+            this.notes.Name = "notes";
+            // 
+            // Action
+            // 
+            this.Action.HeaderText = "Actions";
+            this.Action.Name = "Action";
+            // 
             // FormTest
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -322,10 +323,10 @@
         private System.Windows.Forms.ToolStripMenuItem biblicalWordListToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem ignoreListToolStripMenuItem;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
+        private System.Windows.Forms.ToolStripMenuItem notesToolStripMenuItem;
         private System.Windows.Forms.DataGridViewTextBoxColumn bcv;
         private System.Windows.Forms.DataGridViewTextBoxColumn error;
         private System.Windows.Forms.DataGridViewTextBoxColumn notes;
         private System.Windows.Forms.DataGridViewTextBoxColumn Action;
-        private System.Windows.Forms.ToolStripMenuItem notesToolStripMenuItem;
     }
 }
