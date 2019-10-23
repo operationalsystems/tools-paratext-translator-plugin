@@ -180,14 +180,14 @@ namespace translation_validation_framework
                 biblicalWordListMenuItem.CheckState = CheckState.Unchecked;
                 biblicalWordListMenuItem.Checked = false;
 
-                // TODO: Add code required to disable this filter.
+                MessageBox.Show("Biblical Word List is unselected.");
             }
             else
             {
                 biblicalWordListMenuItem.CheckState = CheckState.Checked;
                 biblicalWordListMenuItem.Checked = true;
 
-                // TODO: Add code required to enable this filter.
+                MessageBox.Show("Biblical Word List filter is selected.");
             }
         }
 
@@ -198,14 +198,14 @@ namespace translation_validation_framework
                 ignoreListMenuItem.CheckState = CheckState.Unchecked;
                 ignoreListMenuItem.Checked = false;
 
-                // TODO: Add code required to disable this filter.
+                MessageBox.Show("Ignore List filter is unselected.");
             }
             else
             {
                 ignoreListMenuItem.CheckState = CheckState.Checked;
                 ignoreListMenuItem.Checked = true;
 
-                // TODO: Add code required to enable this filter.
+                MessageBox.Show("Ignore List filter is selected.");
             }
         }
 
@@ -216,14 +216,14 @@ namespace translation_validation_framework
                 punctuationToolStripMenuItem.CheckState = CheckState.Unchecked;
                 punctuationToolStripMenuItem.Checked = false;
 
-                MessageBox.Show("Punctuation Check Unselected.");
+                MessageBox.Show("Punctuation Check unselected.");
             }
             else
             {
                 punctuationToolStripMenuItem.CheckState = CheckState.Checked;
                 punctuationToolStripMenuItem.Checked = true;
 
-                MessageBox.Show("Punctuation Check Selected.");
+                MessageBox.Show("Punctuation Check selected.");
             }
         }
 
@@ -234,14 +234,14 @@ namespace translation_validation_framework
                 bCVToolStripMenuItem.CheckState = CheckState.Unchecked;
                 bCVToolStripMenuItem.Checked = false;
 
-                
+                MessageBox.Show("BCV column is hidden.");
             }
             else
             {
                 bCVToolStripMenuItem.CheckState = CheckState.Checked;
                 bCVToolStripMenuItem.Checked = true;
 
-                
+                MessageBox.Show("BCV is shown.");
             }
         }
 
@@ -252,14 +252,14 @@ namespace translation_validation_framework
                 errorToolStripMenuItem.CheckState = CheckState.Unchecked;
                 errorToolStripMenuItem.Checked = false;
 
-                // TODO: Add code required to disable this filter.
+                MessageBox.Show("Error column is hidden.");
             }
             else
             {
                 errorToolStripMenuItem.CheckState = CheckState.Checked;
                 errorToolStripMenuItem.Checked = true;
 
-                
+                MessageBox.Show("Error column is shown.");
             }
         }
 
@@ -270,14 +270,14 @@ namespace translation_validation_framework
                 notesToolStripMenuItem.CheckState = CheckState.Unchecked;
                 notesToolStripMenuItem.Checked = false;
 
-                
+                MessageBox.Show("Notes column is hidden.");
             }
             else
             {
                 notesToolStripMenuItem.CheckState = CheckState.Checked;
                 notesToolStripMenuItem.Checked = true;
 
-                
+                MessageBox.Show("Notes column is shown.");
             }
         }
 
@@ -288,14 +288,14 @@ namespace translation_validation_framework
                 actionToolStripMenuItem.CheckState = CheckState.Unchecked;
                 actionToolStripMenuItem.Checked = false;
 
-                
+                MessageBox.Show("Actions column is hidden.");
             }
             else
             {
                 actionToolStripMenuItem.CheckState = CheckState.Checked;
                 actionToolStripMenuItem.Checked = true;
 
-                
+                MessageBox.Show("Actions column is shown.");
             }
         }
 
