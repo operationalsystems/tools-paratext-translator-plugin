@@ -145,11 +145,6 @@ namespace translation_validation_framework
             ignoreList.Show();
         }
 
-        private void PunctuationToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-
-        }
-
         private void DataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
 
@@ -213,5 +208,96 @@ namespace translation_validation_framework
                 // TODO: Add code required to enable this filter.
             }
         }
+
+        private void punctuationToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (punctuationToolStripMenuItem.CheckState == CheckState.Checked)
+            {
+                punctuationToolStripMenuItem.CheckState = CheckState.Unchecked;
+                punctuationToolStripMenuItem.Checked = false;
+
+                // TODO: Add code required to disable this filter.
+            }
+            else
+            {
+                punctuationToolStripMenuItem.CheckState = CheckState.Checked;
+                punctuationToolStripMenuItem.Checked = true;
+
+                // TODO: Add code required to enable this filter.
+            }
+        }
+
+        private void bcvToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (bCVToolStripMenuItem.CheckState == CheckState.Checked)
+            {
+                bCVToolStripMenuItem.CheckState = CheckState.Unchecked;
+                bCVToolStripMenuItem.Checked = false;
+
+                // TODO: Add code required to disable this filter.
+            }
+            else
+            {
+                bCVToolStripMenuItem.CheckState = CheckState.Checked;
+                bCVToolStripMenuItem.Checked = true;
+
+                // TODO: Add code required to enable this filter.
+            }
+        }
+
+        private void errorToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (errorToolStripMenuItem.CheckState == CheckState.Checked)
+            {
+                errorToolStripMenuItem.CheckState = CheckState.Unchecked;
+                errorToolStripMenuItem.Checked = false;
+
+                // TODO: Add code required to disable this filter.
+            }
+            else
+            {
+                errorToolStripMenuItem.CheckState = CheckState.Checked;
+                errorToolStripMenuItem.Checked = true;
+
+                // TODO: Add code required to enable this filter.
+            }
+        }
+
+        private void notesToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (notesToolStripMenuItem.CheckState == CheckState.Checked)
+            {
+                notesToolStripMenuItem.CheckState = CheckState.Unchecked;
+                notesToolStripMenuItem.Checked = false;
+
+                // TODO: Add code required to disable this filter.
+            }
+            else
+            {
+                notesToolStripMenuItem.CheckState = CheckState.Checked;
+                notesToolStripMenuItem.Checked = true;
+
+                // TODO: Add code required to enable this filter.
+            }
+        }
+
+        private void actionToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (actionToolStripMenuItem.CheckState == CheckState.Checked)
+            {
+                actionToolStripMenuItem.CheckState = CheckState.Unchecked;
+                actionToolStripMenuItem.Checked = false;
+
+                // TODO: Add code required to disable this filter.
+            }
+            else
+            {
+                actionToolStripMenuItem.CheckState = CheckState.Checked;
+                actionToolStripMenuItem.Checked = true;
+
+                // TODO: Add code required to enable this filter.
+            }
+        }
+
     }
 }

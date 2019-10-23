@@ -31,6 +31,10 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormTest));
             this.runCheck = new System.Windows.Forms.Button();
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
+            this.bcv = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.error = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.notes = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Action = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator = new System.Windows.Forms.ToolStripSeparator();
@@ -49,10 +53,7 @@
             this.actionToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.ignoreList = new System.Windows.Forms.Button();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
-            this.bcv = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.error = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.notes = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Action = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.notesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.menuStrip1.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
@@ -93,20 +94,21 @@
             this.bcv.HeaderText = "BCV";
             this.bcv.Name = "bcv";
             this.bcv.ReadOnly = true;
-            this.bcv.Width = 238;
             // 
             // error
             // 
             this.error.HeaderText = "Error";
             this.error.Name = "error";
             this.error.ReadOnly = true;
-            this.error.Width = 237;
+            // 
+            // notes
+            // 
+            this.notes.Name = "notes";
             // 
             // Action
             // 
             this.Action.HeaderText = "Actions";
             this.Action.Name = "Action";
-            this.Action.Width = 238;
             // 
             // menuStrip1
             // 
@@ -175,12 +177,10 @@
             // 
             // punctuationToolStripMenuItem
             // 
-            this.punctuationToolStripMenuItem.Checked = true;
-            this.punctuationToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
             this.punctuationToolStripMenuItem.Name = "punctuationToolStripMenuItem";
-            this.punctuationToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.punctuationToolStripMenuItem.Size = new System.Drawing.Size(139, 22);
             this.punctuationToolStripMenuItem.Text = "Punctuation";
-            this.punctuationToolStripMenuItem.Click += new System.EventHandler(this.PunctuationToolStripMenuItem_Click);
+            this.punctuationToolStripMenuItem.Click += new System.EventHandler(this.punctuationToolStripMenuItem_Click);
             // 
             // toolsToolStripMenuItem
             // 
@@ -194,14 +194,14 @@
             // biblicalWordListToolStripMenuItem
             // 
             this.biblicalWordListToolStripMenuItem.Name = "biblicalWordListToolStripMenuItem";
-            this.biblicalWordListToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.biblicalWordListToolStripMenuItem.Size = new System.Drawing.Size(165, 22);
             this.biblicalWordListToolStripMenuItem.Text = "Biblical Word List";
             this.biblicalWordListToolStripMenuItem.Click += new System.EventHandler(this.biblicalWordListToolStripMenuItem_Click);
             // 
             // ignoreListToolStripMenuItem
             // 
             this.ignoreListToolStripMenuItem.Name = "ignoreListToolStripMenuItem";
-            this.ignoreListToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.ignoreListToolStripMenuItem.Size = new System.Drawing.Size(165, 22);
             this.ignoreListToolStripMenuItem.Text = "Ignore List";
             this.ignoreListToolStripMenuItem.Click += new System.EventHandler(this.ignoreListToolStripMenuItem_Click);
             // 
@@ -210,6 +210,7 @@
             this.viewsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.bCVToolStripMenuItem,
             this.errorToolStripMenuItem,
+            this.notesToolStripMenuItem,
             this.actionToolStripMenuItem});
             this.viewsToolStripMenuItem.Name = "viewsToolStripMenuItem";
             this.viewsToolStripMenuItem.Size = new System.Drawing.Size(49, 20);
@@ -217,27 +218,24 @@
             // 
             // bCVToolStripMenuItem
             // 
-            this.bCVToolStripMenuItem.Checked = true;
-            this.bCVToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
             this.bCVToolStripMenuItem.Name = "bCVToolStripMenuItem";
             this.bCVToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.bCVToolStripMenuItem.Text = "BCV";
+            this.bCVToolStripMenuItem.Click += new System.EventHandler(this.bcvToolStripMenuItem_Click);
             // 
             // errorToolStripMenuItem
             // 
-            this.errorToolStripMenuItem.Checked = true;
-            this.errorToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
             this.errorToolStripMenuItem.Name = "errorToolStripMenuItem";
             this.errorToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.errorToolStripMenuItem.Text = "Error";
+            this.errorToolStripMenuItem.Click += new System.EventHandler(this.errorToolStripMenuItem_Click);
             // 
             // actionToolStripMenuItem
             // 
-            this.actionToolStripMenuItem.Checked = true;
-            this.actionToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
             this.actionToolStripMenuItem.Name = "actionToolStripMenuItem";
             this.actionToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.actionToolStripMenuItem.Text = "Action";
+            this.actionToolStripMenuItem.Click += new System.EventHandler(this.actionToolStripMenuItem_Click);
             // 
             // ignoreList
             // 
@@ -268,6 +266,13 @@
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.Size = new System.Drawing.Size(762, 394);
             this.tableLayoutPanel1.TabIndex = 5;
+            // 
+            // notesToolStripMenuItem
+            // 
+            this.notesToolStripMenuItem.Name = "notesToolStripMenuItem";
+            this.notesToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.notesToolStripMenuItem.Text = "Notes";
+            this.notesToolStripMenuItem.Click += new System.EventHandler(this.notesToolStripMenuItem_Click);
             // 
             // FormTest
             // 
@@ -321,5 +326,6 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn error;
         private System.Windows.Forms.DataGridViewTextBoxColumn notes;
         private System.Windows.Forms.DataGridViewTextBoxColumn Action;
+        private System.Windows.Forms.ToolStripMenuItem notesToolStripMenuItem;
     }
 }
