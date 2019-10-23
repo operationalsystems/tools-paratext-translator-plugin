@@ -19,16 +19,15 @@ namespace translation_validation_framework
     public partial class FormTest : Form
     {
         private readonly TranslationValidationPlugin plugin;
-
         private readonly IHost host;
-
         private readonly string activeProjectName;
-
         private readonly ProgressForm frmProgress;
-
         private readonly PuctuationCheck1 chkPunctuation1;
 
-        
+        private ToolStripMenuItem biblicalWordListMenuItem;
+        private ToolStripMenuItem ignoreListMenuItem;
+
+
         public FormTest(TranslationValidationPlugin plugin, IHost host, string activeProjectName)
         {
             try
@@ -131,7 +130,8 @@ namespace translation_validation_framework
 
         private void FormTest_Load(object sender, EventArgs e)
         {
-
+            biblicalWordListMenuItem = this.biblicalWordListToolStripMenuItem;
+            ignoreListMenuItem = this.ignoreListToolStripMenuItem;
         }
 
         private void FileToolStripMenuItem_Click(object sender, EventArgs e)
@@ -159,7 +159,7 @@ namespace translation_validation_framework
         {
             switch (MessageBox.Show(this,
                                     "Are you sure you want to close this plugin?",
-                                     ".FormTest_FormClosing",
+                                     "Close Plugin",
                                     MessageBoxButtons.YesNo, MessageBoxIcon.Question))
             {
 
@@ -176,6 +176,42 @@ namespace translation_validation_framework
         private void FormTest_FormClosed(object sender, FormClosedEventArgs e)
         {
             
+        }
+
+        private void biblicalWordListToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (biblicalWordListMenuItem.CheckState == CheckState.Checked)
+            {
+                biblicalWordListMenuItem.CheckState = CheckState.Unchecked;
+                biblicalWordListMenuItem.Checked = false;
+
+                // TODO: Add code required to disable this filter.
+            }
+            else
+            {
+                biblicalWordListMenuItem.CheckState = CheckState.Checked;
+                biblicalWordListMenuItem.Checked = true;
+
+                // TODO: Add code required to enable this filter.
+            }
+        }
+
+        private void ignoreListToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (ignoreListMenuItem.CheckState == CheckState.Checked)
+            {
+                ignoreListMenuItem.CheckState = CheckState.Unchecked;
+                ignoreListMenuItem.Checked = false;
+
+                // TODO: Add code required to disable this filter.
+            }
+            else
+            {
+                ignoreListMenuItem.CheckState = CheckState.Checked;
+                ignoreListMenuItem.Checked = true;
+
+                // TODO: Add code required to enable this filter.
+            }
         }
     }
 }

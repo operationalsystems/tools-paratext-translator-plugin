@@ -31,6 +31,9 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormTest));
             this.runCheck = new System.Windows.Forms.Button();
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
+            this.bcv = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.error = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Action = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator = new System.Windows.Forms.ToolStripSeparator();
@@ -49,9 +52,6 @@
             this.actionToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.ignoreList = new System.Windows.Forms.Button();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
-            this.bcv = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.error = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Action = new System.Windows.Forms.DataGridViewTextBoxColumn();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.menuStrip1.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
@@ -85,6 +85,26 @@
             this.dataGridView1.Size = new System.Drawing.Size(756, 388);
             this.dataGridView1.TabIndex = 2;
             this.dataGridView1.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.DataGridView1_CellContentClick);
+            // 
+            // bcv
+            // 
+            this.bcv.HeaderText = "BCV";
+            this.bcv.Name = "bcv";
+            this.bcv.ReadOnly = true;
+            this.bcv.Width = 238;
+            // 
+            // error
+            // 
+            this.error.HeaderText = "Error";
+            this.error.Name = "error";
+            this.error.ReadOnly = true;
+            this.error.Width = 237;
+            // 
+            // Action
+            // 
+            this.Action.HeaderText = "Actions";
+            this.Action.Name = "Action";
+            this.Action.Width = 238;
             // 
             // menuStrip1
             // 
@@ -170,14 +190,16 @@
             // biblicalWordListToolStripMenuItem
             // 
             this.biblicalWordListToolStripMenuItem.Name = "biblicalWordListToolStripMenuItem";
-            this.biblicalWordListToolStripMenuItem.Size = new System.Drawing.Size(165, 22);
+            this.biblicalWordListToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.biblicalWordListToolStripMenuItem.Text = "Biblical Word List";
+            this.biblicalWordListToolStripMenuItem.Click += new System.EventHandler(this.biblicalWordListToolStripMenuItem_Click);
             // 
             // ignoreListToolStripMenuItem
             // 
             this.ignoreListToolStripMenuItem.Name = "ignoreListToolStripMenuItem";
-            this.ignoreListToolStripMenuItem.Size = new System.Drawing.Size(165, 22);
+            this.ignoreListToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.ignoreListToolStripMenuItem.Text = "Ignore List";
+            this.ignoreListToolStripMenuItem.Click += new System.EventHandler(this.ignoreListToolStripMenuItem_Click);
             // 
             // viewsToolStripMenuItem
             // 
@@ -235,26 +257,6 @@
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.Size = new System.Drawing.Size(762, 394);
             this.tableLayoutPanel1.TabIndex = 5;
-            // 
-            // bcv
-            // 
-            this.bcv.HeaderText = "BCV";
-            this.bcv.Name = "bcv";
-            this.bcv.ReadOnly = true;
-            this.bcv.Width = 238;
-            // 
-            // error
-            // 
-            this.error.HeaderText = "Error";
-            this.error.Name = "error";
-            this.error.ReadOnly = true;
-            this.error.Width = 237;
-            // 
-            // Action
-            // 
-            this.Action.HeaderText = "Actions";
-            this.Action.Name = "Action";
-            this.Action.Width = 238;
             // 
             // FormTest
             // 
