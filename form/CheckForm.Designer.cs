@@ -88,6 +88,26 @@
             this.dataGridView1.TabIndex = 2;
             this.dataGridView1.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.DataGridView1_CellContentClick);
             // 
+            // bcv
+            // 
+            this.bcv.HeaderText = "BCV";
+            this.bcv.Name = "bcv";
+            this.bcv.ReadOnly = true;
+            this.bcv.Width = 238;
+            // 
+            // error
+            // 
+            this.error.HeaderText = "Error";
+            this.error.Name = "error";
+            this.error.ReadOnly = true;
+            this.error.Width = 237;
+            // 
+            // Action
+            // 
+            this.Action.HeaderText = "Actions";
+            this.Action.Name = "Action";
+            this.Action.Width = 238;
+            // 
             // menuStrip1
             // 
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -176,12 +196,14 @@
             this.biblicalWordListToolStripMenuItem.Name = "biblicalWordListToolStripMenuItem";
             this.biblicalWordListToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.biblicalWordListToolStripMenuItem.Text = "Biblical Word List";
+            this.biblicalWordListToolStripMenuItem.Click += new System.EventHandler(this.biblicalWordListToolStripMenuItem_Click);
             // 
             // ignoreListToolStripMenuItem
             // 
             this.ignoreListToolStripMenuItem.Name = "ignoreListToolStripMenuItem";
             this.ignoreListToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.ignoreListToolStripMenuItem.Text = "Ignore List";
+            this.ignoreListToolStripMenuItem.Click += new System.EventHandler(this.ignoreListToolStripMenuItem_Click);
             // 
             // viewsToolStripMenuItem
             // 
@@ -246,29 +268,6 @@
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.Size = new System.Drawing.Size(762, 394);
             this.tableLayoutPanel1.TabIndex = 5;
-            // 
-            // bcv
-            // 
-            this.bcv.HeaderText = "BCV";
-            this.bcv.Name = "bcv";
-            this.bcv.ReadOnly = true;
-            this.bcv.Resizable = System.Windows.Forms.DataGridViewTriState.True;
-            // 
-            // error
-            // 
-            this.error.HeaderText = "Error";
-            this.error.Name = "error";
-            this.error.ReadOnly = true;
-            // 
-            // notes
-            // 
-            this.notes.HeaderText = "Notes";
-            this.notes.Name = "notes";
-            // 
-            // Action
-            // 
-            this.Action.HeaderText = "Actions";
-            this.Action.Name = "Action";
             // 
             // FormTest
             // 
