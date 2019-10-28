@@ -21,10 +21,6 @@ namespace translation_validation_framework.form
             InitializeComponent();
         }
 
-        private void btnCancel_Click(object sender, EventArgs e)
-        {
-
-        }
 
         public void SetTitle(string titleText)
         {
@@ -39,6 +35,16 @@ namespace translation_validation_framework.form
             this.pbrStatus.Value = bookNum;
 
             this.lblTitle.Text = $"Checked book #{bookNum} of {MainConsts.MAX_BOOK_NUM}...";
+        }
+
+        private void pbrStatus_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void btnCancel_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }

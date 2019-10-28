@@ -103,7 +103,18 @@ namespace translation_validation_framework
             this.Enabled = false;
             this.frmProgress.Show(this);
 
+            //this.frmProgress.Visible = false;
+            //StartForm(frmProgress);
+
             Application.DoEvents();
+        }
+
+        void StartForm(ProgressForm form)
+        {
+            DialogResult result = form.ShowDialog();
+            if (result == DialogResult.Cancel)
+                MessageBox.Show("Operation has been cancelled");
+            
         }
 
         private void HideProgress()
