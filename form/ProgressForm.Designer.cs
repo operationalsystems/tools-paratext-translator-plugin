@@ -36,9 +36,11 @@
             // pbrStatus
             // 
             this.pbrStatus.Location = new System.Drawing.Point(12, 45);
+            this.pbrStatus.MarqueeAnimationSpeed = 10;
             this.pbrStatus.Maximum = 111;
             this.pbrStatus.Name = "pbrStatus";
             this.pbrStatus.Size = new System.Drawing.Size(367, 23);
+            this.pbrStatus.Style = System.Windows.Forms.ProgressBarStyle.Marquee;
             this.pbrStatus.TabIndex = 0;
             // 
             // lblTitle
@@ -52,6 +54,7 @@
             // 
             // btnCancel
             // 
+            this.btnCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
             this.btnCancel.Location = new System.Drawing.Point(304, 12);
             this.btnCancel.Name = "btnCancel";
             this.btnCancel.Size = new System.Drawing.Size(75, 23);
