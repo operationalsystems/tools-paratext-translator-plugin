@@ -98,7 +98,7 @@
     <Compile Include="util\ErrorUtil.cs" />
     <Compile Include="data\CheckResult.cs" />
     <Compile Include="check\ITextCheck.cs" />
-    <Compile Include="check\PuctuationCheck1.cs" />
+    <Compile Include="check\PunctuationCheck1.cs" />
     <Compile Include="data\ResultItem.cs" />
     <Compile Include="TranslationValidationPlugin.cs" />
     <Compile Include="form\CheckForm.cs">

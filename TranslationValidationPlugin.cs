@@ -28,7 +28,7 @@ namespace translation_validation_framework
     {
         public const string pluginName = "Capitalizatoin Validation Check";
 
-        private FormTest frmCheck;
+        private CheckForm frmCheck;
 
         public void Run(IHost host, string activeProjectName)
         {
@@ -45,7 +45,7 @@ namespace translation_validation_framework
                     {
                         if (frmCheck == null)
                         {
-                            frmCheck = new FormTest(this, host, activeProjectName);
+                            frmCheck = new CheckForm(this, host, activeProjectName);
                         }
                         frmCheck.ShowDialog();
                         Environment.Exit(0);

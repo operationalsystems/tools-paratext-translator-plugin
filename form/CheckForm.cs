@@ -16,19 +16,19 @@ using translation_validation_framework.util;
  */
 namespace translation_validation_framework
 {
-    public partial class FormTest : Form
+    public partial class CheckForm : Form
     {
         private readonly TranslationValidationPlugin plugin;
         private readonly IHost host;
         private readonly string activeProjectName;
         private readonly ProgressForm frmProgress;
-        private readonly PuctuationCheck1 chkPunctuation1;
+        private readonly PunctuationCheck1 chkPunctuation1;
 
         private ToolStripMenuItem biblicalWordListMenuItem;
         private ToolStripMenuItem ignoreListMenuItem;
 
 
-        public FormTest(TranslationValidationPlugin plugin, IHost host, string activeProjectName)
+        public CheckForm(TranslationValidationPlugin plugin, IHost host, string activeProjectName)
         {
             try
             {
@@ -41,8 +41,8 @@ namespace translation_validation_framework
                 this.host = host ?? throw new ArgumentNullException(nameof(host));
                 this.activeProjectName = activeProjectName ?? throw new ArgumentNullException(nameof(activeProjectName));
 
-                this.frmProgress = new ProgressForm();
-                this.chkPunctuation1 = new PuctuationCheck1(this.plugin, this.host, this.activeProjectName);
+                this.frmProgress = new ProgressForm(this);
+                this.chkPunctuation1 = new PunctuationCheck1(this.plugin, this.host, this.activeProjectName);
                 this.chkPunctuation1.ProgressHandler += ChkPunctuation1_ProgressHandler;
                 this.chkPunctuation1.ResultHandler += ChkPunctuation1_ResultHandler;
             }
@@ -52,9 +52,30 @@ namespace translation_validation_framework
             }
 
         }
+
+        internal void CancelCheck()
+        {
+            this.dataGridView1.Rows.Clear();
+            this.chkPunctuation1.CancelCheck();
+
+            Dispatcher.CurrentDispatcher.Invoke(() =>
+            {
+                try
+                {
+                    this.HideProgress();
+
+                    Application.DoEvents();
+                }
+                catch (Exception ex)
+                {
+                    ErrorUtil.ReportError(ex);
+                }
+            });
+        }
+
         /*
-         * Launches the Progress form after run has been clicked.
-         */
+* Launches the Progress form after run has been clicked.
+*/
         private void ChkPunctuation1_ProgressHandler(object sender, int currBookNum)
         {
             Dispatcher.CurrentDispatcher.Invoke(() =>
@@ -103,24 +124,14 @@ namespace translation_validation_framework
             this.Enabled = false;
             this.frmProgress.Show(this);
 
-            //this.frmProgress.Visible = false;
-            //StartForm(frmProgress);
-
             Application.DoEvents();
-        }
-
-        void StartForm(ProgressForm form)
-        {
-            DialogResult result = form.ShowDialog();
-            if (result == DialogResult.Cancel)
-                MessageBox.Show("Operation has been cancelled");
-            
         }
 
         private void HideProgress()
         {
             this.frmProgress.Hide();
             this.Enabled = true;
+            this.frmProgress.ResetForm();
             this.Activate();
 
             Application.DoEvents();
@@ -128,6 +139,7 @@ namespace translation_validation_framework
 
         private void Run_Click(object sender, EventArgs e)
         {
+            this.dataGridView1.Rows.Clear();
             try
             {
                 this.ShowProgress();

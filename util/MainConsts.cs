@@ -12,7 +12,7 @@ namespace translation_validation_framework.util
     public class MainConsts
     {
         // 66 = all books
-        public const int MAX_BOOK_NUM = 1;
+        public const int MAX_BOOK_NUM = 66;
 
         public const int MAX_CHECK_THREADS = 4;
         public static readonly string[] BOOK_NAMES = {

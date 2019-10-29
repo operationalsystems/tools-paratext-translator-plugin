@@ -51,7 +51,7 @@
             this.lblTitle.Name = "lblTitle";
             this.lblTitle.Size = new System.Drawing.Size(61, 13);
             this.lblTitle.TabIndex = 1;
-            this.lblTitle.Text = "Checking...";
+            this.lblTitle.Text = "Running Validation...";
             // 
             // btnCancel
             // 
@@ -76,6 +76,7 @@
             this.Controls.Add(this.pbrStatus);
             this.Name = "ProgressForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
+            this.Load += new System.EventHandler(this.ProgressForm_Load);
             this.ResumeLayout(false);
             this.PerformLayout();
 

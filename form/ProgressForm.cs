@@ -16,8 +16,11 @@ namespace translation_validation_framework.form
 {
     public partial class ProgressForm : Form
     {
-        public ProgressForm()
+        private readonly CheckForm checkForm;
+
+        public ProgressForm(CheckForm checkForm)
         {
+            this.checkForm = checkForm;
             InitializeComponent();
         }
 
@@ -44,7 +47,20 @@ namespace translation_validation_framework.form
 
         private void btnCancel_Click(object sender, EventArgs e)
         {
+            SetTitle("Cancelling Validation.  Please Wait...");
+            checkForm.CancelCheck();
+            Application.DoEvents();
+        }
 
+        private void ProgressForm_Load(object sender, EventArgs e)
+        {
+
+        }
+
+        public void ResetForm()
+        {
+            SetTitle("Running Validation...");
+            this.pbrStatus.Value = 0;
         }
     }
 }
