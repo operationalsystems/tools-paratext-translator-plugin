@@ -1,7 +1,6 @@
-﻿using System;
+﻿using AddInSideViews;
+using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
-using AddInSideViews;
 
 /*
  * A class to handle results from validation checks.

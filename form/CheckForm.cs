@@ -1,11 +1,5 @@
 ﻿using AddInSideViews;
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
 using System.Windows.Forms;
 using System.Windows.Threading;
 using translation_validation_framework.form;
@@ -74,15 +68,15 @@ namespace translation_validation_framework
         }
 
         /*
-* Launches the Progress form after run has been clicked.
-*/
+         * Launches the Progress form after run has been clicked.
+         */
         private void ChkPunctuation1_ProgressHandler(object sender, int currBookNum)
         {
             Dispatcher.CurrentDispatcher.Invoke(() =>
             {
                 try
                 {
-                    this.frmProgress.setCurrBookNum(currBookNum);
+                    this.frmProgress.SetCurrBookNum(currBookNum);
                     this.frmProgress.Activate();
 
                     Application.DoEvents();
@@ -193,10 +187,10 @@ namespace translation_validation_framework
 
         private void FormTest_FormClosed(object sender, FormClosedEventArgs e)
         {
-            
+
         }
 
-        private void biblicalWordListToolStripMenuItem_Click(object sender, EventArgs e)
+        private void BiblicalWordListToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (biblicalWordListMenuItem.CheckState == CheckState.Checked)
             {
@@ -214,7 +208,7 @@ namespace translation_validation_framework
             }
         }
 
-        private void ignoreListToolStripMenuItem_Click(object sender, EventArgs e)
+        private void IgnoreListToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (ignoreListMenuItem.CheckState == CheckState.Checked)
             {
@@ -232,7 +226,7 @@ namespace translation_validation_framework
             }
         }
 
-        private void punctuationToolStripMenuItem_Click(object sender, EventArgs e)
+        private void PunctuationToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (punctuationToolStripMenuItem.CheckState == CheckState.Checked)
             {
@@ -250,7 +244,7 @@ namespace translation_validation_framework
             }
         }
 
-        private void bcvToolStripMenuItem_Click(object sender, EventArgs e)
+        private void BcvToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (bCVToolStripMenuItem.CheckState == CheckState.Checked)
             {
@@ -268,7 +262,7 @@ namespace translation_validation_framework
             }
         }
 
-        private void errorToolStripMenuItem_Click(object sender, EventArgs e)
+        private void ErrorToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (errorToolStripMenuItem.CheckState == CheckState.Checked)
             {
@@ -286,7 +280,7 @@ namespace translation_validation_framework
             }
         }
 
-        private void notesToolStripMenuItem_Click(object sender, EventArgs e)
+        private void NotesToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (notesToolStripMenuItem.CheckState == CheckState.Checked)
             {
@@ -304,7 +298,7 @@ namespace translation_validation_framework
             }
         }
 
-        private void actionToolStripMenuItem_Click(object sender, EventArgs e)
+        private void ActionToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (actionToolStripMenuItem.CheckState == CheckState.Checked)
             {

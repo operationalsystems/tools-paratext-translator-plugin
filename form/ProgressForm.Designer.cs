@@ -42,7 +42,6 @@
             this.pbrStatus.Size = new System.Drawing.Size(367, 23);
             this.pbrStatus.Style = System.Windows.Forms.ProgressBarStyle.Continuous;
             this.pbrStatus.TabIndex = 0;
-            this.pbrStatus.Click += new System.EventHandler(this.pbrStatus_Click);
             // 
             // lblTitle
             // 
@@ -62,7 +61,7 @@
             this.btnCancel.TabIndex = 2;
             this.btnCancel.Text = "Cancel";
             this.btnCancel.UseVisualStyleBackColor = true;
-            this.btnCancel.Click += new System.EventHandler(this.btnCancel_Click);
+            this.btnCancel.Click += new System.EventHandler(this.BtnCancel_Click);
             // 
             // ProgressForm
             // 

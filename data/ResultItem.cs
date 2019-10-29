@@ -1,8 +1,4 @@
-﻿using AddInSideViews;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System;
 
 /*
  * Class to track all result items necessary for the Translation Validation Plugin

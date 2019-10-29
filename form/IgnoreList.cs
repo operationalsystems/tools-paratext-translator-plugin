@@ -1,11 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace translation_validation_framework.form
@@ -16,10 +9,10 @@ namespace translation_validation_framework.form
         {
             InitializeComponent();
             // TODO: Remove when we implement displaying real data.
-            createDummyData();
+            CreateDummyData();
         }
 
-        private void createDummyData()
+        private void CreateDummyData()
         {
             this.dataGridView1.Rows.Add("MAT, 9, 15", "(text), I", "Add to ignore list");
             this.dataGridView1.Rows.Add("FOO, 9, 15", "foo, Bar", "This is an error");
@@ -29,12 +22,7 @@ namespace translation_validation_framework.form
             this.dataGridView1.Rows.Add("MAT, 15, 10", "(text); In", "This is an error");
         }
 
-        private void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
-        {
-;
-        }
-
-        private void button1_Click(object sender, EventArgs e)
+        private void BtnClose_Click(object sender, EventArgs e)
         {
             this.Close();
         }

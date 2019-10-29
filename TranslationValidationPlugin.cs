@@ -1,16 +1,10 @@
-﻿using System;
+﻿using AddInSideViews;
+using System;
 using System.AddIn;
 using System.AddIn.Pipeline;
 using System.Collections.Generic;
 using System.Threading;
-using AddInSideViews;
-using System.Text;
-using System.Text.RegularExpressions;
 using System.Windows.Forms;
-using System.Reflection;
-using System.Reflection.Emit;
-using System.Runtime.Serialization.Formatters;
-using System.Runtime.Serialization;
 
 /*
  * This is the main framework for the Translation Validation Plugin

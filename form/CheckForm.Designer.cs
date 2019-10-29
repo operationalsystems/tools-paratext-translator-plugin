@@ -159,7 +159,7 @@
             this.punctuationToolStripMenuItem.Name = "punctuationToolStripMenuItem";
             this.punctuationToolStripMenuItem.Size = new System.Drawing.Size(139, 22);
             this.punctuationToolStripMenuItem.Text = "Punctuation";
-            this.punctuationToolStripMenuItem.Click += new System.EventHandler(this.punctuationToolStripMenuItem_Click);
+            this.punctuationToolStripMenuItem.Click += new System.EventHandler(this.PunctuationToolStripMenuItem_Click);
             // 
             // toolsToolStripMenuItem
             // 
@@ -175,14 +175,14 @@
             this.biblicalWordListToolStripMenuItem.Name = "biblicalWordListToolStripMenuItem";
             this.biblicalWordListToolStripMenuItem.Size = new System.Drawing.Size(165, 22);
             this.biblicalWordListToolStripMenuItem.Text = "Biblical Word List";
-            this.biblicalWordListToolStripMenuItem.Click += new System.EventHandler(this.biblicalWordListToolStripMenuItem_Click);
+            this.biblicalWordListToolStripMenuItem.Click += new System.EventHandler(this.BiblicalWordListToolStripMenuItem_Click);
             // 
             // ignoreListToolStripMenuItem
             // 
             this.ignoreListToolStripMenuItem.Name = "ignoreListToolStripMenuItem";
             this.ignoreListToolStripMenuItem.Size = new System.Drawing.Size(165, 22);
             this.ignoreListToolStripMenuItem.Text = "Ignore List";
-            this.ignoreListToolStripMenuItem.Click += new System.EventHandler(this.ignoreListToolStripMenuItem_Click);
+            this.ignoreListToolStripMenuItem.Click += new System.EventHandler(this.IgnoreListToolStripMenuItem_Click);
             // 
             // viewsToolStripMenuItem
             // 
@@ -200,21 +200,21 @@
             this.bCVToolStripMenuItem.Name = "bCVToolStripMenuItem";
             this.bCVToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.bCVToolStripMenuItem.Text = "BCV";
-            this.bCVToolStripMenuItem.Click += new System.EventHandler(this.bcvToolStripMenuItem_Click);
+            this.bCVToolStripMenuItem.Click += new System.EventHandler(this.BcvToolStripMenuItem_Click);
             // 
             // errorToolStripMenuItem
             // 
             this.errorToolStripMenuItem.Name = "errorToolStripMenuItem";
             this.errorToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.errorToolStripMenuItem.Text = "Error";
-            this.errorToolStripMenuItem.Click += new System.EventHandler(this.errorToolStripMenuItem_Click);
+            this.errorToolStripMenuItem.Click += new System.EventHandler(this.ErrorToolStripMenuItem_Click);
             // 
             // actionToolStripMenuItem
             // 
             this.actionToolStripMenuItem.Name = "actionToolStripMenuItem";
             this.actionToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.actionToolStripMenuItem.Text = "Action";
-            this.actionToolStripMenuItem.Click += new System.EventHandler(this.actionToolStripMenuItem_Click);
+            this.actionToolStripMenuItem.Click += new System.EventHandler(this.ActionToolStripMenuItem_Click);
             // 
             // ignoreList
             // 
@@ -250,7 +250,7 @@
             this.notesToolStripMenuItem.Name = "notesToolStripMenuItem";
             this.notesToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.notesToolStripMenuItem.Text = "Notes";
-            this.notesToolStripMenuItem.Click += new System.EventHandler(this.notesToolStripMenuItem_Click);
+            this.notesToolStripMenuItem.Click += new System.EventHandler(this.NotesToolStripMenuItem_Click);
             // 
             // bcv
             // 

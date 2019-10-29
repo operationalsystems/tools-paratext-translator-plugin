@@ -1,6 +1,6 @@
-﻿using System;
+﻿using AddInSideViews;
+using System;
 using System.Text.RegularExpressions;
-using AddInSideViews;
 using System.Threading;
 using System.Threading.Tasks;
 using translation_validation_framework.util;
@@ -13,19 +13,12 @@ namespace translation_validation_framework
     class PunctuationCheck1 : ITextCheck
     {
         private static readonly Regex checkRegex;
-
         private readonly TranslationValidationPlugin plugin;
-
         private readonly IHost host;
-
         private readonly string activeProjectName;
-
         private CheckResult lastResult;
-
         public event EventHandler<CheckResult> ResultHandler;
-
         public event EventHandler<int> ProgressHandler;
-
         private CancellationTokenSource tokenSource;
         private int currProgress;
 
@@ -67,7 +60,7 @@ namespace translation_validation_framework
 
         public void CancelCheck()
         {
-           if (tokenSource != null)
+            if (tokenSource != null)
             {
                 tokenSource.Cancel();
             }
@@ -131,7 +124,7 @@ namespace translation_validation_framework
                               }
                           }
 
-                       
+
                           extractorState.SubTotal++;
 
                           lock (this)
@@ -160,7 +153,7 @@ namespace translation_validation_framework
             }
             catch (OperationCanceledException e)
             {
-                
+                // Eating this exception for now.
             }
             catch (Exception ex)
             {
@@ -172,5 +165,8 @@ namespace translation_validation_framework
         {
             return this.lastResult;
         }
+
     }
+
+
 }
