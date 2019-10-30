@@ -31,6 +31,10 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(CheckForm));
             this.runCheck = new System.Windows.Forms.Button();
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
+            this.bcv = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.error = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.notes = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Action = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator = new System.Windows.Forms.ToolStripSeparator();
@@ -46,14 +50,10 @@
             this.viewsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.bCVToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.errorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.notesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.actionToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.ignoreList = new System.Windows.Forms.Button();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
-            this.notesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.bcv = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.error = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.notes = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Action = new System.Windows.Forms.DataGridViewTextBoxColumn();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
@@ -72,8 +72,8 @@
             // dataGridView1
             // 
             this.dataGridView1.AllowUserToOrderColumns = true;
-            this.dataGridView1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-            | System.Windows.Forms.AnchorStyles.Left)
+            this.dataGridView1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.dataGridView1.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
             this.dataGridView1.AutoSizeRowsMode = System.Windows.Forms.DataGridViewAutoSizeRowsMode.DisplayedCells;
@@ -82,20 +82,43 @@
             this.error,
             this.notes,
             this.Action});
-            this.dataGridView1.Location = new System.Drawing.Point(31, 60);
+            this.dataGridView1.Location = new System.Drawing.Point(31, 54);
             this.dataGridView1.MultiSelect = false;
             this.dataGridView1.Name = "dataGridView1";
-            this.dataGridView1.Size = new System.Drawing.Size(756, 388);
+            this.dataGridView1.ScrollBars = System.Windows.Forms.ScrollBars.None;
+            this.dataGridView1.Size = new System.Drawing.Size(762, 394);
             this.dataGridView1.TabIndex = 2;
             this.dataGridView1.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.DataGridView1_CellContentClick);
+            // 
+            // bcv
+            // 
+            this.bcv.HeaderText = "BCV";
+            this.bcv.Name = "bcv";
+            this.bcv.ReadOnly = true;
+            // 
+            // error
+            // 
+            this.error.HeaderText = "Error";
+            this.error.Name = "error";
+            this.error.ReadOnly = true;
+            // 
+            // notes
+            // 
+            this.notes.HeaderText = "Notes";
+            this.notes.Name = "notes";
+            // 
+            // Action
+            // 
+            this.Action.HeaderText = "Actions";
+            this.Action.Name = "Action";
             // 
             // menuStrip1
             // 
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.fileToolStripMenuItem,
             this.editToolStripMenuItem,
-            this.toolsToolStripMenuItem,
-            this.viewsToolStripMenuItem});
+            this.viewsToolStripMenuItem,
+            this.toolsToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(10, 10);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Size = new System.Drawing.Size(805, 24);
@@ -126,7 +149,7 @@
             this.saveToolStripMenuItem.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
             this.saveToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
-            this.saveToolStripMenuItem.Size = new System.Drawing.Size(138, 22);
+            this.saveToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.saveToolStripMenuItem.Text = "&Save";
             // 
             // saveAsToolStripMenuItem
@@ -198,21 +221,28 @@
             // bCVToolStripMenuItem
             // 
             this.bCVToolStripMenuItem.Name = "bCVToolStripMenuItem";
-            this.bCVToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.bCVToolStripMenuItem.Size = new System.Drawing.Size(109, 22);
             this.bCVToolStripMenuItem.Text = "BCV";
             this.bCVToolStripMenuItem.Click += new System.EventHandler(this.BcvToolStripMenuItem_Click);
             // 
             // errorToolStripMenuItem
             // 
             this.errorToolStripMenuItem.Name = "errorToolStripMenuItem";
-            this.errorToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.errorToolStripMenuItem.Size = new System.Drawing.Size(109, 22);
             this.errorToolStripMenuItem.Text = "Error";
             this.errorToolStripMenuItem.Click += new System.EventHandler(this.ErrorToolStripMenuItem_Click);
+            // 
+            // notesToolStripMenuItem
+            // 
+            this.notesToolStripMenuItem.Name = "notesToolStripMenuItem";
+            this.notesToolStripMenuItem.Size = new System.Drawing.Size(109, 22);
+            this.notesToolStripMenuItem.Text = "Notes";
+            this.notesToolStripMenuItem.Click += new System.EventHandler(this.NotesToolStripMenuItem_Click);
             // 
             // actionToolStripMenuItem
             // 
             this.actionToolStripMenuItem.Name = "actionToolStripMenuItem";
-            this.actionToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.actionToolStripMenuItem.Size = new System.Drawing.Size(109, 22);
             this.actionToolStripMenuItem.Text = "Action";
             this.actionToolStripMenuItem.Click += new System.EventHandler(this.ActionToolStripMenuItem_Click);
             // 
@@ -229,8 +259,8 @@
             // 
             // tableLayoutPanel1
             // 
-            this.tableLayoutPanel1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-            | System.Windows.Forms.AnchorStyles.Left)
+            this.tableLayoutPanel1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.tableLayoutPanel1.AutoScroll = true;
             this.tableLayoutPanel1.AutoSize = true;
@@ -245,39 +275,11 @@
             this.tableLayoutPanel1.Size = new System.Drawing.Size(762, 394);
             this.tableLayoutPanel1.TabIndex = 5;
             // 
-            // notesToolStripMenuItem
-            // 
-            this.notesToolStripMenuItem.Name = "notesToolStripMenuItem";
-            this.notesToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.notesToolStripMenuItem.Text = "Notes";
-            this.notesToolStripMenuItem.Click += new System.EventHandler(this.NotesToolStripMenuItem_Click);
-            // 
-            // bcv
-            // 
-            this.bcv.HeaderText = "BCV";
-            this.bcv.Name = "bcv";
-            this.bcv.ReadOnly = true;
-            // 
-            // error
-            // 
-            this.error.HeaderText = "Error";
-            this.error.Name = "error";
-            this.error.ReadOnly = true;
-            // 
-            // notes
-            // 
-            this.notes.HeaderText = "Notes";
-            this.notes.Name = "notes";
-            // 
-            // Action
-            // 
-            this.Action.HeaderText = "Actions";
-            this.Action.Name = "Action";
-            // 
-            // FormTest
+            // CheckForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.AutoScroll = true;
             this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.ClientSize = new System.Drawing.Size(825, 514);
             this.Controls.Add(this.dataGridView1);
@@ -286,7 +288,7 @@
             this.Controls.Add(this.menuStrip1);
             this.Controls.Add(this.tableLayoutPanel1);
             this.MainMenuStrip = this.menuStrip1;
-            this.Name = "FormTest";
+            this.Name = "CheckForm";
             this.Padding = new System.Windows.Forms.Padding(10);
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Translation Validation Plugin";

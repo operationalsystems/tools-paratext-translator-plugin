@@ -8,7 +8,6 @@ namespace translation_validation_framework
 
         public event EventHandler<int> ProgressHandler;
 
-
         public void RunCheck();
         public void CancelCheck();
 
