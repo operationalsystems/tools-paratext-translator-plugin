@@ -25,12 +25,12 @@ namespace translation_validation_framework
         public int CurrProgress { get => currProgress; }
 
         /*
-         * Regex to check for improper capitlization following non-final punctuation (E.g. <tex>, And <text>).
+         * Regex to check for improper capitlization following non-final punctuation (E.g. <text>, And <text>).
          */
         static PunctuationCheck1()
         {
             PunctuationCheck1.checkRegex = new Regex("(?<=[;,]([\"'](\\s[\"'])*)?(\\\\f([^\\\\]|\\\\(?!f\\*))*?\\\\f\\*)*(\\s*\\\\\\w+)+(\\s*\\\\v\\s\\S+)?\\s+(\\\\x([^\\\\]|\\\\(?!x\\*))*?\\\\x\\*)?)[A-Z]\\w+",
-                RegexOptions.Multiline | RegexOptions.IgnoreCase);
+                RegexOptions.Multiline);
         }
 
         public PunctuationCheck1(TranslationValidationPlugin plugin, IHost host, string activeProjectName)
@@ -106,11 +106,13 @@ namespace translation_validation_framework
                                   coord += chapterNum * 1000;
                                   coord += verseNum;
 
+                                  string verseText = extractorState.Extractor.Extract(coord, coord);
+
                                   foreach (Match matchItem in checkRegex.Matches(extractorState.Extractor.Extract(coord, coord)))
                                   {
 
-                                      ResultItem resultItem = new ResultItem(bookNum, chapterNum, verseNum,
-                                          $"Punctuation check failure at position {matchItem.Index}.");
+                                      ResultItem resultItem = new ResultItem(bookNum, chapterNum, verseNum, 
+                                          $"Punctuation check failure at position {matchItem.Index}.", verseText);
                                       result.ResultItems.Enqueue(resultItem);
 
                                       // this.host.WriteLineToLog(this.plugin, resultItem.ToString());

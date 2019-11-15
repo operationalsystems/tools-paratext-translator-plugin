@@ -99,9 +99,11 @@ namespace translation_validation_framework
                 {
                     this.HideProgress();
 
-                    foreach (ResultItem item in chkResult.ResultItems)
+                    foreach (ResultItem item in (chkResult.ResultItems))
                     {
-                        this.dataGridView1.Rows.Add(new string[] { $"{MainConsts.BOOK_NAMES[item.BookNum - 1] + " " + item.ChapterNum + ":" + item.VerseNum}", $"{item.ErrorText}" });
+
+                        this.dataGridView1.Rows.Add(new string[] { $"{MainConsts.BOOK_NAMES[item.BookNum - 1] + " " + item.ChapterNum + ":" + item.VerseNum}", $"{item.VerseText}"
+                        });
                     }
 
                     Application.DoEvents();
