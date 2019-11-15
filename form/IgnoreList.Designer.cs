@@ -1,4 +1,4 @@
-﻿namespace translation_validation_framework.form
+﻿namespace TvpMain.Form
 {
     partial class IgnoreList
     {
@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(IgnoreList));
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
             this.ignoredText = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.dateAdded = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -101,6 +102,7 @@
             this.ClientSize = new System.Drawing.Size(495, 473);
             this.Controls.Add(this.flowLayoutPanel1);
             this.Controls.Add(this.btnClose);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "IgnoreList";
             this.Text = "Ignore List";
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();

@@ -1,7 +1,7 @@
 ﻿/*
  * A Class to handle the Global Constants.
  */
-namespace translation_validation_framework.util
+namespace TvpMain.Util
 {
     public class MainConsts
     {

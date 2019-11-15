@@ -2,25 +2,26 @@
 using System;
 using System.Windows.Forms;
 using System.Windows.Threading;
-using translation_validation_framework.form;
-using translation_validation_framework.util;
+using TvpMain.Check;
+using TvpMain.Data;
+using TvpMain.Form;
+using TvpMain.Util;
 
 /*
  * This is the main form for the Translation Validation Plugin and will be the base for the UI work.
  */
-namespace translation_validation_framework
+namespace TvpMain.Form
 {
-    public partial class CheckForm : Form
+    public partial class CheckForm : System.Windows.Forms.Form
     {
-        private readonly TranslationValidationPlugin plugin;
-        private readonly IHost host;
-        private readonly string activeProjectName;
-        private readonly ProgressForm frmProgress;
-        private readonly PunctuationCheck1 chkPunctuation1;
+        private readonly TranslationValidationPlugin _plugin;
+        private readonly IHost _host;
+        private readonly string _activeProjectName;
+        private readonly ProgressForm _progressForm;
+        private readonly PunctuationCheck1 _punctuationCheck;
 
-        private ToolStripMenuItem biblicalWordListMenuItem;
-        private ToolStripMenuItem ignoreListMenuItem;
-
+        private ToolStripMenuItem _wordListMenuItem;
+        private ToolStripMenuItem _ignoreListMenuItem;
 
         public CheckForm(TranslationValidationPlugin plugin, IHost host, string activeProjectName)
         {
@@ -31,14 +32,14 @@ namespace translation_validation_framework
                 */
                 InitializeComponent();
 
-                this.plugin = plugin ?? throw new ArgumentNullException(nameof(plugin));
-                this.host = host ?? throw new ArgumentNullException(nameof(host));
-                this.activeProjectName = activeProjectName ?? throw new ArgumentNullException(nameof(activeProjectName));
+                this._plugin = plugin ?? throw new ArgumentNullException(nameof(plugin));
+                this._host = host ?? throw new ArgumentNullException(nameof(host));
+                this._activeProjectName = activeProjectName ?? throw new ArgumentNullException(nameof(activeProjectName));
 
-                this.frmProgress = new ProgressForm(this);
-                this.chkPunctuation1 = new PunctuationCheck1(this.plugin, this.host, this.activeProjectName);
-                this.chkPunctuation1.ProgressHandler += ChkPunctuation1_ProgressHandler;
-                this.chkPunctuation1.ResultHandler += ChkPunctuation1_ResultHandler;
+                this._progressForm = new ProgressForm();
+                this._punctuationCheck = new PunctuationCheck1(this._plugin, this._host, this._activeProjectName);
+                this._punctuationCheck.ProgressHandler += OnCheckProgress;
+                this._punctuationCheck.ResultHandler += OnCheckResult;
             }
             catch (Exception ex)
             {
@@ -50,14 +51,13 @@ namespace translation_validation_framework
         internal void CancelCheck()
         {
             this.dataGridView1.Rows.Clear();
-            this.chkPunctuation1.CancelCheck();
+            this._punctuationCheck.CancelCheck();
 
             Dispatcher.CurrentDispatcher.Invoke(() =>
             {
                 try
                 {
                     this.HideProgress();
-
                     Application.DoEvents();
                 }
                 catch (Exception ex)
@@ -70,14 +70,14 @@ namespace translation_validation_framework
         /*
          * Launches the Progress form after run has been clicked.
          */
-        private void ChkPunctuation1_ProgressHandler(object sender, int currBookNum)
+        private void OnCheckProgress(object sender, int currBookNum)
         {
             Dispatcher.CurrentDispatcher.Invoke(() =>
             {
                 try
                 {
-                    this.frmProgress.SetCurrBookNum(currBookNum);
-                    this.frmProgress.Activate();
+                    this._progressForm.SetCurrBookNum(currBookNum);
+                    this._progressForm.Activate();
 
                     Application.DoEvents();
                 }
@@ -91,7 +91,7 @@ namespace translation_validation_framework
         /*
          * Populates after the main Validation form after the Progress form has finished.
          */
-        private void ChkPunctuation1_ResultHandler(object sender, CheckResult chkResult)
+        private void OnCheckResult(object sender, CheckResult chkResult)
         {
             Dispatcher.CurrentDispatcher.Invoke(() =>
             {
@@ -118,16 +118,16 @@ namespace translation_validation_framework
         private void ShowProgress()
         {
             this.Enabled = false;
-            this.frmProgress.Show(this);
+            this._progressForm.Show(this);
 
             Application.DoEvents();
         }
 
         private void HideProgress()
         {
-            this.frmProgress.Hide();
+            this._progressForm.Hide();
             this.Enabled = true;
-            this.frmProgress.ResetForm();
+            this._progressForm.ResetForm();
             this.Activate();
 
             Application.DoEvents();
@@ -139,7 +139,7 @@ namespace translation_validation_framework
             try
             {
                 this.ShowProgress();
-                this.chkPunctuation1.RunCheck();
+                this._punctuationCheck.RunCheck();
             }
             catch (Exception ex)
             {
@@ -149,8 +149,8 @@ namespace translation_validation_framework
 
         private void FormTest_Load(object sender, EventArgs e)
         {
-            biblicalWordListMenuItem = this.biblicalWordListToolStripMenuItem;
-            ignoreListMenuItem = this.ignoreListToolStripMenuItem;
+            _wordListMenuItem = this.biblicalWordListToolStripMenuItem;
+            _ignoreListMenuItem = this.ignoreListToolStripMenuItem;
         }
 
         private void FileToolStripMenuItem_Click(object sender, EventArgs e)
@@ -176,7 +176,6 @@ namespace translation_validation_framework
                                      "Close Plugin",
                                     MessageBoxButtons.YesNo, MessageBoxIcon.Question))
             {
-
                 // ---- *)  if No keep the application alive 
                 //----  *)  else close the application
                 case DialogResult.No:
@@ -187,24 +186,19 @@ namespace translation_validation_framework
             }
         }
 
-        private void FormTest_FormClosed(object sender, FormClosedEventArgs e)
-        {
-
-        }
-
         private void BiblicalWordListToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (biblicalWordListMenuItem.CheckState == CheckState.Checked)
+            if (_wordListMenuItem.CheckState == CheckState.Checked)
             {
-                biblicalWordListMenuItem.CheckState = CheckState.Unchecked;
-                biblicalWordListMenuItem.Checked = false;
+                _wordListMenuItem.CheckState = CheckState.Unchecked;
+                _wordListMenuItem.Checked = false;
 
                 MessageBox.Show("Biblical Word List is unselected.");
             }
             else
             {
-                biblicalWordListMenuItem.CheckState = CheckState.Checked;
-                biblicalWordListMenuItem.Checked = true;
+                _wordListMenuItem.CheckState = CheckState.Checked;
+                _wordListMenuItem.Checked = true;
 
                 MessageBox.Show("Biblical Word List filter is selected.");
             }
@@ -212,17 +206,17 @@ namespace translation_validation_framework
 
         private void IgnoreListToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (ignoreListMenuItem.CheckState == CheckState.Checked)
+            if (_ignoreListMenuItem.CheckState == CheckState.Checked)
             {
-                ignoreListMenuItem.CheckState = CheckState.Unchecked;
-                ignoreListMenuItem.Checked = false;
+                _ignoreListMenuItem.CheckState = CheckState.Unchecked;
+                _ignoreListMenuItem.Checked = false;
 
                 MessageBox.Show("Ignore List filter is unselected.");
             }
             else
             {
-                ignoreListMenuItem.CheckState = CheckState.Checked;
-                ignoreListMenuItem.Checked = true;
+                _ignoreListMenuItem.CheckState = CheckState.Checked;
+                _ignoreListMenuItem.Checked = true;
 
                 MessageBox.Show("Ignore List filter is selected.");
             }

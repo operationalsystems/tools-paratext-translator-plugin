@@ -3,15 +3,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TvpMain.Data;
 
-namespace translation_validation_framework.data
+namespace TvpMain.Filter
 {
     interface IFilter
     {
-        public event EventHandler<CheckResult> ResultHandler;
-
         public void RunFilter();
 
         public CheckResult GetLastResult();
+
+        public event EventHandler<CheckResult> ResultHandler;
     }
 }

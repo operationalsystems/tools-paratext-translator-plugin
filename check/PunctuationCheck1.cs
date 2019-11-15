@@ -3,41 +3,43 @@ using System;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
-using translation_validation_framework.util;
+using TvpMain.Data;
+using TvpMain.Util;
 
 /*
  * The first validation check in the Translation Validation Plugin framework.
  */
-namespace translation_validation_framework
+namespace TvpMain.Check
 {
     class PunctuationCheck1 : ITextCheck
     {
-        private static readonly Regex checkRegex;
-        private readonly TranslationValidationPlugin plugin;
-        private readonly IHost host;
-        private readonly string activeProjectName;
-        private CheckResult lastResult;
+        private static readonly Regex _checkRegex;
+        private readonly TranslationValidationPlugin _plugin;
+        private readonly IHost _host;
+        private readonly string _activeProjectName;
+        private CheckResult _lastResult;
+        private CancellationTokenSource _tokenSource;
+        private int _currProgress;
+
         public event EventHandler<CheckResult> ResultHandler;
         public event EventHandler<int> ProgressHandler;
-        private CancellationTokenSource tokenSource;
-        private int currProgress;
 
-        public int CurrProgress { get => currProgress; }
+        public int CurrProgress { get => _currProgress; }
 
         /*
          * Regex to check for improper capitlization following non-final punctuation (E.g. <text>, And <text>).
          */
         static PunctuationCheck1()
         {
-            PunctuationCheck1.checkRegex = new Regex("(?<=[;,]([\"'](\\s[\"'])*)?(\\\\f([^\\\\]|\\\\(?!f\\*))*?\\\\f\\*)*(\\s*\\\\\\w+)+(\\s*\\\\v\\s\\S+)?\\s+(\\\\x([^\\\\]|\\\\(?!x\\*))*?\\\\x\\*)?)[A-Z]\\w+",
+            _checkRegex = new Regex("(?<=[;,]([\"'](\\s[\"'])*)?(\\\\f([^\\\\]|\\\\(?!f\\*))*?\\\\f\\*)*(\\s*\\\\\\w+)+(\\s*\\\\v\\s\\S+)?\\s+(\\\\x([^\\\\]|\\\\(?!x\\*))*?\\\\x\\*)?)[A-Z]\\w+",
                 RegexOptions.Multiline);
         }
 
         public PunctuationCheck1(TranslationValidationPlugin plugin, IHost host, string activeProjectName)
         {
-            this.plugin = plugin;
-            this.host = host;
-            this.activeProjectName = activeProjectName;
+            this._plugin = plugin;
+            this._host = host;
+            this._activeProjectName = activeProjectName;
         }
 
         /*
@@ -54,15 +56,15 @@ namespace translation_validation_framework
             public ExtractorState(IScrExtractor extractor)
             {
                 this.extractor = extractor ?? throw new ArgumentNullException(nameof(extractor));
-                this.subTotal = 0;
+                subTotal = 0;
             }
         }
 
         public void CancelCheck()
         {
-            if (tokenSource != null)
+            if (_tokenSource != null)
             {
-                tokenSource.Cancel();
+                _tokenSource.Cancel();
             }
         }
 
@@ -70,18 +72,18 @@ namespace translation_validation_framework
         {
             try
             {
-                CheckResult result = new CheckResult(this.host, this.activeProjectName);
+                CheckResult result = new CheckResult(_host, _activeProjectName);
 
-                string versificationName = host.GetProjectVersificationName(this.activeProjectName);
-                this.currProgress = 0;
+                string versificationName = _host.GetProjectVersificationName(_activeProjectName);
+                _currProgress = 0;
 
-                tokenSource = new CancellationTokenSource();
+                _tokenSource = new CancellationTokenSource();
 
                 // Provides multiple threads in order to increase the speed of the Puncutation check.
                 // Use type parameter to make subtotal a long, not an int
-                Parallel.For<ExtractorState>(1, (MainConsts.MAX_BOOK_NUM + 1),
-                    new ParallelOptions { MaxDegreeOfParallelism = MainConsts.MAX_CHECK_THREADS, CancellationToken = tokenSource.Token },
-                    () => new ExtractorState(this.host.GetScriptureExtractor(this.activeProjectName, ExtractorType.USFM)),
+                Parallel.For(1, MainConsts.MAX_BOOK_NUM + 1,
+                    new ParallelOptions { MaxDegreeOfParallelism = MainConsts.MAX_CHECK_THREADS, CancellationToken = _tokenSource.Token },
+                    () => new ExtractorState(_host.GetScriptureExtractor(_activeProjectName, ExtractorType.USFM)),
                     (bookNum, loopState, extractorState) =>
                   {
                       int currBookNum = bookNum;
@@ -93,11 +95,11 @@ namespace translation_validation_framework
                           /*
                            * Handles looping over the entire Bible and storing the results to be indexed.
                            */
-                          int lastChapterNum = this.host.GetLastChapter(bookNum, versificationName);
+                          int lastChapterNum = _host.GetLastChapter(bookNum, versificationName);
                           for (int chapterNum = 1; chapterNum <= lastChapterNum; chapterNum++)
                           {
                               currChapterNum = chapterNum;
-                              int lastVerseNum = this.host.GetLastVerse(bookNum, chapterNum, versificationName);
+                              int lastVerseNum = _host.GetLastVerse(bookNum, chapterNum, versificationName);
 
                               for (int verseNum = 1; verseNum <= lastVerseNum; verseNum++)
                               {
@@ -108,21 +110,21 @@ namespace translation_validation_framework
 
                                   string verseText = extractorState.Extractor.Extract(coord, coord);
 
-                                  foreach (Match matchItem in checkRegex.Matches(extractorState.Extractor.Extract(coord, coord)))
+                                  foreach (Match matchItem in _checkRegex.Matches(extractorState.Extractor.Extract(coord, coord)))
                                   {
 
-                                      ResultItem resultItem = new ResultItem(bookNum, chapterNum, verseNum, 
+                                      ResultItem resultItem = new ResultItem(bookNum, chapterNum, verseNum,
                                           $"Punctuation check failure at position {matchItem.Index}.", verseText);
                                       result.ResultItems.Enqueue(resultItem);
 
                                       // this.host.WriteLineToLog(this.plugin, resultItem.ToString());
                                   }
 
-                                  if (tokenSource.IsCancellationRequested)
+                                  if (_tokenSource.IsCancellationRequested)
                                   {
                                       return extractorState;
                                   }
-                                  this.ProgressHandler?.Invoke(this, this.currProgress);
+                                  ProgressHandler?.Invoke(this, _currProgress);
                               }
                           }
 
@@ -131,19 +133,19 @@ namespace translation_validation_framework
 
                           lock (this)
                           {
-                              this.currProgress++;
+                              _currProgress++;
                               //this.ProgressHandler?.Invoke(this, this.currProgress);
 
-                              if (this.currProgress >= MainConsts.MAX_BOOK_NUM)
+                              if (_currProgress >= MainConsts.MAX_BOOK_NUM)
                               {
-                                  this.lastResult = result;
-                                  this.ResultHandler?.Invoke(this, this.lastResult);
+                                  _lastResult = result;
+                                  ResultHandler?.Invoke(this, _lastResult);
                               }
                           }
                       }
                       catch (Exception ex)
                       {
-                          ErrorUtil.reportError($"Location: {currBookNum}.{currChapterNum}.{currVerseNum}", ex);
+                          ErrorUtil.ReportError($"Location: {currBookNum}.{currChapterNum}.{currVerseNum}", ex);
                       }
 
                       return extractorState;
@@ -153,7 +155,7 @@ namespace translation_validation_framework
                         // ignore, at this time
                     });
             }
-            catch (OperationCanceledException e)
+            catch (OperationCanceledException ex)
             {
                 // Eating this exception for now.
             }
@@ -165,7 +167,7 @@ namespace translation_validation_framework
 
         public CheckResult GetLastResult()
         {
-            return this.lastResult;
+            return _lastResult;
         }
 
     }

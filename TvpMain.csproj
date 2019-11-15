@@ -82,29 +82,32 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="form\IgnoreList.cs">
+    <Compile Include="Data\FilterResults.cs" />
+    <Compile Include="Filter\FilterResult.cs" />
+    <Compile Include="Filter\IFilter.cs" />
+    <Compile Include="Form\IgnoreList.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="form\IgnoreList.Designer.cs">
+    <Compile Include="Form\IgnoreList.Designer.cs">
       <DependentUpon>IgnoreList.cs</DependentUpon>
     </Compile>
-    <Compile Include="form\ProgressForm.cs">
+    <Compile Include="Form\ProgressForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="form\ProgressForm.Designer.cs">
+    <Compile Include="Form\ProgressForm.Designer.cs">
       <DependentUpon>ProgressForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="util\MainConsts.cs" />
-    <Compile Include="util\ErrorUtil.cs" />
-    <Compile Include="data\CheckResult.cs" />
-    <Compile Include="check\ITextCheck.cs" />
-    <Compile Include="check\PunctuationCheck1.cs" />
-    <Compile Include="data\ResultItem.cs" />
+    <Compile Include="Util\MainConsts.cs" />
+    <Compile Include="Util\ErrorUtil.cs" />
+    <Compile Include="Data\CheckResult.cs" />
+    <Compile Include="Check\ITextCheck.cs" />
+    <Compile Include="Check\PunctuationCheck1.cs" />
+    <Compile Include="Data\ResultItem.cs" />
     <Compile Include="TranslationValidationPlugin.cs" />
-    <Compile Include="form\CheckForm.cs">
+    <Compile Include="Form\CheckForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="form\CheckForm.Designer.cs">
+    <Compile Include="Form\CheckForm.Designer.cs">
       <DependentUpon>CheckForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -113,15 +116,20 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="form\IgnoreList.resx">
+    <EmbeddedResource Include="Form\IgnoreList.resx">
       <DependentUpon>IgnoreList.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="form\ProgressForm.resx">
+    <EmbeddedResource Include="Form\ProgressForm.resx">
       <DependentUpon>ProgressForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="form\CheckForm.resx">
+    <EmbeddedResource Include="Form\CheckForm.resx">
       <DependentUpon>CheckForm.cs</DependentUpon>
     </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Resources\biblica-16x16.ico" />
+    <Content Include="Resources\biblica-32x32.ico" />
+    <Content Include="Resources\biblica-96x96.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

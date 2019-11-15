@@ -3,46 +3,38 @@
 /*
  * Class to track all result items necessary for the Translation Validation Plugin
  */
-namespace translation_validation_framework
+namespace TvpMain.Data
 {
     public class ResultItem
     {
-        private readonly int bookNum;
+        private readonly int _bookNum;
+        private readonly int _chapterNum;
+        private readonly int _verseNum;
+        private readonly string _errorText;
+        private readonly string _verseText;
 
-        private readonly int chapterNum;
-
-        private readonly int verseNum;
-
-        private readonly string errorText;
-
-        private readonly string verseText;
-
-        public int BookNum => bookNum;
-
-        public int ChapterNum => chapterNum;
-
-        public int VerseNum => verseNum;
-
-        public string ErrorText => errorText;
-
-        public string VerseText => verseText;
+        public int BookNum => _bookNum;
+        public int ChapterNum => _chapterNum;
+        public int VerseNum => _verseNum;
+        public string ErrorText => _errorText;
+        public string VerseText => _verseText;
 
         public ResultItem(int bookNum, int chapterNum, int verseNum, string errorText, string verseText)
         {
-            this.bookNum = bookNum;
-            this.chapterNum = chapterNum;
-            this.verseNum = verseNum;
-            this.verseText = verseText;
-            this.errorText = errorText ?? throw new ArgumentNullException(nameof(errorText));
+            this._bookNum = bookNum;
+            this._chapterNum = chapterNum;
+            this._verseNum = verseNum;
+            this._verseText = verseText;
+            this._errorText = errorText ?? throw new ArgumentNullException(nameof(errorText));
         }
         /*
          * Comma separated output of the error in the open Project TVP Main form text box from the Punctuation check run.
          */
         public override string ToString()
         {
-            return $"{bookNum},{chapterNum},{verseNum} = {errorText}";
+            return $"{_bookNum},{_chapterNum},{_verseNum} = {_errorText}";
         }
 
-        public int Coordinate => (this.bookNum * 1000000) + (this.chapterNum * 1000) + this.verseNum;
+        public int Coordinate => _bookNum * 1000000 + _chapterNum * 1000 + _verseNum;
     }
 }

@@ -1,14 +1,13 @@
 ﻿using System;
 using System.Windows.Forms;
 
-namespace translation_validation_framework.form
+namespace TvpMain.Form
 {
-    public partial class IgnoreList : Form
+    public partial class IgnoreList : System.Windows.Forms.Form
     {
         public IgnoreList()
         {
             InitializeComponent();
-            // TODO: Remove when we implement displaying real data.
             CreateDummyData();
         }
 

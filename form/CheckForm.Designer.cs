@@ -1,4 +1,4 @@
-﻿namespace translation_validation_framework
+﻿namespace TvpMain.Form
 {
     partial class CheckForm
     {
@@ -44,14 +44,14 @@
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.editToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.punctuationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.biblicalWordListToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.ignoreListToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.viewsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.bCVToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.errorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.notesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.actionToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.biblicalWordListToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.ignoreListToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.ignoreList = new System.Windows.Forms.Button();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
@@ -149,7 +149,7 @@
             this.saveToolStripMenuItem.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
             this.saveToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
-            this.saveToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.saveToolStripMenuItem.Size = new System.Drawing.Size(138, 22);
             this.saveToolStripMenuItem.Text = "&Save";
             // 
             // saveAsToolStripMenuItem
@@ -183,29 +183,6 @@
             this.punctuationToolStripMenuItem.Size = new System.Drawing.Size(139, 22);
             this.punctuationToolStripMenuItem.Text = "Punctuation";
             this.punctuationToolStripMenuItem.Click += new System.EventHandler(this.PunctuationToolStripMenuItem_Click);
-            // 
-            // toolsToolStripMenuItem
-            // 
-            this.toolsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.biblicalWordListToolStripMenuItem,
-            this.ignoreListToolStripMenuItem});
-            this.toolsToolStripMenuItem.Name = "toolsToolStripMenuItem";
-            this.toolsToolStripMenuItem.Size = new System.Drawing.Size(50, 20);
-            this.toolsToolStripMenuItem.Text = "Filters";
-            // 
-            // biblicalWordListToolStripMenuItem
-            // 
-            this.biblicalWordListToolStripMenuItem.Name = "biblicalWordListToolStripMenuItem";
-            this.biblicalWordListToolStripMenuItem.Size = new System.Drawing.Size(165, 22);
-            this.biblicalWordListToolStripMenuItem.Text = "Biblical Word List";
-            this.biblicalWordListToolStripMenuItem.Click += new System.EventHandler(this.BiblicalWordListToolStripMenuItem_Click);
-            // 
-            // ignoreListToolStripMenuItem
-            // 
-            this.ignoreListToolStripMenuItem.Name = "ignoreListToolStripMenuItem";
-            this.ignoreListToolStripMenuItem.Size = new System.Drawing.Size(165, 22);
-            this.ignoreListToolStripMenuItem.Text = "Ignore List";
-            this.ignoreListToolStripMenuItem.Click += new System.EventHandler(this.IgnoreListToolStripMenuItem_Click);
             // 
             // viewsToolStripMenuItem
             // 
@@ -245,6 +222,29 @@
             this.actionToolStripMenuItem.Size = new System.Drawing.Size(109, 22);
             this.actionToolStripMenuItem.Text = "Action";
             this.actionToolStripMenuItem.Click += new System.EventHandler(this.ActionToolStripMenuItem_Click);
+            // 
+            // toolsToolStripMenuItem
+            // 
+            this.toolsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.biblicalWordListToolStripMenuItem,
+            this.ignoreListToolStripMenuItem});
+            this.toolsToolStripMenuItem.Name = "toolsToolStripMenuItem";
+            this.toolsToolStripMenuItem.Size = new System.Drawing.Size(50, 20);
+            this.toolsToolStripMenuItem.Text = "Filters";
+            // 
+            // biblicalWordListToolStripMenuItem
+            // 
+            this.biblicalWordListToolStripMenuItem.Name = "biblicalWordListToolStripMenuItem";
+            this.biblicalWordListToolStripMenuItem.Size = new System.Drawing.Size(165, 22);
+            this.biblicalWordListToolStripMenuItem.Text = "Biblical Word List";
+            this.biblicalWordListToolStripMenuItem.Click += new System.EventHandler(this.BiblicalWordListToolStripMenuItem_Click);
+            // 
+            // ignoreListToolStripMenuItem
+            // 
+            this.ignoreListToolStripMenuItem.Name = "ignoreListToolStripMenuItem";
+            this.ignoreListToolStripMenuItem.Size = new System.Drawing.Size(165, 22);
+            this.ignoreListToolStripMenuItem.Text = "Ignore List";
+            this.ignoreListToolStripMenuItem.Click += new System.EventHandler(this.IgnoreListToolStripMenuItem_Click);
             // 
             // ignoreList
             // 
@@ -287,13 +287,13 @@
             this.Controls.Add(this.runCheck);
             this.Controls.Add(this.menuStrip1);
             this.Controls.Add(this.tableLayoutPanel1);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MainMenuStrip = this.menuStrip1;
             this.Name = "CheckForm";
             this.Padding = new System.Windows.Forms.Padding(10);
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Translation Validation Plugin";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.FormTest_FormClosing);
-            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.FormTest_FormClosed);
             this.Load += new System.EventHandler(this.FormTest_Load);
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
             this.menuStrip1.ResumeLayout(false);

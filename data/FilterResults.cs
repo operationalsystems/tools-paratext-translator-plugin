@@ -1,13 +1,15 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TvpMain.Data;
 
 /*
  * This class will handle the filter options in order to allow results to be as accurate as possible.
  */
-namespace translation_validation_framework.data
+namespace TvpMain.Data
 {
     public class Filter
     {

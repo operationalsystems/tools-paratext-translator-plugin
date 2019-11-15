@@ -1,6 +1,7 @@
 ﻿using System;
+using TvpMain.Data;
 
-namespace translation_validation_framework
+namespace TvpMain.Check
 {
     interface ITextCheck
     {
