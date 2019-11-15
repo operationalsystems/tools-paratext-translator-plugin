@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using AddInSideViews;
 
 namespace translation_validation_framework
 {
@@ -13,6 +9,7 @@ namespace translation_validation_framework
         public event EventHandler<int> ProgressHandler;
 
         public void RunCheck();
+        public void CancelCheck();
 
         public CheckResult GetLastResult();
     }

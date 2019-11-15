@@ -1,34 +1,28 @@
 ﻿using AddInSideViews;
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
 using System.Windows.Forms;
 using System.Windows.Threading;
 using translation_validation_framework.form;
+using translation_validation_framework.util;
 
 /*
  * This is the main form for the Translation Validation Plugin and will be the base for the UI work.
  */
 namespace translation_validation_framework
 {
-    public partial class FormTest : Form
+    public partial class CheckForm : Form
     {
         private readonly TranslationValidationPlugin plugin;
-
         private readonly IHost host;
-
         private readonly string activeProjectName;
-
         private readonly ProgressForm frmProgress;
+        private readonly PunctuationCheck1 chkPunctuation1;
 
-        private readonly PuctuationCheck1 chkPunctuation1;
+        private ToolStripMenuItem biblicalWordListMenuItem;
+        private ToolStripMenuItem ignoreListMenuItem;
 
-        
-        public FormTest(TranslationValidationPlugin plugin, IHost host, string activeProjectName)
+
+        public CheckForm(TranslationValidationPlugin plugin, IHost host, string activeProjectName)
         {
             try
             {
@@ -41,8 +35,8 @@ namespace translation_validation_framework
                 this.host = host ?? throw new ArgumentNullException(nameof(host));
                 this.activeProjectName = activeProjectName ?? throw new ArgumentNullException(nameof(activeProjectName));
 
-                this.frmProgress = new ProgressForm();
-                this.chkPunctuation1 = new PuctuationCheck1(this.plugin, this.host, this.activeProjectName);
+                this.frmProgress = new ProgressForm(this);
+                this.chkPunctuation1 = new PunctuationCheck1(this.plugin, this.host, this.activeProjectName);
                 this.chkPunctuation1.ProgressHandler += ChkPunctuation1_ProgressHandler;
                 this.chkPunctuation1.ResultHandler += ChkPunctuation1_ResultHandler;
             }
@@ -52,6 +46,27 @@ namespace translation_validation_framework
             }
 
         }
+
+        internal void CancelCheck()
+        {
+            this.dataGridView1.Rows.Clear();
+            this.chkPunctuation1.CancelCheck();
+
+            Dispatcher.CurrentDispatcher.Invoke(() =>
+            {
+                try
+                {
+                    this.HideProgress();
+
+                    Application.DoEvents();
+                }
+                catch (Exception ex)
+                {
+                    ErrorUtil.ReportError(ex);
+                }
+            });
+        }
+
         /*
          * Launches the Progress form after run has been clicked.
          */
@@ -61,7 +76,7 @@ namespace translation_validation_framework
             {
                 try
                 {
-                    this.frmProgress.setCurrBookNum(currBookNum);
+                    this.frmProgress.SetCurrBookNum(currBookNum);
                     this.frmProgress.Activate();
 
                     Application.DoEvents();
@@ -84,16 +99,13 @@ namespace translation_validation_framework
                 {
                     this.HideProgress();
 
-                    string text = "";
-                    foreach (ResultItem item in chkResult.ResultItems)
+                    foreach (ResultItem item in (chkResult.ResultItems))
                     {
-                        text += item.ToString();
-                        text += Environment.NewLine;
 
-                        // this.dataGridView1.Rows.Add(new string[] { $"{item.BookNum}", $"{item.ChapterNum}", $"{item.VerseNum}", $"{item.ErrorText}" });
+                        this.dataGridView1.Rows.Add(new string[] { $"{MainConsts.BOOK_NAMES[item.BookNum - 1] + " " + item.ChapterNum + ":" + item.VerseNum}", $"{item.VerseText}"
+                        });
                     }
 
-                    this.SetText(text);
                     Application.DoEvents();
                 }
                 catch (Exception ex)
@@ -101,16 +113,6 @@ namespace translation_validation_framework
                     ErrorUtil.ReportError(ex);
                 }
             });
-        }
-
-        private void TextBox1_TextChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        public void SetText(string inputText)
-        {
-            this.txtData.Text = inputText;
         }
 
         private void ShowProgress()
@@ -125,6 +127,7 @@ namespace translation_validation_framework
         {
             this.frmProgress.Hide();
             this.Enabled = true;
+            this.frmProgress.ResetForm();
             this.Activate();
 
             Application.DoEvents();
@@ -132,6 +135,7 @@ namespace translation_validation_framework
 
         private void Run_Click(object sender, EventArgs e)
         {
+            this.dataGridView1.Rows.Clear();
             try
             {
                 this.ShowProgress();
@@ -145,7 +149,174 @@ namespace translation_validation_framework
 
         private void FormTest_Load(object sender, EventArgs e)
         {
+            biblicalWordListMenuItem = this.biblicalWordListToolStripMenuItem;
+            ignoreListMenuItem = this.ignoreListToolStripMenuItem;
+        }
+
+        private void FileToolStripMenuItem_Click(object sender, EventArgs e)
+        {
 
         }
+
+        private void Button1_Click(object sender, EventArgs e)
+        {
+            var ignoreList = new IgnoreList();
+            ignoreList.Show();
+        }
+
+        private void DataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+
+        }
+
+        private void FormTest_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            switch (MessageBox.Show(this,
+                                    "Are you sure you want to close this plugin?",
+                                     "Close Plugin",
+                                    MessageBoxButtons.YesNo, MessageBoxIcon.Question))
+            {
+
+                // ---- *)  if No keep the application alive 
+                //----  *)  else close the application
+                case DialogResult.No:
+                    e.Cancel = true;
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        private void FormTest_FormClosed(object sender, FormClosedEventArgs e)
+        {
+
+        }
+
+        private void BiblicalWordListToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (biblicalWordListMenuItem.CheckState == CheckState.Checked)
+            {
+                biblicalWordListMenuItem.CheckState = CheckState.Unchecked;
+                biblicalWordListMenuItem.Checked = false;
+
+                MessageBox.Show("Biblical Word List is unselected.");
+            }
+            else
+            {
+                biblicalWordListMenuItem.CheckState = CheckState.Checked;
+                biblicalWordListMenuItem.Checked = true;
+
+                MessageBox.Show("Biblical Word List filter is selected.");
+            }
+        }
+
+        private void IgnoreListToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (ignoreListMenuItem.CheckState == CheckState.Checked)
+            {
+                ignoreListMenuItem.CheckState = CheckState.Unchecked;
+                ignoreListMenuItem.Checked = false;
+
+                MessageBox.Show("Ignore List filter is unselected.");
+            }
+            else
+            {
+                ignoreListMenuItem.CheckState = CheckState.Checked;
+                ignoreListMenuItem.Checked = true;
+
+                MessageBox.Show("Ignore List filter is selected.");
+            }
+        }
+
+        private void PunctuationToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (punctuationToolStripMenuItem.CheckState == CheckState.Checked)
+            {
+                punctuationToolStripMenuItem.CheckState = CheckState.Unchecked;
+                punctuationToolStripMenuItem.Checked = false;
+
+                MessageBox.Show("Punctuation Check unselected.");
+            }
+            else
+            {
+                punctuationToolStripMenuItem.CheckState = CheckState.Checked;
+                punctuationToolStripMenuItem.Checked = true;
+
+                MessageBox.Show("Punctuation Check selected.");
+            }
+        }
+
+        private void BcvToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (bCVToolStripMenuItem.CheckState == CheckState.Checked)
+            {
+                bCVToolStripMenuItem.CheckState = CheckState.Unchecked;
+                bCVToolStripMenuItem.Checked = false;
+
+                MessageBox.Show("BCV column is hidden.");
+            }
+            else
+            {
+                bCVToolStripMenuItem.CheckState = CheckState.Checked;
+                bCVToolStripMenuItem.Checked = true;
+
+                MessageBox.Show("BCV is shown.");
+            }
+        }
+
+        private void ErrorToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (errorToolStripMenuItem.CheckState == CheckState.Checked)
+            {
+                errorToolStripMenuItem.CheckState = CheckState.Unchecked;
+                errorToolStripMenuItem.Checked = false;
+
+                MessageBox.Show("Error column is hidden.");
+            }
+            else
+            {
+                errorToolStripMenuItem.CheckState = CheckState.Checked;
+                errorToolStripMenuItem.Checked = true;
+
+                MessageBox.Show("Error column is shown.");
+            }
+        }
+
+        private void NotesToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (notesToolStripMenuItem.CheckState == CheckState.Checked)
+            {
+                notesToolStripMenuItem.CheckState = CheckState.Unchecked;
+                notesToolStripMenuItem.Checked = false;
+
+                MessageBox.Show("Notes column is hidden.");
+            }
+            else
+            {
+                notesToolStripMenuItem.CheckState = CheckState.Checked;
+                notesToolStripMenuItem.Checked = true;
+
+                MessageBox.Show("Notes column is shown.");
+            }
+        }
+
+        private void ActionToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (actionToolStripMenuItem.CheckState == CheckState.Checked)
+            {
+                actionToolStripMenuItem.CheckState = CheckState.Unchecked;
+                actionToolStripMenuItem.Checked = false;
+
+                MessageBox.Show("Actions column is hidden.");
+            }
+            else
+            {
+                actionToolStripMenuItem.CheckState = CheckState.Checked;
+                actionToolStripMenuItem.Checked = true;
+
+                MessageBox.Show("Actions column is shown.");
+            }
+        }
+
     }
 }

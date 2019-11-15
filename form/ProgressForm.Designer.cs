@@ -36,9 +36,11 @@
             // pbrStatus
             // 
             this.pbrStatus.Location = new System.Drawing.Point(12, 45);
+            this.pbrStatus.MarqueeAnimationSpeed = 10;
             this.pbrStatus.Maximum = 111;
             this.pbrStatus.Name = "pbrStatus";
             this.pbrStatus.Size = new System.Drawing.Size(367, 23);
+            this.pbrStatus.Style = System.Windows.Forms.ProgressBarStyle.Continuous;
             this.pbrStatus.TabIndex = 0;
             // 
             // lblTitle
@@ -48,17 +50,18 @@
             this.lblTitle.Name = "lblTitle";
             this.lblTitle.Size = new System.Drawing.Size(61, 13);
             this.lblTitle.TabIndex = 1;
-            this.lblTitle.Text = "Checking...";
+            this.lblTitle.Text = "Running Validation...";
             // 
             // btnCancel
             // 
+            this.btnCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
             this.btnCancel.Location = new System.Drawing.Point(304, 12);
             this.btnCancel.Name = "btnCancel";
             this.btnCancel.Size = new System.Drawing.Size(75, 23);
             this.btnCancel.TabIndex = 2;
             this.btnCancel.Text = "Cancel";
             this.btnCancel.UseVisualStyleBackColor = true;
-            this.btnCancel.Click += new System.EventHandler(this.btnCancel_Click);
+            this.btnCancel.Click += new System.EventHandler(this.BtnCancel_Click);
             // 
             // ProgressForm
             // 
@@ -72,6 +75,7 @@
             this.Controls.Add(this.pbrStatus);
             this.Name = "ProgressForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
+            this.Load += new System.EventHandler(this.ProgressForm_Load);
             this.ResumeLayout(false);
             this.PerformLayout();
 

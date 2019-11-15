@@ -1,8 +1,4 @@
-﻿using AddInSideViews;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System;
 
 /*
  * Class to track all result items necessary for the Translation Validation Plugin
@@ -19,6 +15,8 @@ namespace translation_validation_framework
 
         private readonly string errorText;
 
+        private readonly string verseText;
+
         public int BookNum => bookNum;
 
         public int ChapterNum => chapterNum;
@@ -27,11 +25,14 @@ namespace translation_validation_framework
 
         public string ErrorText => errorText;
 
-        public ResultItem(int bookNum, int chapterNum, int verseNum, string errorText)
+        public string VerseText => verseText;
+
+        public ResultItem(int bookNum, int chapterNum, int verseNum, string errorText, string verseText)
         {
             this.bookNum = bookNum;
             this.chapterNum = chapterNum;
             this.verseNum = verseNum;
+            this.verseText = verseText;
             this.errorText = errorText ?? throw new ArgumentNullException(nameof(errorText));
         }
         /*
