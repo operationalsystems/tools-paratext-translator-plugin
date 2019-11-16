@@ -7,12 +7,8 @@ using TvpMain.Data;
 
 namespace TvpMain.Filter
 {
-    interface IFilter
+    public interface ITextFilter
     {
-        public void RunFilter();
-
-        public CheckResult GetLastResult();
-
-        public event EventHandler<CheckResult> ResultHandler;
+        public bool FilterText(int bookNum, int chapterNum, int verseNum, string inputText);
     }
 }

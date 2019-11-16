@@ -5,10 +5,8 @@ namespace TvpMain.Util
 {
     public class MainConsts
     {
-        // 66 = all books
-        public const int MAX_BOOK_NUM = 66;
-
         public const int MAX_CHECK_THREADS = 4;
+        public const int MAX_BOOK_NUM = 66; // 66 = all books
         public static readonly string[] BOOK_NAMES = {
             "GEN","EXO","LEV","NUM","DEU","JOS","JDG","RUT",
             "1SA","2SA","1KI","2KI","1CH","2CH","EZR","NEH",

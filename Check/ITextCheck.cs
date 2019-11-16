@@ -3,15 +3,15 @@ using TvpMain.Data;
 
 namespace TvpMain.Check
 {
-    interface ITextCheck
+    public interface ITextCheck
     {
-        public event EventHandler<CheckResult> ResultHandler;
+        public event EventHandler<CheckResult> CheckCompleted;
 
-        public event EventHandler<int> ProgressHandler;
+        public event EventHandler<int> CheckUpdated;
 
         public void RunCheck();
         public void CancelCheck();
 
-        public CheckResult GetLastResult();
+        public CheckResult LastResult { get; }
     }
 }

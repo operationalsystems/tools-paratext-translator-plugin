@@ -1,9 +1,11 @@
 ﻿using AddInSideViews;
 using System;
+using System.Linq;
 using System.Windows.Forms;
 using System.Windows.Threading;
 using TvpMain.Check;
 using TvpMain.Data;
+using TvpMain.Filter;
 using TvpMain.Form;
 using TvpMain.Util;
 
@@ -12,18 +14,18 @@ using TvpMain.Util;
  */
 namespace TvpMain.Form
 {
-    public partial class CheckForm : System.Windows.Forms.Form
+    public partial class MainForm : System.Windows.Forms.Form
     {
-        private readonly TranslationValidationPlugin _plugin;
         private readonly IHost _host;
         private readonly string _activeProjectName;
         private readonly ProgressForm _progressForm;
-        private readonly PunctuationCheck1 _punctuationCheck;
+        private readonly IgnoreListForm _ignoreListForm;
+        private readonly RegexPunctuationCheck1 _punctuationCheck;
 
         private ToolStripMenuItem _wordListMenuItem;
         private ToolStripMenuItem _ignoreListMenuItem;
 
-        public CheckForm(TranslationValidationPlugin plugin, IHost host, string activeProjectName)
+        public MainForm(IHost host, string activeProjectName)
         {
             try
             {
@@ -32,14 +34,17 @@ namespace TvpMain.Form
                 */
                 InitializeComponent();
 
-                this._plugin = plugin ?? throw new ArgumentNullException(nameof(plugin));
                 this._host = host ?? throw new ArgumentNullException(nameof(host));
                 this._activeProjectName = activeProjectName ?? throw new ArgumentNullException(nameof(activeProjectName));
 
                 this._progressForm = new ProgressForm();
-                this._punctuationCheck = new PunctuationCheck1(this._plugin, this._host, this._activeProjectName);
-                this._punctuationCheck.ProgressHandler += OnCheckProgress;
-                this._punctuationCheck.ResultHandler += OnCheckResult;
+                this._progressForm.Cancelled += OnProgressFormCancelled;
+
+                this._ignoreListForm = new IgnoreListForm();
+
+                this._punctuationCheck = new RegexPunctuationCheck1(this._host, this._activeProjectName);
+                this._punctuationCheck.CheckUpdated += OnCheckProgress;
+                this._punctuationCheck.CheckCompleted += OnCheckResult;
             }
             catch (Exception ex)
             {
@@ -48,15 +53,15 @@ namespace TvpMain.Form
 
         }
 
-        internal void CancelCheck()
+        private void OnProgressFormCancelled(object sender, EventArgs e)
         {
-            this.dataGridView1.Rows.Clear();
-            this._punctuationCheck.CancelCheck();
-
             Dispatcher.CurrentDispatcher.Invoke(() =>
             {
                 try
                 {
+                    this.dgvCheckResults.Rows.Clear();
+                    this._punctuationCheck.CancelCheck();
+
                     this.HideProgress();
                     Application.DoEvents();
                 }
@@ -102,7 +107,11 @@ namespace TvpMain.Form
                     foreach (ResultItem item in (chkResult.ResultItems))
                     {
 
-                        this.dataGridView1.Rows.Add(new string[] { $"{MainConsts.BOOK_NAMES[item.BookNum - 1] + " " + item.ChapterNum + ":" + item.VerseNum}", $"{item.VerseText}"
+                        this.dgvCheckResults.Rows.Add(new string[] {
+                            $"{MainConsts.BOOK_NAMES[item.BookNum - 1] + " " + item.ChapterNum + ":" + item.VerseNum}",
+                            $"{item.MatchText}",
+                            $"{item.VerseText}",
+                            $"{item.ErrorText}"
                         });
                     }
 
@@ -133,9 +142,9 @@ namespace TvpMain.Form
             Application.DoEvents();
         }
 
-        private void Run_Click(object sender, EventArgs e)
+        private void OnRunChecks(object sender, EventArgs e)
         {
-            this.dataGridView1.Rows.Clear();
+            this.dgvCheckResults.Rows.Clear();
             try
             {
                 this.ShowProgress();
@@ -158,10 +167,9 @@ namespace TvpMain.Form
 
         }
 
-        private void Button1_Click(object sender, EventArgs e)
+        private void OnShowIgnoreList(object sender, EventArgs e)
         {
-            var ignoreList = new IgnoreList();
-            ignoreList.Show();
+            _ignoreListForm.ShowDialog(this);
         }
 
         private void DataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
@@ -172,9 +180,8 @@ namespace TvpMain.Form
         private void FormTest_FormClosing(object sender, FormClosingEventArgs e)
         {
             switch (MessageBox.Show(this,
-                                    "Are you sure you want to close this plugin?",
-                                     "Close Plugin",
-                                    MessageBoxButtons.YesNo, MessageBoxIcon.Question))
+                                    "Are you sure you want to quit?",
+                                     "Notice...", MessageBoxButtons.YesNo, MessageBoxIcon.Question))
             {
                 // ---- *)  if No keep the application alive 
                 //----  *)  else close the application
@@ -188,38 +195,16 @@ namespace TvpMain.Form
 
         private void BiblicalWordListToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (_wordListMenuItem.CheckState == CheckState.Checked)
-            {
-                _wordListMenuItem.CheckState = CheckState.Unchecked;
-                _wordListMenuItem.Checked = false;
-
-                MessageBox.Show("Biblical Word List is unselected.");
-            }
-            else
-            {
-                _wordListMenuItem.CheckState = CheckState.Checked;
-                _wordListMenuItem.Checked = true;
-
-                MessageBox.Show("Biblical Word List filter is selected.");
-            }
+            _wordListMenuItem.Checked = !_wordListMenuItem.Checked;
+            _wordListMenuItem.CheckState = _wordListMenuItem.Checked
+                ? CheckState.Checked : CheckState.Unchecked;
         }
 
         private void IgnoreListToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (_ignoreListMenuItem.CheckState == CheckState.Checked)
-            {
-                _ignoreListMenuItem.CheckState = CheckState.Unchecked;
-                _ignoreListMenuItem.Checked = false;
-
-                MessageBox.Show("Ignore List filter is unselected.");
-            }
-            else
-            {
-                _ignoreListMenuItem.CheckState = CheckState.Checked;
-                _ignoreListMenuItem.Checked = true;
-
-                MessageBox.Show("Ignore List filter is selected.");
-            }
+            _ignoreListMenuItem.Checked = !_ignoreListMenuItem.Checked;
+            _ignoreListMenuItem.CheckState = _ignoreListMenuItem.Checked
+                ? CheckState.Checked : CheckState.Unchecked;
         }
 
         private void PunctuationToolStripMenuItem_Click(object sender, EventArgs e)
@@ -312,5 +297,9 @@ namespace TvpMain.Form
             }
         }
 
+        private void btnClose_Click(object sender, EventArgs e)
+        {
+            Close();
+        }
     }
 }
