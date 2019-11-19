@@ -22,6 +22,7 @@ namespace TvpMain.Form
         private readonly string _activeProjectName;
         private readonly RegexPunctuationCheck1 _punctuationCheck;
         private readonly IgnoreListTextFilter _ignoreFilter;
+        private readonly BiblicalTermsTextFilter _termFilter;
         private ProgressForm _progressForm;
 
         private ToolStripMenuItem _wordListMenuItem;
@@ -48,14 +49,33 @@ namespace TvpMain.Form
                 _progressForm.Cancelled += OnProgressFormCancelled;
 
                 _ignoreFilter = new IgnoreListTextFilter();
+                _termFilter = new BiblicalTermsTextFilter();
                 _punctuationCheck = new RegexPunctuationCheck1(_host, _activeProjectName);
                 _punctuationCheck.CheckUpdated += OnCheckProgress;
+
+                termWorker.DoWork += OnTermWorkerDoWork;
+                termWorker.RunWorkerAsync();
             }
             catch (Exception ex)
             {
                 HostUtil.Instance.ReportError(ex);
             }
+        }
 
+        private void OnTermWorkerDoWork(object sender, System.ComponentModel.DoWorkEventArgs e)
+        {
+            try
+            {
+                lock (_termFilter)
+                {
+                    _termFilter.SetKeyTerms(_host.GetProjectKeyTerms(_activeProjectName,
+                        _host.GetProjectLanguageId(_activeProjectName, "translation validation")));
+                }
+            }
+            catch (Exception ex)
+            {
+                HostUtil.Instance.ReportError(ex);
+            }
         }
 
         private void OnProgressFormCancelled(object sender, EventArgs e)
@@ -98,15 +118,23 @@ namespace TvpMain.Form
             }
             else
             {
+                _filteredResultItems = _allResultItems;
+
                 if (ignoreListToolStripMenuItem.Checked
                     && !_ignoreFilter.IsEmpty)
                 {
-                    _filteredResultItems = _allResultItems.Where(
+                    _filteredResultItems = _filteredResultItems.Where(
                         resultItem => !_ignoreFilter.FilterText(resultItem)).ToList();
                 }
-                else
+
+                lock (_termFilter)
                 {
-                    _filteredResultItems = _allResultItems;
+                    if (_wordListMenuItem.Checked
+                    && !_termFilter.IsEmpty)
+                    {
+                        _filteredResultItems = _filteredResultItems.Where(
+                            resultItem => !_termFilter.FilterText(resultItem)).ToList();
+                    }
                 }
             }
         }

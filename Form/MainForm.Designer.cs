@@ -31,6 +31,11 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             this.btnRunChecks = new System.Windows.Forms.Button();
             this.dgvCheckResults = new System.Windows.Forms.DataGridView();
+            this.bcv = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Match = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Verse = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.error = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.notes = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.mstMain = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator = new System.Windows.Forms.ToolStripSeparator();
@@ -50,11 +55,7 @@
             this.ignoreListToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.btnShowIgnoreList = new System.Windows.Forms.Button();
             this.btnClose = new System.Windows.Forms.Button();
-            this.bcv = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Match = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Verse = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.error = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.notes = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.termWorker = new System.ComponentModel.BackgroundWorker();
             ((System.ComponentModel.ISupportInitialize)(this.dgvCheckResults)).BeginInit();
             this.mstMain.SuspendLayout();
             this.SuspendLayout();
@@ -75,8 +76,8 @@
             this.dgvCheckResults.AllowUserToAddRows = false;
             this.dgvCheckResults.AllowUserToDeleteRows = false;
             this.dgvCheckResults.AllowUserToOrderColumns = true;
-            this.dgvCheckResults.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-            | System.Windows.Forms.AnchorStyles.Left)
+            this.dgvCheckResults.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.dgvCheckResults.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
             this.dgvCheckResults.AutoSizeRowsMode = System.Windows.Forms.DataGridViewAutoSizeRowsMode.DisplayedCells;
@@ -92,6 +93,45 @@
             this.dgvCheckResults.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.dgvCheckResults.Size = new System.Drawing.Size(805, 435);
             this.dgvCheckResults.TabIndex = 2;
+            // 
+            // bcv
+            // 
+            this.bcv.FillWeight = 15F;
+            this.bcv.HeaderText = "BCV";
+            this.bcv.MinimumWidth = 60;
+            this.bcv.Name = "bcv";
+            this.bcv.ReadOnly = true;
+            // 
+            // Match
+            // 
+            this.Match.FillWeight = 15F;
+            this.Match.HeaderText = "Match";
+            this.Match.MinimumWidth = 60;
+            this.Match.Name = "Match";
+            this.Match.ReadOnly = true;
+            // 
+            // Verse
+            // 
+            this.Verse.FillWeight = 30F;
+            this.Verse.HeaderText = "Verse";
+            this.Verse.MinimumWidth = 120;
+            this.Verse.Name = "Verse";
+            this.Verse.ReadOnly = true;
+            // 
+            // error
+            // 
+            this.error.FillWeight = 30F;
+            this.error.HeaderText = "Error";
+            this.error.MinimumWidth = 120;
+            this.error.Name = "error";
+            this.error.ReadOnly = true;
+            // 
+            // notes
+            // 
+            this.notes.FillWeight = 10F;
+            this.notes.HeaderText = "Notes";
+            this.notes.MinimumWidth = 40;
+            this.notes.Name = "notes";
             // 
             // mstMain
             // 
@@ -215,14 +255,14 @@
             // biblicalWordListToolStripMenuItem
             // 
             this.biblicalWordListToolStripMenuItem.Name = "biblicalWordListToolStripMenuItem";
-            this.biblicalWordListToolStripMenuItem.Size = new System.Drawing.Size(165, 22);
-            this.biblicalWordListToolStripMenuItem.Text = "Biblical Word List";
+            this.biblicalWordListToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.biblicalWordListToolStripMenuItem.Text = "Biblical Term List";
             this.biblicalWordListToolStripMenuItem.Click += new System.EventHandler(this.BiblicalWordListToolStripMenuItem_Click);
             // 
             // ignoreListToolStripMenuItem
             // 
             this.ignoreListToolStripMenuItem.Name = "ignoreListToolStripMenuItem";
-            this.ignoreListToolStripMenuItem.Size = new System.Drawing.Size(165, 22);
+            this.ignoreListToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.ignoreListToolStripMenuItem.Text = "Ignore List";
             this.ignoreListToolStripMenuItem.Click += new System.EventHandler(this.IgnoreListToolStripMenuItem_Click);
             // 
@@ -248,45 +288,6 @@
             this.btnClose.Text = "&Close";
             this.btnClose.UseVisualStyleBackColor = true;
             this.btnClose.Click += new System.EventHandler(this.btnClose_Click);
-            // 
-            // bcv
-            // 
-            this.bcv.FillWeight = 15F;
-            this.bcv.HeaderText = "BCV";
-            this.bcv.MinimumWidth = 60;
-            this.bcv.Name = "bcv";
-            this.bcv.ReadOnly = true;
-            // 
-            // Match
-            // 
-            this.Match.FillWeight = 15F;
-            this.Match.HeaderText = "Match";
-            this.Match.MinimumWidth = 60;
-            this.Match.Name = "Match";
-            this.Match.ReadOnly = true;
-            // 
-            // Verse
-            // 
-            this.Verse.FillWeight = 30F;
-            this.Verse.HeaderText = "Verse";
-            this.Verse.MinimumWidth = 120;
-            this.Verse.Name = "Verse";
-            this.Verse.ReadOnly = true;
-            // 
-            // error
-            // 
-            this.error.FillWeight = 30F;
-            this.error.HeaderText = "Error";
-            this.error.MinimumWidth = 120;
-            this.error.Name = "error";
-            this.error.ReadOnly = true;
-            // 
-            // notes
-            // 
-            this.notes.FillWeight = 10F;
-            this.notes.HeaderText = "Notes";
-            this.notes.MinimumWidth = 40;
-            this.notes.Name = "notes";
             // 
             // MainForm
             // 
@@ -346,5 +347,6 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn Verse;
         private System.Windows.Forms.DataGridViewTextBoxColumn error;
         private System.Windows.Forms.DataGridViewTextBoxColumn notes;
+        private System.ComponentModel.BackgroundWorker termWorker;
     }
 }

@@ -17,7 +17,7 @@ namespace TvpMain.Filter
 
         public bool FilterText(ResultItem inputItem)
         {
-            string inputText = inputItem.MatchText;
+            string inputText = inputItem.MatchText.Trim();
 
             ISet<string> caseSensitiveWords = CaseSensitiveWords;
             ISet<string> caseInsensitiveWords = CaseInsensitiveWords;
@@ -42,24 +42,27 @@ namespace TvpMain.Filter
                 }
             }
 
-            IList<string> caseSensitivePhrases = CaseSensitivePhrases;
-            IList<string> caseInsensitivePhrases = CaseInsensitivePhrases;
-
-            if (caseSensitivePhrases.Count > 0
-                || caseInsensitivePhrases.Count > 0)
+            if (inputText.Any(Char.IsWhiteSpace))
             {
-                if (caseSensitivePhrases.Count > 0
-                    && caseSensitivePhrases.Any(phraseItem => inputText.Contains(phraseItem)))
-                {
-                    return true;
-                }
+                IList<string> caseSensitivePhrases = CaseSensitivePhrases;
+                IList<string> caseInsensitivePhrases = CaseInsensitivePhrases;
 
-                if (caseInsensitivePhrases.Count > 0)
+                if (caseSensitivePhrases.Count > 0
+                    || caseInsensitivePhrases.Count > 0)
                 {
-                    string lowerVerseText = inputText.ToLower();
-                    if (caseInsensitivePhrases.Any(phraseItem => lowerVerseText.Contains(phraseItem)))
+                    if (caseSensitivePhrases.Count > 0
+                        && caseSensitivePhrases.Any(phraseItem => inputText.Contains(phraseItem)))
                     {
                         return true;
+                    }
+
+                    if (caseInsensitivePhrases.Count > 0)
+                    {
+                        string lowerVerseText = inputText.ToLower();
+                        if (caseInsensitivePhrases.Any(phraseItem => lowerVerseText.Contains(phraseItem)))
+                        {
+                            return true;
+                        }
                     }
                 }
             }

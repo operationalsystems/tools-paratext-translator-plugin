@@ -1,4 +1,5 @@
-﻿using System;
+﻿using AddInSideViews;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -28,6 +29,27 @@ namespace TvpMain.Filter
             _caseInsensitiveWords = new HashSet<string>();
             _caseSensitivePhrases = new List<string>();
             _caseInsensitivePhrases = new List<string>();
+        }
+
+        public void SetKeyTerms(IList<IKeyTerm> inputItems)
+        {
+            _caseSensitiveWords.Clear();
+            _caseInsensitiveWords.Clear();
+            _caseSensitivePhrases.Clear();
+            _caseInsensitivePhrases.Clear();
+
+            foreach (IKeyTerm listItem in inputItems)
+            {
+                string termText = listItem.Term.Trim();
+                if (termText.Any(Char.IsWhiteSpace))
+                {
+                    _caseSensitivePhrases.Add(termText);
+                }
+                else
+                {
+                    _caseSensitiveWords.Add(termText);
+                }
+            }
         }
     }
 }
