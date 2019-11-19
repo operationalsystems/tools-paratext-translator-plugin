@@ -7,8 +7,8 @@
     <ProjectGuid>{C803FD57-F7F1-4924-904A-6A242730B898}</ProjectGuid>
     <OutputType>Library</OutputType>
     <RootNamespace>TvpMain</RootNamespace>
-    <AssemblyName>translation_validation_framework</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <AssemblyName>TranslationValidationPlugin</AssemblyName>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <Deterministic>true</Deterministic>
@@ -19,7 +19,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>C:\Program Files %28x86%29\Paratext 8\plugins\Translation Validation\</OutputPath>
+    <OutputPath>C:\Program Files %28x86%29\Paratext 8\plugins\TranslationValidationPlugin\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -67,6 +67,9 @@
       <HintPath>C:\Program Files (x86)\Paratext 8\Pipeline\AddInViews\AddInViews.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>packages\Newtonsoft.Json.12.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.AddIn" />
     <Reference Include="System.AddIn.Contract" />
@@ -83,6 +86,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Check\RegexPunctuationCheck1.cs" />
+    <Compile Include="Data\IgnoreListItem.cs" />
     <Compile Include="Filter\AbstractTextFilter.cs" />
     <Compile Include="Filter\BiblicalTermsTextFilter.cs" />
     <Compile Include="Filter\ITextFilter.cs" />
@@ -100,7 +104,7 @@
       <DependentUpon>ProgressForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Util\MainConsts.cs" />
-    <Compile Include="Util\ErrorUtil.cs" />
+    <Compile Include="Util\HostUtil.cs" />
     <Compile Include="Data\CheckResult.cs" />
     <Compile Include="Check\ITextCheck.cs" />
     <Compile Include="Check\AbstractTextCheck.cs" />
@@ -116,6 +120,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Form\IgnoreListForm.resx">

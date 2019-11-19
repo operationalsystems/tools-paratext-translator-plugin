@@ -9,6 +9,8 @@ namespace TvpMain.Filter
 {
     public interface ITextFilter
     {
-        public bool FilterText(int bookNum, int chapterNum, int verseNum, string inputText);
+        public bool FilterText(ResultItem inputItem);
+
+        public bool IsEmpty { get; }
     }
 }

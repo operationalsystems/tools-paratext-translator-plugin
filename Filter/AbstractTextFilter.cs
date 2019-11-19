@@ -3,43 +3,47 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TvpMain.Data;
 
 namespace TvpMain.Filter
 {
     public abstract class AbstractTextFilter : ITextFilter
     {
+
         protected abstract ISet<string> CaseSensitiveWords { get; }
         protected abstract ISet<string> CaseInsensitiveWords { get; }
         protected abstract IList<string> CaseSensitivePhrases { get; }
         protected abstract IList<string> CaseInsensitivePhrases { get; }
 
-        public bool FilterText(int bookNum, int chapterNum, int verseNum, string inputText)
+        public bool FilterText(ResultItem inputItem)
         {
+            string inputText = inputItem.MatchText;
+
             ISet<string> caseSensitiveWords = CaseSensitiveWords;
             ISet<string> caseInsensitiveWords = CaseInsensitiveWords;
 
             if (caseSensitiveWords.Count > 0
                 || caseInsensitiveWords.Count > 0)
             {
-                IEnumerable<string> verseParts = inputText.Split(null)
+                IEnumerable<string> textParts = inputText.Split(null)
                     .Select(partItem => partItem.Trim())
                     .Where(partItem => !partItem.StartsWith("\\"));
 
                 if (caseSensitiveWords.Count > 0
-                    && verseParts.Any(partItem => caseSensitiveWords.Contains(partItem)))
+                    && textParts.Any(textItem => caseSensitiveWords.Contains(textItem)))
                 {
                     return true;
                 }
 
                 if (caseInsensitiveWords.Count > 0
-                    && verseParts.Any(partItem => caseInsensitiveWords.Contains(partItem.ToLower())))
+                    && textParts.Any(partItem => caseInsensitiveWords.Contains(partItem.ToLower())))
                 {
                     return true;
                 }
             }
 
             IList<string> caseSensitivePhrases = CaseSensitivePhrases;
-            IList<string> caseInsensitivePhrases = CaseSensitivePhrases;
+            IList<string> caseInsensitivePhrases = CaseInsensitivePhrases;
 
             if (caseSensitivePhrases.Count > 0
                 || caseInsensitivePhrases.Count > 0)
@@ -61,6 +65,17 @@ namespace TvpMain.Filter
             }
 
             return false;
+        }
+
+        public bool IsEmpty
+        {
+            get
+            {
+                return (CaseSensitiveWords.Count < 1
+                        && CaseInsensitiveWords.Count < 1
+                        && CaseSensitivePhrases.Count < 1
+                        && CaseInsensitivePhrases.Count < 1);
+            }
         }
     }
 }

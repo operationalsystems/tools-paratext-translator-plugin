@@ -11,6 +11,7 @@ namespace TvpMain.Form
     public partial class ProgressForm : System.Windows.Forms.Form
     {
         private readonly DateTime _startTime;
+        private int _lastBookNum;
 
         /// <summary>
         /// Cancel event handler, for use by workflow.
@@ -25,7 +26,7 @@ namespace TvpMain.Form
 
         public void SetTitle(string titleText)
         {
-            this.lblTitle.Text = titleText;
+            lblTitle.Text = titleText;
 
         }
         /*
@@ -33,25 +34,19 @@ namespace TvpMain.Form
          */
         public void SetCurrBookNum(int bookNum)
         {
-            this.pbrStatus.Maximum = MainConsts.MAX_BOOK_NUM;
-            this.pbrStatus.Value = bookNum;
-
-            this.lblTitle.Text = $"Checked book #{bookNum} of {MainConsts.MAX_BOOK_NUM}...";
-            Application.DoEvents();
+            _lastBookNum = bookNum;
         }
 
-        private void BtnCancel_Click(object sender, EventArgs e)
+        private void OnCancelClick(object sender, EventArgs e)
         {
             SetTitle("Cancelling Validation.  Please Wait...");
-            Application.DoEvents();
-
             Cancelled?.Invoke(sender, e);
         }
 
         public void ResetForm()
         {
-            SetTitle("Running Validation...");
-            this.pbrStatus.Value = 0;
+            pbrStatus.Value = 0;
+            lblTitle.Text = $"Checking books...";
         }
 
         /// <summary>
@@ -83,6 +78,16 @@ namespace TvpMain.Form
         private void tmrUpdate_Tick(object sender, EventArgs e)
         {
             lblElapsedTime.Text = GetElapsedTime(DateTime.Now.Subtract(_startTime));
+            int currBookNum = _lastBookNum;
+
+            if (currBookNum != pbrStatus.Value)
+            {
+                pbrStatus.Maximum = MainConsts.MAX_BOOK_NUM;
+                pbrStatus.Value = currBookNum;
+
+                lblTitle.Text = $"Checked book #{currBookNum} of {MainConsts.MAX_BOOK_NUM}...";
+                Activate();
+            }
         }
     }
 }

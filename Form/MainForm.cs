@@ -1,5 +1,7 @@
 ﻿using AddInSideViews;
+using Newtonsoft.Json;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Forms;
 using System.Windows.Threading;
@@ -18,12 +20,17 @@ namespace TvpMain.Form
     {
         private readonly IHost _host;
         private readonly string _activeProjectName;
-        private readonly ProgressForm _progressForm;
-        private readonly IgnoreListForm _ignoreListForm;
         private readonly RegexPunctuationCheck1 _punctuationCheck;
+        private readonly IgnoreListTextFilter _ignoreFilter;
+        private ProgressForm _progressForm;
 
         private ToolStripMenuItem _wordListMenuItem;
         private ToolStripMenuItem _ignoreListMenuItem;
+
+        private CheckResult _lastResult;
+
+        private IList<ResultItem> _allResultItems;
+        private IList<ResultItem> _filteredResultItems;
 
         public MainForm(IHost host, string activeProjectName)
         {
@@ -34,42 +41,29 @@ namespace TvpMain.Form
                 */
                 InitializeComponent();
 
-                this._host = host ?? throw new ArgumentNullException(nameof(host));
-                this._activeProjectName = activeProjectName ?? throw new ArgumentNullException(nameof(activeProjectName));
+                _host = host ?? throw new ArgumentNullException(nameof(host));
+                _activeProjectName = activeProjectName ?? throw new ArgumentNullException(nameof(activeProjectName));
 
-                this._progressForm = new ProgressForm();
-                this._progressForm.Cancelled += OnProgressFormCancelled;
+                _progressForm = new ProgressForm();
+                _progressForm.Cancelled += OnProgressFormCancelled;
 
-                this._ignoreListForm = new IgnoreListForm();
-
-                this._punctuationCheck = new RegexPunctuationCheck1(this._host, this._activeProjectName);
-                this._punctuationCheck.CheckUpdated += OnCheckProgress;
-                this._punctuationCheck.CheckCompleted += OnCheckResult;
+                _ignoreFilter = new IgnoreListTextFilter();
+                _punctuationCheck = new RegexPunctuationCheck1(_host, _activeProjectName);
+                _punctuationCheck.CheckUpdated += OnCheckProgress;
             }
             catch (Exception ex)
             {
-                ErrorUtil.ReportError(ex);
+                HostUtil.Instance.ReportError(ex);
             }
 
         }
 
         private void OnProgressFormCancelled(object sender, EventArgs e)
         {
-            Dispatcher.CurrentDispatcher.Invoke(() =>
-            {
-                try
-                {
-                    this.dgvCheckResults.Rows.Clear();
-                    this._punctuationCheck.CancelCheck();
+            dgvCheckResults.Rows.Clear();
+            _punctuationCheck.CancelCheck();
 
-                    this.HideProgress();
-                    Application.DoEvents();
-                }
-                catch (Exception ex)
-                {
-                    ErrorUtil.ReportError(ex);
-                }
-            });
+            HideProgress();
         }
 
         /*
@@ -77,110 +71,106 @@ namespace TvpMain.Form
          */
         private void OnCheckProgress(object sender, int currBookNum)
         {
-            Dispatcher.CurrentDispatcher.Invoke(() =>
-            {
-                try
-                {
-                    this._progressForm.SetCurrBookNum(currBookNum);
-                    this._progressForm.Activate();
-
-                    Application.DoEvents();
-                }
-                catch (Exception ex)
-                {
-                    ErrorUtil.ReportError(ex);
-                }
-            });
+            _progressForm.SetCurrBookNum(currBookNum);
         }
 
-        /*
-         * Populates after the main Validation form after the Progress form has finished.
-         */
-        private void OnCheckResult(object sender, CheckResult chkResult)
+        private void UpdateMainTable()
         {
-            Dispatcher.CurrentDispatcher.Invoke(() =>
+            FilterResults();
+
+            dgvCheckResults.Rows.Clear();
+            foreach (ResultItem item in _filteredResultItems)
             {
-                try
-                {
-                    this.HideProgress();
-
-                    foreach (ResultItem item in (chkResult.ResultItems))
-                    {
-
-                        this.dgvCheckResults.Rows.Add(new string[] {
+                dgvCheckResults.Rows.Add(new string[] {
                             $"{MainConsts.BOOK_NAMES[item.BookNum - 1] + " " + item.ChapterNum + ":" + item.VerseNum}",
                             $"{item.MatchText}",
                             $"{item.VerseText}",
                             $"{item.ErrorText}"
                         });
-                    }
+            }
+        }
 
-                    Application.DoEvents();
-                }
-                catch (Exception ex)
+        private void FilterResults()
+        {
+            if (_allResultItems == null)
+            {
+                _filteredResultItems = Enumerable.Empty<ResultItem>().ToList();
+            }
+            else
+            {
+                if (ignoreListToolStripMenuItem.Checked
+                    && !_ignoreFilter.IsEmpty)
                 {
-                    ErrorUtil.ReportError(ex);
+                    _filteredResultItems = _allResultItems.Where(
+                        resultItem => !_ignoreFilter.FilterText(resultItem)).ToList();
                 }
-            });
+                else
+                {
+                    _filteredResultItems = _allResultItems;
+                }
+            }
         }
 
         private void ShowProgress()
         {
-            this.Enabled = false;
-            this._progressForm.Show(this);
+            _progressForm.ResetForm();
 
-            Application.DoEvents();
+            Enabled = false;
+            _progressForm.Show(this);
         }
 
         private void HideProgress()
         {
-            this._progressForm.Hide();
-            this.Enabled = true;
-            this._progressForm.ResetForm();
-            this.Activate();
+            _progressForm.Hide();
 
-            Application.DoEvents();
+            Enabled = true;
+            Activate();
         }
 
         private void OnRunChecks(object sender, EventArgs e)
         {
-            this.dgvCheckResults.Rows.Clear();
+            dgvCheckResults.Rows.Clear();
             try
             {
-                this.ShowProgress();
-                this._punctuationCheck.RunCheck();
+                ShowProgress();
+                _lastResult = _punctuationCheck.RunCheck() ?? _lastResult;
+
+                HideProgress();
+                if (_lastResult != null)
+                {
+                    _allResultItems = new List<ResultItem>(_lastResult.ResultItems);
+                    UpdateMainTable();
+                }
             }
             catch (Exception ex)
             {
-                ErrorUtil.ReportError(ex);
+                HostUtil.Instance.ReportError(ex);
             }
         }
 
-        private void FormTest_Load(object sender, EventArgs e)
+        private void OnFormLoad(object sender, EventArgs e)
         {
-            _wordListMenuItem = this.biblicalWordListToolStripMenuItem;
-            _ignoreListMenuItem = this.ignoreListToolStripMenuItem;
+            _wordListMenuItem = biblicalWordListToolStripMenuItem;
+            _ignoreListMenuItem = ignoreListToolStripMenuItem;
         }
 
-        private void FileToolStripMenuItem_Click(object sender, EventArgs e)
+        private void OnClickIgnoreList(object sender, EventArgs e)
         {
+            IgnoreListForm ignoreListForm = new IgnoreListForm();
+            ignoreListForm.IgnoreListItems = HostUtil.Instance.GetIgnoreListItems(_activeProjectName);
 
-        }
+            ignoreListForm.ShowDialog(this);
+            IList<IgnoreListItem> ignoreListItems = ignoreListForm.IgnoreListItems;
 
-        private void OnShowIgnoreList(object sender, EventArgs e)
-        {
-            _ignoreListForm.ShowDialog(this);
-        }
+            HostUtil.Instance.PutIgnoreListItems(_activeProjectName, ignoreListItems);
+            _ignoreFilter.SetIgnoreListItems(ignoreListItems);
 
-        private void DataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
-        {
-
+            UpdateMainTable();
         }
 
         private void FormTest_FormClosing(object sender, FormClosingEventArgs e)
         {
-            switch (MessageBox.Show(this,
-                                    "Are you sure you want to quit?",
+            switch (MessageBox.Show(this, "Are you sure you want to quit?",
                                      "Notice...", MessageBoxButtons.YesNo, MessageBoxIcon.Question))
             {
                 // ---- *)  if No keep the application alive 
@@ -198,6 +188,8 @@ namespace TvpMain.Form
             _wordListMenuItem.Checked = !_wordListMenuItem.Checked;
             _wordListMenuItem.CheckState = _wordListMenuItem.Checked
                 ? CheckState.Checked : CheckState.Unchecked;
+
+            UpdateMainTable();
         }
 
         private void IgnoreListToolStripMenuItem_Click(object sender, EventArgs e)
@@ -205,6 +197,8 @@ namespace TvpMain.Form
             _ignoreListMenuItem.Checked = !_ignoreListMenuItem.Checked;
             _ignoreListMenuItem.CheckState = _ignoreListMenuItem.Checked
                 ? CheckState.Checked : CheckState.Unchecked;
+
+            UpdateMainTable();
         }
 
         private void PunctuationToolStripMenuItem_Click(object sender, EventArgs e)

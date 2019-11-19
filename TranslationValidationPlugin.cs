@@ -17,7 +17,7 @@ namespace TvpMain
     /*
      * Positions the launch for the Translation Validation Plugin in the Main Tools drop down in Paratext.
      */
-    [AddIn("Translation Validation Plugin", Description = "Validation checks for translated text.", Version = "1.0", Publisher = "Biblica")]
+    [AddIn("Translation Validation Plugin", Description = "Provides validation checks for translated text.", Version = "1.0", Publisher = "Biblica")]
     [QualificationData(PluginMetaDataKeys.menuText, "Translation Validation")]
     [QualificationData(PluginMetaDataKeys.insertAfterMenuName, "Tools|")]
     [QualificationData(PluginMetaDataKeys.multipleInstances, CreateInstanceRule.always)]
@@ -28,8 +28,8 @@ namespace TvpMain
             lock (this)
             {
 
-                ErrorUtil.Host = host;
-                ErrorUtil.TranslationValidationPlugin = this;
+                HostUtil.Instance.Host = host;
+                HostUtil.Instance.TranslationValidationPlugin = this;
 
 #if DEBUG
                 // Provided because plugins are separate processes that may only be attached to,
@@ -50,7 +50,7 @@ namespace TvpMain
                         }
                         catch (Exception ex)
                         {
-                            ErrorUtil.ReportError($"Can't perform translation validation for project \"{activeProjectName}\".", ex);
+                            HostUtil.Instance.ReportError($"Can't perform translation validation for project \"{activeProjectName}\".", ex);
                         }
                     });
 
@@ -60,7 +60,7 @@ namespace TvpMain
                 }
                 catch (Exception ex)
                 {
-                    ErrorUtil.ReportError(ex);
+                    HostUtil.Instance.ReportError(ex);
                     throw;
                 }
             }

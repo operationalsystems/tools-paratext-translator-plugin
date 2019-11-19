@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 using TvpMain.Data;
 using TvpMain.Filter;
 using TvpMain.Util;
@@ -18,16 +19,9 @@ namespace TvpMain.Check
     {
         private readonly IHost _host;
         private readonly string _activeProjectName;
-        private CheckResult _lastResult;
         private CancellationTokenSource _tokenSource;
-        private int _currProgress;
 
-        public event EventHandler<CheckResult> CheckCompleted;
         public event EventHandler<int> CheckUpdated;
-
-        public int CurrProgress { get => _currProgress; }
-
-        public CheckResult LastResult { get => _lastResult; }
 
         public AbstractTextCheck(IHost host, string activeProjectName)
         {
@@ -61,110 +55,124 @@ namespace TvpMain.Check
             }
         }
 
-        public void RunCheck()
+        public CheckResult RunCheck()
         {
-            try
+            CheckResult checkResult = new CheckResult(_host, _activeProjectName);
+            string versificationName = _host.GetProjectVersificationName(_activeProjectName);
+
+            int currProgress = 0;
+            _tokenSource = new CancellationTokenSource();
+
+            Thread workThread = new Thread(() =>
             {
-                CheckResult checkResult = new CheckResult(_host, _activeProjectName);
-                string versificationName = _host.GetProjectVersificationName(_activeProjectName);
-
-                _currProgress = 0;
-                _tokenSource = new CancellationTokenSource();
-
-                // Provides multiple threads in order to increase the speed of the Puncutation check.
-                // Use type parameter to make subtotal a long, not an int
-                Parallel.For(1, MainConsts.MAX_BOOK_NUM + 1,
-                    new ParallelOptions { MaxDegreeOfParallelism = MainConsts.MAX_CHECK_THREADS, CancellationToken = _tokenSource.Token },
-                    () => new ExtractorState(_host.GetScriptureExtractor(_activeProjectName, ExtractorType.USFM)),
-                    (bookNum, loopState, extractorState) =>
-                  {
-                      int currBookNum = bookNum;
-                      int currChapterNum = 0;
-                      int currVerseNum = 0;
-
-                      try
+                try
+                {
+                    // Provides multiple threads in order to increase the speed of the Puncutation check.
+                    // Use type parameter to make subtotal a long, not an int
+                    Parallel.For(1, MainConsts.MAX_BOOK_NUM + 1,
+                        new ParallelOptions { MaxDegreeOfParallelism = MainConsts.MAX_CHECK_THREADS, CancellationToken = _tokenSource.Token },
+                        () => new ExtractorState(_host.GetScriptureExtractor(_activeProjectName, ExtractorType.USFM)),
+                        (bookNum, loopState, extractorState) =>
                       {
-                          /*
-                           * Handles looping over the entire Bible and storing the results to be indexed.
-                           */
-                          int lastChapterNum = _host.GetLastChapter(bookNum, versificationName);
-                          IList<ResultItem> resultItems = new List<ResultItem>();
+                          int currBookNum = bookNum;
+                          int currChapterNum = 0;
+                          int currVerseNum = 0;
 
-                          for (int chapterNum = 1; chapterNum <= lastChapterNum; chapterNum++)
+                          try
                           {
-                              currChapterNum = chapterNum;
-                              int lastVerseNum = _host.GetLastVerse(bookNum, chapterNum, versificationName);
+                              /*
+                              * Handles looping over the entire Bible and storing the results to be indexed.
+                              */
+                              int lastChapterNum = _host.GetLastChapter(bookNum, versificationName);
+                              IList<ResultItem> resultItems = new List<ResultItem>();
 
-                              for (int verseNum = 1; verseNum <= lastVerseNum; verseNum++)
+                              for (int chapterNum = 1; chapterNum <= lastChapterNum; chapterNum++)
                               {
-                                  if (_tokenSource.IsCancellationRequested)
-                                  {
-                                      return extractorState;
-                                  }
+                                  currChapterNum = chapterNum;
+                                  int lastVerseNum = _host.GetLastVerse(bookNum, chapterNum, versificationName);
 
-                                  currVerseNum = verseNum;
-                                  int coord = bookNum * 1000000;
-                                  coord += chapterNum * 1000;
-                                  coord += verseNum;
+                                  for (int verseNum = 1; verseNum <= lastVerseNum; verseNum++)
+                                  {
+                                      if (_tokenSource.IsCancellationRequested)
+                                      {
+                                          return extractorState;
+                                      }
 
-                                  string verseText = null;
-                                  try
-                                  {
-                                      verseText = extractorState.ScrExtractor.Extract(coord, coord);
-                                  }
-                                  catch (ArgumentException)
-                                  {
-                                      // arg exceptions occur when verses are missing, 
-                                      // which they can be for given translations (ignore and move on)
-                                      continue;
-                                  }
-                                  if (verseText == null)
-                                  {
-                                      continue;
-                                  }
+                                      currVerseNum = verseNum;
+                                      int coord = bookNum * 1000000;
+                                      coord += chapterNum * 1000;
+                                      coord += verseNum;
 
-                                  resultItems.Clear();
-                                  CheckVerse(bookNum, chapterNum, verseNum, verseText, resultItems);
+                                      string verseText = null;
+                                      try
+                                      {
+                                          verseText = extractorState.ScrExtractor.Extract(coord, coord);
+                                      }
+                                      catch (ArgumentException)
+                                      {
+                                          // arg exceptions occur when verses are missing, 
+                                          // which they can be for given translations (ignore and move on)
+                                          continue;
+                                      }
+                                      if (verseText == null)
+                                      {
+                                          continue;
+                                      }
 
-                                  foreach (ResultItem resultItem in resultItems)
-                                  {
-                                      checkResult.ResultItems.Enqueue(resultItem);
+                                      resultItems.Clear();
+                                      CheckVerse(bookNum, chapterNum, verseNum, verseText, resultItems);
+
+                                      foreach (ResultItem resultItem in resultItems)
+                                      {
+                                          checkResult.ResultItems.Enqueue(resultItem);
+                                      }
                                   }
-                                  CheckUpdated?.Invoke(this, _currProgress);
+                              }
+                              extractorState.SubTotal++;
+
+                              lock (this)
+                              {
+                                  currProgress++;
+                                  CheckUpdated?.Invoke(this, currProgress);
                               }
                           }
-                          extractorState.SubTotal++;
-
-                          lock (this)
+                          catch (Exception ex)
                           {
-                              _currProgress++;
-                              CheckUpdated?.Invoke(this, _currProgress);
-
-                              if (_currProgress >= MainConsts.MAX_BOOK_NUM)
-                              {
-                                  _lastResult = checkResult;
-                                  CheckCompleted?.Invoke(this, _lastResult);
-                              }
+                              HostUtil.Instance.ReportError($"Error: Can't check location: {currBookNum}.{currChapterNum}.{currVerseNum}", ex);
                           }
-                      }
-                      catch (Exception ex)
-                      {
-                          ErrorUtil.ReportError($"Error: Can't check location: {currBookNum}.{currChapterNum}.{currVerseNum}", ex);
-                      }
-                      return extractorState;
-                  },
-                    (extractorState) =>
-                    {
-                        // ignore, at this time
-                    });
-            }
-            catch (OperationCanceledException)
+                          return extractorState;
+                      },
+                        (extractorState) =>
+                        {
+                            // ignore, at this time
+                        });
+                }
+                catch (OperationCanceledException)
+                {
+                    // Ignore, at this time
+                }
+                catch (Exception ex)
+                {
+                    HostUtil.Instance.ReportError(ex);
+                }
+            });
+            workThread.IsBackground = true;
+            workThread.Start();
+
+            int threadSleepInMs = (int)(1000f / (float)MainConsts.CHECK_EVENTS_UPDATE_RATE_IN_FPS);
+            while (workThread.IsAlive)
             {
-                // Ignore, at this time
+                Application.DoEvents();
+                Thread.Sleep(threadSleepInMs);
             }
-            catch (Exception ex)
+
+            if (currProgress >= MainConsts.MAX_BOOK_NUM)
             {
-                ErrorUtil.ReportError(ex);
+                return checkResult;
+            }
+            else
+            {
+                return null;
             }
         }
 

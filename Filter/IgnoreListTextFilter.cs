@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TvpMain.Data;
 
 namespace TvpMain.Filter
 {
@@ -27,6 +28,40 @@ namespace TvpMain.Filter
             _caseInsensitiveWords = new HashSet<string>();
             _caseSensitivePhrases = new List<string>();
             _caseInsensitivePhrases = new List<string>();
+        }
+
+        public void SetIgnoreListItems(IList<IgnoreListItem> inputItems)
+        {
+            _caseSensitiveWords.Clear();
+            _caseInsensitiveWords.Clear();
+            _caseSensitivePhrases.Clear();
+            _caseInsensitivePhrases.Clear();
+
+            foreach (IgnoreListItem listItem in inputItems)
+            {
+                if (listItem.IsPhrase)
+                {
+                    if (listItem.IsIgnoreCase)
+                    {
+                        _caseInsensitivePhrases.Add(listItem.CaseInsensitiveItemText);
+                    }
+                    else
+                    {
+                        _caseSensitivePhrases.Add(listItem.CaseSensitiveItemText);
+                    }
+                }
+                else
+                {
+                    if (listItem.IsIgnoreCase)
+                    {
+                        _caseInsensitiveWords.Add(listItem.CaseInsensitiveItemText);
+                    }
+                    else
+                    {
+                        _caseSensitiveWords.Add(listItem.CaseSensitiveItemText);
+                    }
+                }
+            }
         }
     }
 }

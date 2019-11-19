@@ -31,10 +31,11 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(IgnoreListForm));
             this.btnOk = new System.Windows.Forms.Button();
             this.dgvIgnoreList = new System.Windows.Forms.DataGridView();
-            this.btnImport = new System.Windows.Forms.Button();
-            this.btnCancel = new System.Windows.Forms.Button();
             this.WordOrPhrase = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.IsIgnoreCase = new System.Windows.Forms.DataGridViewCheckBoxColumn();
+            this.btnImport = new System.Windows.Forms.Button();
+            this.btnCancel = new System.Windows.Forms.Button();
+            this.btnClear = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.dgvIgnoreList)).BeginInit();
             this.SuspendLayout();
             // 
@@ -47,7 +48,7 @@
             this.btnOk.TabIndex = 1;
             this.btnOk.Text = "&OK";
             this.btnOk.UseVisualStyleBackColor = true;
-            this.btnOk.Click += new System.EventHandler(this.BtnClose_Click);
+            this.btnOk.Click += new System.EventHandler(this.OnClickClose);
             // 
             // dgvIgnoreList
             // 
@@ -62,10 +63,25 @@
             this.IsIgnoreCase});
             this.dgvIgnoreList.Location = new System.Drawing.Point(12, 12);
             this.dgvIgnoreList.Name = "dgvIgnoreList";
-            this.dgvIgnoreList.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
             this.dgvIgnoreList.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.dgvIgnoreList.Size = new System.Drawing.Size(808, 420);
             this.dgvIgnoreList.TabIndex = 3;
+            // 
+            // WordOrPhrase
+            // 
+            this.WordOrPhrase.FillWeight = 80F;
+            this.WordOrPhrase.HeaderText = "Word or Phrase";
+            this.WordOrPhrase.MinimumWidth = 120;
+            this.WordOrPhrase.Name = "WordOrPhrase";
+            // 
+            // IsIgnoreCase
+            // 
+            this.IsIgnoreCase.FillWeight = 20F;
+            this.IsIgnoreCase.HeaderText = "Ignore Case?";
+            this.IsIgnoreCase.MinimumWidth = 20;
+            this.IsIgnoreCase.Name = "IsIgnoreCase";
+            this.IsIgnoreCase.Resizable = System.Windows.Forms.DataGridViewTriState.True;
+            this.IsIgnoreCase.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Automatic;
             // 
             // btnImport
             // 
@@ -76,6 +92,7 @@
             this.btnImport.TabIndex = 4;
             this.btnImport.Text = "&Import...";
             this.btnImport.UseVisualStyleBackColor = true;
+            this.btnImport.Click += new System.EventHandler(this.OnClickImport);
             // 
             // btnCancel
             // 
@@ -87,21 +104,18 @@
             this.btnCancel.TabIndex = 5;
             this.btnCancel.Text = "&Cancel";
             this.btnCancel.UseVisualStyleBackColor = true;
-            this.btnCancel.Click += new System.EventHandler(this.btnCancel_Click);
+            this.btnCancel.Click += new System.EventHandler(this.OnClickCancel);
             // 
-            // WordOrPhrase
+            // btnClear
             // 
-            this.WordOrPhrase.FillWeight = 70F;
-            this.WordOrPhrase.HeaderText = "Word or Phrase";
-            this.WordOrPhrase.Name = "WordOrPhrase";
-            // 
-            // IsIgnoreCase
-            // 
-            this.IsIgnoreCase.FillWeight = 30F;
-            this.IsIgnoreCase.HeaderText = "Ignore Case?";
-            this.IsIgnoreCase.Name = "IsIgnoreCase";
-            this.IsIgnoreCase.Resizable = System.Windows.Forms.DataGridViewTriState.True;
-            this.IsIgnoreCase.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Automatic;
+            this.btnClear.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.btnClear.Location = new System.Drawing.Point(93, 438);
+            this.btnClear.Name = "btnClear";
+            this.btnClear.Size = new System.Drawing.Size(75, 23);
+            this.btnClear.TabIndex = 6;
+            this.btnClear.Text = "&Clear...";
+            this.btnClear.UseVisualStyleBackColor = true;
+            this.btnClear.Click += new System.EventHandler(this.OnClickClear);
             // 
             // IgnoreListForm
             // 
@@ -110,6 +124,7 @@
             this.AutoScroll = true;
             this.ClientSize = new System.Drawing.Size(832, 473);
             this.ControlBox = false;
+            this.Controls.Add(this.btnClear);
             this.Controls.Add(this.btnCancel);
             this.Controls.Add(this.btnImport);
             this.Controls.Add(this.dgvIgnoreList);
@@ -131,5 +146,6 @@
         private System.Windows.Forms.Button btnCancel;
         private System.Windows.Forms.DataGridViewTextBoxColumn WordOrPhrase;
         private System.Windows.Forms.DataGridViewCheckBoxColumn IsIgnoreCase;
+        private System.Windows.Forms.Button btnClear;
     }
 }

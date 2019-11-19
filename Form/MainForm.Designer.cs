@@ -31,11 +31,6 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             this.btnRunChecks = new System.Windows.Forms.Button();
             this.dgvCheckResults = new System.Windows.Forms.DataGridView();
-            this.bcv = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Match = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Verse = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.error = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.notes = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.mstMain = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator = new System.Windows.Forms.ToolStripSeparator();
@@ -55,6 +50,11 @@
             this.ignoreListToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.btnShowIgnoreList = new System.Windows.Forms.Button();
             this.btnClose = new System.Windows.Forms.Button();
+            this.bcv = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Match = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Verse = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.error = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.notes = new System.Windows.Forms.DataGridViewTextBoxColumn();
             ((System.ComponentModel.ISupportInitialize)(this.dgvCheckResults)).BeginInit();
             this.mstMain.SuspendLayout();
             this.SuspendLayout();
@@ -72,9 +72,11 @@
             // 
             // dgvCheckResults
             // 
+            this.dgvCheckResults.AllowUserToAddRows = false;
+            this.dgvCheckResults.AllowUserToDeleteRows = false;
             this.dgvCheckResults.AllowUserToOrderColumns = true;
-            this.dgvCheckResults.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
+            this.dgvCheckResults.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+            | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.dgvCheckResults.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
             this.dgvCheckResults.AutoSizeRowsMode = System.Windows.Forms.DataGridViewAutoSizeRowsMode.DisplayedCells;
@@ -87,45 +89,9 @@
             this.dgvCheckResults.Location = new System.Drawing.Point(10, 37);
             this.dgvCheckResults.MultiSelect = false;
             this.dgvCheckResults.Name = "dgvCheckResults";
-            this.dgvCheckResults.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
             this.dgvCheckResults.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.dgvCheckResults.Size = new System.Drawing.Size(805, 435);
             this.dgvCheckResults.TabIndex = 2;
-            this.dgvCheckResults.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.DataGridView1_CellContentClick);
-            // 
-            // bcv
-            // 
-            this.bcv.FillWeight = 15F;
-            this.bcv.HeaderText = "BCV";
-            this.bcv.Name = "bcv";
-            this.bcv.ReadOnly = true;
-            // 
-            // Match
-            // 
-            this.Match.FillWeight = 15F;
-            this.Match.HeaderText = "Match";
-            this.Match.Name = "Match";
-            this.Match.ReadOnly = true;
-            // 
-            // Verse
-            // 
-            this.Verse.FillWeight = 30F;
-            this.Verse.HeaderText = "Verse";
-            this.Verse.Name = "Verse";
-            this.Verse.ReadOnly = true;
-            // 
-            // error
-            // 
-            this.error.FillWeight = 30F;
-            this.error.HeaderText = "Error";
-            this.error.Name = "error";
-            this.error.ReadOnly = true;
-            // 
-            // notes
-            // 
-            this.notes.FillWeight = 10F;
-            this.notes.HeaderText = "Notes";
-            this.notes.Name = "notes";
             // 
             // mstMain
             // 
@@ -151,7 +117,6 @@
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
             this.fileToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
             this.fileToolStripMenuItem.Text = "File";
-            this.fileToolStripMenuItem.Click += new System.EventHandler(this.FileToolStripMenuItem_Click);
             // 
             // toolStripSeparator
             // 
@@ -213,28 +178,28 @@
             // bCVToolStripMenuItem
             // 
             this.bCVToolStripMenuItem.Name = "bCVToolStripMenuItem";
-            this.bCVToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.bCVToolStripMenuItem.Size = new System.Drawing.Size(109, 22);
             this.bCVToolStripMenuItem.Text = "BCV";
             this.bCVToolStripMenuItem.Click += new System.EventHandler(this.BcvToolStripMenuItem_Click);
             // 
             // errorToolStripMenuItem
             // 
             this.errorToolStripMenuItem.Name = "errorToolStripMenuItem";
-            this.errorToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.errorToolStripMenuItem.Size = new System.Drawing.Size(109, 22);
             this.errorToolStripMenuItem.Text = "Error";
             this.errorToolStripMenuItem.Click += new System.EventHandler(this.ErrorToolStripMenuItem_Click);
             // 
             // notesToolStripMenuItem
             // 
             this.notesToolStripMenuItem.Name = "notesToolStripMenuItem";
-            this.notesToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.notesToolStripMenuItem.Size = new System.Drawing.Size(109, 22);
             this.notesToolStripMenuItem.Text = "Notes";
             this.notesToolStripMenuItem.Click += new System.EventHandler(this.NotesToolStripMenuItem_Click);
             // 
             // actionToolStripMenuItem
             // 
             this.actionToolStripMenuItem.Name = "actionToolStripMenuItem";
-            this.actionToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.actionToolStripMenuItem.Size = new System.Drawing.Size(109, 22);
             this.actionToolStripMenuItem.Text = "Action";
             this.actionToolStripMenuItem.Click += new System.EventHandler(this.ActionToolStripMenuItem_Click);
             // 
@@ -250,14 +215,14 @@
             // biblicalWordListToolStripMenuItem
             // 
             this.biblicalWordListToolStripMenuItem.Name = "biblicalWordListToolStripMenuItem";
-            this.biblicalWordListToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.biblicalWordListToolStripMenuItem.Size = new System.Drawing.Size(165, 22);
             this.biblicalWordListToolStripMenuItem.Text = "Biblical Word List";
             this.biblicalWordListToolStripMenuItem.Click += new System.EventHandler(this.BiblicalWordListToolStripMenuItem_Click);
             // 
             // ignoreListToolStripMenuItem
             // 
             this.ignoreListToolStripMenuItem.Name = "ignoreListToolStripMenuItem";
-            this.ignoreListToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.ignoreListToolStripMenuItem.Size = new System.Drawing.Size(165, 22);
             this.ignoreListToolStripMenuItem.Text = "Ignore List";
             this.ignoreListToolStripMenuItem.Click += new System.EventHandler(this.IgnoreListToolStripMenuItem_Click);
             // 
@@ -270,7 +235,7 @@
             this.btnShowIgnoreList.TabIndex = 4;
             this.btnShowIgnoreList.Text = "&Ignore List...";
             this.btnShowIgnoreList.UseVisualStyleBackColor = true;
-            this.btnShowIgnoreList.Click += new System.EventHandler(this.OnShowIgnoreList);
+            this.btnShowIgnoreList.Click += new System.EventHandler(this.OnClickIgnoreList);
             // 
             // btnClose
             // 
@@ -283,6 +248,45 @@
             this.btnClose.Text = "&Close";
             this.btnClose.UseVisualStyleBackColor = true;
             this.btnClose.Click += new System.EventHandler(this.btnClose_Click);
+            // 
+            // bcv
+            // 
+            this.bcv.FillWeight = 15F;
+            this.bcv.HeaderText = "BCV";
+            this.bcv.MinimumWidth = 60;
+            this.bcv.Name = "bcv";
+            this.bcv.ReadOnly = true;
+            // 
+            // Match
+            // 
+            this.Match.FillWeight = 15F;
+            this.Match.HeaderText = "Match";
+            this.Match.MinimumWidth = 60;
+            this.Match.Name = "Match";
+            this.Match.ReadOnly = true;
+            // 
+            // Verse
+            // 
+            this.Verse.FillWeight = 30F;
+            this.Verse.HeaderText = "Verse";
+            this.Verse.MinimumWidth = 120;
+            this.Verse.Name = "Verse";
+            this.Verse.ReadOnly = true;
+            // 
+            // error
+            // 
+            this.error.FillWeight = 30F;
+            this.error.HeaderText = "Error";
+            this.error.MinimumWidth = 120;
+            this.error.Name = "error";
+            this.error.ReadOnly = true;
+            // 
+            // notes
+            // 
+            this.notes.FillWeight = 10F;
+            this.notes.HeaderText = "Notes";
+            this.notes.MinimumWidth = 40;
+            this.notes.Name = "notes";
             // 
             // MainForm
             // 
@@ -306,7 +310,7 @@
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Translation Validations...";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.FormTest_FormClosing);
-            this.Load += new System.EventHandler(this.FormTest_Load);
+            this.Load += new System.EventHandler(this.OnFormLoad);
             ((System.ComponentModel.ISupportInitialize)(this.dgvCheckResults)).EndInit();
             this.mstMain.ResumeLayout(false);
             this.mstMain.PerformLayout();
@@ -336,11 +340,11 @@
         private System.Windows.Forms.ToolStripMenuItem biblicalWordListToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem ignoreListToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem notesToolStripMenuItem;
+        private System.Windows.Forms.Button btnClose;
         private System.Windows.Forms.DataGridViewTextBoxColumn bcv;
         private System.Windows.Forms.DataGridViewTextBoxColumn Match;
         private System.Windows.Forms.DataGridViewTextBoxColumn Verse;
         private System.Windows.Forms.DataGridViewTextBoxColumn error;
         private System.Windows.Forms.DataGridViewTextBoxColumn notes;
-        private System.Windows.Forms.Button btnClose;
     }
 }
