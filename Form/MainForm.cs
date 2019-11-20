@@ -51,7 +51,9 @@ namespace TvpMain.Form
                 _ignoreFilter = new IgnoreListTextFilter();
                 _termFilter = new BiblicalTermsTextFilter();
                 _punctuationCheck = new RegexPunctuationCheck1(_host, _activeProjectName);
-                _punctuationCheck.CheckUpdated += OnCheckProgress;
+                _punctuationCheck.CheckUpdated += OnCheckUpdated;
+
+                searchMenuTextBox.TextChanged += OnSearchTextChanged;
 
                 termWorker.DoWork += OnTermWorkerDoWork;
                 termWorker.RunWorkerAsync();
@@ -60,6 +62,11 @@ namespace TvpMain.Form
             {
                 HostUtil.Instance.ReportError(ex);
             }
+        }
+
+        private void OnSearchTextChanged(object sender, EventArgs e)
+        {
+            UpdateMainTable();
         }
 
         private void OnTermWorkerDoWork(object sender, System.ComponentModel.DoWorkEventArgs e)
@@ -89,9 +96,9 @@ namespace TvpMain.Form
         /*
          * Launches the Progress form after run has been clicked.
          */
-        private void OnCheckProgress(object sender, int currBookNum)
+        private void OnCheckUpdated(object sender, CheckUpdatedArgs updatedArgs)
         {
-            _progressForm.SetCurrBookNum(currBookNum);
+            _progressForm.OnCheckUpdated(updatedArgs);
         }
 
         private void UpdateMainTable()
@@ -99,6 +106,8 @@ namespace TvpMain.Form
             FilterResults();
 
             dgvCheckResults.Rows.Clear();
+            statusLabel.Text = CheckResult.GetSummaryText(_filteredResultItems);
+
             foreach (ResultItem item in _filteredResultItems)
             {
                 dgvCheckResults.Rows.Add(new string[] {
@@ -107,6 +116,8 @@ namespace TvpMain.Form
                             $"{item.VerseText}",
                             $"{item.ErrorText}"
                         });
+                dgvCheckResults.Rows[(dgvCheckResults.Rows.Count - 1)].HeaderCell.Value =
+                    $"{dgvCheckResults.Rows.Count:N0}";
             }
         }
 
@@ -119,12 +130,14 @@ namespace TvpMain.Form
             else
             {
                 _filteredResultItems = _allResultItems;
+                bool isEntireVerse = entireVerseFiltersMenuItem.Checked;
 
-                if (ignoreListToolStripMenuItem.Checked
+                if (ignoreListFiltersMenuItem.Checked
                     && !_ignoreFilter.IsEmpty)
                 {
                     _filteredResultItems = _filteredResultItems.Where(
-                        resultItem => !_ignoreFilter.FilterText(resultItem)).ToList();
+                        resultItem => !_ignoreFilter.FilterText(isEntireVerse
+                        ? resultItem.VerseText : resultItem.MatchText)).ToList();
                 }
 
                 lock (_termFilter)
@@ -133,7 +146,25 @@ namespace TvpMain.Form
                     && !_termFilter.IsEmpty)
                     {
                         _filteredResultItems = _filteredResultItems.Where(
-                            resultItem => !_termFilter.FilterText(resultItem)).ToList();
+                            resultItem => !_termFilter.FilterText(isEntireVerse
+                        ? resultItem.VerseText : resultItem.MatchText)).ToList();
+                    }
+                }
+
+                string searchText = searchMenuTextBox.TextBox.Text.Trim();
+                if (searchText.Length > 0)
+                {
+                    if (searchText.Any(Char.IsUpper))
+                    {
+                        _filteredResultItems = _filteredResultItems.Where(
+                                resultItem => (resultItem.VerseText.Contains(searchText)
+                                || resultItem.ErrorText.Contains(searchText))).ToList();
+                    }
+                    else
+                    {
+                        _filteredResultItems = _filteredResultItems.Where(
+                                resultItem => (resultItem.VerseText.ToLower().Contains(searchText)
+                                || resultItem.ErrorText.ToLower().Contains(searchText))).ToList();
                     }
                 }
             }
@@ -161,9 +192,20 @@ namespace TvpMain.Form
             try
             {
                 ShowProgress();
-                _lastResult = _punctuationCheck.RunCheck() ?? _lastResult;
 
+                CheckArea checkArea = CheckArea.CurrentProject;
+                if (currentBookAreaMenuItem.Checked)
+                {
+                    checkArea = CheckArea.CurrentBook;
+                }
+                else if (currentChapterAreaMenuItem.Checked)
+                {
+                    checkArea = CheckArea.CurrentChapter;
+                }
+
+                _lastResult = _punctuationCheck.RunCheck(checkArea) ?? _lastResult;
                 HideProgress();
+
                 if (_lastResult != null)
                 {
                     _allResultItems = new List<ResultItem>(_lastResult.ResultItems);
@@ -178,8 +220,8 @@ namespace TvpMain.Form
 
         private void OnFormLoad(object sender, EventArgs e)
         {
-            _wordListMenuItem = biblicalWordListToolStripMenuItem;
-            _ignoreListMenuItem = ignoreListToolStripMenuItem;
+            _wordListMenuItem = biblicalTermsFiltersMenuItem;
+            _ignoreListMenuItem = ignoreListFiltersMenuItem;
         }
 
         private void OnClickIgnoreList(object sender, EventArgs e)
@@ -229,99 +271,91 @@ namespace TvpMain.Form
             UpdateMainTable();
         }
 
-        private void PunctuationToolStripMenuItem_Click(object sender, EventArgs e)
+        private void OnBcvViewMenuClick(object sender, EventArgs e)
         {
-            if (punctuationToolStripMenuItem.CheckState == CheckState.Checked)
-            {
-                punctuationToolStripMenuItem.CheckState = CheckState.Unchecked;
-                punctuationToolStripMenuItem.Checked = false;
+            bcvViewMenuItem.Checked = !bcvViewMenuItem.Checked;
+            bcvViewMenuItem.CheckState = bcvViewMenuItem.Checked
+                ? CheckState.Checked : CheckState.Unchecked;
 
-                MessageBox.Show("Punctuation Check unselected.");
-            }
-            else
-            {
-                punctuationToolStripMenuItem.CheckState = CheckState.Checked;
-                punctuationToolStripMenuItem.Checked = true;
-
-                MessageBox.Show("Punctuation Check selected.");
-            }
+            dgvCheckResults.Columns[0].Visible = bcvViewMenuItem.Checked;
         }
 
-        private void BcvToolStripMenuItem_Click(object sender, EventArgs e)
+        private void OnErrorViewMenuClicked(object sender, EventArgs e)
         {
-            if (bCVToolStripMenuItem.CheckState == CheckState.Checked)
-            {
-                bCVToolStripMenuItem.CheckState = CheckState.Unchecked;
-                bCVToolStripMenuItem.Checked = false;
+            errorViewMenuItem.Checked = !errorViewMenuItem.Checked;
+            errorViewMenuItem.CheckState = errorViewMenuItem.Checked
+                ? CheckState.Checked : CheckState.Unchecked;
 
-                MessageBox.Show("BCV column is hidden.");
-            }
-            else
-            {
-                bCVToolStripMenuItem.CheckState = CheckState.Checked;
-                bCVToolStripMenuItem.Checked = true;
-
-                MessageBox.Show("BCV is shown.");
-            }
+            dgvCheckResults.Columns[3].Visible = errorViewMenuItem.Checked;
         }
 
-        private void ErrorToolStripMenuItem_Click(object sender, EventArgs e)
+        private void OnVerseViewMenuClicked(object sender, EventArgs e)
         {
-            if (errorToolStripMenuItem.CheckState == CheckState.Checked)
-            {
-                errorToolStripMenuItem.CheckState = CheckState.Unchecked;
-                errorToolStripMenuItem.Checked = false;
+            verseViewMenuItem.Checked = !verseViewMenuItem.Checked;
+            verseViewMenuItem.CheckState = verseViewMenuItem.Checked
+                ? CheckState.Checked : CheckState.Unchecked;
 
-                MessageBox.Show("Error column is hidden.");
-            }
-            else
-            {
-                errorToolStripMenuItem.CheckState = CheckState.Checked;
-                errorToolStripMenuItem.Checked = true;
-
-                MessageBox.Show("Error column is shown.");
-            }
+            dgvCheckResults.Columns[2].Visible = verseViewMenuItem.Checked;
         }
 
-        private void NotesToolStripMenuItem_Click(object sender, EventArgs e)
+        private void OnMatchViewMenuItem_Click(object sender, EventArgs e)
         {
-            if (notesToolStripMenuItem.CheckState == CheckState.Checked)
-            {
-                notesToolStripMenuItem.CheckState = CheckState.Unchecked;
-                notesToolStripMenuItem.Checked = false;
+            matchViewMenuItem.Checked = !matchViewMenuItem.Checked;
+            matchViewMenuItem.CheckState = matchViewMenuItem.Checked
+                ? CheckState.Checked : CheckState.Unchecked;
 
-                MessageBox.Show("Notes column is hidden.");
-            }
-            else
-            {
-                notesToolStripMenuItem.CheckState = CheckState.Checked;
-                notesToolStripMenuItem.Checked = true;
-
-                MessageBox.Show("Notes column is shown.");
-            }
+            dgvCheckResults.Columns[1].Visible = matchViewMenuItem.Checked;
         }
 
-        private void ActionToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            if (actionToolStripMenuItem.CheckState == CheckState.Checked)
-            {
-                actionToolStripMenuItem.CheckState = CheckState.Unchecked;
-                actionToolStripMenuItem.Checked = false;
-
-                MessageBox.Show("Actions column is hidden.");
-            }
-            else
-            {
-                actionToolStripMenuItem.CheckState = CheckState.Checked;
-                actionToolStripMenuItem.Checked = true;
-
-                MessageBox.Show("Actions column is shown.");
-            }
-        }
-
-        private void btnClose_Click(object sender, EventArgs e)
+        private void OnCloseButtonClick(object sender, EventArgs e)
         {
             Close();
+        }
+
+
+        private void ClearAreaMenuItems()
+        {
+            currentProjectAreaMenuItem.CheckState = CheckState.Unchecked;
+            currentProjectAreaMenuItem.Checked = false;
+
+            currentBookAreaMenuItem.CheckState = CheckState.Unchecked;
+            currentBookAreaMenuItem.Checked = false;
+
+            currentChapterAreaMenuItem.CheckState = CheckState.Unchecked;
+            currentChapterAreaMenuItem.Checked = false;
+        }
+
+        private void OnCurrentProjectAreaMenuClick(object sender, EventArgs e)
+        {
+            ClearAreaMenuItems();
+
+            currentProjectAreaMenuItem.CheckState = CheckState.Checked;
+            currentProjectAreaMenuItem.Checked = true;
+        }
+
+        private void OnCurrentBookAreaMenuClick(object sender, EventArgs e)
+        {
+            ClearAreaMenuItems();
+
+            currentBookAreaMenuItem.CheckState = CheckState.Checked;
+            currentBookAreaMenuItem.Checked = true;
+        }
+
+        private void OnCurrentChapterAreaMenuClick(object sender, EventArgs e)
+        {
+            ClearAreaMenuItems();
+
+            currentChapterAreaMenuItem.CheckState = CheckState.Checked;
+            currentChapterAreaMenuItem.Checked = true;
+        }
+
+        private void OnEntireVerseFiltersMenuClick(object sender, EventArgs e)
+        {
+            entireVerseFiltersMenuItem.Checked = !entireVerseFiltersMenuItem.Checked;
+            entireVerseFiltersMenuItem.CheckState = entireVerseFiltersMenuItem.Checked
+                ? CheckState.Checked : CheckState.Unchecked;
+
+            UpdateMainTable();
         }
     }
 }

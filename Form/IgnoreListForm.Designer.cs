@@ -42,7 +42,7 @@
             // btnOk
             // 
             this.btnOk.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnOk.Location = new System.Drawing.Point(664, 438);
+            this.btnOk.Location = new System.Drawing.Point(307, 348);
             this.btnOk.Name = "btnOk";
             this.btnOk.Size = new System.Drawing.Size(75, 23);
             this.btnOk.TabIndex = 1;
@@ -64,7 +64,7 @@
             this.dgvIgnoreList.Location = new System.Drawing.Point(12, 12);
             this.dgvIgnoreList.Name = "dgvIgnoreList";
             this.dgvIgnoreList.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.dgvIgnoreList.Size = new System.Drawing.Size(808, 420);
+            this.dgvIgnoreList.Size = new System.Drawing.Size(451, 330);
             this.dgvIgnoreList.TabIndex = 3;
             // 
             // WordOrPhrase
@@ -86,7 +86,7 @@
             // btnImport
             // 
             this.btnImport.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.btnImport.Location = new System.Drawing.Point(12, 438);
+            this.btnImport.Location = new System.Drawing.Point(12, 348);
             this.btnImport.Name = "btnImport";
             this.btnImport.Size = new System.Drawing.Size(75, 23);
             this.btnImport.TabIndex = 4;
@@ -98,7 +98,7 @@
             // 
             this.btnCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.btnCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.btnCancel.Location = new System.Drawing.Point(745, 438);
+            this.btnCancel.Location = new System.Drawing.Point(388, 348);
             this.btnCancel.Name = "btnCancel";
             this.btnCancel.Size = new System.Drawing.Size(75, 23);
             this.btnCancel.TabIndex = 5;
@@ -109,7 +109,7 @@
             // btnClear
             // 
             this.btnClear.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.btnClear.Location = new System.Drawing.Point(93, 438);
+            this.btnClear.Location = new System.Drawing.Point(93, 348);
             this.btnClear.Name = "btnClear";
             this.btnClear.Size = new System.Drawing.Size(75, 23);
             this.btnClear.TabIndex = 6;
@@ -122,7 +122,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoScroll = true;
-            this.ClientSize = new System.Drawing.Size(832, 473);
+            this.ClientSize = new System.Drawing.Size(475, 383);
             this.ControlBox = false;
             this.Controls.Add(this.btnClear);
             this.Controls.Add(this.btnCancel);

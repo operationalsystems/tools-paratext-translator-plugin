@@ -5,8 +5,8 @@ namespace TvpMain.Check
 {
     public interface ITextCheck
     {
-        public event EventHandler<int> CheckUpdated;
-        public CheckResult RunCheck();
+        public event EventHandler<CheckUpdatedArgs> CheckUpdated;
+        public CheckResult RunCheck(CheckArea checkScope);
         public void CancelCheck();
     }
 }

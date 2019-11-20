@@ -1,6 +1,8 @@
 ﻿using AddInSideViews;
 using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Text;
 using TvpMain.Data;
 
 /*
@@ -27,6 +29,15 @@ namespace TvpMain.Data
             _resultItems = new ConcurrentQueue<ResultItem>();
         }
 
+
+        public string SummaryText
+        {
+            get
+            {
+                return GetSummaryText(new List<ResultItem>(_resultItems));
+            }
+        }
+
         public IScrExtractor Extractor
         {
             get
@@ -40,6 +51,37 @@ namespace TvpMain.Data
                     return _scrExtractor;
                 }
             }
+        }
+
+        public static string GetSummaryText(IList<ResultItem> resultItems)
+        {
+            StringBuilder stringBuilder = new StringBuilder();
+            if (resultItems.Count < 1)
+            {
+                stringBuilder.Append("No violations.");
+            }
+            else
+            {
+                stringBuilder.Append(resultItems.Count > 1
+                    ? $"{resultItems.Count:N0} violations"
+                    : $"{resultItems.Count:N0} violation");
+
+                ISet<int> bookSet = new HashSet<int>();
+                ISet<string> matchSet = new HashSet<string>();
+                foreach (ResultItem resultItem in resultItems)
+                {
+                    bookSet.Add(resultItem.BookNum);
+                    matchSet.Add(resultItem.MatchText);
+                }
+
+                stringBuilder.Append(bookSet.Count > 1
+                    ? $" in {bookSet.Count:N0} books"
+                    : $" in {bookSet.Count:N0} book");
+                stringBuilder.Append(matchSet.Count > 1
+                    ? $" with {matchSet.Count:N0} unique matches."
+                    : $" with {matchSet.Count:N0} unique match.");
+            }
+            return stringBuilder.ToString();
         }
     }
 }

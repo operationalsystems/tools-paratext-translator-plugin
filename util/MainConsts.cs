@@ -8,7 +8,7 @@ namespace TvpMain.Util
         public const string IGNORE_LIST_ITEMS_ID = "IgnoreListItems";
         public const int CHECK_EVENTS_UPDATE_RATE_IN_FPS = 10;
         public const int MAX_CHECK_THREADS = 4;
-        public const int MAX_BOOK_NUM = 5; // 66 = all books
+        public const int MAX_BOOK_NUM = 66; // 66 = all books
         public static readonly string[] BOOK_NAMES = {
             "GEN","EXO","LEV","NUM","DEU","JOS","JDG","RUT",
             "1SA","2SA","1KI","2KI","1CH","2CH","EZR","NEH",

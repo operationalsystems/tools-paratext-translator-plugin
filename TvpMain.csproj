@@ -85,6 +85,8 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Check\CheckArea.cs" />
+    <Compile Include="Check\CheckUpdatedArgs.cs" />
     <Compile Include="Check\RegexPunctuationCheck1.cs" />
     <Compile Include="Data\IgnoreListItem.cs" />
     <Compile Include="Filter\AbstractTextFilter.cs" />

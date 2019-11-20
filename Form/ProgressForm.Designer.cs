@@ -44,7 +44,7 @@
             this.pbrStatus.Maximum = 111;
             this.pbrStatus.Name = "pbrStatus";
             this.pbrStatus.Size = new System.Drawing.Size(367, 23);
-            this.pbrStatus.Style = System.Windows.Forms.ProgressBarStyle.Continuous;
+            this.pbrStatus.Style = System.Windows.Forms.ProgressBarStyle.Marquee;
             this.pbrStatus.TabIndex = 0;
             // 
             // lblTitle

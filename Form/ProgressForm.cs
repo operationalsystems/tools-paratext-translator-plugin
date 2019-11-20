@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Text;
 using System.Windows.Forms;
+using TvpMain.Check;
 using TvpMain.Util;
 
 /*
@@ -12,6 +13,7 @@ namespace TvpMain.Form
     {
         private readonly DateTime _startTime;
         private int _lastBookNum;
+        private int _maxBookNum;
 
         /// <summary>
         /// Cancel event handler, for use by workflow.
@@ -32,9 +34,13 @@ namespace TvpMain.Form
         /*
          * Show progress of books being checked against the validation check(s) being used.
          */
-        public void SetCurrBookNum(int bookNum)
+        public void OnCheckUpdated(CheckUpdatedArgs updatedArgs)
         {
-            _lastBookNum = bookNum;
+            lock (this)
+            {
+                _lastBookNum = updatedArgs.CurrPos;
+                _maxBookNum = updatedArgs.MaxPos;
+            }
         }
 
         private void OnCancelClick(object sender, EventArgs e)
@@ -45,8 +51,10 @@ namespace TvpMain.Form
 
         public void ResetForm()
         {
-            pbrStatus.Value = 0;
-            lblTitle.Text = $"Checking books...";
+            pbrStatus.Value = pbrStatus.Minimum;
+            pbrStatus.Style = ProgressBarStyle.Marquee;
+
+            lblTitle.Text = $"Running Validation...";
         }
 
         /// <summary>
@@ -78,15 +86,28 @@ namespace TvpMain.Form
         private void tmrUpdate_Tick(object sender, EventArgs e)
         {
             lblElapsedTime.Text = GetElapsedTime(DateTime.Now.Subtract(_startTime));
-            int currBookNum = _lastBookNum;
-
-            if (currBookNum != pbrStatus.Value)
+            lock (this)
             {
-                pbrStatus.Maximum = MainConsts.MAX_BOOK_NUM;
-                pbrStatus.Value = currBookNum;
+                if (_lastBookNum != pbrStatus.Value
+                    || _maxBookNum != pbrStatus.Maximum)
+                {
+                    pbrStatus.Maximum = _maxBookNum;
 
-                lblTitle.Text = $"Checked book #{currBookNum} of {MainConsts.MAX_BOOK_NUM}...";
-                Activate();
+                    if (_lastBookNum > pbrStatus.Maximum
+                        || _lastBookNum <= pbrStatus.Minimum)
+                    {
+                        ResetForm();
+                    }
+                    else
+                    {
+                        pbrStatus.Value = _lastBookNum;
+                        pbrStatus.Style = ProgressBarStyle.Continuous;
+
+                        lblTitle.Text = $"Checked book #{_lastBookNum} of {_maxBookNum}...";
+                    }
+
+                    Activate();
+                }
             }
         }
     }

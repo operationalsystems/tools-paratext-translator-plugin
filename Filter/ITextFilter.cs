@@ -9,7 +9,7 @@ namespace TvpMain.Filter
 {
     public interface ITextFilter
     {
-        public bool FilterText(ResultItem inputItem);
+        public bool FilterText(String inputText);
 
         public bool IsEmpty { get; }
     }

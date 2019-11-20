@@ -21,7 +21,7 @@ namespace TvpMain.Check
         private readonly string _activeProjectName;
         private CancellationTokenSource _tokenSource;
 
-        public event EventHandler<int> CheckUpdated;
+        public event EventHandler<CheckUpdatedArgs> CheckUpdated;
 
         public AbstractTextCheck(IHost host, string activeProjectName)
         {
@@ -55,7 +55,7 @@ namespace TvpMain.Check
             }
         }
 
-        public CheckResult RunCheck()
+        public CheckResult RunCheck(CheckArea checkArea)
         {
             CheckResult checkResult = new CheckResult(_host, _activeProjectName);
             string versificationName = _host.GetProjectVersificationName(_activeProjectName);
@@ -63,17 +63,32 @@ namespace TvpMain.Check
             int currProgress = 0;
             _tokenSource = new CancellationTokenSource();
 
+            int userRef = _host.GetCurrentRef(versificationName);
+            int refBook = (userRef / 1000000);
+            int refChapter = (userRef / 1000) % 1000;
+            int refVerse = userRef % 1000;
+            int minBook = (checkArea == CheckArea.CurrentProject)
+                ? 1 : refBook;
+            int maxBook = (checkArea == CheckArea.CurrentProject)
+                ? (MainConsts.MAX_BOOK_NUM + 1) : (refBook + 1);
+            int numBooks = (maxBook - minBook);
+
             Thread workThread = new Thread(() =>
             {
                 try
                 {
                     // Provides multiple threads in order to increase the speed of the Puncutation check.
                     // Use type parameter to make subtotal a long, not an int
-                    Parallel.For(1, MainConsts.MAX_BOOK_NUM + 1,
+                    Parallel.For(minBook, maxBook,
                         new ParallelOptions { MaxDegreeOfParallelism = MainConsts.MAX_CHECK_THREADS, CancellationToken = _tokenSource.Token },
                         () => new ExtractorState(_host.GetScriptureExtractor(_activeProjectName, ExtractorType.USFM)),
                         (bookNum, loopState, extractorState) =>
                       {
+                          int minChapter = (checkArea != CheckArea.CurrentChapter)
+                              ? 1 : refChapter;
+                          int maxChapter = (checkArea != CheckArea.CurrentChapter)
+                              ? _host.GetLastChapter(bookNum, versificationName) : refChapter;
+
                           int currBookNum = bookNum;
                           int currChapterNum = 0;
                           int currVerseNum = 0;
@@ -83,10 +98,9 @@ namespace TvpMain.Check
                               /*
                               * Handles looping over the entire Bible and storing the results to be indexed.
                               */
-                              int lastChapterNum = _host.GetLastChapter(bookNum, versificationName);
                               IList<ResultItem> resultItems = new List<ResultItem>();
 
-                              for (int chapterNum = 1; chapterNum <= lastChapterNum; chapterNum++)
+                              for (int chapterNum = minChapter; chapterNum <= maxChapter; chapterNum++)
                               {
                                   currChapterNum = chapterNum;
                                   int lastVerseNum = _host.GetLastVerse(bookNum, chapterNum, versificationName);
@@ -133,7 +147,9 @@ namespace TvpMain.Check
                               lock (this)
                               {
                                   currProgress++;
-                                  CheckUpdated?.Invoke(this, currProgress);
+                                  CheckUpdated?.Invoke(this, (checkArea == CheckArea.CurrentProject)
+                                      ? new CheckUpdatedArgs(currProgress, numBooks)
+                                      : new CheckUpdatedArgs(currProgress, 1));
                               }
                           }
                           catch (Exception ex)
@@ -166,7 +182,7 @@ namespace TvpMain.Check
                 Thread.Sleep(threadSleepInMs);
             }
 
-            if (currProgress >= MainConsts.MAX_BOOK_NUM)
+            if (currProgress >= numBooks)
             {
                 return checkResult;
             }

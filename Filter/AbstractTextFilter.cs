@@ -15,9 +15,9 @@ namespace TvpMain.Filter
         protected abstract IList<string> CaseSensitivePhrases { get; }
         protected abstract IList<string> CaseInsensitivePhrases { get; }
 
-        public bool FilterText(ResultItem inputItem)
+        public bool FilterText(String inputText)
         {
-            string inputText = inputItem.MatchText.Trim();
+            inputText = inputText.Trim();
 
             ISet<string> caseSensitiveWords = CaseSensitiveWords;
             ISet<string> caseInsensitiveWords = CaseInsensitiveWords;

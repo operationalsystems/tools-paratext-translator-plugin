@@ -40,12 +40,13 @@ namespace TvpMain
 
                 try
                 {
-                    Application.EnableVisualStyles();
                     Thread uiThread = new Thread(() =>
                     {
                         try
                         {
+                            Application.EnableVisualStyles();
                             Application.Run(new MainForm(host, activeProjectName));
+
                             Environment.Exit(0);
                         }
                         catch (Exception ex)
