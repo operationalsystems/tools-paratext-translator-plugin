@@ -10,24 +10,43 @@ using TvpMain.Filter;
 
 namespace TvpMain.Check
 {
+    /// <summary>
+    /// Regex-based punctuation check.
+    /// </summary>
     public class RegexPunctuationCheck1 : AbstractTextCheck
     {
+        /// <summary>
+        /// Regex to check for improper capitlization following non-final punctuation (E.g. <text>, And <text>).
+        /// </summary>
         private static readonly Regex _checkRegex;
 
-        /*
-         * Regex to check for improper capitlization following non-final punctuation (E.g. <text>, And <text>).
-         */
+        /// <summary>
+        /// Static initializer.
+        /// </summary>
         static RegexPunctuationCheck1()
         {
             _checkRegex = new Regex("(?<=[;,]([\"'](\\s[\"'])*)?(\\\\f([^\\\\]|\\\\(?!f\\*))*?\\\\f\\*)*(\\s*\\\\\\w+)+(\\s*\\\\v\\s\\S+)?\\s+(\\\\x([^\\\\]|\\\\(?!x\\*))*?\\\\x\\*)?)[A-Z]\\w+",
                 RegexOptions.Multiline);
         }
 
+        /// <summary>
+        /// Basic ctor.
+        /// </summary>
+        /// <param name="host">Paratext host interface (required).</param>
+        /// <param name="activeProjectName">Active project name (required).</param>
         public RegexPunctuationCheck1(IHost host, string activeProjectName)
             : base(host, activeProjectName)
         {
         }
 
+        /// <summary>
+        /// Check implementation.
+        /// </summary>
+        /// <param name="bookNum">Book number.</param>
+        /// <param name="chapterNum">Chapter number.</param>
+        /// <param name="verseNum">Verse number.</param>
+        /// <param name="verseText">Verse text.</param>
+        /// <param name="resultItems">Result items list to populate.</param>
         protected override void CheckVerse(int bookNum, int chapterNum, int verseNum, string verseText, IList<ResultItem> checkResults)
         {
             foreach (Match matchItem in _checkRegex.Matches(verseText))

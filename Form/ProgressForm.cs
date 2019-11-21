@@ -9,10 +9,24 @@ using TvpMain.Util;
  */
 namespace TvpMain.Form
 {
+    /// <summary>
+    /// Validation progress form.
+    /// </summary>
     public partial class ProgressForm : System.Windows.Forms.Form
     {
-        private readonly DateTime _startTime;
+        /// <summary>
+        /// Start time for timer label.
+        /// </summary>
+        private DateTime _startTime;
+
+        /// <summary>
+        /// Last book number processed in current run.
+        /// </summary>
         private int _lastBookNum;
+
+        /// <summary>
+        /// Max book number in current run.
+        /// </summary>
         private int _maxBookNum;
 
         /// <summary>
@@ -20,20 +34,19 @@ namespace TvpMain.Form
         /// </summary>
         public event EventHandler Cancelled;
 
+        /// <summary>
+        /// Basic ctor.
+        /// </summary>
         public ProgressForm()
         {
             InitializeComponent();
-            _startTime = DateTime.Now;
+            ResetForm();
         }
 
-        public void SetTitle(string titleText)
-        {
-            lblTitle.Text = titleText;
-
-        }
-        /*
-         * Show progress of books being checked against the validation check(s) being used.
-         */
+        /// <summary>
+        /// On notification validation updates.
+        /// </summary>
+        /// <param name="updatedArgs"></param>
         public void OnCheckUpdated(CheckUpdatedArgs updatedArgs)
         {
             lock (this)
@@ -43,13 +56,27 @@ namespace TvpMain.Form
             }
         }
 
+        /// <summary>
+        /// Cancellation click handler.
+        /// </summary>
+        /// <param name="sender">Sender (ignored).</param>
+        /// <param name="e">Event args (ignored).</param>
         private void OnCancelClick(object sender, EventArgs e)
         {
-            SetTitle("Cancelling Validation.  Please Wait...");
+            pbrStatus.Value = pbrStatus.Minimum;
+            pbrStatus.Style = ProgressBarStyle.Marquee;
+
+            lblTitle.Text = $"Cancelling Validation...";
             Cancelled?.Invoke(sender, e);
         }
 
         public void ResetForm()
+        {
+            _startTime = DateTime.Now;
+            ResetFormContents();
+        }
+
+        private void ResetFormContents()
         {
             pbrStatus.Value = pbrStatus.Minimum;
             pbrStatus.Style = ProgressBarStyle.Marquee;
@@ -77,13 +104,18 @@ namespace TvpMain.Form
         /// Cancel event forwarder.
         /// </summary>
         /// <param name="sender">Event source (button).</param>
-        /// <param name="e">Event args.</param>
+        /// <param name="e">Event args (ignored).</param>
         private void btnCancel_Click(object sender, EventArgs e)
         {
             Cancelled?.Invoke(sender, e);
         }
 
-        private void tmrUpdate_Tick(object sender, EventArgs e)
+        /// <summary>
+        /// Timer update method that synchronizes progress bar, label text, and elapsed time label.
+        /// </summary>
+        /// <param name="sender">Event source (ignored).</param>
+        /// <param name="e">Event args (ignored).</param>
+        private void OnTimerUpdate(object sender, EventArgs e)
         {
             lblElapsedTime.Text = GetElapsedTime(DateTime.Now.Subtract(_startTime));
             lock (this)
@@ -96,7 +128,7 @@ namespace TvpMain.Form
                     if (_lastBookNum > pbrStatus.Maximum
                         || _lastBookNum <= pbrStatus.Minimum)
                     {
-                        ResetForm();
+                        ResetFormContents();
                     }
                     else
                     {

@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using CsvHelper.Configuration.Attributes;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,14 +12,23 @@ namespace TvpMain.Data
     public class IgnoreListItem
     {
         [JsonProperty]
-        public string CaseSensitiveItemText { get; set; }
+        [Index(0)]
+        public string CaseSensitiveText { get; set; }
 
         [JsonProperty]
+        [Index(1)]
+        [Default(false)]
         public bool IsIgnoreCase { get; set; }
+
+        [Ignore]
+        public bool IsPhrase { get => CaseSensitiveText.Any(Char.IsWhiteSpace); }
+
+        [Ignore]
+        public string CaseInsensitiveText { get => CaseSensitiveText.ToLower(); }
 
         public IgnoreListItem(string itemText, bool isIgnoreCase)
         {
-            CaseSensitiveItemText = itemText ?? throw new ArgumentNullException(nameof(itemText));
+            CaseSensitiveText = itemText ?? throw new ArgumentNullException(nameof(itemText));
             IsIgnoreCase = isIgnoreCase;
         }
 
@@ -26,8 +36,5 @@ namespace TvpMain.Data
         private IgnoreListItem()
         {
         }
-
-        public bool IsPhrase { get => CaseSensitiveItemText.Any(Char.IsWhiteSpace); }
-        public string CaseInsensitiveItemText { get => CaseSensitiveItemText.ToLower(); }
     }
 }

@@ -28,9 +28,14 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             this.btnRunChecks = new System.Windows.Forms.Button();
             this.dgvCheckResults = new System.Windows.Forms.DataGridView();
+            this.bcv = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Match = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Verse = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.error = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.mainMenu = new System.Windows.Forms.MenuStrip();
             this.fileMenu = new System.Windows.Forms.ToolStripMenuItem();
             this.saveMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -56,12 +61,12 @@
             this.btnClose = new System.Windows.Forms.Button();
             this.termWorker = new System.ComponentModel.BackgroundWorker();
             this.statusLabel = new System.Windows.Forms.Label();
-            this.bcv = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Match = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Verse = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.error = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.contextMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.addToIgnoreList = new System.Windows.Forms.ToolStripMenuItem();
+            this.removeFromIgnoreList = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.dgvCheckResults)).BeginInit();
             this.mainMenu.SuspendLayout();
+            this.contextMenu.SuspendLayout();
             this.SuspendLayout();
             // 
             // btnRunChecks
@@ -79,9 +84,8 @@
             // 
             this.dgvCheckResults.AllowUserToAddRows = false;
             this.dgvCheckResults.AllowUserToDeleteRows = false;
-            this.dgvCheckResults.AllowUserToOrderColumns = true;
-            this.dgvCheckResults.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
+            this.dgvCheckResults.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+            | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.dgvCheckResults.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
             this.dgvCheckResults.AutoSizeRowsMode = System.Windows.Forms.DataGridViewAutoSizeRowsMode.DisplayedCells;
@@ -90,12 +94,45 @@
             this.Match,
             this.Verse,
             this.error});
+            this.dgvCheckResults.ContextMenuStrip = this.contextMenu;
             this.dgvCheckResults.Location = new System.Drawing.Point(10, 40);
             this.dgvCheckResults.Name = "dgvCheckResults";
             this.dgvCheckResults.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.AutoSizeToDisplayedHeaders;
             this.dgvCheckResults.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.dgvCheckResults.Size = new System.Drawing.Size(688, 407);
             this.dgvCheckResults.TabIndex = 2;
+            // 
+            // bcv
+            // 
+            this.bcv.FillWeight = 10F;
+            this.bcv.HeaderText = "BCV";
+            this.bcv.MinimumWidth = 60;
+            this.bcv.Name = "bcv";
+            this.bcv.ReadOnly = true;
+            // 
+            // Match
+            // 
+            this.Match.FillWeight = 15F;
+            this.Match.HeaderText = "Match";
+            this.Match.MinimumWidth = 60;
+            this.Match.Name = "Match";
+            this.Match.ReadOnly = true;
+            // 
+            // Verse
+            // 
+            this.Verse.FillWeight = 35F;
+            this.Verse.HeaderText = "Verse";
+            this.Verse.MinimumWidth = 120;
+            this.Verse.Name = "Verse";
+            this.Verse.ReadOnly = true;
+            // 
+            // error
+            // 
+            this.error.FillWeight = 30F;
+            this.error.HeaderText = "Error";
+            this.error.MinimumWidth = 120;
+            this.error.Name = "error";
+            this.error.ReadOnly = true;
             // 
             // mainMenu
             // 
@@ -118,7 +155,7 @@
             this.fileMenu.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.saveMenuItem});
             this.fileMenu.Name = "fileMenu";
-            this.fileMenu.Size = new System.Drawing.Size(37, 20);
+            this.fileMenu.Size = new System.Drawing.Size(37, 23);
             this.fileMenu.Text = "&File";
             // 
             // saveMenuItem
@@ -129,6 +166,7 @@
             this.saveMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
             this.saveMenuItem.Size = new System.Drawing.Size(147, 22);
             this.saveMenuItem.Text = "&Save...";
+            this.saveMenuItem.Click += new System.EventHandler(this.OnFileSaveMenuClick);
             // 
             // areaMenu
             // 
@@ -137,7 +175,7 @@
             this.currentBookAreaMenuItem,
             this.currentChapterAreaMenuItem});
             this.areaMenu.Name = "areaMenu";
-            this.areaMenu.Size = new System.Drawing.Size(43, 20);
+            this.areaMenu.Size = new System.Drawing.Size(43, 23);
             this.areaMenu.Text = "&Area";
             // 
             // currentProjectAreaMenuItem
@@ -168,7 +206,7 @@
             this.checkMenu.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.punctuationCheckMenuItem});
             this.checkMenu.Name = "checkMenu";
-            this.checkMenu.Size = new System.Drawing.Size(57, 20);
+            this.checkMenu.Size = new System.Drawing.Size(57, 23);
             this.checkMenu.Text = "&Checks";
             // 
             // punctuationCheckMenuItem
@@ -188,7 +226,7 @@
             this.toolStripSeparator1,
             this.entireVerseFiltersMenuItem});
             this.toolsToolStripMenuItem.Name = "toolsToolStripMenuItem";
-            this.toolsToolStripMenuItem.Size = new System.Drawing.Size(50, 20);
+            this.toolsToolStripMenuItem.Size = new System.Drawing.Size(50, 23);
             this.toolsToolStripMenuItem.Text = "&Filters";
             // 
             // biblicalTermsFiltersMenuItem
@@ -196,7 +234,7 @@
             this.biblicalTermsFiltersMenuItem.Name = "biblicalTermsFiltersMenuItem";
             this.biblicalTermsFiltersMenuItem.Size = new System.Drawing.Size(146, 22);
             this.biblicalTermsFiltersMenuItem.Text = "&Biblical Terms";
-            this.biblicalTermsFiltersMenuItem.Click += new System.EventHandler(this.BiblicalWordListToolStripMenuItem_Click);
+            this.biblicalTermsFiltersMenuItem.Click += new System.EventHandler(this.OnBiblicalTermListToolMenuClick);
             // 
             // ignoreListFiltersMenuItem
             // 
@@ -225,7 +263,7 @@
             this.verseViewMenuItem,
             this.errorViewMenuItem});
             this.viewMenu.Name = "viewMenu";
-            this.viewMenu.Size = new System.Drawing.Size(44, 20);
+            this.viewMenu.Size = new System.Drawing.Size(44, 23);
             this.viewMenu.Text = "&View";
             // 
             // bcvViewMenuItem
@@ -312,37 +350,27 @@
             this.statusLabel.TabIndex = 6;
             this.statusLabel.Text = "No violations.";
             // 
-            // bcv
+            // contextMenu
             // 
-            this.bcv.FillWeight = 10F;
-            this.bcv.HeaderText = "BCV";
-            this.bcv.MinimumWidth = 60;
-            this.bcv.Name = "bcv";
-            this.bcv.ReadOnly = true;
+            this.contextMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.addToIgnoreList,
+            this.removeFromIgnoreList});
+            this.contextMenu.Name = "contextMenu";
+            this.contextMenu.Size = new System.Drawing.Size(214, 70);
             // 
-            // Match
+            // addToIgnoreList
             // 
-            this.Match.FillWeight = 15F;
-            this.Match.HeaderText = "Match";
-            this.Match.MinimumWidth = 60;
-            this.Match.Name = "Match";
-            this.Match.ReadOnly = true;
+            this.addToIgnoreList.Name = "addToIgnoreList";
+            this.addToIgnoreList.Size = new System.Drawing.Size(213, 22);
+            this.addToIgnoreList.Text = "&Add to Ignore List...";
+            this.addToIgnoreList.Click += new System.EventHandler(this.OnAddToIgnoreListMenuClick);
             // 
-            // Verse
+            // removeFromIgnoreList
             // 
-            this.Verse.FillWeight = 35F;
-            this.Verse.HeaderText = "Verse";
-            this.Verse.MinimumWidth = 120;
-            this.Verse.Name = "Verse";
-            this.Verse.ReadOnly = true;
-            // 
-            // error
-            // 
-            this.error.FillWeight = 30F;
-            this.error.HeaderText = "Error";
-            this.error.MinimumWidth = 120;
-            this.error.Name = "error";
-            this.error.ReadOnly = true;
+            this.removeFromIgnoreList.Name = "removeFromIgnoreList";
+            this.removeFromIgnoreList.Size = new System.Drawing.Size(213, 22);
+            this.removeFromIgnoreList.Text = "&Remove from Ignore List...";
+            this.removeFromIgnoreList.Click += new System.EventHandler(this.OnRemoveFromIgnoreListMenuClick);
             // 
             // MainForm
             // 
@@ -367,10 +395,10 @@
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Translation Validations...";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.FormTest_FormClosing);
-            this.Load += new System.EventHandler(this.OnFormLoad);
             ((System.ComponentModel.ISupportInitialize)(this.dgvCheckResults)).EndInit();
             this.mainMenu.ResumeLayout(false);
             this.mainMenu.PerformLayout();
+            this.contextMenu.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -408,5 +436,8 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn Match;
         private System.Windows.Forms.DataGridViewTextBoxColumn Verse;
         private System.Windows.Forms.DataGridViewTextBoxColumn error;
+        private System.Windows.Forms.ContextMenuStrip contextMenu;
+        private System.Windows.Forms.ToolStripMenuItem addToIgnoreList;
+        private System.Windows.Forms.ToolStripMenuItem removeFromIgnoreList;
     }
 }

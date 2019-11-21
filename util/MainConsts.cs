@@ -3,13 +3,35 @@
  */
 namespace TvpMain.Util
 {
+    /// <summary>
+    /// Utility constants, magic numbers, etc.
+    /// </summary>
     public class MainConsts
     {
+        /// <summary>
+        /// Plugin data identifier for ignore list items.
+        /// </summary>
         public const string IGNORE_LIST_ITEMS_ID = "IgnoreListItems";
+
+        /// <summary>
+        /// Update rate for progress form and similar loops.
+        /// </summary>
         public const int CHECK_EVENTS_UPDATE_RATE_IN_FPS = 10;
+
+        /// <summary>
+        /// Max threads to use for validation checks.
+        /// </summary>
         public const int MAX_CHECK_THREADS = 4;
+
+        /// <summary>
+        /// Max number of books in standard versification (1 = Gensis, 66 = Revelations).
+        /// </summary>
         public const int MAX_BOOK_NUM = 66; // 66 = all books
-        public static readonly string[] BOOK_NAMES = {
+
+        /// <summary>
+        /// Abbreviations for bible book names.
+        /// </summary>
+        public static readonly string[] SHORT_BOOK_NAMES = {
             "GEN","EXO","LEV","NUM","DEU","JOS","JDG","RUT",
             "1SA","2SA","1KI","2KI","1CH","2CH","EZR","NEH",
             "EST","JOB","PSA","PRO","ECC","SNG","ISA","JER",

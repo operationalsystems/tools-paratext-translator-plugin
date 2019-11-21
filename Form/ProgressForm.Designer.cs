@@ -81,7 +81,7 @@
             // 
             this.tmrUpdate.Enabled = true;
             this.tmrUpdate.Interval = 200;
-            this.tmrUpdate.Tick += new System.EventHandler(this.tmrUpdate_Tick);
+            this.tmrUpdate.Tick += new System.EventHandler(this.OnTimerUpdate);
             // 
             // ProgressForm
             // 

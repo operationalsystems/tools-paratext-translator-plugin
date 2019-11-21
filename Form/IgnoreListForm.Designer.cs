@@ -63,6 +63,7 @@
             this.IsIgnoreCase});
             this.dgvIgnoreList.Location = new System.Drawing.Point(12, 12);
             this.dgvIgnoreList.Name = "dgvIgnoreList";
+            this.dgvIgnoreList.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.AutoSizeToDisplayedHeaders;
             this.dgvIgnoreList.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.dgvIgnoreList.Size = new System.Drawing.Size(451, 330);
             this.dgvIgnoreList.TabIndex = 3;

@@ -10,26 +10,34 @@ using TvpMain.Data;
  */
 namespace TvpMain.Data
 {
+    /// <summary>
+    /// Check result aggregator.
+    /// </summary>
     public class CheckResult
     {
-        private readonly IHost _host;
-        private readonly string _activeProjectName;
+        /// <summary>
+        /// Collection of result items.
+        /// </summary>
         private readonly ConcurrentQueue<ResultItem> _resultItems;
-        private IScrExtractor _scrExtractor;
 
-        public IHost Host => _host;
-        public string ActiveProjectName => _activeProjectName;
+        /// <summary>
+        /// Collection of result items.
+        /// </summary>
         public ConcurrentQueue<ResultItem> ResultItems => _resultItems;
 
-
-        public CheckResult(IHost host, string activeProjectName)
+        /// <summary>
+        /// Basic ctor.
+        /// </summary>
+        /// <param name="host">Paratext host interface.</param>
+        /// <param name="activeProjectName">Active project name.</param>
+        public CheckResult()
         {
-            this._host = host ?? throw new ArgumentNullException(nameof(host));
-            this._activeProjectName = activeProjectName ?? throw new ArgumentNullException(nameof(activeProjectName));
             _resultItems = new ConcurrentQueue<ResultItem>();
         }
 
-
+        /// <summary>
+        /// Summary text from the collection of result items.
+        /// </summary>
         public string SummaryText
         {
             get
@@ -38,21 +46,11 @@ namespace TvpMain.Data
             }
         }
 
-        public IScrExtractor Extractor
-        {
-            get
-            {
-                lock (this)
-                {
-                    if (_scrExtractor == null)
-                    {
-                        _scrExtractor = _host.GetScriptureExtractor(_activeProjectName, ExtractorType.USFM);
-                    }
-                    return _scrExtractor;
-                }
-            }
-        }
-
+        /// <summary>
+        /// Gets summary text from a collection of result items.
+        /// </summary>
+        /// <param name="resultItems">Result items (required).</param>
+        /// <returns>Summary text.</returns>
         public static string GetSummaryText(IList<ResultItem> resultItems)
         {
             StringBuilder stringBuilder = new StringBuilder();

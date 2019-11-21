@@ -1,4 +1,6 @@
-﻿using System;
+﻿using CsvHelper.Configuration.Attributes;
+using System;
+using TvpMain.Util;
 
 /*
  * Class to track all result items necessary for the Translation Validation Plugin
@@ -17,9 +19,19 @@ namespace TvpMain.Data
         public int BookNum => _bookNum;
         public int ChapterNum => _chapterNum;
         public int VerseNum => _verseNum;
-        public string ErrorText => _errorText;
-        public string VerseText => _verseText;
+        public string BcvText
+        {
+            get
+            {
+                return $"{ MainConsts.SHORT_BOOK_NAMES[BookNum - 1] + " " + ChapterNum + ":" + VerseNum}";
+            }
+        }
         public string MatchText => _matchText;
+        public string VerseText => _verseText;
+        public string ErrorText => _errorText;
+
+        [Ignore]
+        public int Coordinate => _bookNum * 1000000 + _chapterNum * 1000 + _verseNum;
 
         public ResultItem(int bookNum, int chapterNum, int verseNum, string errorText, string verseText, string matchText)
         {
@@ -30,7 +42,5 @@ namespace TvpMain.Data
             this._verseText = verseText ?? throw new ArgumentNullException(nameof(verseText));
             this._matchText = matchText ?? throw new ArgumentNullException(nameof(matchText));
         }
-
-        public int Coordinate => _bookNum * 1000000 + _chapterNum * 1000 + _verseNum;
     }
 }

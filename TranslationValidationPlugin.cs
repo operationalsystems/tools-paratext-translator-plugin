@@ -14,15 +14,20 @@ using TvpMain.Util;
  */
 namespace TvpMain
 {
-    /*
-     * Positions the launch for the Translation Validation Plugin in the Main Tools drop down in Paratext.
-     */
+    /// <summary>
+    /// Translation validation plugin entry point.
+    /// </summary>
     [AddIn("Translation Validation Plugin", Description = "Provides validation checks for translated text.", Version = "1.0", Publisher = "Biblica")]
     [QualificationData(PluginMetaDataKeys.menuText, "Translation Validation")]
     [QualificationData(PluginMetaDataKeys.insertAfterMenuName, "Tools|")]
     [QualificationData(PluginMetaDataKeys.multipleInstances, CreateInstanceRule.always)]
     public class TranslationValidationPlugin : IParatextAddIn2
     {
+        /// <summary>
+        /// Main entry method.
+        /// </summary>
+        /// <param name="host">Paratext host interface (required).</param>
+        /// <param name="activeProjectName">Active project name (required).</param>
         public void Run(IHost host, string activeProjectName)
         {
             lock (this)
@@ -46,12 +51,14 @@ namespace TvpMain
                         {
                             Application.EnableVisualStyles();
                             Application.Run(new MainForm(host, activeProjectName));
-
-                            Environment.Exit(0);
                         }
                         catch (Exception ex)
                         {
                             HostUtil.Instance.ReportError($"Can't perform translation validation for project \"{activeProjectName}\".", ex);
+                        }
+                        finally
+                        {
+                            Environment.Exit(0);
                         }
                     });
 
@@ -68,16 +75,26 @@ namespace TvpMain
 
         }
 
+        /// <summary>
+        /// Shutdown request method.
+        /// </summary>
         public void RequestShutdown()
         {
             Environment.Exit(0);
         }
 
+        /// <summary>
+        /// Re-activation method (no-op, for now).
+        /// </summary>
+        /// <param name="activeProjectName">Active project name (ignored).</param>
         public void Activate(string activeProjectName)
         {
             // ignore, for now
         }
 
+        /// <summary>
+        /// Data file key spec accessor (no-op, not used by this plugin).
+        /// </summary>
         public Dictionary<string, IPluginDataFileMergeInfo> DataFileKeySpecifications
         {
             get { return null; }

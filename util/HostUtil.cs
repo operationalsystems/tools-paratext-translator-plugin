@@ -6,9 +6,9 @@ using System.Linq;
 using System.Windows.Forms;
 using TvpMain.Data;
 
-/*
- * A class to handle errors for the Translation Validation Plugin.
- */
+/// <summary>
+/// Global error-handling and other maintenance capabilities.
+/// </summary>
 namespace TvpMain.Util
 {
     /// <summary>
@@ -16,8 +16,14 @@ namespace TvpMain.Util
     /// </summary>
     public class HostUtil
     {
+        /// <summary>
+        /// Thread-safe singleton pattern.
+        /// </summary>
         private static readonly HostUtil _instance = new HostUtil();
 
+        /// <summary>
+        /// Thread-safe singleton accessor.
+        /// </summary>
         public static HostUtil Instance
         {
             get => _instance;
@@ -59,13 +65,38 @@ namespace TvpMain.Util
         /// <param name="ex">Exception (required).</param>
         public void ReportError(string prefixText, Exception ex)
         {
-            string messageText = (prefixText ?? "Error: Please contact support.")
-                + Environment.NewLine + Environment.NewLine
-                + "Details: " + ex.ToString() + Environment.NewLine;
-            MessageBox.Show(messageText, "Notice...", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-            LogLine($"Error: {messageText}", true);
+            ReportError(prefixText, true, ex);
         }
 
+        /// <summary>
+        /// Reports exception to log and message box w/prefix text.
+        /// </summary>
+        /// <param name="prefixText">Prefix text (optional, may be null; default used when null).</param>
+        /// <param name="includeStackTrace">True to include stack trace, false otherwise.</param>
+        /// <param name="ex">Exception (required).</param>
+        public void ReportError(string prefixText, bool includeStackTrace, Exception ex)
+        {
+            string messageText = null;
+            if (includeStackTrace)
+            {
+                messageText = (prefixText ?? "Error: Please contact support.")
+                    + Environment.NewLine + Environment.NewLine
+                    + "Details: " + ex.ToString() + Environment.NewLine;
+            }
+            else
+            {
+                messageText = (prefixText ?? "Error: Please contact support")
+                    + $" (Details: {ex.Message}).";
+            }
+            MessageBox.Show(messageText, "Notice...", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            LogLine(messageText, true);
+        }
+
+        /// <summary>
+        /// Log text to Paratext's app log and the console.
+        /// </summary>
+        /// <param name="inputText">Input text (required).</param>
+        /// <param name="isError">Error flag.</param>
         public void LogLine(String inputText, bool isError)
         {
             (isError ? Console.Error : Console.Out).WriteLine(inputText);
@@ -75,7 +106,12 @@ namespace TvpMain.Util
             }
         }
 
-        public IList<IgnoreListItem> GetIgnoreListItems(string activeProjectName)
+        /// <summary>
+        /// Retrieve the ignore list from the host's plugin data storage.
+        /// </summary>
+        /// <param name="activeProjectName">Active project name (required).</param>
+        /// <returns>Ignore list.</returns>
+        public IList<IgnoreListItem> GetIgnoreList(string activeProjectName)
         {
             string inputData =
                     _host.GetPlugInData(_translationValidationPlugin,
@@ -90,6 +126,11 @@ namespace TvpMain.Util
             }
         }
 
+        /// <summary>
+        /// Stores the ignore list to the host's plugin data storage.
+        /// </summary>
+        /// <param name="activeProjectName">Active project name (required).</param>
+        /// <param name="outputItems">Ignore list.</param>
         public void PutIgnoreListItems(string activeProjectName, IList<IgnoreListItem> outputItems)
         {
             _host.PutPlugInData(_translationValidationPlugin,

@@ -7,21 +7,54 @@ using TvpMain.Data;
 
 namespace TvpMain.Filter
 {
+    /// <summary>
+    /// Text filter for an ignore list.
+    /// </summary>
     public class IgnoreListTextFilter : AbstractTextFilter
     {
+        /// <summary>
+        /// Case-sensitive word set.
+        /// </summary>
         private readonly HashSet<String> _caseSensitiveWords;
+
+        /// <summary>
+        /// Case-insensitive word set.
+        /// </summary>
         private readonly HashSet<String> _caseInsensitiveWords;
+
+        /// <summary>
+        /// Case-sensitive phrase list.
+        /// </summary>
         private readonly List<String> _caseSensitivePhrases;
+
+        /// <summary>
+        /// Case-insensitive phrase list.
+        /// </summary>
         private readonly List<String> _caseInsensitivePhrases;
 
-        protected override ISet<string> CaseSensitiveWords => _caseSensitiveWords;
+        /// <summary>
+        /// Case-sensitive word set.
+        /// </summary>
+        public override ISet<string> CaseSensitiveWords => _caseSensitiveWords;
 
-        protected override ISet<string> CaseInsensitiveWords => _caseInsensitiveWords;
+        /// <summary>
+        /// Case-insensitive word set.
+        /// </summary>
+        public override ISet<string> CaseInsensitiveWords => _caseInsensitiveWords;
 
-        protected override IList<string> CaseSensitivePhrases => _caseSensitivePhrases;
+        /// <summary>
+        /// Case-insensitive phrase list.
+        /// </summary>
+        public override IList<string> CaseSensitivePhrases => _caseSensitivePhrases;
 
-        protected override IList<string> CaseInsensitivePhrases => _caseInsensitivePhrases;
+        /// <summary>
+        /// Case-sensitive word set.
+        /// </summary>
+        public override IList<string> CaseInsensitivePhrases => _caseInsensitivePhrases;
 
+        /// <summary>
+        /// Basic ctor.
+        /// </summary>
         public IgnoreListTextFilter()
         {
             _caseSensitiveWords = new HashSet<string>();
@@ -30,12 +63,19 @@ namespace TvpMain.Filter
             _caseInsensitivePhrases = new List<string>();
         }
 
-        public void SetIgnoreListItems(IList<IgnoreListItem> inputItems)
+        /// <summary>
+        /// Sets up filter withg ignore list items, dividing into words and phrases according to whitespace.
+        /// </summary>
+        /// <param name="inputItems">Input items (required).</param>
+        public void SetIgnoreList(IList<IgnoreListItem> inputItems)
         {
             _caseSensitiveWords.Clear();
             _caseInsensitiveWords.Clear();
             _caseSensitivePhrases.Clear();
             _caseInsensitivePhrases.Clear();
+
+            ISet<string> caseSensitivePhraseSet = new HashSet<string>();
+            ISet<string> caseInsensitivePhraseSet = new HashSet<string>();
 
             foreach (IgnoreListItem listItem in inputItems)
             {
@@ -43,25 +83,28 @@ namespace TvpMain.Filter
                 {
                     if (listItem.IsIgnoreCase)
                     {
-                        _caseInsensitivePhrases.Add(listItem.CaseInsensitiveItemText);
+                        caseInsensitivePhraseSet.Add(listItem.CaseInsensitiveText);
                     }
                     else
                     {
-                        _caseSensitivePhrases.Add(listItem.CaseSensitiveItemText);
+                        caseSensitivePhraseSet.Add(listItem.CaseSensitiveText);
                     }
                 }
                 else
                 {
                     if (listItem.IsIgnoreCase)
                     {
-                        _caseInsensitiveWords.Add(listItem.CaseInsensitiveItemText);
+                        _caseInsensitiveWords.Add(listItem.CaseInsensitiveText);
                     }
                     else
                     {
-                        _caseSensitiveWords.Add(listItem.CaseSensitiveItemText);
+                        _caseSensitiveWords.Add(listItem.CaseSensitiveText);
                     }
                 }
             }
+
+            _caseSensitivePhrases.AddRange(caseSensitivePhraseSet);
+            _caseInsensitivePhrases.AddRange(caseInsensitivePhraseSet);
         }
     }
 }
