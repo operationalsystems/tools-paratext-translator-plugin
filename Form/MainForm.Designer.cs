@@ -36,6 +36,9 @@
             this.Match = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Verse = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.error = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.contextMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.addToIgnoreList = new System.Windows.Forms.ToolStripMenuItem();
+            this.removeFromIgnoreList = new System.Windows.Forms.ToolStripMenuItem();
             this.mainMenu = new System.Windows.Forms.MenuStrip();
             this.fileMenu = new System.Windows.Forms.ToolStripMenuItem();
             this.saveMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -61,12 +64,9 @@
             this.btnClose = new System.Windows.Forms.Button();
             this.termWorker = new System.ComponentModel.BackgroundWorker();
             this.statusLabel = new System.Windows.Forms.Label();
-            this.contextMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.addToIgnoreList = new System.Windows.Forms.ToolStripMenuItem();
-            this.removeFromIgnoreList = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.dgvCheckResults)).BeginInit();
-            this.mainMenu.SuspendLayout();
             this.contextMenu.SuspendLayout();
+            this.mainMenu.SuspendLayout();
             this.SuspendLayout();
             // 
             // btnRunChecks
@@ -84,8 +84,8 @@
             // 
             this.dgvCheckResults.AllowUserToAddRows = false;
             this.dgvCheckResults.AllowUserToDeleteRows = false;
-            this.dgvCheckResults.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-            | System.Windows.Forms.AnchorStyles.Left)
+            this.dgvCheckResults.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.dgvCheckResults.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
             this.dgvCheckResults.AutoSizeRowsMode = System.Windows.Forms.DataGridViewAutoSizeRowsMode.DisplayedCells;
@@ -133,6 +133,28 @@
             this.error.MinimumWidth = 120;
             this.error.Name = "error";
             this.error.ReadOnly = true;
+            // 
+            // contextMenu
+            // 
+            this.contextMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.addToIgnoreList,
+            this.removeFromIgnoreList});
+            this.contextMenu.Name = "contextMenu";
+            this.contextMenu.Size = new System.Drawing.Size(214, 48);
+            // 
+            // addToIgnoreList
+            // 
+            this.addToIgnoreList.Name = "addToIgnoreList";
+            this.addToIgnoreList.Size = new System.Drawing.Size(213, 22);
+            this.addToIgnoreList.Text = "&Add to Ignore List...";
+            this.addToIgnoreList.Click += new System.EventHandler(this.OnAddToIgnoreListMenuClick);
+            // 
+            // removeFromIgnoreList
+            // 
+            this.removeFromIgnoreList.Name = "removeFromIgnoreList";
+            this.removeFromIgnoreList.Size = new System.Drawing.Size(213, 22);
+            this.removeFromIgnoreList.Text = "&Remove from Ignore List...";
+            this.removeFromIgnoreList.Click += new System.EventHandler(this.OnRemoveFromIgnoreListMenuClick);
             // 
             // mainMenu
             // 
@@ -350,28 +372,6 @@
             this.statusLabel.TabIndex = 6;
             this.statusLabel.Text = "No violations.";
             // 
-            // contextMenu
-            // 
-            this.contextMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.addToIgnoreList,
-            this.removeFromIgnoreList});
-            this.contextMenu.Name = "contextMenu";
-            this.contextMenu.Size = new System.Drawing.Size(214, 70);
-            // 
-            // addToIgnoreList
-            // 
-            this.addToIgnoreList.Name = "addToIgnoreList";
-            this.addToIgnoreList.Size = new System.Drawing.Size(213, 22);
-            this.addToIgnoreList.Text = "&Add to Ignore List...";
-            this.addToIgnoreList.Click += new System.EventHandler(this.OnAddToIgnoreListMenuClick);
-            // 
-            // removeFromIgnoreList
-            // 
-            this.removeFromIgnoreList.Name = "removeFromIgnoreList";
-            this.removeFromIgnoreList.Size = new System.Drawing.Size(213, 22);
-            this.removeFromIgnoreList.Text = "&Remove from Ignore List...";
-            this.removeFromIgnoreList.Click += new System.EventHandler(this.OnRemoveFromIgnoreListMenuClick);
-            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -396,9 +396,9 @@
             this.Text = "Translation Validations...";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.FormTest_FormClosing);
             ((System.ComponentModel.ISupportInitialize)(this.dgvCheckResults)).EndInit();
+            this.contextMenu.ResumeLayout(false);
             this.mainMenu.ResumeLayout(false);
             this.mainMenu.PerformLayout();
-            this.contextMenu.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 

@@ -135,7 +135,11 @@ namespace TvpMain.Check
                     // Paralellizes the checks. We're not using (e.g.) backgroundworker because we want >1 thread 
                     // to do this this efficiently across the whole Bible, but also want to constrain the number of threads.
                     Parallel.For(minBook, maxBook,
-                        new ParallelOptions { MaxDegreeOfParallelism = MainConsts.MAX_CHECK_THREADS, CancellationToken = _tokenSource.Token },
+                        new ParallelOptions
+                        {
+                            MaxDegreeOfParallelism = MainConsts.MAX_CHECK_THREADS,
+                            CancellationToken = _tokenSource.Token
+                        },
                         () => new ExtractorState(_host.GetScriptureExtractor(_activeProjectName, ExtractorType.USFM)),
                         (bookNum, loopState, extractorState) =>
                       {

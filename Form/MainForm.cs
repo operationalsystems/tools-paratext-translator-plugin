@@ -309,7 +309,7 @@ namespace TvpMain.Form
             ignoreListForm.ShowDialog(this);
             IList<IgnoreListItem> ignoreList = ignoreListForm.IgnoreList;
 
-            HostUtil.Instance.PutIgnoreListItems(_activeProjectName, ignoreList);
+            HostUtil.Instance.PutIgnoreList(_activeProjectName, ignoreList);
             _ignoreFilter.SetIgnoreList(ignoreList);
 
             UpdateMainTable();
@@ -587,7 +587,7 @@ namespace TvpMain.Form
                 {
                     ignoreList.Add(new IgnoreListItem(matchItem, false));
                 }
-                HostUtil.Instance.PutIgnoreListItems(_activeProjectName, ignoreList);
+                HostUtil.Instance.PutIgnoreList(_activeProjectName, ignoreList);
 
                 int presentItems = (selectedMatches - matchesToAdd.Count);
                 if (presentItems == 0)
@@ -633,7 +633,7 @@ namespace TvpMain.Form
             int removedItems = (oldIgnoreList.Count - newIgnoreList.Count);
             if (removedItems > 0)
             {
-                HostUtil.Instance.PutIgnoreListItems(_activeProjectName, newIgnoreList);
+                HostUtil.Instance.PutIgnoreList(_activeProjectName, newIgnoreList);
                 MessageBox.Show(removedItems > 1
                     ? $"Removed {removedItems:N0} matching items from ignore list."
                     : $"Removed {removedItems:N0} matching item from ignore list.");

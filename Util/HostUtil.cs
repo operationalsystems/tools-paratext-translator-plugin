@@ -131,7 +131,7 @@ namespace TvpMain.Util
         /// </summary>
         /// <param name="activeProjectName">Active project name (required).</param>
         /// <param name="outputItems">Ignore list.</param>
-        public void PutIgnoreListItems(string activeProjectName, IList<IgnoreListItem> outputItems)
+        public void PutIgnoreList(string activeProjectName, IList<IgnoreListItem> outputItems)
         {
             _host.PutPlugInData(_translationValidationPlugin,
                 activeProjectName, MainConsts.IGNORE_LIST_ITEMS_ID,
