@@ -34,8 +34,14 @@ namespace TvpTest
         /// </summary>
         public static readonly int TEST_REF_PART_RANGE = 1000;
 
+        /// <summary>
+        /// Minimum number of books in test datasets.
+        /// </summary>
         public static readonly int MIN_TEST_BOOKS = 11;
 
+        /// <summary>
+        /// Minimum number of verses in test datasets.
+        /// </summary>
         public static readonly int MIN_TEST_VERSES = 111;
 
         /// <summary>
