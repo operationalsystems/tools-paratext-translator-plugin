@@ -34,6 +34,10 @@ namespace TvpTest
         /// </summary>
         public static readonly int TEST_REF_PART_RANGE = 1000;
 
+        public static readonly int MIN_TEST_BOOKS = 11;
+
+        public static readonly int MIN_TEST_VERSES = 111;
+
         /// <summary>
         /// Test project name.
         /// </summary>
@@ -117,9 +121,9 @@ namespace TvpTest
                 .Returns<string>((versificationName) =>
                 GetVerseRef(TEST_BOOK_NUM, TEST_CHAPTER_NUM, 1));
             _mockHost.Setup(hostItem => hostItem.GetLastChapter(It.IsAny<int>(), TEST_VERSIFICATION_NAME))
-                .Returns<int, string>((bookNum, versificationName) => bookNum + 11);
+                .Returns<int, string>((bookNum, versificationName) => bookNum + MIN_TEST_BOOKS);
             _mockHost.Setup(hostItem => hostItem.GetLastVerse(It.IsAny<int>(), It.IsAny<int>(), TEST_VERSIFICATION_NAME))
-                .Returns<int, int, string>((bookNum, chapterNum, versificationName) => chapterNum + 111);
+                .Returns<int, int, string>((bookNum, chapterNum, versificationName) => chapterNum + MIN_TEST_VERSES);
 
             // extractor setup
             _mockExtractor.Setup(extractorItem => extractorItem.Extract(It.IsAny<int>(), It.IsAny<int>()))
@@ -176,16 +180,16 @@ namespace TvpTest
             // setup
             for (int bookNum = 1; bookNum <= TEST_MAX_BOOK_NUM; bookNum++)
             {
-                for (int chapterNum = 1; chapterNum <= 11 + bookNum; chapterNum++)
+                for (int chapterNum = 1; chapterNum <= MIN_TEST_BOOKS + bookNum; chapterNum++)
                 {
-                    for (int verseNum = 1; verseNum <= 111 + chapterNum; verseNum++)
+                    for (int verseNum = 1; verseNum <= MIN_TEST_VERSES + chapterNum; verseNum++)
                     {
                         _expectedRefs.Add(GetVerseRef(bookNum, chapterNum, verseNum));
                     }
                 }
             }
 
-            ITextCheck textCheck = new MissingSentencePunctuationCheck1(_mockHost.Object, TEST_PROJECT_NAME);
+            ITextCheck textCheck = new MissingSentencePunctuationCheck(_mockHost.Object, TEST_PROJECT_NAME);
 
             // execute
             CheckResult checkResult = textCheck.RunCheck(CheckArea.CurrentProject);
@@ -202,15 +206,15 @@ namespace TvpTest
         public void TestBookOnlyPunctuationCheck()
         {
             // setup
-            for (int chapterNum = 1; chapterNum <= 11 + TEST_BOOK_NUM; chapterNum++)
+            for (int chapterNum = 1; chapterNum <= MIN_TEST_BOOKS + TEST_BOOK_NUM; chapterNum++)
             {
-                for (int verseNum = 1; verseNum <= 111 + chapterNum; verseNum++)
+                for (int verseNum = 1; verseNum <= MIN_TEST_VERSES + chapterNum; verseNum++)
                 {
                     _expectedRefs.Add(GetVerseRef(TEST_BOOK_NUM, chapterNum, verseNum));
                 }
             }
 
-            ITextCheck textCheck = new MissingSentencePunctuationCheck1(_mockHost.Object, TEST_PROJECT_NAME);
+            ITextCheck textCheck = new MissingSentencePunctuationCheck(_mockHost.Object, TEST_PROJECT_NAME);
 
             // execute
             CheckResult checkResult = textCheck.RunCheck(CheckArea.CurrentBook);
@@ -227,12 +231,12 @@ namespace TvpTest
         public void TestChapterOnlyPunctuationCheck()
         {
             // setup
-            for (int verseNum = 1; verseNum <= 111 + TEST_CHAPTER_NUM; verseNum++)
+            for (int verseNum = 1; verseNum <= MIN_TEST_VERSES + TEST_CHAPTER_NUM; verseNum++)
             {
                 _expectedRefs.Add(GetVerseRef(TEST_BOOK_NUM, TEST_CHAPTER_NUM, verseNum));
             }
 
-            ITextCheck textCheck = new MissingSentencePunctuationCheck1(_mockHost.Object, TEST_PROJECT_NAME);
+            ITextCheck textCheck = new MissingSentencePunctuationCheck(_mockHost.Object, TEST_PROJECT_NAME);
 
             // execute
             CheckResult checkResult = textCheck.RunCheck(CheckArea.CurrentChapter);
@@ -250,9 +254,9 @@ namespace TvpTest
         {
             for (int bookNum = 1; bookNum <= TEST_MAX_BOOK_NUM; bookNum++)
             {
-                for (int chapterNum = 1; chapterNum <= 11 + bookNum; chapterNum++)
+                for (int chapterNum = 1; chapterNum <= MIN_TEST_BOOKS + bookNum; chapterNum++)
                 {
-                    for (int verseNum = 1; verseNum <= 111 + chapterNum; verseNum++)
+                    for (int verseNum = 1; verseNum <= MIN_TEST_VERSES + chapterNum; verseNum++)
                     {
                         _expectedRefs.Add(GetVerseRef(bookNum, chapterNum, verseNum));
                     }
@@ -261,7 +265,7 @@ namespace TvpTest
             _isVersesDelayed = true;
 
             // setup
-            ITextCheck textCheck = new MissingSentencePunctuationCheck1(_mockHost.Object, TEST_PROJECT_NAME);
+            ITextCheck textCheck = new MissingSentencePunctuationCheck(_mockHost.Object, TEST_PROJECT_NAME);
 
             // start check in background thread, then cancel from test thread.
             Thread workThread = new Thread(() =>
