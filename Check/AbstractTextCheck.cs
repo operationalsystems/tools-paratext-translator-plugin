@@ -114,10 +114,8 @@ namespace TvpMain.Check
             _tokenSource = new CancellationTokenSource();
 
             // get user's location in Paratext
-            int userRef = _host.GetCurrentRef(versificationName);
-            int refBook = (userRef / 1000000);
-            int refChapter = (userRef / 1000) % 1000;
-            int refVerse = userRef % 1000;
+            HostUtil.RefToBCV(_host.GetCurrentRef(versificationName),
+                out int refBook, out int refChapter, out int refVerse);
 
             // determine book range using checkarea and user's location in Paratext
             int minBook = (checkArea == CheckArea.CurrentProject)
@@ -169,10 +167,8 @@ namespace TvpMain.Check
                                       }
 
                                       currVerseNum = verseNum;
-                                      int checkRef = bookNum * 1000000;
-                                      checkRef += chapterNum * 1000;
-                                      checkRef += verseNum;
 
+                                      int checkRef = HostUtil.BcvToRef(bookNum, chapterNum, verseNum);
                                       string verseText = null;
                                       try
                                       {

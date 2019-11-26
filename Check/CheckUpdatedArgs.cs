@@ -14,32 +14,32 @@ namespace TvpMain.Check
         /// <summary>
         /// Current book count in check.
         /// </summary>
-        private int _currPos;
+        private int _currBookNum;
 
         /// <summary>
         /// Max book position in check (1 for single-book check, 66 for all books, etc.).
         /// </summary>
-        private int _maxPos;
+        private int _maxBookNum;
 
         /// <summary>
         /// Current book count in check.
         /// </summary>
-        public int CurrPos { get => _currPos; }
+        public int CurrBookNum { get => _currBookNum; }
 
         /// <summary>
         /// Max book position in check (1 for single-book check, 66 for all books, etc.).
         /// </summary>
-        public int MaxPos { get => _maxPos; }
+        public int MaxBookNum { get => _maxBookNum; }
 
         /// <summary>
         /// Basic ctor;
         /// </summary>
-        /// <param name="currPos">Current book count in check.</param>
-        /// <param name="maxPos">Max book position in check.</param>
-        public CheckUpdatedArgs(int currPos, int maxPos)
+        /// <param name="currBookNum">Current book count in check.</param>
+        /// <param name="maxBookNum">Max book position in check.</param>
+        public CheckUpdatedArgs(int currBookNum, int maxBookNum)
         {
-            this._currPos = currPos;
-            this._maxPos = maxPos;
+            this._currBookNum = currBookNum;
+            this._maxBookNum = maxBookNum;
         }
     }
 }

@@ -13,7 +13,7 @@ namespace TvpMain.Check
     /// <summary>
     /// Regex-based punctuation check.
     /// </summary>
-    public class RegexPunctuationCheck1 : AbstractTextCheck
+    public class MissingSentencePunctuationCheck1 : AbstractTextCheck
     {
         /// <summary>
         /// Regex to check for improper capitlization following non-final punctuation (E.g. <text>, And <text>).
@@ -23,7 +23,7 @@ namespace TvpMain.Check
         /// <summary>
         /// Static initializer.
         /// </summary>
-        static RegexPunctuationCheck1()
+        static MissingSentencePunctuationCheck1()
         {
             _checkRegex = new Regex("(?<=[;,]([\"'](\\s[\"'])*)?(\\\\f([^\\\\]|\\\\(?!f\\*))*?\\\\f\\*)*(\\s*\\\\\\w+)+(\\s*\\\\v\\s\\S+)?\\s+(\\\\x([^\\\\]|\\\\(?!x\\*))*?\\\\x\\*)?)[A-Z]\\w+",
                 RegexOptions.Multiline);
@@ -34,7 +34,7 @@ namespace TvpMain.Check
         /// </summary>
         /// <param name="host">Paratext host interface (required).</param>
         /// <param name="activeProjectName">Active project name (required).</param>
-        public RegexPunctuationCheck1(IHost host, string activeProjectName)
+        public MissingSentencePunctuationCheck1(IHost host, string activeProjectName)
             : base(host, activeProjectName)
         {
         }

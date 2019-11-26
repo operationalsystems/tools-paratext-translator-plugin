@@ -20,6 +20,21 @@ namespace TvpTest
     public class CheckTests
     {
         /// <summary>
+        /// Multiplier for book numbers in BCV-style references.
+        /// </summary>
+        public static readonly int TEST_BOOK_REF_MULTIPLIER = 1000000;
+
+        /// <summary>
+        /// Multiplier for chapter numbers in BCV-style references.
+        /// </summary>
+        public static readonly int TEST_CHAP_REF_MULTIPLIER = 1000;
+
+        /// <summary>
+        /// Range ref parts (i.e., chapters, verses).
+        /// </summary>
+        public static readonly int TEST_REF_PART_RANGE = 1000;
+
+        /// <summary>
         /// Test project name.
         /// </summary>
         private const string TEST_PROJECT_NAME = "testProjectName";
@@ -131,8 +146,8 @@ namespace TvpTest
         /// <returns></returns>
         static private int GetVerseRef(int bookNum, int chapterNum, int verseNum)
         {
-            int verseRef = bookNum * 1000000;
-            verseRef += chapterNum * 1000;
+            int verseRef = bookNum * TEST_BOOK_REF_MULTIPLIER;
+            verseRef += chapterNum * TEST_CHAP_REF_MULTIPLIER;
             verseRef += verseNum;
             return verseRef;
         }
@@ -170,7 +185,7 @@ namespace TvpTest
                 }
             }
 
-            ITextCheck textCheck = new RegexPunctuationCheck1(_mockHost.Object, TEST_PROJECT_NAME);
+            ITextCheck textCheck = new MissingSentencePunctuationCheck1(_mockHost.Object, TEST_PROJECT_NAME);
 
             // execute
             CheckResult checkResult = textCheck.RunCheck(CheckArea.CurrentProject);
@@ -195,7 +210,7 @@ namespace TvpTest
                 }
             }
 
-            ITextCheck textCheck = new RegexPunctuationCheck1(_mockHost.Object, TEST_PROJECT_NAME);
+            ITextCheck textCheck = new MissingSentencePunctuationCheck1(_mockHost.Object, TEST_PROJECT_NAME);
 
             // execute
             CheckResult checkResult = textCheck.RunCheck(CheckArea.CurrentBook);
@@ -217,7 +232,7 @@ namespace TvpTest
                 _expectedRefs.Add(GetVerseRef(TEST_BOOK_NUM, TEST_CHAPTER_NUM, verseNum));
             }
 
-            ITextCheck textCheck = new RegexPunctuationCheck1(_mockHost.Object, TEST_PROJECT_NAME);
+            ITextCheck textCheck = new MissingSentencePunctuationCheck1(_mockHost.Object, TEST_PROJECT_NAME);
 
             // execute
             CheckResult checkResult = textCheck.RunCheck(CheckArea.CurrentChapter);
@@ -246,7 +261,7 @@ namespace TvpTest
             _isVersesDelayed = true;
 
             // setup
-            ITextCheck textCheck = new RegexPunctuationCheck1(_mockHost.Object, TEST_PROJECT_NAME);
+            ITextCheck textCheck = new MissingSentencePunctuationCheck1(_mockHost.Object, TEST_PROJECT_NAME);
 
             // start check in background thread, then cancel from test thread.
             Thread workThread = new Thread(() =>
@@ -256,6 +271,7 @@ namespace TvpTest
 
             // wait a sec, then cancel
             Thread.Sleep(2000);
+            Assert.IsTrue(workThread.IsAlive); // worker thread is still alive
 
             // cancel and wait for worker thread to be done
             textCheck.CancelCheck();

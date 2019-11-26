@@ -47,7 +47,7 @@
             this.currentBookAreaMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.currentChapterAreaMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.checkMenu = new System.Windows.Forms.ToolStripMenuItem();
-            this.punctuationCheckMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.missingSentencePunctuationCheckMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.biblicalTermsFiltersMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.ignoreListFiltersMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -205,40 +205,40 @@
             this.currentProjectAreaMenuItem.Checked = true;
             this.currentProjectAreaMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
             this.currentProjectAreaMenuItem.Name = "currentProjectAreaMenuItem";
-            this.currentProjectAreaMenuItem.Size = new System.Drawing.Size(159, 22);
+            this.currentProjectAreaMenuItem.Size = new System.Drawing.Size(180, 22);
             this.currentProjectAreaMenuItem.Text = "Current &Project";
             this.currentProjectAreaMenuItem.Click += new System.EventHandler(this.OnCurrentProjectAreaMenuClick);
             // 
             // currentBookAreaMenuItem
             // 
             this.currentBookAreaMenuItem.Name = "currentBookAreaMenuItem";
-            this.currentBookAreaMenuItem.Size = new System.Drawing.Size(159, 22);
+            this.currentBookAreaMenuItem.Size = new System.Drawing.Size(180, 22);
             this.currentBookAreaMenuItem.Text = "Current &Book";
             this.currentBookAreaMenuItem.Click += new System.EventHandler(this.OnCurrentBookAreaMenuClick);
             // 
             // currentChapterAreaMenuItem
             // 
             this.currentChapterAreaMenuItem.Name = "currentChapterAreaMenuItem";
-            this.currentChapterAreaMenuItem.Size = new System.Drawing.Size(159, 22);
+            this.currentChapterAreaMenuItem.Size = new System.Drawing.Size(180, 22);
             this.currentChapterAreaMenuItem.Text = "Current &Chapter";
             this.currentChapterAreaMenuItem.Click += new System.EventHandler(this.OnCurrentChapterAreaMenuClick);
             // 
             // checkMenu
             // 
             this.checkMenu.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.punctuationCheckMenuItem});
+            this.missingSentencePunctuationCheckMenuItem});
             this.checkMenu.Name = "checkMenu";
             this.checkMenu.Size = new System.Drawing.Size(57, 23);
             this.checkMenu.Text = "&Checks";
             // 
-            // punctuationCheckMenuItem
+            // missingSentencePunctuationCheckMenuItem
             // 
-            this.punctuationCheckMenuItem.Checked = true;
-            this.punctuationCheckMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.punctuationCheckMenuItem.Enabled = false;
-            this.punctuationCheckMenuItem.Name = "punctuationCheckMenuItem";
-            this.punctuationCheckMenuItem.Size = new System.Drawing.Size(139, 22);
-            this.punctuationCheckMenuItem.Text = "Punctuation";
+            this.missingSentencePunctuationCheckMenuItem.Checked = true;
+            this.missingSentencePunctuationCheckMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.missingSentencePunctuationCheckMenuItem.Enabled = false;
+            this.missingSentencePunctuationCheckMenuItem.Name = "missingSentencePunctuationCheckMenuItem";
+            this.missingSentencePunctuationCheckMenuItem.Size = new System.Drawing.Size(234, 22);
+            this.missingSentencePunctuationCheckMenuItem.Text = "&Missing Sentence Punctuation";
             // 
             // toolsToolStripMenuItem
             // 
@@ -411,7 +411,7 @@
         private System.Windows.Forms.ToolStripMenuItem fileMenu;
         private System.Windows.Forms.ToolStripMenuItem saveMenuItem;
         private System.Windows.Forms.ToolStripMenuItem checkMenu;
-        private System.Windows.Forms.ToolStripMenuItem punctuationCheckMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem missingSentencePunctuationCheckMenuItem;
         private System.Windows.Forms.ToolStripMenuItem toolsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem viewMenu;
         private System.Windows.Forms.ToolStripMenuItem bcvViewMenuItem;

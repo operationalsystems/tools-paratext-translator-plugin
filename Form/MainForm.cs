@@ -38,7 +38,7 @@ namespace TvpMain.Form
         /// Only check currently implemented. This will grow to an aggregate model of some kind
         /// (maybe even just a list of checks, run in series or parallel). 
         /// </summary>
-        private readonly RegexPunctuationCheck1 _punctuationCheck;
+        private readonly MissingSentencePunctuationCheck1 _punctuationCheck;
 
         /// <summary>
         /// Ignore list filter.
@@ -87,7 +87,7 @@ namespace TvpMain.Form
 
             _ignoreFilter = new IgnoreListTextFilter();
             _termFilter = new BiblicalTermsTextFilter();
-            _punctuationCheck = new RegexPunctuationCheck1(_host, _activeProjectName);
+            _punctuationCheck = new MissingSentencePunctuationCheck1(_host, _activeProjectName);
 
             _punctuationCheck.CheckUpdated += OnCheckUpdated;
             searchMenuTextBox.TextChanged += OnSearchTextChanged;

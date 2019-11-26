@@ -24,7 +24,7 @@ namespace TvpMain.Util
         public const int MAX_CHECK_THREADS = 4;
 
         /// <summary>
-        /// Max number of books in standard versification (1 = Gensis, 66 = Revelations).
+        /// Max number of books in standard versification (1 d= Gensis, 66 = Revelations).
         /// </summary>
         public const int MAX_BOOK_NUM = 66; // 66 = all books
 
@@ -42,5 +42,20 @@ namespace TvpMain.Util
             "PHM","HEB","JAS","1PE","2PE","1JN","2JN","3JN",
             "JUD","REV"
         };
+
+        /// <summary>
+        /// Multiplier for book numbers in BCV-style references.
+        /// </summary>
+        public static readonly int BOOK_REF_MULTIPLIER = 1000000;
+
+        /// <summary>
+        /// Multiplier for chapter numbers in BCV-style references.
+        /// </summary>
+        public static readonly int CHAP_REF_MULTIPLIER = 1000;
+
+        /// <summary>
+        /// Range ref parts (i.e., chapters, verses).
+        /// </summary>
+        public static readonly int REF_PART_RANGE = 1000;
     }
 }

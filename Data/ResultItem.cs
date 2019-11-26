@@ -31,7 +31,7 @@ namespace TvpMain.Data
         public string ErrorText => _errorText;
 
         [Ignore]
-        public int Coordinate => _bookNum * 1000000 + _chapterNum * 1000 + _verseNum;
+        public int Coordinate => HostUtil.BcvToRef(_bookNum, _chapterNum, _verseNum);
 
         public ResultItem(int bookNum, int chapterNum, int verseNum, string errorText, string verseText, string matchText)
         {

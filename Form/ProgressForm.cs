@@ -51,8 +51,8 @@ namespace TvpMain.Form
         {
             lock (this)
             {
-                _lastBookNum = updatedArgs.CurrPos;
-                _maxBookNum = updatedArgs.MaxPos;
+                _lastBookNum = updatedArgs.CurrBookNum;
+                _maxBookNum = updatedArgs.MaxBookNum;
             }
         }
 
