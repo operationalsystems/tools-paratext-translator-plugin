@@ -17,7 +17,7 @@ namespace TvpTest
         public void TestIgnoreListFilter()
         {
             // empty checks
-            IgnoreListTextFilter ignoreFilter = new IgnoreListTextFilter();
+            var ignoreFilter = new IgnoreListTextFilter();
             Assert.IsTrue(ignoreFilter.IsEmpty);
 
             IList<IgnoreListItem> ignoreList = new List<IgnoreListItem>();
@@ -68,7 +68,7 @@ namespace TvpTest
         public void TestBiblicalTermsFilter()
         {
             // empty checks
-            BiblicalTermsTextFilter termFilter = new BiblicalTermsTextFilter();
+            var termFilter = new BiblicalTermsTextFilter();
             Assert.IsTrue(termFilter.IsEmpty);
 
             IList<IKeyTerm> termList = new List<IKeyTerm>();

@@ -15,22 +15,22 @@ namespace TvpMain.Filter
         /// <summary>
         /// Case-sensitive word set.
         /// </summary>
-        private readonly HashSet<String> _caseSensitiveWords;
+        private readonly HashSet<string> _caseSensitiveWords;
 
         /// <summary>
         /// Case-insensitive word set.
         /// </summary>
-        private readonly HashSet<String> _caseInsensitiveWords;
+        private readonly HashSet<string> _caseInsensitiveWords;
 
         /// <summary>
         /// Case-sensitive phrase list.
         /// </summary>
-        private readonly List<String> _caseSensitivePhrases;
+        private readonly List<string> _caseSensitivePhrases;
 
         /// <summary>
         /// Case-insensitive phrase list.
         /// </summary>
-        private readonly List<String> _caseInsensitivePhrases;
+        private readonly List<string> _caseInsensitivePhrases;
 
         /// <summary>
         /// Case-sensitive word set.
@@ -77,7 +77,7 @@ namespace TvpMain.Filter
             ISet<string> caseSensitivePhraseSet = new HashSet<string>();
             ISet<string> caseInsensitivePhraseSet = new HashSet<string>();
 
-            foreach (IgnoreListItem listItem in inputItems)
+            foreach (var listItem in inputItems)
             {
                 if (listItem.IsPhrase)
                 {

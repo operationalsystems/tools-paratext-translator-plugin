@@ -1,17 +1,14 @@
-﻿using AddInSideViews;
-using CsvHelper;
-using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
-using System.Windows.Threading;
+using AddInSideViews;
+using CsvHelper;
 using TvpMain.Check;
 using TvpMain.Data;
 using TvpMain.Filter;
-using TvpMain.Form;
 using TvpMain.Util;
 using static System.Environment;
 
@@ -166,14 +163,13 @@ namespace TvpMain.Form
             dgvCheckResults.Rows.Clear();
             statusLabel.Text = CheckResult.GetSummaryText(_filteredResultItems);
 
-            foreach (ResultItem resultItem in _filteredResultItems)
+            foreach (var resultItem in _filteredResultItems)
             {
-                dgvCheckResults.Rows.Add(new string[] {
-                            $"{resultItem.BcvText}",
-                            $"{resultItem.MatchText}",
-                            $"{resultItem.VerseText}",
-                            $"{resultItem.ErrorText}"
-                        });
+                dgvCheckResults.Rows.Add(
+                    $"{resultItem.BcvText}",
+                    $"{resultItem.MatchText}",
+                    $"{resultItem.VerseText}",
+                    $"{resultItem.ErrorText}");
                 dgvCheckResults.Rows[(dgvCheckResults.Rows.Count - 1)].HeaderCell.Value =
                     $"{dgvCheckResults.Rows.Count:N0}";
                 dgvCheckResults.Rows[(dgvCheckResults.Rows.Count - 1)].Tag = resultItem;
@@ -194,7 +190,7 @@ namespace TvpMain.Form
             else
             {
                 _filteredResultItems = _allResultItems;
-                bool isEntireVerse = entireVerseFiltersMenuItem.Checked;
+                var isEntireVerse = entireVerseFiltersMenuItem.Checked;
 
                 if (ignoreListFiltersMenuItem.Checked
                     && !_ignoreFilter.IsEmpty)
@@ -216,12 +212,12 @@ namespace TvpMain.Form
                     }
                 }
 
-                string searchText = searchMenuTextBox.TextBox.Text.Trim();
+                var searchText = searchMenuTextBox.TextBox.Text.Trim();
                 if (searchText.Length > 0)
                 {
                     // upcase chars in search text = 
                     // case-sensitive match, otherwise case-insensitive
-                    if (searchText.Any(Char.IsUpper))
+                    if (searchText.Any(char.IsUpper))
                     {
                         _filteredResultItems = _filteredResultItems.Where(
                                 resultItem => (resultItem.VerseText.Contains(searchText)
@@ -271,7 +267,7 @@ namespace TvpMain.Form
             {
                 ShowProgress();
 
-                CheckArea checkArea = CheckArea.CurrentProject;
+                var checkArea = CheckArea.CurrentProject;
                 if (currentBookAreaMenuItem.Checked)
                 {
                     checkArea = CheckArea.CurrentBook;
@@ -303,11 +299,11 @@ namespace TvpMain.Form
         /// <param name="e">Event args (ignored).</param>
         private void OnClickIgnoreList(object sender, EventArgs e)
         {
-            IgnoreListForm ignoreListForm = new IgnoreListForm();
+            var ignoreListForm = new IgnoreListForm();
             ignoreListForm.IgnoreList = HostUtil.Instance.GetIgnoreList(_activeProjectName);
 
             ignoreListForm.ShowDialog(this);
-            IList<IgnoreListItem> ignoreList = ignoreListForm.IgnoreList;
+            var ignoreList = ignoreListForm.IgnoreList;
 
             HostUtil.Instance.PutIgnoreList(_activeProjectName, ignoreList);
             _ignoreFilter.SetIgnoreList(ignoreList);
@@ -329,8 +325,6 @@ namespace TvpMain.Form
                 //----  *)  else close the application
                 case DialogResult.No:
                     e.Cancel = true;
-                    break;
-                default:
                     break;
             }
         }
@@ -506,11 +500,11 @@ namespace TvpMain.Form
         /// <param name="e">Event args (ignored).</param>
         private void OnFileSaveMenuClick(object sender, EventArgs e)
         {
-            using SaveFileDialog saveFile = new SaveFileDialog();
+            using var saveFile = new SaveFileDialog();
 
-            saveFile.FileName = $"";
+            saveFile.FileName = "";
             saveFile.Title = "Save CSV file...";
-            saveFile.InitialDirectory = Environment.GetFolderPath(SpecialFolder.MyDocuments);
+            saveFile.InitialDirectory = GetFolderPath(SpecialFolder.MyDocuments);
             saveFile.Filter = "CSV files (*.csv)|*.csv|All files (*.*)|*.*";
             saveFile.DefaultExt = "csv";
             saveFile.AddExtension = true;
@@ -520,9 +514,9 @@ namespace TvpMain.Form
             {
                 try
                 {
-                    using Stream outputStream = saveFile.OpenFile();
-                    using StreamWriter streamWriter = new StreamWriter(outputStream);
-                    using CsvWriter csvWriter = new CsvWriter(streamWriter);
+                    using var outputStream = saveFile.OpenFile();
+                    using var streamWriter = new StreamWriter(outputStream);
+                    using var csvWriter = new CsvWriter(streamWriter);
 
                     csvWriter.WriteRecords(_filteredResultItems);
                     csvWriter.Flush();
@@ -539,25 +533,25 @@ namespace TvpMain.Form
         /// </summary>
         /// <param name="sender">Event sender (ignored).</param>
         /// <param name="e">Event args (ignored).</param>
-        private void OnContextMenuOpening(object sender, System.ComponentModel.CancelEventArgs e)
+        private void OnContextMenuOpening(object sender, CancelEventArgs e)
         {
-            bool isEnabled = (dgvCheckResults.SelectedRows != null
-                                && dgvCheckResults.SelectedRows.Count > 0);
+            var isEnabled = (dgvCheckResults.SelectedRows != null
+                             && dgvCheckResults.SelectedRows.Count > 0);
 
             addToIgnoreList.Enabled = isEnabled;
             removeFromIgnoreList.Enabled = isEnabled;
 
             if (isEnabled)
             {
-                int selectedCount = dgvCheckResults.SelectedRows.Count;
+                var selectedCount = dgvCheckResults.SelectedRows.Count;
 
                 addToIgnoreList.Text = $"Add {selectedCount:N0} selected to Ignore List...";
                 removeFromIgnoreList.Text = $"Remove {selectedCount:N0} selected from Ignore List...";
             }
             else
             {
-                addToIgnoreList.Text = $"Add to Ignore List...";
-                removeFromIgnoreList.Text = $"Remove from Ignore List...";
+                addToIgnoreList.Text = "Add to Ignore List...";
+                removeFromIgnoreList.Text = "Remove from Ignore List...";
             }
         }
 
@@ -573,23 +567,23 @@ namespace TvpMain.Form
             {
                 matchesToAdd.Add((rowItem.Tag as ResultItem).MatchText);
             }
-            int selectedMatches = matchesToAdd.Count;
+            var selectedMatches = matchesToAdd.Count;
 
-            IList<IgnoreListItem> ignoreList = HostUtil.Instance.GetIgnoreList(_activeProjectName);
-            foreach (IgnoreListItem ignoreItem in ignoreList)
+            var ignoreList = HostUtil.Instance.GetIgnoreList(_activeProjectName);
+            foreach (var ignoreItem in ignoreList)
             {
                 matchesToAdd.Remove(ignoreItem.CaseSensitiveText);
             }
 
             if (matchesToAdd.Count > 0)
             {
-                foreach (string matchItem in matchesToAdd)
+                foreach (var matchItem in matchesToAdd)
                 {
                     ignoreList.Add(new IgnoreListItem(matchItem, false));
                 }
                 HostUtil.Instance.PutIgnoreList(_activeProjectName, ignoreList);
 
-                int presentItems = (selectedMatches - matchesToAdd.Count);
+                var presentItems = (selectedMatches - matchesToAdd.Count);
                 if (presentItems == 0)
                 {
                     MessageBox.Show(matchesToAdd.Count > 1
@@ -624,13 +618,13 @@ namespace TvpMain.Form
             {
                 matchesToRemove.Add((rowItem.Tag as ResultItem).MatchText);
             }
-            int selectedMatches = matchesToRemove.Count;
+            var selectedMatches = matchesToRemove.Count;
 
-            IList<IgnoreListItem> oldIgnoreList = HostUtil.Instance.GetIgnoreList(_activeProjectName);
+            var oldIgnoreList = HostUtil.Instance.GetIgnoreList(_activeProjectName);
             IList<IgnoreListItem> newIgnoreList = oldIgnoreList.Where(ignoreItem =>
                 !matchesToRemove.Contains(ignoreItem.CaseSensitiveText)).ToList();
 
-            int removedItems = (oldIgnoreList.Count - newIgnoreList.Count);
+            var removedItems = (oldIgnoreList.Count - newIgnoreList.Count);
             if (removedItems > 0)
             {
                 HostUtil.Instance.PutIgnoreList(_activeProjectName, newIgnoreList);

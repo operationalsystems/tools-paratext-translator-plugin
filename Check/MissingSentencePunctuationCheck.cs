@@ -16,16 +16,16 @@ namespace TvpMain.Check
     public class MissingSentencePunctuationCheck : AbstractTextCheck
     {
         /// <summary>
-        /// Regex to check for improper capitlization following non-final punctuation (E.g. <text>, And <text>).
+        /// Regex to check for improper capitalization following non-final punctuation (E.g. <text>, And <text>).
         /// </summary>
-        private static readonly Regex _checkRegex;
+        private static readonly Regex CheckRegex;
 
         /// <summary>
         /// Static initializer.
         /// </summary>
         static MissingSentencePunctuationCheck()
         {
-            _checkRegex = new Regex("(?<=[;,]([\"'](\\s[\"'])*)?(\\\\f([^\\\\]|\\\\(?!f\\*))*?\\\\f\\*)*(\\s*\\\\\\w+)+(\\s*\\\\v\\s\\S+)?\\s+(\\\\x([^\\\\]|\\\\(?!x\\*))*?\\\\x\\*)?)[A-Z]\\w+",
+            CheckRegex = new Regex("(?<=[;,]([\"'](\\s[\"'])*)?(\\\\f([^\\\\]|\\\\(?!f\\*))*?\\\\f\\*)*(\\s*\\\\\\w+)+(\\s*\\\\v\\s\\S+)?\\s+(\\\\x([^\\\\]|\\\\(?!x\\*))*?\\\\x\\*)?)[A-Z]\\w+",
                 RegexOptions.Multiline);
         }
 
@@ -46,10 +46,10 @@ namespace TvpMain.Check
         /// <param name="chapterNum">Chapter number.</param>
         /// <param name="verseNum">Verse number.</param>
         /// <param name="verseText">Verse text.</param>
-        /// <param name="resultItems">Result items list to populate.</param>
+        /// <param name="checkResults">Result items list to populate.</param>
         protected override void CheckVerse(int bookNum, int chapterNum, int verseNum, string verseText, IList<ResultItem> checkResults)
         {
-            foreach (Match matchItem in _checkRegex.Matches(verseText))
+            foreach (Match matchItem in CheckRegex.Matches(verseText))
             {
                 checkResults.Add(new ResultItem(bookNum, chapterNum, verseNum,
                     $"Punctuation check failure at position {matchItem.Index}.",

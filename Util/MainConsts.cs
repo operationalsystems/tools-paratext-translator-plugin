@@ -31,7 +31,7 @@ namespace TvpMain.Util
         /// <summary>
         /// Abbreviations for bible book names.
         /// </summary>
-        public static readonly string[] SHORT_BOOK_NAMES = {
+        public static readonly string[] ShortBookNames = {
             "GEN","EXO","LEV","NUM","DEU","JOS","JDG","RUT",
             "1SA","2SA","1KI","2KI","1CH","2CH","EZR","NEH",
             "EST","JOB","PSA","PRO","ECC","SNG","ISA","JER",
@@ -46,16 +46,16 @@ namespace TvpMain.Util
         /// <summary>
         /// Multiplier for book numbers in BCV-style references.
         /// </summary>
-        public static readonly int BOOK_REF_MULTIPLIER = 1000000;
+        public static readonly int BookRefMultiplier = 1000000;
 
         /// <summary>
         /// Multiplier for chapter numbers in BCV-style references.
         /// </summary>
-        public static readonly int CHAP_REF_MULTIPLIER = 1000;
+        public static readonly int ChapRefMultiplier = 1000;
 
         /// <summary>
         /// Range ref parts (i.e., chapters, verses).
         /// </summary>
-        public static readonly int REF_PART_RANGE = 1000;
+        public static readonly int RefPartRange = 1000;
     }
 }

@@ -11,9 +11,6 @@ using TvpMain.Data;
 using TvpMain.Filter;
 using TvpMain.Util;
 
-/*
- * The first validation check in the Translation Validation Plugin framework.
- */
 namespace TvpMain.Check
 {
     /// <summary>
@@ -47,7 +44,7 @@ namespace TvpMain.Check
         /// </summary>
         /// <param name="host"></param>
         /// <param name="activeProjectName"></param>
-        public AbstractTextCheck(IHost host, string activeProjectName)
+        protected AbstractTextCheck(IHost host, string activeProjectName)
         {
             this._host = host ?? throw new ArgumentNullException(nameof(host));
             this._activeProjectName = activeProjectName ?? throw new ArgumentNullException(nameof(activeProjectName));
@@ -61,22 +58,12 @@ namespace TvpMain.Check
             /// <summary>
             /// Scripture extractor.
             /// </summary>
-            private readonly IScrExtractor _scrExtractor;
+            public IScrExtractor ScrExtractor { get; }
 
             /// <summary>
             /// Progress count.
             /// </summary>
-            private int _subTotal;
-
-            /// <summary>
-            /// Scripture extractor.
-            /// </summary>
-            public IScrExtractor ScrExtractor { get => _scrExtractor; }
-
-            /// <summary>
-            /// Progress count.
-            /// </summary>
-            public int SubTotal { get => _subTotal; set => _subTotal = value; }
+            public int SubTotal { get; set; }
 
             /// <summary>
             /// Basic ctor.
@@ -84,8 +71,8 @@ namespace TvpMain.Check
             /// <param name="extractor">Scripture extractor.</param>
             public ExtractorState(IScrExtractor extractor)
             {
-                this._scrExtractor = extractor ?? throw new ArgumentNullException(nameof(extractor));
-                _subTotal = 0;
+                this.ScrExtractor = extractor ?? throw new ArgumentNullException(nameof(extractor));
+                SubTotal = 0;
             }
         }
 
@@ -94,10 +81,7 @@ namespace TvpMain.Check
         /// </summary>
         public void CancelCheck()
         {
-            if (_tokenSource != null)
-            {
-                _tokenSource.Cancel();
-            }
+            _tokenSource?.Cancel();
         }
 
         /// <summary>
@@ -107,26 +91,26 @@ namespace TvpMain.Check
         /// <returns>Check result.</returns>
         public CheckResult RunCheck(CheckArea checkArea)
         {
-            CheckResult checkResult = new CheckResult();
-            string versificationName = _host.GetProjectVersificationName(_activeProjectName);
+            var checkResult = new CheckResult();
+            var versificationName = _host.GetProjectVersificationName(_activeProjectName);
 
-            int currProgress = 0;
+            var currProgress = 0;
             _tokenSource = new CancellationTokenSource();
 
             // get user's location in Paratext
-            HostUtil.RefToBCV(_host.GetCurrentRef(versificationName),
-                out int refBook, out int refChapter, out int refVerse);
+            HostUtil.RefToBcv(_host.GetCurrentRef(versificationName),
+                out var refBook, out var refChapter, out var refVerse);
 
-            // determine book range using checkarea and user's location in Paratext
-            int minBook = (checkArea == CheckArea.CurrentProject)
+            // determine book range using check area and user's location in Paratext
+            var minBook = (checkArea == CheckArea.CurrentProject)
                 ? 1 : refBook;
-            int maxBook = (checkArea == CheckArea.CurrentProject)
+            var maxBook = (checkArea == CheckArea.CurrentProject)
                 ? (MainConsts.MAX_BOOK_NUM + 1) : (refBook + 1);
-            int numBooks = (maxBook - minBook);
+            var numBooks = (maxBook - minBook);
 
             // wrap in a single thread to coordinate TPL (parallelized) for-loop 
             // so calling thread can busy-wait and keep the UI responsive w/DoEvents().
-            Thread workThread = new Thread(() =>
+            var workThread = new Thread(() =>
             {
                 try
                 {
@@ -140,81 +124,89 @@ namespace TvpMain.Check
                         },
                         () => new ExtractorState(_host.GetScriptureExtractor(_activeProjectName, ExtractorType.USFM)),
                         (bookNum, loopState, extractorState) =>
-                      {
-                          // determine chapter range using checkarea and user's location in Paratext
-                          int minChapter = (checkArea != CheckArea.CurrentChapter)
-                              ? 1 : refChapter;
-                          int maxChapter = (checkArea != CheckArea.CurrentChapter)
-                              ? _host.GetLastChapter(bookNum, versificationName) : refChapter;
+                        {
+                            // determine chapter range using checkarea and user's location in Paratext
+                            var minChapter = (checkArea != CheckArea.CurrentChapter)
+                                ? 1
+                                : refChapter;
+                            var maxChapter = (checkArea != CheckArea.CurrentChapter)
+                                ? _host.GetLastChapter(bookNum, versificationName)
+                                : refChapter;
 
-                          int currBookNum = bookNum;
-                          int currChapterNum = 0;
-                          int currVerseNum = 0;
+                            var currBookNum = bookNum;
+                            var currChapterNum = 0;
+                            var currVerseNum = 0;
 
-                          try
-                          {
-                              IList<ResultItem> resultItems = new List<ResultItem>();
-                              for (int chapterNum = minChapter; chapterNum <= maxChapter; chapterNum++)
-                              {
-                                  currChapterNum = chapterNum;
-                                  int lastVerseNum = _host.GetLastVerse(bookNum, chapterNum, versificationName);
+                            try
+                            {
+                                IList<ResultItem> resultItems = new List<ResultItem>();
+                                for (var chapterNum = minChapter; chapterNum <= maxChapter; chapterNum++)
+                                {
+                                    currChapterNum = chapterNum;
+                                    var lastVerseNum = _host.GetLastVerse(bookNum, chapterNum, versificationName);
 
-                                  for (int verseNum = 1; verseNum <= lastVerseNum; verseNum++)
-                                  {
-                                      if (_tokenSource.IsCancellationRequested)
-                                      {
-                                          return extractorState;
-                                      }
+                                    for (var verseNum = 1; verseNum <= lastVerseNum; verseNum++)
+                                    {
+                                        if (_tokenSource.IsCancellationRequested)
+                                        {
+                                            return extractorState;
+                                        }
 
-                                      currVerseNum = verseNum;
+                                        currVerseNum = verseNum;
 
-                                      int checkRef = HostUtil.BcvToRef(bookNum, chapterNum, verseNum);
-                                      string verseText = null;
-                                      try
-                                      {
-                                          verseText = extractorState.ScrExtractor.Extract(checkRef, checkRef);
-                                      }
-                                      catch (ArgumentException)
-                                      {
-                                          // arg exceptions occur when verses are missing, 
-                                          // which they can be for given translations (ignore and move on)
-                                          continue;
-                                      }
-                                      if (verseText == null
-                                          || verseText.Trim().Count() < 1)
-                                      {
-                                          continue;
-                                      }
+                                        var checkRef = HostUtil.BcvToRef(bookNum, chapterNum, verseNum);
+                                        string verseText = null;
 
-                                      resultItems.Clear();
-                                      CheckVerse(bookNum, chapterNum, verseNum, verseText, resultItems);
+                                        try
+                                        {
+                                            verseText = extractorState.ScrExtractor.Extract(checkRef, checkRef);
+                                        }
+                                        catch (ArgumentException)
+                                        {
+                                            // arg exceptions occur when verses are missing, 
+                                            // which they can be for given translations (ignore and move on)
+                                            continue;
+                                        }
 
-                                      foreach (ResultItem resultItem in resultItems)
-                                      {
-                                          checkResult.ResultItems.Enqueue(resultItem);
-                                      }
-                                  }
-                              }
-                              extractorState.SubTotal++;
+                                        if (verseText == null
+                                            || !verseText.Trim().Any())
+                                        {
+                                            continue;
+                                        }
 
-                              lock (this)
-                              {
-                                  currProgress++;
-                                  CheckUpdated?.Invoke(this, (checkArea == CheckArea.CurrentProject)
-                                      ? new CheckUpdatedArgs(currProgress, numBooks)
-                                      : new CheckUpdatedArgs(currProgress, 1));
-                              }
-                          }
-                          catch (ThreadAbortException)
-                          {
-                              // Ignore (can occur w/cancel).
-                          }
-                          catch (Exception ex)
-                          {
-                              HostUtil.Instance.ReportError($"Error: Can't check location: {currBookNum}.{currChapterNum}.{currVerseNum} in project: \"{_activeProjectName}\"", ex);
-                          }
-                          return extractorState;
-                      },
+                                        resultItems.Clear();
+                                        CheckVerse(bookNum, chapterNum, verseNum, verseText, resultItems);
+
+                                        foreach (var resultItem in resultItems)
+                                        {
+                                            checkResult.ResultItems.Enqueue(resultItem);
+                                        }
+                                    }
+                                }
+
+                                extractorState.SubTotal++;
+
+                                lock (this)
+                                {
+                                    currProgress++;
+                                    CheckUpdated?.Invoke(this, (checkArea == CheckArea.CurrentProject)
+                                        ? new CheckUpdatedArgs(currProgress, numBooks)
+                                        : new CheckUpdatedArgs(currProgress, 1));
+                                }
+                            }
+                            catch (ThreadAbortException)
+                            {
+                                // Ignore (can occur w/cancel).
+                            }
+                            catch (Exception ex)
+                            {
+                                HostUtil.Instance.ReportError(
+                                    $"Error: Can't check location: {currBookNum}.{currChapterNum}.{currVerseNum} in project: \"{_activeProjectName}\"",
+                                    ex);
+                            }
+
+                            return extractorState;
+                        },
                         (extractorState) =>
                         {
                             // ignore, at this time
@@ -232,13 +224,13 @@ namespace TvpMain.Check
                 {
                     HostUtil.Instance.ReportError($"Error: Can't check project: \"{_activeProjectName}\"", ex);
                 }
-            });
-            workThread.IsBackground = true;
+            })
+            { IsBackground = true };
             workThread.Start();
 
             // busy-wait until helper thead is done,
             // keeping the UI responsive w/DoEvents()
-            int threadSleepInMs = (int)(1000f / (float)MainConsts.CHECK_EVENTS_UPDATE_RATE_IN_FPS);
+            var threadSleepInMs = (int)(1000f / (float)MainConsts.CHECK_EVENTS_UPDATE_RATE_IN_FPS);
             while (workThread.IsAlive)
             {
                 Application.DoEvents();

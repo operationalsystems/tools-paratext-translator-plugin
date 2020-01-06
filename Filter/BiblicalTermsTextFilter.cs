@@ -16,22 +16,22 @@ namespace TvpMain.Filter
         /// <summary>
         /// Case-sensitive word set.
         /// </summary>
-        private readonly HashSet<String> _caseSensitiveWords;
+        private readonly HashSet<string> _caseSensitiveWords;
 
         /// <summary>
         /// Case-insensitive word set.
         /// </summary>
-        private readonly HashSet<String> _caseInsensitiveWords;
+        private readonly HashSet<string> _caseInsensitiveWords;
 
         /// <summary>
         /// Case-sensitive phrase list.
         /// </summary>
-        private readonly List<String> _caseSensitivePhrases;
+        private readonly List<string> _caseSensitivePhrases;
 
         /// <summary>
         /// Case-insensitive phrase list.
         /// </summary>
-        private readonly List<String> _caseInsensitivePhrases;
+        private readonly List<string> _caseInsensitivePhrases;
 
         /// <summary>
         /// Case-sensitive word set.
@@ -65,7 +65,7 @@ namespace TvpMain.Filter
         }
 
         /// <summary>
-        /// Sets up filter withg biblical terms, dividing into words and phrases according to whitespace.
+        /// Sets up filter with biblical terms, dividing into words and phrases according to whitespace.
         /// 
         /// Assumes all terms are case-sensitive.
         /// </summary>
@@ -78,10 +78,10 @@ namespace TvpMain.Filter
             _caseInsensitivePhrases.Clear();
 
             ISet<string> caseSensitivePhraseSet = new HashSet<string>();
-            foreach (IKeyTerm listItem in inputItems)
+            foreach (var listItem in inputItems)
             {
-                string termText = listItem.Term.Trim();
-                if (termText.Any(Char.IsWhiteSpace))
+                var termText = listItem.Term.Trim();
+                if (termText.Any(char.IsWhiteSpace))
                 {
                     caseSensitivePhraseSet.Add(termText);
                 }

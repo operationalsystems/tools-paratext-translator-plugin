@@ -6,9 +6,6 @@ using System.Linq;
 using System.Windows.Forms;
 using TvpMain.Data;
 
-/// <summary>
-/// Global error-handling and other maintenance capabilities.
-/// </summary>
 namespace TvpMain.Util
 {
     /// <summary>
@@ -24,10 +21,7 @@ namespace TvpMain.Util
         /// <summary>
         /// Thread-safe singleton accessor.
         /// </summary>
-        public static HostUtil Instance
-        {
-            get => _instance;
-        }
+        public static HostUtil Instance => _instance;
 
         /// <summary>
         /// Global reference to plugin, to route logging.
@@ -97,13 +91,10 @@ namespace TvpMain.Util
         /// </summary>
         /// <param name="inputText">Input text (required).</param>
         /// <param name="isError">Error flag.</param>
-        public void LogLine(String inputText, bool isError)
+        public void LogLine(string inputText, bool isError)
         {
             (isError ? Console.Error : Console.Out).WriteLine(inputText);
-            if (_host != null)
-            {
-                _host.WriteLineToLog(_translationValidationPlugin, inputText);
-            }
+            _host?.WriteLineToLog(_translationValidationPlugin, inputText);
         }
 
         /// <summary>
@@ -113,17 +104,10 @@ namespace TvpMain.Util
         /// <returns>Ignore list.</returns>
         public IList<IgnoreListItem> GetIgnoreList(string activeProjectName)
         {
-            string inputData =
+            var inputData =
                     _host.GetPlugInData(_translationValidationPlugin,
                 activeProjectName, MainConsts.IGNORE_LIST_ITEMS_ID);
-            if (inputData == null)
-            {
-                return Enumerable.Empty<IgnoreListItem>().ToList();
-            }
-            else
-            {
-                return JsonConvert.DeserializeObject<List<IgnoreListItem>>(inputData);
-            }
+            return inputData == null ? Enumerable.Empty<IgnoreListItem>().ToList() : JsonConvert.DeserializeObject<List<IgnoreListItem>>(inputData);
         }
 
         /// <summary>
@@ -145,11 +129,11 @@ namespace TvpMain.Util
         /// <param name="outputBook">Output book number (1-66).</param>
         /// <param name="outputChapter">Output chapter number (1-1000; Max varies by book & versification).</param>
         /// <param name="outputVerse">Output verse number (1-1000; Max varies by chapter & versification).</param>
-        static public void RefToBCV(int inputRef, out int outputBook, out int outputChapter, out int outputVerse)
+        public static void RefToBcv(int inputRef, out int outputBook, out int outputChapter, out int outputVerse)
         {
-            outputBook = (inputRef / MainConsts.BOOK_REF_MULTIPLIER);
-            outputChapter = (inputRef / MainConsts.CHAP_REF_MULTIPLIER) % MainConsts.REF_PART_RANGE;
-            outputVerse = inputRef % MainConsts.REF_PART_RANGE;
+            outputBook = (inputRef / MainConsts.BookRefMultiplier);
+            outputChapter = (inputRef / MainConsts.ChapRefMultiplier) % MainConsts.RefPartRange;
+            outputVerse = inputRef % MainConsts.RefPartRange;
         }
 
 
@@ -160,10 +144,10 @@ namespace TvpMain.Util
         /// <param name="inputChapter">Input chapter number (1-1000; Max varies by book & versification).</param>
         /// <param name="inputVerse">Input verse number (1-1000; Max varies by chapter & versification).</param>
         /// <returns>Output coordinate reference (BBBCCCVVV).</returns>
-        static public int BcvToRef(int inputBook, int inputChapter, int inputVerse)
+        public static int BcvToRef(int inputBook, int inputChapter, int inputVerse)
         {
-            return (inputBook * MainConsts.BOOK_REF_MULTIPLIER)
-                + (inputChapter * MainConsts.CHAP_REF_MULTIPLIER)
+            return (inputBook * MainConsts.BookRefMultiplier)
+                + (inputChapter * MainConsts.ChapRefMultiplier)
                 + inputVerse;
         }
     }

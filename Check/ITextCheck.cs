@@ -18,7 +18,7 @@ namespace TvpMain.Check
         /// <summary>
         /// Event handler for updates.
         /// </summary>
-        public event EventHandler<CheckUpdatedArgs> CheckUpdated;
+        event EventHandler<CheckUpdatedArgs> CheckUpdated;
 
         /// <summary>
         /// Start the check.
@@ -28,11 +28,11 @@ namespace TvpMain.Check
         /// </summary>
         /// <param name="checkScope">Check scope (project, book, chapter; required).</param>
         /// <returns>Check result.</returns>
-        public CheckResult RunCheck(CheckArea checkScope);
+        CheckResult RunCheck(CheckArea checkScope);
 
         /// <summary>
         /// Cancels an in-progress run.
         /// </summary>
-        public void CancelCheck();
+        void CancelCheck();
     }
 }

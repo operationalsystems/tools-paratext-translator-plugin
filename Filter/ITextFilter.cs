@@ -17,11 +17,11 @@ namespace TvpMain.Filter
         /// </summary>
         /// <param name="inputText">Text to be checked for filtering (required).</param>
         /// <returns>True if filter matches, false otherwise.</returns>
-        public bool FilterText(String inputText);
+        bool FilterText(string inputText);
 
         /// <summary>
         /// True if filter is currently a no-op (i.e., an empty ignore list), false otherwise.
         /// </summary>
-        public bool IsEmpty { get; }
+        bool IsEmpty { get; }
     }
 }

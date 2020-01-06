@@ -66,7 +66,7 @@ namespace TvpMain.Form
             pbrStatus.Value = pbrStatus.Minimum;
             pbrStatus.Style = ProgressBarStyle.Marquee;
 
-            lblTitle.Text = $"Cancelling Validation...";
+            lblTitle.Text = "Cancelling Validation...";
             Cancelled?.Invoke(sender, e);
         }
 
@@ -81,7 +81,7 @@ namespace TvpMain.Form
             pbrStatus.Value = pbrStatus.Minimum;
             pbrStatus.Style = ProgressBarStyle.Marquee;
 
-            lblTitle.Text = $"Running Validation...";
+            lblTitle.Text = "Running Validation...";
         }
 
         /// <summary>
@@ -91,23 +91,13 @@ namespace TvpMain.Form
         /// <returns>Reported time text.</returns>
         private string GetElapsedTime(TimeSpan timeSpan)
         {
-            StringBuilder stringBuilder = new StringBuilder();
+            var stringBuilder = new StringBuilder();
 
-            stringBuilder.Append(string.Format("{0:D2}", (int)timeSpan.TotalMinutes));
+            stringBuilder.Append($"{(int)timeSpan.TotalMinutes:D2}");
             stringBuilder.Append(((timeSpan.Seconds % 2) == 0) ? " " : ":");
-            stringBuilder.Append(string.Format("{0:D2}", timeSpan.Seconds));
+            stringBuilder.Append($"{timeSpan.Seconds:D2}");
 
             return stringBuilder.ToString();
-        }
-
-        /// <summary>
-        /// Cancel event forwarder.
-        /// </summary>
-        /// <param name="sender">Event source (button).</param>
-        /// <param name="e">Event args (ignored).</param>
-        private void btnCancel_Click(object sender, EventArgs e)
-        {
-            Cancelled?.Invoke(sender, e);
         }
 
         /// <summary>

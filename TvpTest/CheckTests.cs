@@ -22,62 +22,62 @@ namespace TvpTest
         /// <summary>
         /// Multiplier for book numbers in BCV-style references.
         /// </summary>
-        public static readonly int TEST_BOOK_REF_MULTIPLIER = 1000000;
+        public static readonly int TestBookRefMultiplier = 1000000;
 
         /// <summary>
         /// Multiplier for chapter numbers in BCV-style references.
         /// </summary>
-        public static readonly int TEST_CHAP_REF_MULTIPLIER = 1000;
+        public static readonly int TestChapRefMultiplier = 1000;
 
         /// <summary>
         /// Range ref parts (i.e., chapters, verses).
         /// </summary>
-        public static readonly int TEST_REF_PART_RANGE = 1000;
+        public static readonly int TestRefPartRange = 1000;
 
         /// <summary>
         /// Minimum number of books in test datasets.
         /// </summary>
-        public static readonly int MIN_TEST_BOOKS = 11;
+        public static readonly int MinTestBooks = 11;
 
         /// <summary>
         /// Minimum number of verses in test datasets.
         /// </summary>
-        public static readonly int MIN_TEST_VERSES = 111;
+        public static readonly int MinTestVerses = 111;
 
         /// <summary>
         /// Test project name.
         /// </summary>
-        private const string TEST_PROJECT_NAME = "testProjectName";
+        private const string TestProjectName = "testProjectName";
 
         /// <summary>
         /// Test versification name.
         /// </summary>
-        private const string TEST_VERSIFICATION_NAME = "testVersificationName";
+        private const string TestVersificationName = "testVersificationName";
 
         /// <summary>
         /// Max book number.
         /// </summary>
-        private const int TEST_MAX_BOOK_NUM = 66;
+        private const int TestMaxBookNum = 66;
 
         /// <summary>
         /// Test book number, for book-scale tests.
         /// </summary>
-        private const int TEST_BOOK_NUM = 10;
+        private const int TestBookNum = 10;
 
         /// <summary>
         /// Test chapter number, for chapter-scale tests.
         /// </summary>
-        private const int TEST_CHAPTER_NUM = 10;
+        private const int TestChapterNum = 10;
 
         /// <summary>
-        /// Test delay in miliseconds, for cancellation tests.
+        /// Test delay in milliseconds, for cancellation tests.
         /// </summary>
-        private const int TEST_DELAY_IN_MS = 500;
+        private const int TestDelayInMs = 500;
 
         /// <summary>
         /// Time in seconds to wait for cancellation to complete.
         /// </summary>
-        private const int TEST_CANCEL_TIMEOUT_IN_SEC = 5;
+        private const int TestCancelTimeoutInSec = 5;
 
         /// <summary>
         /// Test verses loaded from resource file.
@@ -119,17 +119,17 @@ namespace TvpTest
             _mockExtractor = new Mock<IScrExtractor>(MockBehavior.Strict);
 
             // host setup
-            _mockHost.Setup(hostItem => hostItem.GetScriptureExtractor(TEST_PROJECT_NAME, ExtractorType.USFM))
+            _mockHost.Setup(hostItem => hostItem.GetScriptureExtractor(TestProjectName, ExtractorType.USFM))
                 .Returns(_mockExtractor.Object);
-            _mockHost.Setup(hostItem => hostItem.GetProjectVersificationName(TEST_PROJECT_NAME))
-                .Returns(TEST_VERSIFICATION_NAME);
-            _mockHost.Setup(hostItem => hostItem.GetCurrentRef(TEST_VERSIFICATION_NAME))
+            _mockHost.Setup(hostItem => hostItem.GetProjectVersificationName(TestProjectName))
+                .Returns(TestVersificationName);
+            _mockHost.Setup(hostItem => hostItem.GetCurrentRef(TestVersificationName))
                 .Returns<string>((versificationName) =>
-                GetVerseRef(TEST_BOOK_NUM, TEST_CHAPTER_NUM, 1));
-            _mockHost.Setup(hostItem => hostItem.GetLastChapter(It.IsAny<int>(), TEST_VERSIFICATION_NAME))
-                .Returns<int, string>((bookNum, versificationName) => bookNum + MIN_TEST_BOOKS);
-            _mockHost.Setup(hostItem => hostItem.GetLastVerse(It.IsAny<int>(), It.IsAny<int>(), TEST_VERSIFICATION_NAME))
-                .Returns<int, int, string>((bookNum, chapterNum, versificationName) => chapterNum + MIN_TEST_VERSES);
+                GetVerseRef(TestBookNum, TestChapterNum, 1));
+            _mockHost.Setup(hostItem => hostItem.GetLastChapter(It.IsAny<int>(), TestVersificationName))
+                .Returns<int, string>((bookNum, versificationName) => bookNum + MinTestBooks);
+            _mockHost.Setup(hostItem => hostItem.GetLastVerse(It.IsAny<int>(), It.IsAny<int>(), TestVersificationName))
+                .Returns<int, int, string>((bookNum, chapterNum, versificationName) => chapterNum + MinTestVerses);
 
             // extractor setup
             _mockExtractor.Setup(extractorItem => extractorItem.Extract(It.IsAny<int>(), It.IsAny<int>()))
@@ -137,7 +137,7 @@ namespace TvpTest
                 {
                     if (_isVersesDelayed)
                     {
-                        Thread.Sleep(TEST_DELAY_IN_MS);
+                        Thread.Sleep(TestDelayInMs);
                     }
                 })
                 .Returns<int, int>((fromRef, toRef) =>
@@ -148,16 +148,16 @@ namespace TvpTest
         }
 
         /// <summary>
-        /// Turn independant BCV valus into a coordinate.
+        /// Turn independent BCV values into a coordinate.
         /// </summary>
         /// <param name="bookNum">Paratext book number (1-66).</param>
         /// <param name="chapterNum">Paratext chapter number (book- and versification-specific).</param>
         /// <param name="verseNum">Paratext verse number (chapter- and versification-specific).</param>
         /// <returns></returns>
-        static private int GetVerseRef(int bookNum, int chapterNum, int verseNum)
+        private static int GetVerseRef(int bookNum, int chapterNum, int verseNum)
         {
-            int verseRef = bookNum * TEST_BOOK_REF_MULTIPLIER;
-            verseRef += chapterNum * TEST_CHAP_REF_MULTIPLIER;
+            var verseRef = bookNum * TestBookRefMultiplier;
+            verseRef += chapterNum * TestChapRefMultiplier;
             verseRef += verseNum;
             return verseRef;
         }
@@ -184,21 +184,21 @@ namespace TvpTest
         public void TestWholeProjectPunctuationCheck()
         {
             // setup
-            for (int bookNum = 1; bookNum <= TEST_MAX_BOOK_NUM; bookNum++)
+            for (var bookNum = 1; bookNum <= TestMaxBookNum; bookNum++)
             {
-                for (int chapterNum = 1; chapterNum <= MIN_TEST_BOOKS + bookNum; chapterNum++)
+                for (var chapterNum = 1; chapterNum <= MinTestBooks + bookNum; chapterNum++)
                 {
-                    for (int verseNum = 1; verseNum <= MIN_TEST_VERSES + chapterNum; verseNum++)
+                    for (var verseNum = 1; verseNum <= MinTestVerses + chapterNum; verseNum++)
                     {
                         _expectedRefs.Add(GetVerseRef(bookNum, chapterNum, verseNum));
                     }
                 }
             }
 
-            ITextCheck textCheck = new MissingSentencePunctuationCheck(_mockHost.Object, TEST_PROJECT_NAME);
+            ITextCheck textCheck = new MissingSentencePunctuationCheck(_mockHost.Object, TestProjectName);
 
             // execute
-            CheckResult checkResult = textCheck.RunCheck(CheckArea.CurrentProject);
+            var checkResult = textCheck.RunCheck(CheckArea.CurrentProject);
 
             // assert
             Assert.AreEqual(0, _expectedRefs.Count); // all expected verses have been read
@@ -212,18 +212,18 @@ namespace TvpTest
         public void TestBookOnlyPunctuationCheck()
         {
             // setup
-            for (int chapterNum = 1; chapterNum <= MIN_TEST_BOOKS + TEST_BOOK_NUM; chapterNum++)
+            for (var chapterNum = 1; chapterNum <= MinTestBooks + TestBookNum; chapterNum++)
             {
-                for (int verseNum = 1; verseNum <= MIN_TEST_VERSES + chapterNum; verseNum++)
+                for (var verseNum = 1; verseNum <= MinTestVerses + chapterNum; verseNum++)
                 {
-                    _expectedRefs.Add(GetVerseRef(TEST_BOOK_NUM, chapterNum, verseNum));
+                    _expectedRefs.Add(GetVerseRef(TestBookNum, chapterNum, verseNum));
                 }
             }
 
-            ITextCheck textCheck = new MissingSentencePunctuationCheck(_mockHost.Object, TEST_PROJECT_NAME);
+            ITextCheck textCheck = new MissingSentencePunctuationCheck(_mockHost.Object, TestProjectName);
 
             // execute
-            CheckResult checkResult = textCheck.RunCheck(CheckArea.CurrentBook);
+            var checkResult = textCheck.RunCheck(CheckArea.CurrentBook);
 
             // assert
             Assert.AreEqual(0, _expectedRefs.Count); // all expected verses have been read
@@ -237,15 +237,15 @@ namespace TvpTest
         public void TestChapterOnlyPunctuationCheck()
         {
             // setup
-            for (int verseNum = 1; verseNum <= MIN_TEST_VERSES + TEST_CHAPTER_NUM; verseNum++)
+            for (var verseNum = 1; verseNum <= MinTestVerses + TestChapterNum; verseNum++)
             {
-                _expectedRefs.Add(GetVerseRef(TEST_BOOK_NUM, TEST_CHAPTER_NUM, verseNum));
+                _expectedRefs.Add(GetVerseRef(TestBookNum, TestChapterNum, verseNum));
             }
 
-            ITextCheck textCheck = new MissingSentencePunctuationCheck(_mockHost.Object, TEST_PROJECT_NAME);
+            ITextCheck textCheck = new MissingSentencePunctuationCheck(_mockHost.Object, TestProjectName);
 
             // execute
-            CheckResult checkResult = textCheck.RunCheck(CheckArea.CurrentChapter);
+            var checkResult = textCheck.RunCheck(CheckArea.CurrentChapter);
 
             // assert
             Assert.AreEqual(0, _expectedRefs.Count); // all expected verses have been read
@@ -258,11 +258,11 @@ namespace TvpTest
         [TestMethod]
         public void TestCancelledPunctuationCheck()
         {
-            for (int bookNum = 1; bookNum <= TEST_MAX_BOOK_NUM; bookNum++)
+            for (var bookNum = 1; bookNum <= TestMaxBookNum; bookNum++)
             {
-                for (int chapterNum = 1; chapterNum <= MIN_TEST_BOOKS + bookNum; chapterNum++)
+                for (var chapterNum = 1; chapterNum <= MinTestBooks + bookNum; chapterNum++)
                 {
-                    for (int verseNum = 1; verseNum <= MIN_TEST_VERSES + chapterNum; verseNum++)
+                    for (var verseNum = 1; verseNum <= MinTestVerses + chapterNum; verseNum++)
                     {
                         _expectedRefs.Add(GetVerseRef(bookNum, chapterNum, verseNum));
                     }
@@ -271,12 +271,12 @@ namespace TvpTest
             _isVersesDelayed = true;
 
             // setup
-            ITextCheck textCheck = new MissingSentencePunctuationCheck(_mockHost.Object, TEST_PROJECT_NAME);
+            ITextCheck textCheck = new MissingSentencePunctuationCheck(_mockHost.Object, TestProjectName);
 
             // start check in background thread, then cancel from test thread.
-            Thread workThread = new Thread(() =>
-                    textCheck.RunCheck(CheckArea.CurrentProject));
-            workThread.IsBackground = true;
+            var workThread = new Thread(() =>
+                textCheck.RunCheck(CheckArea.CurrentProject))
+            { IsBackground = true };
             workThread.Start();
 
             // wait a sec, then cancel
@@ -285,7 +285,7 @@ namespace TvpTest
 
             // cancel and wait for worker thread to be done
             textCheck.CancelCheck();
-            workThread.Join(TimeSpan.FromSeconds(TEST_CANCEL_TIMEOUT_IN_SEC));
+            workThread.Join(TimeSpan.FromSeconds(TestCancelTimeoutInSec));
 
             // assert
             Assert.IsFalse(workThread.IsAlive); // worker thread is dead

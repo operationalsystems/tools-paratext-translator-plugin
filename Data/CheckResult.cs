@@ -5,9 +5,6 @@ using System.Collections.Generic;
 using System.Text;
 using TvpMain.Data;
 
-/*
- * A class to handle results from validation checks.
- */
 namespace TvpMain.Data
 {
     /// <summary>
@@ -28,8 +25,6 @@ namespace TvpMain.Data
         /// <summary>
         /// Basic ctor.
         /// </summary>
-        /// <param name="host">Paratext host interface.</param>
-        /// <param name="activeProjectName">Active project name.</param>
         public CheckResult()
         {
             _resultItems = new ConcurrentQueue<ResultItem>();
@@ -38,13 +33,7 @@ namespace TvpMain.Data
         /// <summary>
         /// Summary text from the collection of result items.
         /// </summary>
-        public string SummaryText
-        {
-            get
-            {
-                return GetSummaryText(new List<ResultItem>(_resultItems));
-            }
-        }
+        public string SummaryText => GetSummaryText(new List<ResultItem>(_resultItems));
 
         /// <summary>
         /// Gets summary text from a collection of result items.
@@ -53,7 +42,7 @@ namespace TvpMain.Data
         /// <returns>Summary text.</returns>
         public static string GetSummaryText(IList<ResultItem> resultItems)
         {
-            StringBuilder stringBuilder = new StringBuilder();
+            var stringBuilder = new StringBuilder();
             if (resultItems.Count < 1)
             {
                 stringBuilder.Append("No violations.");
@@ -66,7 +55,7 @@ namespace TvpMain.Data
 
                 ISet<int> bookSet = new HashSet<int>();
                 ISet<string> matchSet = new HashSet<string>();
-                foreach (ResultItem resultItem in resultItems)
+                foreach (var resultItem in resultItems)
                 {
                     bookSet.Add(resultItem.BookNum);
                     matchSet.Add(resultItem.MatchText);
