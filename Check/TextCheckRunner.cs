@@ -82,7 +82,7 @@ namespace TvpMain.Check
         /// <summary>
         /// Cancels a running check.
         /// </summary>
-        public void CancelCheck()
+        public void CancelChecks()
         {
             _tokenSource?.Cancel();
         }
@@ -92,7 +92,7 @@ namespace TvpMain.Check
         /// </summary>
         /// <param name="inputArea">Check area (i.e., scope; required).</param>
         /// <returns>Check result.</returns>
-        public CheckResults RunCheck(CheckArea inputArea, IEnumerable<ITextCheck> inputChecks)
+        public CheckResults RunChecks(CheckArea inputArea, IEnumerable<ITextCheck> inputChecks)
         {
             var inputChecksList = inputChecks.ToList();
 
@@ -181,11 +181,10 @@ namespace TvpMain.Check
 
                                         resultItems.Clear();
 
+                                        var textLocation = new TextLocation(bookNum, chapterNum, verseNum,
+                                            verseNum == 0 ? TextContext.Introduction : TextContext.MainText);
                                         inputChecksList.ForEach(checkItem =>
-                                            checkItem.CheckVerse(
-                                                new TextLocation(bookNum, chapterNum, verseNum,
-                                                    verseNum == 0 ? TextContext.Introduction : TextContext.MainText),
-                                                inputText, resultItems));
+                                            checkItem.CheckVerse(textLocation, inputText, resultItems));
                                         resultItems.ForEach(resultItem =>
                                             checkResults.ResultItems.Enqueue(resultItem));
                                     }
