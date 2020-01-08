@@ -7,7 +7,7 @@ using System.Windows.Forms;
 using AddInSideViews;
 using CsvHelper;
 using TvpMain.Check;
-using TvpMain.Data;
+using TvpMain.Result;
 using TvpMain.Filter;
 using TvpMain.Util;
 using static System.Environment;
@@ -35,7 +35,9 @@ namespace TvpMain.Form
         /// Only check currently implemented. This will grow to an aggregate model of some kind
         /// (maybe even just a list of checks, run in series or parallel). 
         /// </summary>
-        private readonly MissingSentencePunctuationCheck _punctuationCheck;
+        private readonly TextCheckRunner _textCheckRunner;
+
+        private readonly IEnumerable<ITextCheck> _allChecks;
 
         /// <summary>
         /// Ignore list filter.
@@ -55,7 +57,7 @@ namespace TvpMain.Form
         /// <summary>
         /// Last check result (could be null).
         /// </summary>
-        private CheckResult _lastResult;
+        private CheckResults _lastResult;
 
         /// <summary>
         /// All result items from last result (defaults to empty).
@@ -84,14 +86,20 @@ namespace TvpMain.Form
 
             _ignoreFilter = new IgnoreListTextFilter();
             _termFilter = new BiblicalTermsTextFilter();
-            _punctuationCheck = new MissingSentencePunctuationCheck(_host, _activeProjectName);
 
-            _punctuationCheck.CheckUpdated += OnCheckUpdated;
+            _textCheckRunner = new TextCheckRunner(_host, _activeProjectName);
+            _textCheckRunner.CheckUpdated += OnCheckUpdated;
+
             searchMenuTextBox.TextChanged += OnSearchTextChanged;
             contextMenu.Opening += OnContextMenuOpening;
 
             _allResultItems = Enumerable.Empty<ResultItem>().ToList();
             _filteredResultItems = _allResultItems;
+
+            _allChecks = new List<ITextCheck>()
+            {
+                new MissingSentencePunctuationCheck()
+            };
 
             // Background worker to build the biblical term list filter at startup
             // (takes a few seconds, so should not hold up the UI).
@@ -138,7 +146,7 @@ namespace TvpMain.Form
         private void OnProgressFormCancelled(object sender, EventArgs e)
         {
             dgvCheckResults.Rows.Clear();
-            _punctuationCheck.CancelCheck();
+            _textCheckRunner.CancelCheck();
 
             HideProgress();
         }
@@ -161,14 +169,14 @@ namespace TvpMain.Form
             FilterResults();
 
             dgvCheckResults.Rows.Clear();
-            statusLabel.Text = CheckResult.GetSummaryText(_filteredResultItems);
+            statusLabel.Text = CheckResults.GetSummaryText(_filteredResultItems);
 
             foreach (var resultItem in _filteredResultItems)
             {
                 dgvCheckResults.Rows.Add(
-                    $"{resultItem.BcvText}",
+                    $"{resultItem.TextLocation.CoordinateText}",
                     $"{resultItem.MatchText}",
-                    $"{resultItem.VerseText}",
+                    $"{resultItem.CheckText}",
                     $"{resultItem.ErrorText}");
                 dgvCheckResults.Rows[(dgvCheckResults.Rows.Count - 1)].HeaderCell.Value =
                     $"{dgvCheckResults.Rows.Count:N0}";
@@ -197,7 +205,7 @@ namespace TvpMain.Form
                 {
                     _filteredResultItems = _filteredResultItems.Where(
                         resultItem => !_ignoreFilter.FilterText(isEntireVerse
-                        ? resultItem.VerseText : resultItem.MatchText)).ToList();
+                        ? resultItem.CheckText : resultItem.MatchText)).ToList();
                 }
 
                 // lock in case the background worker hasn't finished yet
@@ -208,7 +216,7 @@ namespace TvpMain.Form
                     {
                         _filteredResultItems = _filteredResultItems.Where(
                             resultItem => !_termFilter.FilterText(isEntireVerse
-                        ? resultItem.VerseText : resultItem.MatchText)).ToList();
+                        ? resultItem.CheckText : resultItem.MatchText)).ToList();
                     }
                 }
 
@@ -220,13 +228,13 @@ namespace TvpMain.Form
                     if (searchText.Any(char.IsUpper))
                     {
                         _filteredResultItems = _filteredResultItems.Where(
-                                resultItem => (resultItem.VerseText.Contains(searchText)
+                                resultItem => (resultItem.CheckText.Contains(searchText)
                                 || resultItem.ErrorText.Contains(searchText))).ToList();
                     }
                     else
                     {
                         _filteredResultItems = _filteredResultItems.Where(
-                                resultItem => (resultItem.VerseText.ToLower().Contains(searchText)
+                                resultItem => (resultItem.CheckText.ToLower().Contains(searchText)
                                 || resultItem.ErrorText.ToLower().Contains(searchText))).ToList();
                     }
                 }
@@ -277,7 +285,7 @@ namespace TvpMain.Form
                     checkArea = CheckArea.CurrentChapter;
                 }
 
-                _lastResult = _punctuationCheck.RunCheck(checkArea) ?? _lastResult;
+                _lastResult = _textCheckRunner.RunCheck(checkArea, _allChecks) ?? _lastResult;
                 HideProgress();
 
                 if (_lastResult != null)

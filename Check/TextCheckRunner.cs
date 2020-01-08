@@ -7,17 +7,20 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using TvpMain.Data;
+using TvpMain.Result;
 using TvpMain.Filter;
 using TvpMain.Util;
 
 namespace TvpMain.Check
 {
     /// <summary>
-    /// Abstract implementation that parallelizes the concrete check across
-    /// one or more books.
+    /// Parallelizes concrete text checks across one or more books.
+    /// 
+    /// This is preferable because extracting verses process boundaries and is therefore
+    /// CPU and I/O intensive, so for best results we want (n) checks performed on each
+    /// verse, vs each check extracting all verses (n) times. 
     /// </summary>
-    public abstract class AbstractTextCheck : ITextCheck
+    public class TextCheckRunner
     {
         /// <summary>
         /// Paratext host interface.
@@ -44,7 +47,7 @@ namespace TvpMain.Check
         /// </summary>
         /// <param name="host"></param>
         /// <param name="activeProjectName"></param>
-        protected AbstractTextCheck(IHost host, string activeProjectName)
+        public TextCheckRunner(IHost host, string activeProjectName)
         {
             this._host = host ?? throw new ArgumentNullException(nameof(host));
             this._activeProjectName = activeProjectName ?? throw new ArgumentNullException(nameof(activeProjectName));
@@ -87,11 +90,13 @@ namespace TvpMain.Check
         /// <summary>
         /// Runs a check.
         /// </summary>
-        /// <param name="checkArea">Check area (i.e., scope; required).</param>
+        /// <param name="inputArea">Check area (i.e., scope; required).</param>
         /// <returns>Check result.</returns>
-        public CheckResult RunCheck(CheckArea checkArea)
+        public CheckResults RunCheck(CheckArea inputArea, IEnumerable<ITextCheck> inputChecks)
         {
-            var checkResult = new CheckResult();
+            var inputChecksList = inputChecks.ToList();
+
+            var checkResults = new CheckResults();
             var versificationName = _host.GetProjectVersificationName(_activeProjectName);
 
             var currProgress = 0;
@@ -102,9 +107,9 @@ namespace TvpMain.Check
                 out var refBook, out var refChapter, out var refVerse);
 
             // determine book range using check area and user's location in Paratext
-            var minBook = (checkArea == CheckArea.CurrentProject)
+            var minBook = (inputArea == CheckArea.CurrentProject)
                 ? 1 : refBook;
-            var maxBook = (checkArea == CheckArea.CurrentProject)
+            var maxBook = (inputArea == CheckArea.CurrentProject)
                 ? (MainConsts.MAX_BOOK_NUM + 1) : (refBook + 1);
             var numBooks = (maxBook - minBook);
 
@@ -126,10 +131,10 @@ namespace TvpMain.Check
                         (bookNum, loopState, extractorState) =>
                         {
                             // determine chapter range using checkarea and user's location in Paratext
-                            var minChapter = (checkArea != CheckArea.CurrentChapter)
+                            var minChapter = (inputArea != CheckArea.CurrentChapter)
                                 ? 1
                                 : refChapter;
-                            var maxChapter = (checkArea != CheckArea.CurrentChapter)
+                            var maxChapter = (inputArea != CheckArea.CurrentChapter)
                                 ? _host.GetLastChapter(bookNum, versificationName)
                                 : refChapter;
 
@@ -139,7 +144,7 @@ namespace TvpMain.Check
 
                             try
                             {
-                                IList<ResultItem> resultItems = new List<ResultItem>();
+                                var resultItems = new List<ResultItem>();
                                 for (var chapterNum = minChapter; chapterNum <= maxChapter; chapterNum++)
                                 {
                                     currChapterNum = chapterNum;
@@ -155,11 +160,11 @@ namespace TvpMain.Check
                                         currVerseNum = verseNum;
 
                                         var checkRef = HostUtil.BcvToRef(bookNum, chapterNum, verseNum);
-                                        string verseText = null;
+                                        string inputText = null;
 
                                         try
                                         {
-                                            verseText = extractorState.ScrExtractor.Extract(checkRef, checkRef);
+                                            inputText = extractorState.ScrExtractor.Extract(checkRef, checkRef);
                                         }
                                         catch (ArgumentException)
                                         {
@@ -168,19 +173,21 @@ namespace TvpMain.Check
                                             continue;
                                         }
 
-                                        if (verseText == null
-                                            || !verseText.Trim().Any())
+                                        if (inputText == null
+                                            || !inputText.Trim().Any())
                                         {
                                             continue;
                                         }
 
                                         resultItems.Clear();
-                                        CheckVerse(bookNum, chapterNum, verseNum, verseText, resultItems);
 
-                                        foreach (var resultItem in resultItems)
-                                        {
-                                            checkResult.ResultItems.Enqueue(resultItem);
-                                        }
+                                        inputChecksList.ForEach(checkItem =>
+                                            checkItem.CheckVerse(
+                                                new TextLocation(bookNum, chapterNum, verseNum,
+                                                    verseNum == 0 ? TextContext.Introduction : TextContext.MainText),
+                                                inputText, resultItems));
+                                        resultItems.ForEach(resultItem =>
+                                            checkResults.ResultItems.Enqueue(resultItem));
                                     }
                                 }
 
@@ -189,7 +196,7 @@ namespace TvpMain.Check
                                 lock (this)
                                 {
                                     currProgress++;
-                                    CheckUpdated?.Invoke(this, (checkArea == CheckArea.CurrentProject)
+                                    CheckUpdated?.Invoke(this, (inputArea == CheckArea.CurrentProject)
                                         ? new CheckUpdatedArgs(currProgress, numBooks)
                                         : new CheckUpdatedArgs(currProgress, 1));
                                 }
@@ -238,17 +245,7 @@ namespace TvpMain.Check
             }
 
             return _tokenSource.IsCancellationRequested
-                ? null : checkResult;
+                ? null : checkResults;
         }
-
-        /// <summary>
-        /// Abstract check method.
-        /// </summary>
-        /// <param name="bookNum">Book number.</param>
-        /// <param name="chapterNum">Chapter number.</param>
-        /// <param name="verseNum">Verse number.</param>
-        /// <param name="verseText">Verse text.</param>
-        /// <param name="resultItems">Result items list to populate.</param>
-        protected abstract void CheckVerse(int bookNum, int chapterNum, int verseNum, string verseText, IList<ResultItem> resultItems);
     }
 }

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using AddInSideViews;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using TvpMain.Data;
+using TvpMain.Result;
 using TvpMain.Filter;
 
 namespace TvpTest

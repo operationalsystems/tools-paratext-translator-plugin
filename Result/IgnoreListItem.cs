@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace TvpMain.Data
+namespace TvpMain.Result
 {
     /// <summary>
     /// Model class for ignore list entries.

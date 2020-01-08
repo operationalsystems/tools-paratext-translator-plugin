@@ -89,9 +89,14 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Check\CheckArea.cs" />
+    <Compile Include="Check\TextLocation.cs" />
+    <Compile Include="Check\TextContext.cs" />
     <Compile Include="Check\CheckUpdatedArgs.cs" />
+    <Compile Include="Check\CheckType.cs" />
     <Compile Include="Check\MissingSentencePunctuationCheck.cs" />
-    <Compile Include="Data\IgnoreListItem.cs" />
+    <Compile Include="Check\ScriptureReferenceCheck.cs" />
+    <Compile Include="Result\ResultState.cs" />
+    <Compile Include="Result\IgnoreListItem.cs" />
     <Compile Include="Filter\AbstractTextFilter.cs" />
     <Compile Include="Filter\BiblicalTermsTextFilter.cs" />
     <Compile Include="Filter\ITextFilter.cs" />
@@ -110,10 +115,10 @@
     </Compile>
     <Compile Include="Util\MainConsts.cs" />
     <Compile Include="Util\HostUtil.cs" />
-    <Compile Include="Data\CheckResult.cs" />
+    <Compile Include="Result\CheckResults.cs" />
     <Compile Include="Check\ITextCheck.cs" />
-    <Compile Include="Check\AbstractTextCheck.cs" />
-    <Compile Include="Data\ResultItem.cs" />
+    <Compile Include="Check\TextCheckRunner.cs" />
+    <Compile Include="Result\ResultItem.cs" />
     <Compile Include="TranslationValidationPlugin.cs" />
     <Compile Include="Form\MainForm.cs">
       <SubType>Form</SubType>

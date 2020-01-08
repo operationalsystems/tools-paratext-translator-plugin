@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
-using TvpMain.Data;
+using TvpMain.Result;
 using TvpMain.Util;
 using static System.Environment;
 
@@ -156,7 +156,7 @@ namespace TvpMain.Form
                 foreach (DataGridViewRow rowItem in dgvIgnoreList.Rows)
                 {
                     IgnoreList.Add(new IgnoreListItem(rowItem.Cells[0].Value.ToString(),
-                                                  rowItem.Cells[1].Value == null ? false : (bool)rowItem.Cells[1].Value));
+                                                  (bool?)rowItem.Cells[1].Value ?? false));
                 }
             }
             finally

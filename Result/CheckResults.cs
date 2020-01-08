@@ -3,37 +3,32 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Text;
-using TvpMain.Data;
+using TvpMain.Result;
 
-namespace TvpMain.Data
+namespace TvpMain.Result
 {
     /// <summary>
     /// Check result aggregator.
     /// </summary>
-    public class CheckResult
+    public class CheckResults
     {
         /// <summary>
         /// Collection of result items.
         /// </summary>
-        private readonly ConcurrentQueue<ResultItem> _resultItems;
-
-        /// <summary>
-        /// Collection of result items.
-        /// </summary>
-        public ConcurrentQueue<ResultItem> ResultItems => _resultItems;
+        public ConcurrentQueue<ResultItem> ResultItems { get; }
 
         /// <summary>
         /// Basic ctor.
         /// </summary>
-        public CheckResult()
+        public CheckResults()
         {
-            _resultItems = new ConcurrentQueue<ResultItem>();
+            ResultItems = new ConcurrentQueue<ResultItem>();
         }
 
         /// <summary>
         /// Summary text from the collection of result items.
         /// </summary>
-        public string SummaryText => GetSummaryText(new List<ResultItem>(_resultItems));
+        public string SummaryText => GetSummaryText(new List<ResultItem>(ResultItems));
 
         /// <summary>
         /// Gets summary text from a collection of result items.
@@ -57,7 +52,7 @@ namespace TvpMain.Data
                 ISet<string> matchSet = new HashSet<string>();
                 foreach (var resultItem in resultItems)
                 {
-                    bookSet.Add(resultItem.BookNum);
+                    bookSet.Add(resultItem.TextLocation.BookNum);
                     matchSet.Add(resultItem.MatchText);
                 }
 

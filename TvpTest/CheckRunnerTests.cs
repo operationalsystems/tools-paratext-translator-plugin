@@ -8,7 +8,7 @@ using AddInSideViews;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using TvpMain.Check;
-using TvpMain.Data;
+using TvpMain.Result;
 using TvpMain.Util;
 
 namespace TvpTest
@@ -17,7 +17,7 @@ namespace TvpTest
     /// Basic tests for project, book, and chapter-scope text checks.
     /// </summary>
     [TestClass]
-    public class CheckTests
+    public class CheckRunnerTests
     {
         /// <summary>
         /// Multiplier for book numbers in BCV-style references.
@@ -195,10 +195,14 @@ namespace TvpTest
                 }
             }
 
-            ITextCheck textCheck = new MissingSentencePunctuationCheck(_mockHost.Object, TestProjectName);
-
             // execute
-            var checkResult = textCheck.RunCheck(CheckArea.CurrentProject);
+            var checkRunner = new TextCheckRunner(_mockHost.Object, TestProjectName);
+            var checkResult = checkRunner.RunCheck(
+                CheckArea.CurrentProject,
+                new List<ITextCheck>()
+                {
+                    new MissingSentencePunctuationCheck()
+                });
 
             // assert
             Assert.AreEqual(0, _expectedRefs.Count); // all expected verses have been read
@@ -206,7 +210,7 @@ namespace TvpTest
         }
 
         /// <summary>
-        /// Tests that a check can scan a specific book (only a specific bookt, but all chapters and verses).
+        /// Tests that a check can scan a specific book (only a specific book, but all chapters and verses).
         /// </summary>
         [TestMethod]
         public void TestBookOnlyPunctuationCheck()
@@ -220,10 +224,13 @@ namespace TvpTest
                 }
             }
 
-            ITextCheck textCheck = new MissingSentencePunctuationCheck(_mockHost.Object, TestProjectName);
-
-            // execute
-            var checkResult = textCheck.RunCheck(CheckArea.CurrentBook);
+            var checkRunner = new TextCheckRunner(_mockHost.Object, TestProjectName);
+            var checkResult = checkRunner.RunCheck(
+                CheckArea.CurrentBook,
+                new List<ITextCheck>()
+                {
+                    new MissingSentencePunctuationCheck()
+                });
 
             // assert
             Assert.AreEqual(0, _expectedRefs.Count); // all expected verses have been read
@@ -242,10 +249,13 @@ namespace TvpTest
                 _expectedRefs.Add(GetVerseRef(TestBookNum, TestChapterNum, verseNum));
             }
 
-            ITextCheck textCheck = new MissingSentencePunctuationCheck(_mockHost.Object, TestProjectName);
-
-            // execute
-            var checkResult = textCheck.RunCheck(CheckArea.CurrentChapter);
+            var checkRunner = new TextCheckRunner(_mockHost.Object, TestProjectName);
+            var checkResult = checkRunner.RunCheck(
+                CheckArea.CurrentChapter,
+                new List<ITextCheck>()
+                {
+                    new MissingSentencePunctuationCheck()
+                });
 
             // assert
             Assert.AreEqual(0, _expectedRefs.Count); // all expected verses have been read
@@ -271,11 +281,16 @@ namespace TvpTest
             _isVersesDelayed = true;
 
             // setup
-            ITextCheck textCheck = new MissingSentencePunctuationCheck(_mockHost.Object, TestProjectName);
+            var checkRunner = new TextCheckRunner(_mockHost.Object, TestProjectName);
 
             // start check in background thread, then cancel from test thread.
             var workThread = new Thread(() =>
-                textCheck.RunCheck(CheckArea.CurrentProject))
+                    checkRunner.RunCheck(
+                        CheckArea.CurrentProject,
+                        new List<ITextCheck>()
+                        {
+                            new MissingSentencePunctuationCheck()
+                        }))
             { IsBackground = true };
             workThread.Start();
 
@@ -284,7 +299,7 @@ namespace TvpTest
             Assert.IsTrue(workThread.IsAlive); // worker thread is still alive
 
             // cancel and wait for worker thread to be done
-            textCheck.CancelCheck();
+            checkRunner.CancelCheck();
             workThread.Join(TimeSpan.FromSeconds(TestCancelTimeoutInSec));
 
             // assert

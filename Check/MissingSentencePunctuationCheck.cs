@@ -5,7 +5,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using AddInSideViews;
-using TvpMain.Data;
+using TvpMain.Result;
 using TvpMain.Filter;
 
 namespace TvpMain.Check
@@ -13,7 +13,7 @@ namespace TvpMain.Check
     /// <summary>
     /// Regex-based punctuation check.
     /// </summary>
-    public class MissingSentencePunctuationCheck : AbstractTextCheck
+    public class MissingSentencePunctuationCheck : ITextCheck
     {
         /// <summary>
         /// Regex to check for improper capitalization following non-final punctuation (E.g. <text>, And <text>).
@@ -30,30 +30,20 @@ namespace TvpMain.Check
         }
 
         /// <summary>
-        /// Basic ctor.
-        /// </summary>
-        /// <param name="host">Paratext host interface (required).</param>
-        /// <param name="activeProjectName">Active project name (required).</param>
-        public MissingSentencePunctuationCheck(IHost host, string activeProjectName)
-            : base(host, activeProjectName)
-        {
-        }
-
-        /// <summary>
         /// Check implementation.
         /// </summary>
-        /// <param name="bookNum">Book number.</param>
-        /// <param name="chapterNum">Chapter number.</param>
-        /// <param name="verseNum">Verse number.</param>
-        /// <param name="verseText">Verse text.</param>
+        /// <param name="textLocation">Text location (required).</param>
+        /// <param name="inputText">Input text.</param>
         /// <param name="checkResults">Result items list to populate.</param>
-        protected override void CheckVerse(int bookNum, int chapterNum, int verseNum, string verseText, IList<ResultItem> checkResults)
+        public void CheckVerse(TextLocation textLocation, string inputText, IList<ResultItem> checkResults)
         {
-            foreach (Match matchItem in CheckRegex.Matches(verseText))
+            foreach (Match matchItem in CheckRegex.Matches(inputText))
             {
-                checkResults.Add(new ResultItem(bookNum, chapterNum, verseNum,
+                checkResults.Add
+                (new ResultItem(textLocation,
                     $"Punctuation check failure at position {matchItem.Index}.",
-                    verseText, matchItem.Value));
+                    inputText, matchItem.Value, null,
+                    CheckType.MissingSentencePunctuation));
             }
         }
     }
