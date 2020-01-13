@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace TvpMain.Check
+namespace TvpMain.Text
 {
     /// <summary>
     /// Args for check update events.
@@ -12,24 +12,30 @@ namespace TvpMain.Check
     public class CheckUpdatedArgs
     {
         /// <summary>
-        /// Current book count in check.
-        /// </summary>
-        public int CurrBookNum { get; }
-
-        /// <summary>
         /// Max book position in check (1 for single-book check, 66 for all books, etc.).
         /// </summary>
-        public int MaxBookNum { get; }
+        public int TotalBooks { get; }
+
+        /// <summary>
+        /// Current book count in check.
+        /// </summary>
+        public int BookCtr { get; }
+
+        /// <summary>
+        /// Current book number in update (1-based).
+        /// </summary>
+        public int BookNum { get; }
 
         /// <summary>
         /// Basic ctor;
         /// </summary>
-        /// <param name="currBookNum">Current book count in check.</param>
-        /// <param name="maxBookNum">Max book position in check.</param>
-        public CheckUpdatedArgs(int currBookNum, int maxBookNum)
+        /// <param name="bookCtr">Current book count in check.</param>
+        /// <param name="totalBooks">Max book position in check.</param>
+        public CheckUpdatedArgs(int totalBooks, int bookCtr, int bookNum)
         {
-            this.CurrBookNum = currBookNum;
-            this.MaxBookNum = maxBookNum;
+            this.TotalBooks = totalBooks;
+            this.BookCtr = bookCtr;
+            this.BookNum = bookNum;
         }
     }
 }

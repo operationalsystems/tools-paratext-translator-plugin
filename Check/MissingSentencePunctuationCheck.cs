@@ -8,7 +8,7 @@ using AddInSideViews;
 using TvpMain.Result;
 using TvpMain.Filter;
 
-namespace TvpMain.Check
+namespace TvpMain.Text
 {
     /// <summary>
     /// Regex-based punctuation check.
@@ -18,16 +18,9 @@ namespace TvpMain.Check
         /// <summary>
         /// Regex to check for improper capitalization following non-final punctuation (E.g. <text>, And <text>).
         /// </summary>
-        private static readonly Regex CheckRegex;
-
-        /// <summary>
-        /// Static initializer.
-        /// </summary>
-        static MissingSentencePunctuationCheck()
-        {
-            CheckRegex = new Regex("(?<=[;,]([\"'](\\s[\"'])*)?(\\\\f([^\\\\]|\\\\(?!f\\*))*?\\\\f\\*)*(\\s*\\\\\\w+)+(\\s*\\\\v\\s\\S+)?\\s+(\\\\x([^\\\\]|\\\\(?!x\\*))*?\\\\x\\*)?)[A-Z]\\w+",
-                RegexOptions.Multiline);
-        }
+        private static readonly Regex CheckRegex =
+            new Regex("(?<=[;,]([\"'](\\s[\"'])*)?(\\\\f([^\\\\]|\\\\(?!f\\*))*?\\\\f\\*)*(\\s*\\\\\\w+)+(\\s*\\\\v\\s\\S+)?\\s+(\\\\x([^\\\\]|\\\\(?!x\\*))*?\\\\x\\*)?)[A-Z]\\w+",
+            RegexOptions.Multiline);
 
         /// <summary>
         /// Check implementation.

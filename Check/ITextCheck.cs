@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using TvpMain.Result;
 
-namespace TvpMain.Check
+namespace TvpMain.Text
 {
     /// <summary>
     /// General-purpose per-verse text check.

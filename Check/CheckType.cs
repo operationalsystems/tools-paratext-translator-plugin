@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace TvpMain.Check
+namespace TvpMain.Text
 {
     public enum CheckType
     {

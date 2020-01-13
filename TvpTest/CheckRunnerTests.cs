@@ -7,7 +7,8 @@ using System.Threading;
 using AddInSideViews;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
-using TvpMain.Check;
+using TvpMain.Project;
+using TvpMain.Text;
 using TvpMain.Result;
 using TvpMain.Util;
 
@@ -95,6 +96,11 @@ namespace TvpTest
         private Mock<IHost> _mockHost;
 
         /// <summary>
+        /// Mock settings manager.
+        /// </summary>
+        private Mock<SettingsManager> _mockSettingsManager;
+
+        /// <summary>
         /// Expected set of refs (BCV coordinates) for a given test.
         /// </summary>
         private ISet<int> _expectedRefs;
@@ -103,6 +109,14 @@ namespace TvpTest
         /// True to delay verse extraction, false otherwise (for cancellation tests).
         /// </summary>
         private bool _isVersesDelayed;
+
+        /// <summary>
+        /// Test contexts.
+        /// </summary>
+        private readonly List<TextContext> _testContexts = new List<TextContext>()
+        {
+            TextContext.MainText
+        };
 
         /// <summary>
         /// Test setup for verse lines and main mocks.
@@ -117,6 +131,9 @@ namespace TvpTest
 
             _mockHost = new Mock<IHost>(MockBehavior.Strict);
             _mockExtractor = new Mock<IScrExtractor>(MockBehavior.Strict);
+            _mockSettingsManager = new Mock<SettingsManager>(MockBehavior.Strict,
+                _mockHost.Object,
+                TestProjectName);
 
             // host setup
             _mockHost.Setup(hostItem => hostItem.GetScriptureExtractor(TestProjectName, ExtractorType.USFM))
@@ -196,13 +213,17 @@ namespace TvpTest
             }
 
             // execute
-            var checkRunner = new TextCheckRunner(_mockHost.Object, TestProjectName);
-            var checkResult = checkRunner.RunCheck(
-                CheckArea.CurrentProject,
-                new List<ITextCheck>()
-                {
-                    new MissingSentencePunctuationCheck()
-                });
+            var checkRunner = new TextCheckRunner(
+                _mockHost.Object,
+                TestProjectName,
+                _mockSettingsManager.Object);
+            checkRunner.RunChecks(
+               CheckArea.CurrentProject,
+               new List<ITextCheck>()
+               {
+                   new MissingSentencePunctuationCheck()
+               }, _testContexts,
+               out var checkResult);
 
             // assert
             Assert.AreEqual(0, _expectedRefs.Count); // all expected verses have been read
@@ -224,13 +245,17 @@ namespace TvpTest
                 }
             }
 
-            var checkRunner = new TextCheckRunner(_mockHost.Object, TestProjectName);
-            var checkResult = checkRunner.RunCheck(
+            var checkRunner = new TextCheckRunner(
+                _mockHost.Object,
+                TestProjectName,
+                _mockSettingsManager.Object);
+            checkRunner.RunChecks(
                 CheckArea.CurrentBook,
                 new List<ITextCheck>()
                 {
                     new MissingSentencePunctuationCheck()
-                });
+                }, _testContexts,
+                out var checkResult);
 
             // assert
             Assert.AreEqual(0, _expectedRefs.Count); // all expected verses have been read
@@ -249,13 +274,17 @@ namespace TvpTest
                 _expectedRefs.Add(GetVerseRef(TestBookNum, TestChapterNum, verseNum));
             }
 
-            var checkRunner = new TextCheckRunner(_mockHost.Object, TestProjectName);
-            var checkResult = checkRunner.RunCheck(
+            var checkRunner = new TextCheckRunner(
+                _mockHost.Object,
+                TestProjectName,
+                _mockSettingsManager.Object);
+            checkRunner.RunChecks(
                 CheckArea.CurrentChapter,
                 new List<ITextCheck>()
                 {
                     new MissingSentencePunctuationCheck()
-                });
+                }, _testContexts,
+                out var checkResult);
 
             // assert
             Assert.AreEqual(0, _expectedRefs.Count); // all expected verses have been read
@@ -281,16 +310,20 @@ namespace TvpTest
             _isVersesDelayed = true;
 
             // setup
-            var checkRunner = new TextCheckRunner(_mockHost.Object, TestProjectName);
+            var checkRunner = new TextCheckRunner(
+                _mockHost.Object,
+                TestProjectName,
+                _mockSettingsManager.Object);
 
             // start check in background thread, then cancel from test thread.
             var workThread = new Thread(() =>
-                    checkRunner.RunCheck(
+                    checkRunner.RunChecks(
                         CheckArea.CurrentProject,
                         new List<ITextCheck>()
                         {
                             new MissingSentencePunctuationCheck()
-                        }))
+                        }, _testContexts,
+                        out var checkResult))
             { IsBackground = true };
             workThread.Start();
 
@@ -299,7 +332,7 @@ namespace TvpTest
             Assert.IsTrue(workThread.IsAlive); // worker thread is still alive
 
             // cancel and wait for worker thread to be done
-            checkRunner.CancelCheck();
+            checkRunner.CancelChecks();
             workThread.Join(TimeSpan.FromSeconds(TestCancelTimeoutInSec));
 
             // assert

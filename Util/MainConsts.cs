@@ -24,24 +24,9 @@ namespace TvpMain.Util
         public const int MAX_CHECK_THREADS = 4;
 
         /// <summary>
-        /// Max number of books in standard versification (1 d= Gensis, 66 = Revelations).
+        /// Max consecutive empty verses before chapter is considered empty.
         /// </summary>
-        public const int MAX_BOOK_NUM = 66; // 66 = all books
-
-        /// <summary>
-        /// Abbreviations for bible book names.
-        /// </summary>
-        public static readonly string[] ShortBookNames = {
-            "GEN","EXO","LEV","NUM","DEU","JOS","JDG","RUT",
-            "1SA","2SA","1KI","2KI","1CH","2CH","EZR","NEH",
-            "EST","JOB","PSA","PRO","ECC","SNG","ISA","JER",
-            "LAM","EZE","DAN","HOS","JOL","AMO","OBA","JON",
-            "MIC","NAM","HAB","ZEP","HAG","ZEC","MAL","MAT",
-            "MRK","LUK","JHN","ACT","ROM","1CO","2CO","GAL",
-            "EPH","PHP","COL","1TH","2TH","1TI","2TI","TIT",
-            "PHM","HEB","JAS","1PE","2PE","1JN","2JN","3JN",
-            "JUD","REV"
-        };
+        public const int MAX_CONSECUTIVE_EMPTY_VERSES = 10;
 
         /// <summary>
         /// Multiplier for book numbers in BCV-style references.

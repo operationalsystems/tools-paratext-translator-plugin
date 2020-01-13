@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using TvpMain.Result;
 
-namespace TvpMain.Check
+namespace TvpMain.Text
 {
     public class ScriptureReferenceCheck : ITextCheck
     {

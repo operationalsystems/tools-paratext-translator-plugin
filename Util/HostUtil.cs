@@ -121,34 +121,5 @@ namespace TvpMain.Util
                 activeProjectName, MainConsts.IGNORE_LIST_ITEMS_ID,
                 JsonConvert.SerializeObject(outputItems));
         }
-
-        /// <summary>
-        /// Converts a Paratext coordinate reference to specific book, chapter, and verse.
-        /// </summary>
-        /// <param name="inputRef">Input coordinate reference (BBBCCCVVV).</param>
-        /// <param name="outputBook">Output book number (1-66).</param>
-        /// <param name="outputChapter">Output chapter number (1-1000; Max varies by book & versification).</param>
-        /// <param name="outputVerse">Output verse number (1-1000; Max varies by chapter & versification).</param>
-        public static void RefToBcv(int inputRef, out int outputBook, out int outputChapter, out int outputVerse)
-        {
-            outputBook = (inputRef / MainConsts.BookRefMultiplier);
-            outputChapter = (inputRef / MainConsts.ChapRefMultiplier) % MainConsts.RefPartRange;
-            outputVerse = inputRef % MainConsts.RefPartRange;
-        }
-
-
-        /// <summary>
-        /// Converts specific book, chapter, and verse to a Paratext coordinate reference.
-        /// </summary>
-        /// <param name="inputBook">Input book number (1-66).</param>
-        /// <param name="inputChapter">Input chapter number (1-1000; Max varies by book & versification).</param>
-        /// <param name="inputVerse">Input verse number (1-1000; Max varies by chapter & versification).</param>
-        /// <returns>Output coordinate reference (BBBCCCVVV).</returns>
-        public static int BcvToRef(int inputBook, int inputChapter, int inputVerse)
-        {
-            return (inputBook * MainConsts.BookRefMultiplier)
-                + (inputChapter * MainConsts.ChapRefMultiplier)
-                + inputVerse;
-        }
     }
 }

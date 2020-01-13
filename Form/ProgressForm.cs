@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Text;
 using System.Windows.Forms;
-using TvpMain.Check;
+using TvpMain.Text;
 using TvpMain.Util;
 
 /*
@@ -20,14 +20,9 @@ namespace TvpMain.Form
         private DateTime _startTime;
 
         /// <summary>
-        /// Last book number processed in current run.
+        /// Last check update.
         /// </summary>
-        private int _lastBookNum;
-
-        /// <summary>
-        /// Max book number in current run.
-        /// </summary>
-        private int _maxBookNum;
+        private CheckUpdatedArgs _lastUpdate;
 
         /// <summary>
         /// Cancel event handler, for use by workflow.
@@ -51,8 +46,7 @@ namespace TvpMain.Form
         {
             lock (this)
             {
-                _lastBookNum = updatedArgs.CurrBookNum;
-                _maxBookNum = updatedArgs.MaxBookNum;
+                _lastUpdate = updatedArgs;
             }
         }
 
@@ -73,6 +67,8 @@ namespace TvpMain.Form
         public void ResetForm()
         {
             _startTime = DateTime.Now;
+            _lastUpdate = null;
+
             ResetFormContents();
         }
 
@@ -108,28 +104,36 @@ namespace TvpMain.Form
         private void OnTimerUpdate(object sender, EventArgs e)
         {
             lblElapsedTime.Text = GetElapsedTime(DateTime.Now.Subtract(_startTime));
+            CheckUpdatedArgs currUpdate;
+
             lock (this)
             {
-                if (_lastBookNum != pbrStatus.Value
-                    || _maxBookNum != pbrStatus.Maximum)
+                currUpdate = _lastUpdate;
+            }
+            if (currUpdate == null)
+            {
+                return;
+            }
+
+            if (currUpdate.BookCtr != pbrStatus.Value
+                || currUpdate.TotalBooks != pbrStatus.Maximum)
+            {
+                pbrStatus.Maximum = currUpdate.TotalBooks;
+
+                if (currUpdate.BookCtr > pbrStatus.Maximum
+                    || currUpdate.BookCtr <= pbrStatus.Minimum)
                 {
-                    pbrStatus.Maximum = _maxBookNum;
-
-                    if (_lastBookNum > pbrStatus.Maximum
-                        || _lastBookNum <= pbrStatus.Minimum)
-                    {
-                        ResetFormContents();
-                    }
-                    else
-                    {
-                        pbrStatus.Value = _lastBookNum;
-                        pbrStatus.Style = ProgressBarStyle.Continuous;
-
-                        lblTitle.Text = $"Checked book #{_lastBookNum} of {_maxBookNum}...";
-                    }
-
-                    Activate();
+                    ResetFormContents();
                 }
+                else
+                {
+                    pbrStatus.Value = currUpdate.BookCtr;
+                    pbrStatus.Style = ProgressBarStyle.Continuous;
+
+                    lblTitle.Text = $"Checked {TextUtil.GetBookCode(currUpdate.BookNum)} (#{currUpdate.BookCtr} of {currUpdate.TotalBooks})...";
+                }
+
+                Activate();
             }
         }
     }

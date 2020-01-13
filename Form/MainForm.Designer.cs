@@ -46,10 +46,14 @@
             this.currentProjectAreaMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.currentBookAreaMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.currentChapterAreaMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
+            this.mainTextToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.notesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.checkMenu = new System.Windows.Forms.ToolStripMenuItem();
             this.missingSentencePunctuationCheckMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.biblicalTermsFiltersMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.wordListFiltersMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.biblicaTermsFiltersMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.ignoreListFiltersMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.entireVerseFiltersMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -195,7 +199,10 @@
             this.areaMenu.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.currentProjectAreaMenuItem,
             this.currentBookAreaMenuItem,
-            this.currentChapterAreaMenuItem});
+            this.currentChapterAreaMenuItem,
+            this.toolStripSeparator2,
+            this.mainTextToolStripMenuItem,
+            this.notesToolStripMenuItem});
             this.areaMenu.Name = "areaMenu";
             this.areaMenu.Size = new System.Drawing.Size(43, 23);
             this.areaMenu.Text = "&Area";
@@ -205,23 +212,44 @@
             this.currentProjectAreaMenuItem.Checked = true;
             this.currentProjectAreaMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
             this.currentProjectAreaMenuItem.Name = "currentProjectAreaMenuItem";
-            this.currentProjectAreaMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.currentProjectAreaMenuItem.Size = new System.Drawing.Size(159, 22);
             this.currentProjectAreaMenuItem.Text = "Current &Project";
             this.currentProjectAreaMenuItem.Click += new System.EventHandler(this.OnCurrentProjectAreaMenuClick);
             // 
             // currentBookAreaMenuItem
             // 
             this.currentBookAreaMenuItem.Name = "currentBookAreaMenuItem";
-            this.currentBookAreaMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.currentBookAreaMenuItem.Size = new System.Drawing.Size(159, 22);
             this.currentBookAreaMenuItem.Text = "Current &Book";
             this.currentBookAreaMenuItem.Click += new System.EventHandler(this.OnCurrentBookAreaMenuClick);
             // 
             // currentChapterAreaMenuItem
             // 
             this.currentChapterAreaMenuItem.Name = "currentChapterAreaMenuItem";
-            this.currentChapterAreaMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.currentChapterAreaMenuItem.Size = new System.Drawing.Size(159, 22);
             this.currentChapterAreaMenuItem.Text = "Current &Chapter";
             this.currentChapterAreaMenuItem.Click += new System.EventHandler(this.OnCurrentChapterAreaMenuClick);
+            // 
+            // toolStripSeparator2
+            // 
+            this.toolStripSeparator2.Name = "toolStripSeparator2";
+            this.toolStripSeparator2.Size = new System.Drawing.Size(156, 6);
+            // 
+            // mainTextToolStripMenuItem
+            // 
+            this.mainTextToolStripMenuItem.Checked = true;
+            this.mainTextToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.mainTextToolStripMenuItem.Name = "mainTextToolStripMenuItem";
+            this.mainTextToolStripMenuItem.Size = new System.Drawing.Size(159, 22);
+            this.mainTextToolStripMenuItem.Text = "&Main Text";
+            this.mainTextToolStripMenuItem.Click += new System.EventHandler(this.OnMainTextAreaMenuClick);
+            // 
+            // notesToolStripMenuItem
+            // 
+            this.notesToolStripMenuItem.Name = "notesToolStripMenuItem";
+            this.notesToolStripMenuItem.Size = new System.Drawing.Size(159, 22);
+            this.notesToolStripMenuItem.Text = "&Notes";
+            this.notesToolStripMenuItem.Click += new System.EventHandler(this.OnNotesAreaMenuClick);
             // 
             // checkMenu
             // 
@@ -243,7 +271,8 @@
             // toolsToolStripMenuItem
             // 
             this.toolsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.biblicalTermsFiltersMenuItem,
+            this.wordListFiltersMenuItem,
+            this.biblicaTermsFiltersMenuItem,
             this.ignoreListFiltersMenuItem,
             this.toolStripSeparator1,
             this.entireVerseFiltersMenuItem});
@@ -251,29 +280,36 @@
             this.toolsToolStripMenuItem.Size = new System.Drawing.Size(50, 23);
             this.toolsToolStripMenuItem.Text = "&Filters";
             // 
-            // biblicalTermsFiltersMenuItem
+            // wordListFiltersMenuItem
             // 
-            this.biblicalTermsFiltersMenuItem.Name = "biblicalTermsFiltersMenuItem";
-            this.biblicalTermsFiltersMenuItem.Size = new System.Drawing.Size(146, 22);
-            this.biblicalTermsFiltersMenuItem.Text = "&Biblical Terms";
-            this.biblicalTermsFiltersMenuItem.Click += new System.EventHandler(this.OnBiblicalTermListToolMenuClick);
+            this.wordListFiltersMenuItem.Name = "wordListFiltersMenuItem";
+            this.wordListFiltersMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.wordListFiltersMenuItem.Text = "&Word List";
+            this.wordListFiltersMenuItem.Click += new System.EventHandler(this.OnWordListFilterToolMenuClick);
+            // 
+            // biblicaTermsFiltersMenuItem
+            // 
+            this.biblicaTermsFiltersMenuItem.Name = "biblicaTermsFiltersMenuItem";
+            this.biblicaTermsFiltersMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.biblicaTermsFiltersMenuItem.Text = "&Biblical Terms";
+            this.biblicaTermsFiltersMenuItem.Click += new System.EventHandler(this.OnBiblicalTermsFilterToolMenuClick);
             // 
             // ignoreListFiltersMenuItem
             // 
             this.ignoreListFiltersMenuItem.Name = "ignoreListFiltersMenuItem";
-            this.ignoreListFiltersMenuItem.Size = new System.Drawing.Size(146, 22);
+            this.ignoreListFiltersMenuItem.Size = new System.Drawing.Size(180, 22);
             this.ignoreListFiltersMenuItem.Text = "&Ignore List";
             this.ignoreListFiltersMenuItem.Click += new System.EventHandler(this.IgnoreListToolStripMenuItem_Click);
             // 
             // toolStripSeparator1
             // 
             this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(143, 6);
+            this.toolStripSeparator1.Size = new System.Drawing.Size(177, 6);
             // 
             // entireVerseFiltersMenuItem
             // 
             this.entireVerseFiltersMenuItem.Name = "entireVerseFiltersMenuItem";
-            this.entireVerseFiltersMenuItem.Size = new System.Drawing.Size(146, 22);
+            this.entireVerseFiltersMenuItem.Size = new System.Drawing.Size(180, 22);
             this.entireVerseFiltersMenuItem.Text = "Entire &Verse";
             this.entireVerseFiltersMenuItem.Click += new System.EventHandler(this.OnEntireVerseFiltersMenuClick);
             // 
@@ -417,7 +453,7 @@
         private System.Windows.Forms.ToolStripMenuItem bcvViewMenuItem;
         private System.Windows.Forms.ToolStripMenuItem errorViewMenuItem;
         private System.Windows.Forms.Button btnShowIgnoreList;
-        private System.Windows.Forms.ToolStripMenuItem biblicalTermsFiltersMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem wordListFiltersMenuItem;
         private System.Windows.Forms.ToolStripMenuItem ignoreListFiltersMenuItem;
         private System.Windows.Forms.ToolStripMenuItem verseViewMenuItem;
         private System.Windows.Forms.Button btnClose;
@@ -439,5 +475,9 @@
         private System.Windows.Forms.ContextMenuStrip contextMenu;
         private System.Windows.Forms.ToolStripMenuItem addToIgnoreList;
         private System.Windows.Forms.ToolStripMenuItem removeFromIgnoreList;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
+        private System.Windows.Forms.ToolStripMenuItem mainTextToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem notesToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem biblicaTermsFiltersMenuItem;
     }
 }

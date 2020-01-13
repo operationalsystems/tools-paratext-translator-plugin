@@ -1,6 +1,8 @@
 ﻿using AddInSideViews;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -9,9 +11,10 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using TvpMain.Result;
 using TvpMain.Filter;
+using TvpMain.Project;
 using TvpMain.Util;
 
-namespace TvpMain.Check
+namespace TvpMain.Text
 {
     /// <summary>
     /// Parallelizes concrete text checks across one or more books.
@@ -22,6 +25,11 @@ namespace TvpMain.Check
     /// </summary>
     public class TextCheckRunner
     {
+        /// <summary>
+        /// Lock for publishing check progress.
+        /// </summary>
+        private readonly object _progressLock = new object();
+
         /// <summary>
         /// Paratext host interface.
         /// </summary>
@@ -38,6 +46,43 @@ namespace TvpMain.Check
         private CancellationTokenSource _tokenSource;
 
         /// <summary>
+        /// Project settings manager.
+        /// </summary>
+        private SettingsManager _settingsManager;
+
+        /// <summary>
+        /// Current book number at run start (1-based).
+        /// </summary>
+        private int _runBookNum;
+
+        /// <summary>
+        /// Current chapter number at run start (1-based).
+        /// </summary>
+        private int _runChapterNum;
+
+        /// <summary>
+        /// Current verse number at run start (0-based; 0 = intro, 1+ = verses).
+        /// </summary>
+        private int _runVerseNum;
+
+        /// <summary>
+        /// Total number of books in run.
+        /// </summary>
+        private int _runTotalBooks;
+
+        /// <summary>
+        /// Progress of current run.
+        /// </summary>
+        private int _runBookCtr;
+
+        private CheckArea _runArea;
+        private IList<ITextCheck> _runChecks;
+        private ISet<TextContext> _runContexts;
+        private SemaphoreSlim _runSemaphore;
+        private CheckResults _runResults;
+        private Exception _runEx;
+
+        /// <summary>
         /// Check updated event handler.
         /// </summary>
         public event EventHandler<CheckUpdatedArgs> CheckUpdated;
@@ -45,38 +90,17 @@ namespace TvpMain.Check
         /// <summary>
         /// Basic ctor.
         /// </summary>
-        /// <param name="host"></param>
-        /// <param name="activeProjectName"></param>
-        public TextCheckRunner(IHost host, string activeProjectName)
+        /// <param name="host">Paratext host interface (required).</param>
+        /// <param name="activeProjectName">Active project name (required).</param>
+        /// <param name="settingsManager">Settings manager (required).</param>
+        public TextCheckRunner(IHost host, string activeProjectName, SettingsManager settingsManager)
         {
-            this._host = host ?? throw new ArgumentNullException(nameof(host));
-            this._activeProjectName = activeProjectName ?? throw new ArgumentNullException(nameof(activeProjectName));
-        }
-
-        /// <summary>
-        /// Internal class that keeps track of a scripture extractor and progress count.
-        /// </summary>
-        private class ExtractorState
-        {
-            /// <summary>
-            /// Scripture extractor.
-            /// </summary>
-            public IScrExtractor ScrExtractor { get; }
-
-            /// <summary>
-            /// Progress count.
-            /// </summary>
-            public int SubTotal { get; set; }
-
-            /// <summary>
-            /// Basic ctor.
-            /// </summary>
-            /// <param name="extractor">Scripture extractor.</param>
-            public ExtractorState(IScrExtractor extractor)
-            {
-                this.ScrExtractor = extractor ?? throw new ArgumentNullException(nameof(extractor));
-                SubTotal = 0;
-            }
+            this._host = host
+                         ?? throw new ArgumentNullException(nameof(host));
+            this._activeProjectName = activeProjectName
+                                      ?? throw new ArgumentNullException(nameof(activeProjectName));
+            this._settingsManager = settingsManager
+                                    ?? throw new ArgumentNullException(nameof(settingsManager));
         }
 
         /// <summary>
@@ -87,140 +111,243 @@ namespace TvpMain.Check
             _tokenSource?.Cancel();
         }
 
+        private void OnCheckUpdated(int updateBookNum)
+        {
+            lock (_progressLock)
+            {
+                _runBookCtr++;
+                CheckUpdated?.Invoke(this,
+                    new CheckUpdatedArgs(_runTotalBooks, _runBookCtr, updateBookNum));
+            }
+        }
+
         /// <summary>
         /// Runs a check.
         /// </summary>
         /// <param name="inputArea">Check area (i.e., scope; required).</param>
-        /// <returns>Check result.</returns>
-        public CheckResults RunChecks(CheckArea inputArea, IEnumerable<ITextCheck> inputChecks)
+        /// <param name="inputChecks">List of checks to execute (required).</param>
+        /// <param name="inputContexts">Text contexts (>0 required).</param>
+        /// <param name="outputResults">Output results (populated if run completes normally, null otherwise).</param>
+        /// <returns>True if run completes normally, false otherwise.</returns>
+        public bool RunChecks(CheckArea inputArea,
+            IEnumerable<ITextCheck> inputChecks,
+            IEnumerable<TextContext> inputContexts,
+            out CheckResults outputResults)
         {
-            var inputChecksList = inputChecks.ToList();
+            // create run-based utilities
+            _runArea = inputArea;
+            _runChecks = inputChecks.ToImmutableList();
+            _runContexts = inputContexts.ToImmutableHashSet();
+            _runResults = new CheckResults();
+            _runEx = null;
+            _runBookCtr = 0;
 
-            var checkResults = new CheckResults();
             var versificationName = _host.GetProjectVersificationName(_activeProjectName);
 
-            var currProgress = 0;
+            // set up semaphore and cancellation token to control execution and termination
+            _runSemaphore = new SemaphoreSlim(MainConsts.MAX_CHECK_THREADS);
             _tokenSource = new CancellationTokenSource();
 
             // get user's location in Paratext
-            HostUtil.RefToBcv(_host.GetCurrentRef(versificationName),
-                out var refBook, out var refChapter, out var refVerse);
+            TextUtil.RefToBcv(_host.GetCurrentRef(versificationName),
+                out _runBookNum, out _runChapterNum, out _runVerseNum);
 
-            // determine book range using check area and user's location in Paratext
-            var minBook = (inputArea == CheckArea.CurrentProject)
-                ? 1 : refBook;
-            var maxBook = (inputArea == CheckArea.CurrentProject)
-                ? (MainConsts.MAX_BOOK_NUM + 1) : (refBook + 1);
-            var numBooks = (maxBook - minBook);
-
-            // wrap in a single thread to coordinate TPL (parallelized) for-loop 
-            // so calling thread can busy-wait and keep the UI responsive w/DoEvents().
-            var workThread = new Thread(() =>
+            // set up semaphore for parallelism control, results set, and task list
+            var taskList = new List<Task>();
+            if (_runArea == CheckArea.CurrentProject)
             {
+                var bookNums = _settingsManager.PresentBookNums.ToList();
+                _runTotalBooks = bookNums.Count;
+
+                bookNums.Sort(); // sort to visually run in ~expected order
+                taskList.AddRange(bookNums.Select(RunBookTask));
+            }
+            else
+            {
+                _runTotalBooks = 1;
+                taskList.Add(RunBookTask(_runBookNum));
+            }
+
+            var workThread = new Thread(() =>
+                {
+                    try
+                    {
+                        Task.WaitAll(taskList.ToArray(), _tokenSource.Token);
+                    }
+                    catch (OperationCanceledException)
+                    {
+                        // Ignore (can occur w/cancel).
+                    }
+                    catch (Exception ex)
+                    {
+                        var messageText =
+                            $"Error: Can't check area: {inputArea} in project: \"{_activeProjectName}\" (error: {ex.Message}).";
+
+                        _runEx ??= new TextCheckException(messageText, ex);
+                        HostUtil.Instance.ReportError(messageText, ex);
+                    }
+                })
+            { IsBackground = true };
+            workThread.Start();
+
+            // busy-wait until helper thread is done,
+            // keeping the UI responsive w/DoEvents()
+            const int threadSleepInMs = (int)(1000f / (float)MainConsts.CHECK_EVENTS_UPDATE_RATE_IN_FPS);
+            while (workThread.IsAlive)
+            {
+                Application.DoEvents();
+                Thread.Sleep(threadSleepInMs);
+            }
+
+            // populate output
+            if (_tokenSource.IsCancellationRequested)
+            {
+                outputResults = null;
+                return false;
+            }
+            else
+            {
+                outputResults = _runResults;
+                return true;
+            }
+        }
+
+        private Task RunBookTask(
+            int taskBookNum)
+        {
+            return Task.Run(() =>
+            {
+                // wait to get started
+                _runSemaphore.Wait();
+
+                // track where we are for error reporting
+                var currBookNum = taskBookNum;
+                var currChapterNum = 0;
+                var currVerseNum = 0;
+
                 try
                 {
-                    // Paralellizes the checks. We're not using (e.g.) backgroundworker because we want >1 thread 
-                    // to do this this efficiently across the whole Bible, but also want to constrain the number of threads.
-                    Parallel.For(minBook, maxBook,
-                        new ParallelOptions
-                        {
-                            MaxDegreeOfParallelism = MainConsts.MAX_CHECK_THREADS,
-                            CancellationToken = _tokenSource.Token
-                        },
-                        () => new ExtractorState(_host.GetScriptureExtractor(_activeProjectName, ExtractorType.USFM)),
-                        (bookNum, loopState, extractorState) =>
-                        {
-                            // determine chapter range using checkarea and user's location in Paratext
-                            var minChapter = (inputArea != CheckArea.CurrentChapter)
-                                ? 1
-                                : refChapter;
-                            var maxChapter = (inputArea != CheckArea.CurrentChapter)
-                                ? _host.GetLastChapter(bookNum, versificationName)
-                                : refChapter;
+                    // get utility items
+                    var versificationName = _host.GetProjectVersificationName(_activeProjectName);
+                    var mainExtractor = _host.GetScriptureExtractor(
+                        _activeProjectName, ExtractorType.USFM);
+                    var noteExtractor = _host.GetScriptureExtractor(
+                        _activeProjectName, ExtractorType.USFM);
+                    noteExtractor.IncludeNotes = true;
 
-                            var currBookNum = bookNum;
-                            var currChapterNum = 0;
-                            var currVerseNum = 0;
+                    var checkList = _runChecks.ToList();
+                    string[] splitArray = { "" };
+                    var emptyVerseCtr = 0;
 
-                            try
+                    // determine chapter range using check area and user's location in Paratext
+                    var minChapter = (_runArea != CheckArea.CurrentChapter)
+                        ? 1
+                        : _runChapterNum;
+                    var maxChapter = (_runArea != CheckArea.CurrentChapter)
+                        ? _host.GetLastChapter(taskBookNum, versificationName)
+                        : _runChapterNum;
+
+                    var resultItems = new List<ResultItem>();
+                    for (var chapterNum = minChapter;
+                        chapterNum <= maxChapter;
+                        chapterNum++)
+                    {
+                        currChapterNum = chapterNum;
+                        if (_tokenSource.IsCancellationRequested)
+                        {
+                            return;
+                        }
+
+                        var lastVerseNum = _host.GetLastVerse(taskBookNum, chapterNum, versificationName);
+
+                        for (var verseNum = 0;
+                            verseNum <= lastVerseNum;
+                            verseNum++)
+                        {
+                            currVerseNum = verseNum;
+                            if (_tokenSource.IsCancellationRequested)
                             {
-                                var resultItems = new List<ResultItem>();
-                                for (var chapterNum = minChapter; chapterNum <= maxChapter; chapterNum++)
+                                return;
+                            }
+
+                            var checkRef = TextUtil.BcvToRef(taskBookNum, chapterNum, verseNum);
+                            resultItems.Clear();
+
+                            string mainText = null;
+                            if (_runContexts.Contains(TextContext.MainText))
+                            {
+                                try
                                 {
-                                    currChapterNum = chapterNum;
-                                    var lastVerseNum = _host.GetLastVerse(bookNum, chapterNum, versificationName);
+                                    mainText = mainExtractor.Extract(checkRef, checkRef);
 
-                                    for (var verseNum = 1; verseNum <= lastVerseNum; verseNum++)
+                                    // check main text, if present
+                                    if (!string.IsNullOrWhiteSpace(mainText))
                                     {
-                                        if (_tokenSource.IsCancellationRequested)
-                                        {
-                                            return extractorState;
-                                        }
-
-                                        currVerseNum = verseNum;
-
-                                        var checkRef = HostUtil.BcvToRef(bookNum, chapterNum, verseNum);
-                                        string inputText = null;
-
-                                        try
-                                        {
-                                            inputText = extractorState.ScrExtractor.Extract(checkRef, checkRef);
-                                        }
-                                        catch (ArgumentException)
-                                        {
-                                            // arg exceptions occur when verses are missing, 
-                                            // which they can be for given translations (ignore and move on)
-                                            continue;
-                                        }
-
-                                        if (inputText == null
-                                            || !inputText.Trim().Any())
-                                        {
-                                            continue;
-                                        }
-
-                                        resultItems.Clear();
-
-                                        var textLocation = new TextLocation(bookNum, chapterNum, verseNum,
+                                        // run checks in main text
+                                        var mainLocation = new TextLocation(taskBookNum, chapterNum, verseNum,
                                             verseNum == 0 ? TextContext.Introduction : TextContext.MainText);
-                                        inputChecksList.ForEach(checkItem =>
-                                            checkItem.CheckVerse(textLocation, inputText, resultItems));
-                                        resultItems.ForEach(resultItem =>
-                                            checkResults.ResultItems.Enqueue(resultItem));
+                                        checkList.ForEach(checkItem =>
+                                            checkItem.CheckVerse(mainLocation, mainText, resultItems));
                                     }
                                 }
-
-                                extractorState.SubTotal++;
-
-                                lock (this)
+                                catch (ArgumentException)
                                 {
-                                    currProgress++;
-                                    CheckUpdated?.Invoke(this, (inputArea == CheckArea.CurrentProject)
-                                        ? new CheckUpdatedArgs(currProgress, numBooks)
-                                        : new CheckUpdatedArgs(currProgress, 1));
+                                    // arg exceptions occur when verses are missing, 
+                                    // which they can be for given translations (ignore and move on)
+                                    continue;
                                 }
                             }
-                            catch (ThreadAbortException)
+
+                            string noteText = null;
+                            if (_runContexts.Contains(TextContext.NoteOrReference))
                             {
-                                // Ignore (can occur w/cancel).
-                            }
-                            catch (Exception ex)
-                            {
-                                HostUtil.Instance.ReportError(
-                                    $"Error: Can't check location: {currBookNum}.{currChapterNum}.{currVerseNum} in project: \"{_activeProjectName}\"",
-                                    ex);
+                                try
+                                {
+                                    noteText = noteExtractor.Extract(checkRef, checkRef);
+
+                                    // check main+note text, if present (and) different from main text
+                                    if (!string.IsNullOrWhiteSpace(noteText)
+                                        && (string.IsNullOrWhiteSpace(mainText) || mainText != noteText))
+                                    {
+                                        // run checks on note text
+                                        var noteLocation = new TextLocation(taskBookNum, chapterNum, verseNum,
+                                            TextContext.NoteOrReference);
+                                        checkList.ForEach(checkItem =>
+                                            checkItem.CheckVerse(noteLocation, noteText, resultItems));
+                                    }
+                                }
+                                catch (ArgumentException)
+                                {
+                                    // arg exceptions occur when verses are missing, 
+                                    // which they can be for given translations (ignore and move on)
+                                    continue;
+                                }
                             }
 
-                            return extractorState;
-                        },
-                        (extractorState) =>
-                        {
-                            // ignore, at this time
-                        });
-                }
-                catch (ThreadAbortException)
-                {
-                    // Ignore (can occur w/cancel).
+                            if (string.IsNullOrWhiteSpace(mainText)
+                                && string.IsNullOrWhiteSpace(noteText))
+                            {
+                                emptyVerseCtr++;
+                                if (emptyVerseCtr > MainConsts.MAX_CONSECUTIVE_EMPTY_VERSES)
+                                {
+                                    break; // no beginning text = empty chapter (skip)
+                                }
+                                else
+                                {
+                                    continue; // else, next verse
+                                }
+                            }
+                            else
+                            {
+                                emptyVerseCtr = 0;
+                            }
+
+                            resultItems.ForEach(resultItem =>
+                                _runResults.ResultItems.Enqueue(resultItem));
+                        }
+                    }
+
+                    OnCheckUpdated(taskBookNum);
                 }
                 catch (OperationCanceledException)
                 {
@@ -228,23 +355,33 @@ namespace TvpMain.Check
                 }
                 catch (Exception ex)
                 {
-                    HostUtil.Instance.ReportError($"Error: Can't check project: \"{_activeProjectName}\"", ex);
+                    var messageText =
+                        $"Error: Can't check location: {currBookNum}.{currChapterNum}.{currVerseNum} in project: \"{_activeProjectName}\" (error: {ex.Message}).";
+
+                    _runEx ??= new TextCheckException(messageText, ex);
+                    HostUtil.Instance.ReportError(messageText, ex);
                 }
-            })
-            { IsBackground = true };
-            workThread.Start();
+                finally
+                {
+                    _runSemaphore.Release();
+                }
+            });
+        }
+    }
 
-            // busy-wait until helper thead is done,
-            // keeping the UI responsive w/DoEvents()
-            var threadSleepInMs = (int)(1000f / (float)MainConsts.CHECK_EVENTS_UPDATE_RATE_IN_FPS);
-            while (workThread.IsAlive)
-            {
-                Application.DoEvents();
-                Thread.Sleep(threadSleepInMs);
-            }
-
-            return _tokenSource.IsCancellationRequested
-                ? null : checkResults;
+    /// <summary>
+    /// Basic exception for text check errors.
+    /// </summary>
+    public class TextCheckException : ApplicationException
+    {
+        /// <summary>
+        /// Basic ctor.
+        /// </summary>
+        /// <param name="messageText">Message text (optional, may be null).</param>
+        /// <param name="causeEx">Cause exception (optional, may be null).</param>
+        public TextCheckException(string messageText, Exception causeEx)
+            : base(messageText, causeEx)
+        {
         }
     }
 }

@@ -3,12 +3,14 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Windows.Forms;
 using AddInSideViews;
 using CsvHelper;
-using TvpMain.Check;
+using TvpMain.Text;
 using TvpMain.Result;
 using TvpMain.Filter;
+using TvpMain.Project;
 using TvpMain.Util;
 using static System.Environment;
 
@@ -37,17 +39,29 @@ namespace TvpMain.Form
         /// </summary>
         private readonly TextCheckRunner _textCheckRunner;
 
-        private readonly IEnumerable<ITextCheck> _allChecks;
+        /// <summary>
+        /// List of all checks to be performed.
+        /// </summary>
+        private readonly IEnumerable<ITextCheck> _allChecks = new List<ITextCheck>()
+        {
+            new MissingSentencePunctuationCheck(),
+            new ScriptureReferenceCheck()
+        };
 
         /// <summary>
         /// Ignore list filter.
         /// </summary>
-        private readonly IgnoreListTextFilter _ignoreFilter;
+        private readonly IgnoreListTextFilter _ignoreFilter = new IgnoreListTextFilter();
 
         /// <summary>
-        /// Biblical terms filter.
+        /// Project terms (word list) filter.
         /// </summary>
-        private readonly BiblicalTermsTextFilter _termFilter;
+        private readonly KeyTermsTextFilter _wordListFilter = new KeyTermsTextFilter();
+
+        /// <summary>
+        /// Factory terms (biblical) filter.
+        /// </summary>
+        private readonly KeyTermsTextFilter _biblicalTermFilter = new KeyTermsTextFilter();
 
         /// <summary>
         /// Reusable progress form.
@@ -62,12 +76,22 @@ namespace TvpMain.Form
         /// <summary>
         /// All result items from last result (defaults to empty).
         /// </summary>
-        private IList<ResultItem> _allResultItems;
+        private IList<ResultItem> _allResultItems = Enumerable.Empty<ResultItem>().ToList();
 
         /// <summary>
         /// Result items from last result, post-filtering (defaults to empty).
         /// </summary>
         private IList<ResultItem> _filteredResultItems;
+
+        /// <summary>
+        /// Check contexts, per menu items.
+        /// </summary>
+        private readonly ISet<TextContext> _checkContexts = new HashSet<TextContext>();
+
+        /// <summary>
+        /// Current check area.
+        /// </summary>
+        private CheckArea _checkArea;
 
         /// <summary>
         /// Basic ctor.
@@ -77,6 +101,7 @@ namespace TvpMain.Form
         public MainForm(IHost host, string activeProjectName)
         {
             InitializeComponent();
+            Text = $"Translation Validations - Project: \"{activeProjectName}\"";
 
             _host = host ?? throw new ArgumentNullException(nameof(host));
             _activeProjectName = activeProjectName ?? throw new ArgumentNullException(nameof(activeProjectName));
@@ -84,26 +109,21 @@ namespace TvpMain.Form
             _progressForm = new ProgressForm();
             _progressForm.Cancelled += OnProgressFormCancelled;
 
-            _ignoreFilter = new IgnoreListTextFilter();
-            _termFilter = new BiblicalTermsTextFilter();
-
-            _textCheckRunner = new TextCheckRunner(_host, _activeProjectName);
+            _textCheckRunner = new TextCheckRunner(_host, _activeProjectName,
+                new SettingsManager(host, activeProjectName));
             _textCheckRunner.CheckUpdated += OnCheckUpdated;
 
             searchMenuTextBox.TextChanged += OnSearchTextChanged;
             contextMenu.Opening += OnContextMenuOpening;
 
-            _allResultItems = Enumerable.Empty<ResultItem>().ToList();
             _filteredResultItems = _allResultItems;
 
-            _allChecks = new List<ITextCheck>()
-            {
-                new MissingSentencePunctuationCheck()
-            };
+            UpdateCheckArea();
+            UpdateCheckContexts();
 
             // Background worker to build the biblical term list filter at startup
             // (takes a few seconds, so should not hold up the UI).
-            termWorker.DoWork += OnTermWorkerDoWork;
+            termWorker.DoWork += OnSetupWorkerDoWork;
             termWorker.RunWorkerAsync();
         }
 
@@ -122,13 +142,21 @@ namespace TvpMain.Form
         /// </summary>
         /// <param name="sender">Event sender (ignored).</param>
         /// <param name="e">Event args (ignored).</param>
-        private void OnTermWorkerDoWork(object sender, DoWorkEventArgs e)
+        private void OnSetupWorkerDoWork(object sender, DoWorkEventArgs e)
         {
             try
             {
-                lock (_termFilter)
+                lock (_wordListFilter)
                 {
-                    _termFilter.SetKeyTerms(_host.GetProjectKeyTerms(_activeProjectName,
+                    _wordListFilter.SetKeyTerms(_host.GetProjectKeyTerms(
+                        _activeProjectName,
+                        _host.GetProjectLanguageId(_activeProjectName, "translation validation")));
+                }
+
+                lock (_biblicalTermFilter)
+                {
+                    _biblicalTermFilter.SetKeyTerms(_host.GetFactoryKeyTerms(
+                        _host.GetProjectKeyTermListType(_activeProjectName),
                         _host.GetProjectLanguageId(_activeProjectName, "translation validation")));
                 }
             }
@@ -146,7 +174,7 @@ namespace TvpMain.Form
         private void OnProgressFormCancelled(object sender, EventArgs e)
         {
             dgvCheckResults.Rows.Clear();
-            _textCheckRunner.CancelCheck();
+            _textCheckRunner.CancelChecks();
 
             HideProgress();
         }
@@ -209,14 +237,21 @@ namespace TvpMain.Form
                 }
 
                 // lock in case the background worker hasn't finished yet
-                lock (_termFilter)
+                lock (_wordListFilter)
                 {
-                    if (biblicalTermsFiltersMenuItem.Checked
-                    && !_termFilter.IsEmpty)
+                    if (wordListFiltersMenuItem.Checked
+                    && !_wordListFilter.IsEmpty)
                     {
                         _filteredResultItems = _filteredResultItems.Where(
-                            resultItem => !_termFilter.FilterText(isEntireVerse
+                            resultItem => !_wordListFilter.FilterText(isEntireVerse
                         ? resultItem.CheckText : resultItem.MatchText)).ToList();
+                    }
+                    if (biblicaTermsFiltersMenuItem.Checked
+                        && !_biblicalTermFilter.IsEmpty)
+                    {
+                        _filteredResultItems = _filteredResultItems.Where(
+                            resultItem => !_biblicalTermFilter.FilterText(isEntireVerse
+                                ? resultItem.CheckText : resultItem.MatchText)).ToList();
                     }
                 }
 
@@ -270,22 +305,23 @@ namespace TvpMain.Form
         /// <param name="e">Event args (ignored).</param>
         private void OnRunChecks(object sender, EventArgs e)
         {
+            if (_checkContexts.Count < 1)
+            {
+                MessageBox.Show(
+                    "Can't run check without a context.\r\n\r\nSelect \"Main Text\", \"Notes\", or both from \"Area\" menu.",
+                    "Notice...", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
             dgvCheckResults.Rows.Clear();
             try
             {
                 ShowProgress();
 
-                var checkArea = CheckArea.CurrentProject;
-                if (currentBookAreaMenuItem.Checked)
+                if (_textCheckRunner.RunChecks(_checkArea, _allChecks, _checkContexts, out var nextResults))
                 {
-                    checkArea = CheckArea.CurrentBook;
+                    _lastResult ??= nextResults;
                 }
-                else if (currentChapterAreaMenuItem.Checked)
-                {
-                    checkArea = CheckArea.CurrentChapter;
-                }
-
-                _lastResult = _textCheckRunner.RunCheck(checkArea, _allChecks) ?? _lastResult;
                 HideProgress();
 
                 if (_lastResult != null)
@@ -338,14 +374,28 @@ namespace TvpMain.Form
         }
 
         /// <summary>
+        /// Word list filter menu item handler.
+        /// </summary>
+        /// <param name="sender">Event sender (ignored).</param>
+        /// <param name="e">Event args (ignored).</param>
+        private void OnWordListFilterToolMenuClick(object sender, EventArgs e)
+        {
+            wordListFiltersMenuItem.Checked = !wordListFiltersMenuItem.Checked;
+            wordListFiltersMenuItem.CheckState = wordListFiltersMenuItem.Checked
+                ? CheckState.Checked : CheckState.Unchecked;
+
+            UpdateMainTable();
+        }
+
+        /// <summary>
         /// Biblical term filter menu item handler.
         /// </summary>
         /// <param name="sender">Event sender (ignored).</param>
         /// <param name="e">Event args (ignored).</param>
-        private void OnBiblicalTermListToolMenuClick(object sender, EventArgs e)
+        private void OnBiblicalTermsFilterToolMenuClick(object sender, EventArgs e)
         {
-            biblicalTermsFiltersMenuItem.Checked = !biblicalTermsFiltersMenuItem.Checked;
-            biblicalTermsFiltersMenuItem.CheckState = biblicalTermsFiltersMenuItem.Checked
+            biblicaTermsFiltersMenuItem.Checked = !biblicaTermsFiltersMenuItem.Checked;
+            biblicaTermsFiltersMenuItem.CheckState = biblicaTermsFiltersMenuItem.Checked
                 ? CheckState.Checked : CheckState.Unchecked;
 
             UpdateMainTable();
@@ -457,6 +507,8 @@ namespace TvpMain.Form
 
             currentProjectAreaMenuItem.CheckState = CheckState.Checked;
             currentProjectAreaMenuItem.Checked = true;
+
+            UpdateCheckArea();
         }
 
         /// <summary>
@@ -470,6 +522,8 @@ namespace TvpMain.Form
 
             currentBookAreaMenuItem.CheckState = CheckState.Checked;
             currentBookAreaMenuItem.Checked = true;
+
+            UpdateCheckArea();
         }
 
         /// <summary>
@@ -483,6 +537,71 @@ namespace TvpMain.Form
 
             currentChapterAreaMenuItem.CheckState = CheckState.Checked;
             currentChapterAreaMenuItem.Checked = true;
+
+            UpdateCheckArea();
+        }
+
+        /// <summary>
+        /// Main text area menu click handler.
+        /// </summary>
+        /// <param name="sender">Event sender (ignored).</param>
+        /// <param name="e">Event args (ignored).</param>
+        private void OnMainTextAreaMenuClick(object sender, EventArgs e)
+        {
+            mainTextToolStripMenuItem.Checked = !mainTextToolStripMenuItem.Checked;
+            mainTextToolStripMenuItem.CheckState = mainTextToolStripMenuItem.Checked
+                ? CheckState.Checked : CheckState.Unchecked;
+
+            UpdateCheckContexts();
+        }
+
+        /// <summary>
+        /// Notes area menu click handler.
+        /// </summary>
+        /// <param name="sender">Event sender (ignored).</param>
+        /// <param name="e">Event args (ignored).</param>
+        private void OnNotesAreaMenuClick(object sender, EventArgs e)
+        {
+            notesToolStripMenuItem.Checked = !notesToolStripMenuItem.Checked;
+            notesToolStripMenuItem.CheckState = notesToolStripMenuItem.Checked
+                ? CheckState.Checked : CheckState.Unchecked;
+
+            UpdateCheckContexts();
+        }
+
+        /// <summary>
+        /// Builds check context set on ctor or menu item change.
+        /// </summary>
+        private void UpdateCheckContexts()
+        {
+            _checkContexts.Clear();
+            if (mainTextToolStripMenuItem.Checked)
+            {
+                _checkContexts.Add(TextContext.MainText);
+            }
+            if (notesToolStripMenuItem.Checked)
+            {
+                _checkContexts.Add(TextContext.NoteOrReference);
+            }
+        }
+
+        /// <summary>
+        /// Updates check area.
+        /// </summary>
+        private void UpdateCheckArea()
+        {
+            if (currentBookAreaMenuItem.Checked)
+            {
+                _checkArea = CheckArea.CurrentBook;
+            }
+            else if (currentChapterAreaMenuItem.Checked)
+            {
+                _checkArea = CheckArea.CurrentChapter;
+            }
+            else
+            {
+                _checkArea = CheckArea.CurrentProject;
+            }
         }
 
         /// <summary>

@@ -68,7 +68,7 @@ namespace TvpTest
         public void TestBiblicalTermsFilter()
         {
             // empty checks
-            var termFilter = new BiblicalTermsTextFilter();
+            var termFilter = new KeyTermsTextFilter();
             Assert.IsTrue(termFilter.IsEmpty);
 
             IList<IKeyTerm> termList = new List<IKeyTerm>();

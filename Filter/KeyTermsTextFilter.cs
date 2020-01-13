@@ -11,7 +11,7 @@ namespace TvpMain.Filter
     /// <summary>
     /// Text filter for biblical terms.
     /// </summary>
-    public class BiblicalTermsTextFilter : AbstractTextFilter
+    public class KeyTermsTextFilter : AbstractTextFilter
     {
         /// <summary>
         /// Case-sensitive word set.
@@ -56,7 +56,7 @@ namespace TvpMain.Filter
         /// <summary>
         /// Basic ctor.
         /// </summary>
-        public BiblicalTermsTextFilter()
+        public KeyTermsTextFilter()
         {
             _caseSensitiveWords = new HashSet<string>();
             _caseInsensitiveWords = new HashSet<string>();
