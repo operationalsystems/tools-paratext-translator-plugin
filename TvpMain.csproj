@@ -142,7 +142,7 @@
     <Compile Include="Form\ProgressForm.Designer.cs">
       <DependentUpon>ProgressForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="Util\TextUtil.cs" />
+    <Compile Include="Text\TextUtil.cs" />
     <Compile Include="Util\MainConsts.cs" />
     <Compile Include="Util\HostUtil.cs" />
     <Compile Include="Result\CheckResults.cs" />

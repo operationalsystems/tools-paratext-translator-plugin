@@ -1,20 +1,17 @@
-﻿using AddInSideViews;
-using System;
-using System.Collections.Concurrent;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.IO;
 using System.Linq;
-using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using TvpMain.Result;
-using TvpMain.Filter;
+using AddInSideViews;
 using TvpMain.Project;
+using TvpMain.Result;
+using TvpMain.Text;
 using TvpMain.Util;
 
-namespace TvpMain.Text
+namespace TvpMain.Check
 {
     /// <summary>
     /// Parallelizes concrete text checks across one or more books.

@@ -7,6 +7,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Xml;
 using AddInSideViews;
+using TvpMain.Text;
 using TvpMain.Util;
 
 namespace TvpMain.Project
@@ -227,7 +228,7 @@ namespace TvpMain.Project
                             // no attributes or no/unusuable code = unusable
                             var codeAttrib = nodeItem.Attributes?["code"]?.Value?.Trim();
                             if (string.IsNullOrWhiteSpace(codeAttrib)
-                                || !TextUtil.TryGetBookNum(codeAttrib, out var bookNum))
+                                || !TextUtil.BookNums.TryGetValue(codeAttrib, out var bookNum))
                             {
                                 continue;
                             }
@@ -276,9 +277,8 @@ namespace TvpMain.Project
             }
             else
             {
-                return SeparatorRegex.Split(settingValue.Trim())
+                return SeparatorRegex.Split(settingValue)
                     .Where(listItem => !string.IsNullOrWhiteSpace(listItem))
-                    .Select(listItem => listItem.Trim())
                     .ToImmutableList();
             }
         }

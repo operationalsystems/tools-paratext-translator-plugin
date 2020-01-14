@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using TvpMain.Result;
+using TvpMain.Text;
 
-namespace TvpMain.Text
+namespace TvpMain.Check
 {
     public class ScriptureReferenceCheck : ITextCheck
     {

@@ -1,8 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using TvpMain.Result;
+using TvpMain.Text;
 
-namespace TvpMain.Text
+namespace TvpMain.Check
 {
     /// <summary>
     /// General-purpose per-verse text check.

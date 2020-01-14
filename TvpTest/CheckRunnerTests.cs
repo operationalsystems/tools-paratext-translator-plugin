@@ -7,6 +7,7 @@ using System.Threading;
 using AddInSideViews;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
+using TvpMain.Check;
 using TvpMain.Project;
 using TvpMain.Text;
 using TvpMain.Result;

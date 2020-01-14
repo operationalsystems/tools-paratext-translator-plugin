@@ -1,14 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
-using AddInSideViews;
 using TvpMain.Result;
-using TvpMain.Filter;
+using TvpMain.Text;
 
-namespace TvpMain.Text
+namespace TvpMain.Check
 {
     /// <summary>
     /// Regex-based punctuation check.

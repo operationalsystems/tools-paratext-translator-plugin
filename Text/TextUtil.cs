@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.Collections.ObjectModel;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using TvpMain.Text;
+using TvpMain.Util;
 
-namespace TvpMain.Util
+namespace TvpMain.Text
 {
     /// <summary>
     /// Bible book-related utilities.
@@ -44,48 +40,30 @@ namespace TvpMain.Util
         /// <summary>
         /// Map of book codes to numbers (1-based).
         /// </summary>
-        private static readonly IDictionary<string, int> BookCodesToNums =
-            new Dictionary<string, int>(
+        public static readonly IDictionary<string, int> BookNums =
                 AbbrevNames
-                    .Select((bookCode, codeIndex) =>
+                    .Select((bookCode, indexItem) =>
                     {
-                        var bookNum = (codeIndex + 1);
+                        var bookNum = (indexItem + 1);
                         return new { bookCode, bookNum };
                     })
-                    .ToDictionary(
+                    .ToImmutableDictionary(
                         pairItem => pairItem.bookCode,
-                        pairItem => pairItem.bookNum));
+                        pairItem => pairItem.bookNum);
 
         /// <summary>
-        /// Gets book code text from number (1-based).
+        /// Map of book numbers (1-based) to codes.
         /// </summary>
-        /// <param name="bookNum">Book number (1-based).</param>
-        /// <param name="bookCode">Book code if number in allowable range, null otherwise.</param>
-        /// <returns>True if number in allowable range, false otherwise.</returns>
-        public static bool TryGetBookCode(int bookNum, out string bookCode)
-        {
-            if (bookNum >= 1 && bookNum <= AbbrevNames.Length)
-            {
-                bookCode = AbbrevNames[(bookNum - 1)];
-                return true;
-            }
-            else
-            {
-                bookCode = null;
-                return false;
-            }
-        }
-
-        /// <summary>
-        /// Gets book number (1-based) from book code.
-        /// </summary>
-        /// <param name="bookCode">Book code (required).</param>
-        /// <param name="bookNum">Book number if code found, undefined otherwise.</param>
-        /// <returns>True if code found, false otherwise.</returns>
-        public static bool TryGetBookNum(string bookCode, out int bookNum)
-        {
-            return BookCodesToNums.TryGetValue(bookCode, out bookNum);
-        }
+        public static readonly IDictionary<int, string> BookCodes =
+                AbbrevNames
+                    .Select((bookCode, indexItem) =>
+                    {
+                        var bookNum = (indexItem + 1);
+                        return new { bookCode, bookNum };
+                    })
+                    .ToImmutableDictionary(
+                        pairItem => pairItem.bookNum,
+                        pairItem => pairItem.bookCode);
 
         /// <summary>
         /// Converts a Paratext coordinate reference to specific book, chapter, and verse.
