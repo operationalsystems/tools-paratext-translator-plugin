@@ -210,11 +210,6 @@ namespace TvpMain.Check
                 Thread.Sleep(threadSleepInMs);
             }
 
-            if (_runEx != null)
-            {
-                throw _runEx;
-            }
-
             // populate output
             if (_tokenSource.IsCancellationRequested)
             {
