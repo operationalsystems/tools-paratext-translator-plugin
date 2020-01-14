@@ -226,8 +226,7 @@ namespace TvpMain.Project
                         {
                             // no attributes or no/unusuable code = unusable
                             var codeAttrib = nodeItem.Attributes?["code"];
-                            if (codeAttrib == null
-                                || string.IsNullOrWhiteSpace(codeAttrib.Value)
+                            if (string.IsNullOrWhiteSpace(codeAttrib?.Value)
                                 || !TextUtil.TryGetBookNum(codeAttrib.Value, out var bookNum))
                             {
                                 continue;
@@ -238,9 +237,9 @@ namespace TvpMain.Project
                             var longAttrib = nodeItem.Attributes["long"];
 
                             // no value attribs = unusable
-                            if ((abbrAttrib == null || string.IsNullOrWhiteSpace(abbrAttrib.Value))
-                                && (shortAttrib == null || string.IsNullOrWhiteSpace(shortAttrib.Value))
-                                && (longAttrib == null || string.IsNullOrWhiteSpace(longAttrib.Value)))
+                            if (string.IsNullOrWhiteSpace(abbrAttrib?.Value)
+                                && string.IsNullOrWhiteSpace(shortAttrib?.Value)
+                                && string.IsNullOrWhiteSpace(longAttrib?.Value))
                             {
                                 continue;
                             }
