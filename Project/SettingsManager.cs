@@ -225,32 +225,32 @@ namespace TvpMain.Project
                         foreach (XmlNode nodeItem in nodeList)
                         {
                             // no attributes or no/unusuable code = unusable
-                            var codeAttrib = nodeItem.Attributes?["code"];
-                            if (string.IsNullOrWhiteSpace(codeAttrib?.Value)
-                                || !TextUtil.TryGetBookNum(codeAttrib.Value, out var bookNum))
+                            var codeAttrib = nodeItem.Attributes?["code"]?.Value?.Trim();
+                            if (string.IsNullOrWhiteSpace(codeAttrib)
+                                || !TextUtil.TryGetBookNum(codeAttrib, out var bookNum))
                             {
                                 continue;
                             }
 
-                            var abbrAttrib = nodeItem.Attributes["abbr"];
-                            var shortAttrib = nodeItem.Attributes["short"];
-                            var longAttrib = nodeItem.Attributes["long"];
+                            var abbrAttrib = nodeItem.Attributes["abbr"]?.Value?.Trim();
+                            var shortAttrib = nodeItem.Attributes["short"]?.Value?.Trim();
+                            var longAttrib = nodeItem.Attributes["long"]?.Value?.Trim();
 
                             // no value attribs = unusable
-                            if (string.IsNullOrWhiteSpace(abbrAttrib?.Value)
-                                && string.IsNullOrWhiteSpace(shortAttrib?.Value)
-                                && string.IsNullOrWhiteSpace(longAttrib?.Value))
+                            if (string.IsNullOrWhiteSpace(abbrAttrib)
+                                && string.IsNullOrWhiteSpace(shortAttrib)
+                                && string.IsNullOrWhiteSpace(longAttrib))
                             {
                                 continue;
                             }
 
                             tempBookNames[bookNum]
                                 = new BookNameEntry(
-                                    codeAttrib.Value,
+                                    codeAttrib,
                                     bookNum,
-                                    abbrAttrib?.Value,
-                                    shortAttrib?.Value,
-                                    longAttrib?.Value);
+                                    abbrAttrib,
+                                    shortAttrib,
+                                    longAttrib);
                         }
                     }
                 }
