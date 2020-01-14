@@ -33,7 +33,7 @@ namespace TvpMain.Check
         /// <summary>
         /// Regex for catching end notes.
         /// </summary>
-        private static readonly Regex EndnoteRegex = new Regex(@"\\fe\s*[\S].*?\\fe\*",
+        private static readonly Regex EndnoteRegex = new Regex(@"\\fe.*?\\fe\*",
             RegexOptions.Multiline | RegexOptions.Compiled);
 
         /// <summary>
