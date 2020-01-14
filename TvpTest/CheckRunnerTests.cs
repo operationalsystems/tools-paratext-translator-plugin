@@ -56,6 +56,52 @@ namespace TvpTest
         private const string TestVersificationName = "testVersificationName";
 
         /// <summary>
+        /// Books present setting for test project.
+        /// </summary>
+        private const string TestBooksPresentSetting =
+            "111111111111111111111111111111111111111111111111111111111111111111000000000000000000000000000000000000000000000000000000000";
+
+        /// <summary>
+        /// Chapter verse separator setting.
+        /// </summary>
+        private const string ChapterVerseSeparatorSetting = ":";
+
+        /// <summary>
+        /// Chapter verse separator setting.
+        /// </summary>
+        private const string RangeIndicatorSetting = "-";
+
+        /// <summary>
+        /// Sequence indicator setting.
+        /// </summary>
+        private const string SequenceIndicatorSetting = ",|;| («terrenal»),";
+
+        /// <summary>
+        /// Chapter range separator setting.
+        /// </summary>
+        private const string ChapterRangeSeparatorSetting = "–| al |—|b—";
+
+        /// <summary>
+        /// Book sequence separator setting.
+        /// </summary>
+        private const string BookSequenceSeparatorSetting = "; ";
+
+        /// <summary>
+        /// Chapter number separator setting.
+        /// </summary>
+        private const string ChapterNumberSeparatorSetting = "; | y | ( ";
+
+        /// <summary>
+        /// Reference extra material setting.
+        /// </summary>
+        private const string ReferenceExtraMaterialSetting = "a|Salmos |capítulos |capítulo |cap. |Cap. | –| Tít.-50 –|cf.|) ";
+
+        /// <summary>
+        /// Reference final punctuation setting.
+        /// </summary>
+        private const string ReferenceFinalPunctuationSetting = "";
+
+        /// <summary>
         /// Max book number.
         /// </summary>
         private const int TestMaxBookNum = 66;
@@ -113,7 +159,7 @@ namespace TvpTest
         /// <summary>
         /// Test contexts.
         /// </summary>
-        private readonly List<TextContext> _testContexts = new List<TextContext>()
+        private readonly ISet<TextContext> _testContexts = new HashSet<TextContext>()
         {
             TextContext.MainText
         };
@@ -147,6 +193,24 @@ namespace TvpTest
                 .Returns<int, string>((bookNum, versificationName) => bookNum + MinTestBooks);
             _mockHost.Setup(hostItem => hostItem.GetLastVerse(It.IsAny<int>(), It.IsAny<int>(), TestVersificationName))
                 .Returns<int, int, string>((bookNum, chapterNum, versificationName) => chapterNum + MinTestVerses);
+            _mockHost.Setup(hostItem => hostItem.GetProjectSetting(TestProjectName, "BooksPresent"))
+                .Returns<string, string>((projectName, settingsKey) => TestBooksPresentSetting);
+            _mockHost.Setup(hostItem => hostItem.GetProjectSetting(TestProjectName, "ChapterVerseSeparator"))
+                .Returns<string, string>((projectName, settingsKey) => ChapterVerseSeparatorSetting);
+            _mockHost.Setup(hostItem => hostItem.GetProjectSetting(TestProjectName, "RangeIndicator"))
+                .Returns<string, string>((projectName, settingsKey) => RangeIndicatorSetting);
+            _mockHost.Setup(hostItem => hostItem.GetProjectSetting(TestProjectName, "SequenceIndicator"))
+                .Returns<string, string>((projectName, settingsKey) => SequenceIndicatorSetting);
+            _mockHost.Setup(hostItem => hostItem.GetProjectSetting(TestProjectName, "ChapterRangeSeparator"))
+                .Returns<string, string>((projectName, settingsKey) => ChapterRangeSeparatorSetting);
+            _mockHost.Setup(hostItem => hostItem.GetProjectSetting(TestProjectName, "BookSequenceSeparator"))
+                .Returns<string, string>((projectName, settingsKey) => BookSequenceSeparatorSetting);
+            _mockHost.Setup(hostItem => hostItem.GetProjectSetting(TestProjectName, "ChapterNumberSeparator"))
+                .Returns<string, string>((projectName, settingsKey) => ChapterNumberSeparatorSetting);
+            _mockHost.Setup(hostItem => hostItem.GetProjectSetting(TestProjectName, "ReferenceExtraMaterial"))
+                .Returns<string, string>((projectName, settingsKey) => ReferenceExtraMaterialSetting);
+            _mockHost.Setup(hostItem => hostItem.GetProjectSetting(TestProjectName, "ReferenceFinalPunctuation"))
+                .Returns<string, string>((projectName, settingsKey) => ReferenceFinalPunctuationSetting);
 
             // extractor setup
             _mockExtractor.Setup(extractorItem => extractorItem.Extract(It.IsAny<int>(), It.IsAny<int>()))
@@ -162,6 +226,7 @@ namespace TvpTest
                     Assert.AreEqual(fromRef, toRef, ">1 verse requested."); // always request one verse at a time
                     return GetVerseText(fromRef);
                 });
+            _mockExtractor.SetupAllProperties();
         }
 
         /// <summary>
@@ -205,7 +270,7 @@ namespace TvpTest
             {
                 for (var chapterNum = 1; chapterNum <= MinTestBooks + bookNum; chapterNum++)
                 {
-                    for (var verseNum = 1; verseNum <= MinTestVerses + chapterNum; verseNum++)
+                    for (var verseNum = 0; verseNum <= MinTestVerses + chapterNum; verseNum++)
                     {
                         _expectedRefs.Add(GetVerseRef(bookNum, chapterNum, verseNum));
                     }
@@ -227,7 +292,7 @@ namespace TvpTest
 
             // assert
             Assert.AreEqual(0, _expectedRefs.Count); // all expected verses have been read
-            Assert.AreEqual(1454, checkResult.ResultItems.Count); // expected number of violations found
+            Assert.AreEqual(1459, checkResult.ResultItems.Count); // expected number of violations found
         }
 
         /// <summary>
@@ -239,7 +304,7 @@ namespace TvpTest
             // setup
             for (var chapterNum = 1; chapterNum <= MinTestBooks + TestBookNum; chapterNum++)
             {
-                for (var verseNum = 1; verseNum <= MinTestVerses + chapterNum; verseNum++)
+                for (var verseNum = 0; verseNum <= MinTestVerses + chapterNum; verseNum++)
                 {
                     _expectedRefs.Add(GetVerseRef(TestBookNum, chapterNum, verseNum));
                 }
@@ -269,7 +334,7 @@ namespace TvpTest
         public void TestChapterOnlyPunctuationCheck()
         {
             // setup
-            for (var verseNum = 1; verseNum <= MinTestVerses + TestChapterNum; verseNum++)
+            for (var verseNum = 0; verseNum <= MinTestVerses + TestChapterNum; verseNum++)
             {
                 _expectedRefs.Add(GetVerseRef(TestBookNum, TestChapterNum, verseNum));
             }
@@ -301,7 +366,7 @@ namespace TvpTest
             {
                 for (var chapterNum = 1; chapterNum <= MinTestBooks + bookNum; chapterNum++)
                 {
-                    for (var verseNum = 1; verseNum <= MinTestVerses + chapterNum; verseNum++)
+                    for (var verseNum = 0; verseNum <= MinTestVerses + chapterNum; verseNum++)
                     {
                         _expectedRefs.Add(GetVerseRef(bookNum, chapterNum, verseNum));
                     }
