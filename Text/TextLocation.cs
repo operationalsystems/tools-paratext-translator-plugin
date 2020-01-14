@@ -44,7 +44,10 @@ namespace TvpMain.Text
         /// B/C/V summary text.
         /// </summary>
         [Ignore]
-        public string CoordinateText => $"{ TextUtil.GetBookCode(BookNum) + " " + ChapterNum + ":" + VerseNum}";
+        public string CoordinateText =>
+            TextUtil.TryGetBookCode(BookNum, out var bookCode)
+                ? $"{bookCode + " " + ChapterNum + ":" + VerseNum}"
+                : $"{"#" + BookNum + " " + ChapterNum + ":" + VerseNum}";
 
         /// <summary>
         /// Basic ctor.

@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.Xml;
 using AddInSideViews;
 using TvpMain.Util;
 
@@ -12,6 +13,9 @@ namespace TvpMain.Project
 {
     public class SettingsManager
     {
+        /// <summary>
+        /// Regex for splitting separator settings.
+        /// </summary>
         private static readonly Regex SeparatorRegex = new Regex("\\|");
 
         /// <summary>
@@ -85,6 +89,16 @@ namespace TvpMain.Project
         public int MaxPresentBookNum { get; private set; }
 
         /// <summary>
+        /// Book names map, keyed by book number (1-based).
+        /// </summary>
+        public IDictionary<int, BookNameEntry> BookNames { get; private set; }
+
+        /// <summary>
+        /// Project file manager.
+        /// </summary>
+        private readonly FileManager _fileManager;
+
+        /// <summary>
         /// Basic ctor.
         /// </summary>
         /// <param name="host">Paratext host interface (required).</param>
@@ -95,8 +109,11 @@ namespace TvpMain.Project
             _activeProjectName = activeProjectName
                                  ?? throw new ArgumentNullException(nameof(activeProjectName));
 
+            _fileManager = new FileManager(_host, _activeProjectName);
+
             ReadBooksPresent();
             ReadSeparators();
+            ReadBookNames();
         }
 
         /// <summary>
@@ -104,7 +121,7 @@ namespace TvpMain.Project
         /// </summary>
         private void ReadBooksPresent()
         {
-            var settingText = this["BooksPresent"];
+            var settingText = _host.GetProjectSetting(_activeProjectName, "BooksPresent");
             if (string.IsNullOrWhiteSpace(settingText))
             {
                 PresentBookFlags = Enumerable.Empty<bool>()
@@ -187,15 +204,72 @@ namespace TvpMain.Project
         }
 
         /// <summary>
+        /// Reads book names from XML file.
+        /// </summary>
+        private void ReadBookNames()
+        {
+            var tempBookNames = new Dictionary<int, BookNameEntry>();
+
+            if (_fileManager.TryGetBookNamesFile(out var fileStream))
+            {
+                using (fileStream)
+                {
+                    var xmlDoc = new XmlDocument();
+                    xmlDoc.Load(fileStream);
+
+                    // look for nodes
+                    var nodeList = xmlDoc.SelectNodes("/BookNames/book");
+                    if (nodeList != null)
+                    {
+                        // iterate nodes
+                        foreach (XmlNode nodeItem in nodeList)
+                        {
+                            // no attributes or no/unusuable code = unusable
+                            var codeAttrib = nodeItem.Attributes?["code"];
+                            if (codeAttrib == null
+                                || string.IsNullOrWhiteSpace(codeAttrib.Value)
+                                || !TextUtil.TryGetBookNum(codeAttrib.Value, out var bookNum))
+                            {
+                                continue;
+                            }
+
+                            var abbrAttrib = nodeItem.Attributes["abbr"];
+                            var shortAttrib = nodeItem.Attributes["short"];
+                            var longAttrib = nodeItem.Attributes["long"];
+
+                            // no value attribs = unusable
+                            if ((abbrAttrib == null || string.IsNullOrWhiteSpace(abbrAttrib.Value))
+                                && (shortAttrib == null || string.IsNullOrWhiteSpace(shortAttrib.Value))
+                                && (longAttrib == null || string.IsNullOrWhiteSpace(longAttrib.Value)))
+                            {
+                                continue;
+                            }
+
+                            tempBookNames[bookNum]
+                                = new BookNameEntry(
+                                    codeAttrib.Value,
+                                    bookNum,
+                                    abbrAttrib?.Value,
+                                    shortAttrib?.Value,
+                                    longAttrib?.Value);
+                        }
+                    }
+                }
+            }
+
+            BookNames = tempBookNames.ToImmutableDictionary();
+        }
+
+        /// <summary>
         /// Retrieves a separator-type setting (i.e., delimited by pipe characters).
         ///
         /// All result elements are whitespace trimmed.
         /// </summary>
         /// <param name="settingKey">Settings key (required).</param>
         /// <returns>List of setting values if found, empty list otherwise.</returns>
-        public IList<string> GetSeparatorSetting(string settingKey)
+        private IEnumerable<string> GetSeparatorSetting(string settingKey)
         {
-            var settingValue = this[settingKey];
+            var settingValue = _host.GetProjectSetting(_activeProjectName, settingKey);
             if (string.IsNullOrWhiteSpace(settingValue))
             {
                 return Enumerable.Empty<string>()
@@ -220,7 +294,5 @@ namespace TvpMain.Project
             return (bookNum >= 1 && bookNum <= PresentBookFlags.Count)
                    && PresentBookFlags[bookNum - 1];
         }
-
-        public string this[string key] => _host.GetProjectSetting(_activeProjectName, key);
     }
 }

@@ -42,20 +42,49 @@ namespace TvpMain.Util
         };
 
         /// <summary>
-        /// Get abbreviation text from enum.
+        /// Map of book codes to numbers (1-based).
+        /// </summary>
+        private static readonly IDictionary<string, int> BookCodesToNums =
+            new Dictionary<string, int>(
+                AbbrevNames
+                    .Select((bookCode, codeIndex) =>
+                    {
+                        var bookNum = (codeIndex + 1);
+                        return new { bookCode, bookNum };
+                    })
+                    .ToDictionary(
+                        pairItem => pairItem.bookCode,
+                        pairItem => pairItem.bookNum));
+
+        /// <summary>
+        /// Gets book code text from number (1-based).
         /// </summary>
         /// <param name="bookNum">Book number (1-based).</param>
-        /// <returns>Book abbreviation.</returns>
-        public static string GetBookCode(int bookNum)
+        /// <param name="bookCode">Book code if number in allowable range, null otherwise.</param>
+        /// <returns>True if number in allowable range, false otherwise.</returns>
+        public static bool TryGetBookCode(int bookNum, out string bookCode)
         {
             if (bookNum >= 1 && bookNum <= AbbrevNames.Length)
             {
-                return AbbrevNames[(bookNum - 1)];
+                bookCode = AbbrevNames[(bookNum - 1)];
+                return true;
             }
             else
             {
-                return $"#{bookNum:N0}";
+                bookCode = null;
+                return false;
             }
+        }
+
+        /// <summary>
+        /// Gets book number (1-based) from book code.
+        /// </summary>
+        /// <param name="bookCode">Book code (required).</param>
+        /// <param name="bookNum">Book number if code found, undefined otherwise.</param>
+        /// <returns>True if code found, false otherwise.</returns>
+        public static bool TryGetBookNum(string bookCode, out int bookNum)
+        {
+            return BookCodesToNums.TryGetValue(bookCode, out bookNum);
         }
 
         /// <summary>

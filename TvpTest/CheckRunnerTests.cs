@@ -211,6 +211,8 @@ namespace TvpTest
                 .Returns<string, string>((projectName, settingsKey) => ReferenceExtraMaterialSetting);
             _mockHost.Setup(hostItem => hostItem.GetProjectSetting(TestProjectName, "ReferenceFinalPunctuation"))
                 .Returns<string, string>((projectName, settingsKey) => ReferenceFinalPunctuationSetting);
+            _mockHost.Setup(hostItem => hostItem.GetFigurePath(TestProjectName, false))
+                .Returns<string, bool>((projectName, localFlag) => Path.Combine(Directory.GetCurrentDirectory(), "test"));
 
             // extractor setup
             _mockExtractor.Setup(extractorItem => extractorItem.Extract(It.IsAny<int>(), It.IsAny<int>()))
