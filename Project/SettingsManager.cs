@@ -17,7 +17,8 @@ namespace TvpMain.Project
         /// <summary>
         /// Regex for splitting separator settings.
         /// </summary>
-        private static readonly Regex SeparatorRegex = new Regex("\\|");
+        private static readonly Regex SeparatorRegex = new Regex("\\|",
+            RegexOptions.Multiline | RegexOptions.Compiled);
 
         /// <summary>
         /// Paratext host interface.

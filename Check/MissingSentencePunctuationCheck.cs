@@ -15,7 +15,7 @@ namespace TvpMain.Check
         /// </summary>
         private static readonly Regex CheckRegex =
             new Regex("(?<=[;,]([\"'](\\s[\"'])*)?(\\\\f([^\\\\]|\\\\(?!f\\*))*?\\\\f\\*)*(\\s*\\\\\\w+)+(\\s*\\\\v\\s\\S+)?\\s+(\\\\x([^\\\\]|\\\\(?!x\\*))*?\\\\x\\*)?)[A-Z]\\w+",
-            RegexOptions.Multiline);
+            RegexOptions.Multiline | RegexOptions.Compiled);
 
         /// <summary>
         /// Check implementation.

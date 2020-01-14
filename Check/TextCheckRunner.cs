@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -22,6 +24,18 @@ namespace TvpMain.Check
     /// </summary>
     public class TextCheckRunner
     {
+        /// <summary>
+        /// Regex for catching footnotes.
+        /// </summary>
+        private static readonly Regex FootnoteRegex = new Regex(@"\\f\s*[\S].*?\\f\*",
+            RegexOptions.Multiline | RegexOptions.Compiled);
+
+        /// <summary>
+        /// Regex for catching end notes.
+        /// </summary>
+        private static readonly Regex EndnoteRegex = new Regex(@"\\fe\s*[\S].*?\\fe\*",
+            RegexOptions.Multiline | RegexOptions.Compiled);
+
         /// <summary>
         /// Lock for publishing check progress.
         /// </summary>
@@ -306,11 +320,17 @@ namespace TvpMain.Check
                                     if (!string.IsNullOrWhiteSpace(noteText)
                                         && (string.IsNullOrWhiteSpace(mainText) || mainText != noteText))
                                     {
-                                        // run checks on note text
-                                        var noteLocation = new TextLocation(taskBookNum, chapterNum, verseNum,
-                                            TextContext.NoteOrReference);
-                                        checkList.ForEach(checkItem =>
-                                            checkItem.CheckVerse(noteLocation, noteText, resultItems));
+                                        // filter out non-note text
+                                        var filteredText = FilterMainText(noteText);
+
+                                        // run checks on (filter) note text
+                                        if (!string.IsNullOrWhiteSpace(filteredText))
+                                        {
+                                            var noteLocation = new TextLocation(taskBookNum, chapterNum, verseNum,
+                                                TextContext.NoteOrReference);
+                                            checkList.ForEach(checkItem =>
+                                                checkItem.CheckVerse(noteLocation, noteText, resultItems));
+                                        }
                                     }
                                 }
                                 catch (ArgumentException)
@@ -363,6 +383,60 @@ namespace TvpMain.Check
                     _runSemaphore.Release();
                 }
             });
+        }
+
+        /// <summary>
+        /// Filter main text from note content.
+        /// </summary>
+        /// <param name="noteText"></param>
+        /// <returns></returns>
+        private static string FilterMainText(string noteText)
+        {
+            // create mask of note text
+            var workBuilder = new StringBuilder(noteText, noteText.Length);
+            var isChanged = false;
+
+            foreach (Match footnoteMatch in FootnoteRegex.Matches(noteText))
+            {
+                for (var ctr = footnoteMatch.Index;
+                    ctr < (footnoteMatch.Index + footnoteMatch.Length);
+                    ctr++)
+                {
+                    workBuilder[ctr] = '\0';
+                    isChanged = true;
+                }
+            }
+            foreach (Match endnoteMatch in EndnoteRegex.Matches(noteText))
+            {
+                for (var ctr = endnoteMatch.Index;
+                    ctr < (endnoteMatch.Index + endnoteMatch.Length);
+                    ctr++)
+                {
+                    workBuilder[ctr] = '\0';
+                    isChanged = true;
+                }
+            }
+
+            // filter out non-masked text (i.e., main text)
+            if (isChanged)
+            {
+                var outputBuilder = new StringBuilder();
+                for (var ctr = 0;
+                    ctr < workBuilder.Length;
+                    ctr++)
+                {
+                    if (workBuilder[ctr] == '\0')
+                    {
+                        outputBuilder.Append(noteText[ctr]);
+                    }
+                }
+
+                return outputBuilder.ToString();
+            }
+            else
+            {
+                return string.Empty;
+            }
         }
     }
 
