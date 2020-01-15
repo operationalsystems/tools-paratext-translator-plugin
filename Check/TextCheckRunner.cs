@@ -24,17 +24,6 @@ namespace TvpMain.Check
     /// </summary>
     public class TextCheckRunner
     {
-        /// <summary>
-        /// Regex for catching footnotes.
-        /// </summary>
-        private static readonly Regex FootnoteRegex = new Regex(@"\\f\s*[\S].*?\\f\*",
-            RegexOptions.Multiline | RegexOptions.Compiled);
-
-        /// <summary>
-        /// Regex for catching end notes.
-        /// </summary>
-        private static readonly Regex EndnoteRegex = new Regex(@"\\fe.*?\\fe\*",
-            RegexOptions.Multiline | RegexOptions.Compiled);
 
         /// <summary>
         /// Lock for publishing check progress.
@@ -86,11 +75,34 @@ namespace TvpMain.Check
         /// </summary>
         private int _runBookCtr;
 
+        /// <summary>
+        /// Current run's area.
+        /// </summary>
         private CheckArea _runArea;
+
+        /// <summary>
+        /// Current run's check list.
+        /// </summary>
         private IList<ITextCheck> _runChecks;
+
+        /// <summary>
+        /// Current run's contexts.
+        /// </summary>
         private ISet<TextContext> _runContexts;
+
+        /// <summary>
+        /// Current run's task semaphore.
+        /// </summary>
         private SemaphoreSlim _runSemaphore;
+
+        /// <summary>
+        /// Current run's result collection.
+        /// </summary>
         private CheckResults _runResults;
+
+        /// <summary>
+        /// Current run's earliest exception.
+        /// </summary>
         private Exception _runEx;
 
         /// <summary>
@@ -223,8 +235,13 @@ namespace TvpMain.Check
             }
         }
 
+        /// <summary>
+        /// Creates and runs a check task for a given book number.
+        /// </summary>
+        /// <param name="inputBookNum">Book number (1-based).</param>
+        /// <returns></returns>
         private Task RunBookTask(
-            int taskBookNum)
+            int inputBookNum)
         {
             return Task.Run(() =>
             {
@@ -232,7 +249,7 @@ namespace TvpMain.Check
                 _runSemaphore.Wait();
 
                 // track where we are for error reporting
-                var currBookNum = taskBookNum;
+                var currBookNum = inputBookNum;
                 var currChapterNum = 0;
                 var currVerseNum = 0;
 
@@ -255,8 +272,13 @@ namespace TvpMain.Check
                         ? 1
                         : _runChapterNum;
                     var maxChapter = (_runArea != CheckArea.CurrentChapter)
-                        ? _host.GetLastChapter(taskBookNum, versificationName)
+                        ? _host.GetLastChapter(inputBookNum, versificationName)
                         : _runChapterNum;
+
+                    var mainParts = new List<string>();
+                    var introParts = new List<string>();
+                    var tocParts = new List<string>();
+                    var noteParts = new List<string>();
 
                     var resultItems = new List<ResultItem>();
                     for (var chapterNum = minChapter;
@@ -269,7 +291,7 @@ namespace TvpMain.Check
                             return;
                         }
 
-                        var lastVerseNum = _host.GetLastVerse(taskBookNum, chapterNum, versificationName);
+                        var lastVerseNum = _host.GetLastVerse(inputBookNum, chapterNum, versificationName);
 
                         for (var verseNum = 0;
                             verseNum <= lastVerseNum;
@@ -281,7 +303,7 @@ namespace TvpMain.Check
                                 return;
                             }
 
-                            var checkRef = TextUtil.BcvToRef(taskBookNum, chapterNum, verseNum);
+                            var checkRef = TextUtil.BcvToRef(inputBookNum, chapterNum, verseNum);
                             resultItems.Clear();
 
                             string mainText = null;
@@ -294,11 +316,40 @@ namespace TvpMain.Check
                                     // check main text, if present
                                     if (!string.IsNullOrWhiteSpace(mainText))
                                     {
-                                        // run checks in main text
-                                        var mainLocation = new TextLocation(taskBookNum, chapterNum, verseNum,
-                                            verseNum == 0 ? TextContext.Introduction : TextContext.MainText);
-                                        checkList.ForEach(checkItem =>
-                                            checkItem.CheckVerse(mainLocation, mainText, resultItems));
+                                        mainParts.Clear();
+                                        tocParts.Clear();
+                                        introParts.Clear();
+
+                                        if (TextUtil.FindMainParts(mainText, mainParts, introParts, tocParts))
+                                        {
+                                            if (mainParts.Count > 0)
+                                            {
+                                                // run checks on main text
+                                                RunBookChecks(
+                                                    new TextLocation(inputBookNum, chapterNum, verseNum,
+                                                        TextContext.MainText),
+                                                    mainParts,
+                                                    resultItems);
+                                            }
+                                            if (introParts.Count > 0)
+                                            {
+                                                // run checks on intro lines
+                                                RunBookChecks(
+                                                    new TextLocation(inputBookNum, chapterNum, verseNum,
+                                                        TextContext.Introduction),
+                                                    introParts,
+                                                    resultItems);
+                                            }
+                                            if (tocParts.Count > 0)
+                                            {
+                                                // run checks on TOC lines
+                                                RunBookChecks(
+                                                    new TextLocation(inputBookNum, chapterNum, verseNum,
+                                                        TextContext.TableOfContents),
+                                                    introParts,
+                                                    resultItems);
+                                            }
+                                        }
                                     }
                                 }
                                 catch (ArgumentException)
@@ -321,15 +372,15 @@ namespace TvpMain.Check
                                         && (string.IsNullOrWhiteSpace(mainText) || mainText != noteText))
                                     {
                                         // filter out non-note text
-                                        var filteredText = FilterMainText(noteText);
-
-                                        // run checks on (filter) note text
-                                        if (!string.IsNullOrWhiteSpace(filteredText))
+                                        noteParts.Clear();
+                                        if (TextUtil.FindNoteOrReferenceParts(noteText, noteParts))
                                         {
-                                            var noteLocation = new TextLocation(taskBookNum, chapterNum, verseNum,
-                                                TextContext.NoteOrReference);
-                                            checkList.ForEach(checkItem =>
-                                                checkItem.CheckVerse(noteLocation, noteText, resultItems));
+                                            // run checks on notes or references
+                                            RunBookChecks(
+                                                new TextLocation(inputBookNum, chapterNum, verseNum,
+                                                    TextContext.NoteOrReference),
+                                                noteParts,
+                                                resultItems);
                                         }
                                     }
                                 }
@@ -364,7 +415,7 @@ namespace TvpMain.Check
                         }
                     }
 
-                    OnCheckUpdated(taskBookNum);
+                    OnCheckUpdated(inputBookNum);
                 }
                 catch (OperationCanceledException)
                 {
@@ -386,56 +437,24 @@ namespace TvpMain.Check
         }
 
         /// <summary>
-        /// Filter main text from note content.
+        /// Applies the current run's book checks to specific input.
         /// </summary>
-        /// <param name="noteText"></param>
-        /// <returns></returns>
-        private static string FilterMainText(string noteText)
+        /// <param name="inputLocation">Input location (required).</param>
+        /// <param name="inputParts">Input parts (required).</param>
+        /// <param name="outputItems">Output result items (required).</param>
+        private void RunBookChecks(
+            TextLocation inputLocation,
+            IEnumerable<string> inputParts,
+            ICollection<ResultItem> outputItems)
         {
-            // create mask of note text
-            var workBuilder = new StringBuilder(noteText, noteText.Length);
-            var isChanged = false;
-
-            foreach (Match footnoteMatch in FootnoteRegex.Matches(noteText))
+            foreach (var partItem in inputParts
+                .Where(partItem => !string.IsNullOrWhiteSpace(partItem))
+                .Select(partItem => partItem.Trim()))
             {
-                for (var ctr = footnoteMatch.Index;
-                    ctr < (footnoteMatch.Index + footnoteMatch.Length);
-                    ctr++)
+                foreach (var checkItem in _runChecks)
                 {
-                    workBuilder[ctr] = '\0';
-                    isChanged = true;
+                    checkItem.CheckVerse(inputLocation, partItem, outputItems);
                 }
-            }
-            foreach (Match endnoteMatch in EndnoteRegex.Matches(noteText))
-            {
-                for (var ctr = endnoteMatch.Index;
-                    ctr < (endnoteMatch.Index + endnoteMatch.Length);
-                    ctr++)
-                {
-                    workBuilder[ctr] = '\0';
-                    isChanged = true;
-                }
-            }
-
-            // filter out non-masked text (i.e., main text)
-            if (isChanged)
-            {
-                var outputBuilder = new StringBuilder();
-                for (var ctr = 0;
-                    ctr < workBuilder.Length;
-                    ctr++)
-                {
-                    if (workBuilder[ctr] == '\0')
-                    {
-                        outputBuilder.Append(noteText[ctr]);
-                    }
-                }
-
-                return outputBuilder.ToString();
-            }
-            else
-            {
-                return string.Empty;
             }
         }
     }

@@ -23,7 +23,7 @@ namespace TvpMain.Check
         /// <param name="textLocation">Text location (required).</param>
         /// <param name="inputText">Input text.</param>
         /// <param name="checkResults">Result items list to populate.</param>
-        public void CheckVerse(TextLocation textLocation, string inputText, IList<ResultItem> checkResults)
+        public void CheckVerse(TextLocation textLocation, string inputText, ICollection<ResultItem> checkResults)
         {
             foreach (Match matchItem in CheckRegex.Matches(inputText))
             {

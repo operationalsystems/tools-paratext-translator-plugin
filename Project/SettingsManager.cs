@@ -93,7 +93,7 @@ namespace TvpMain.Project
         /// <summary>
         /// Book names map, keyed by book number (1-based).
         /// </summary>
-        public IDictionary<int, BookNameEntry> BookNames { get; private set; }
+        public IDictionary<int, BookNameItem> BookNames { get; private set; }
 
         /// <summary>
         /// Project file manager.
@@ -210,7 +210,7 @@ namespace TvpMain.Project
         /// </summary>
         private void ReadBookNames()
         {
-            var tempBookNames = new Dictionary<int, BookNameEntry>();
+            var tempBookNames = new Dictionary<int, BookNameItem>();
 
             if (_fileManager.TryGetBookNamesFile(out var fileStream))
             {
@@ -229,7 +229,7 @@ namespace TvpMain.Project
                             // no attributes or no/unusuable code = unusable
                             var codeAttrib = nodeItem.Attributes?["code"]?.Value?.Trim();
                             if (string.IsNullOrWhiteSpace(codeAttrib)
-                                || !TextUtil.BookNums.TryGetValue(codeAttrib, out var bookNum))
+                                || !TextUtil.BookIdsByCode.TryGetValue(codeAttrib, out var bookId))
                             {
                                 continue;
                             }
@@ -246,10 +246,10 @@ namespace TvpMain.Project
                                 continue;
                             }
 
-                            tempBookNames[bookNum]
-                                = new BookNameEntry(
+                            tempBookNames[bookId.BookNum]
+                                = new BookNameItem(
                                     codeAttrib,
-                                    bookNum,
+                                    bookId.BookNum,
                                     abbrAttrib,
                                     shortAttrib,
                                     longAttrib);

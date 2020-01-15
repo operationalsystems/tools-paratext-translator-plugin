@@ -45,8 +45,8 @@ namespace TvpMain.Text
         /// </summary>
         [Ignore]
         public string CoordinateText =>
-            TextUtil.BookCodes.TryGetValue(BookNum, out var bookCode)
-                ? $"{bookCode + " " + ChapterNum + ":" + VerseNum}"
+            TextUtil.BookIdsByNum.TryGetValue(BookNum, out var bookId)
+                ? $"{bookId.BookCode + " " + ChapterNum + ":" + VerseNum}"
                 : $"{"#" + BookNum + " " + ChapterNum + ":" + VerseNum}";
 
         /// <summary>

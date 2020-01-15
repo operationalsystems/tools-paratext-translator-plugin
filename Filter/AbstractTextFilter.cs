@@ -42,6 +42,12 @@ namespace TvpMain.Filter
         /// <returns>True if filter matches, false otherwise.</returns>
         public bool FilterText(string inputText)
         {
+            // empty filter = ignore
+            if (IsEmpty)
+            {
+                return false;
+            }
+
             inputText = inputText.Trim();
 
             var caseSensitiveWords = CaseSensitiveWords;

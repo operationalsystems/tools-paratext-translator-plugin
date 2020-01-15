@@ -131,7 +131,7 @@ namespace TvpMain.Form
                     pbrStatus.Value = currUpdate.BookCtr;
                     pbrStatus.Style = ProgressBarStyle.Continuous;
 
-                    lblTitle.Text = TextUtil.BookCodes.TryGetValue(currUpdate.BookNum, out var bookCode)
+                    lblTitle.Text = TextUtil.BookIdsByNum.TryGetValue(currUpdate.BookNum, out var bookCode)
                             ? $"Checked {bookCode} (#{currUpdate.BookCtr} of {currUpdate.TotalBooks})..."
                             : $"Checked #{currUpdate.BookNum} (#{currUpdate.BookCtr} of {currUpdate.TotalBooks})...";
                 }

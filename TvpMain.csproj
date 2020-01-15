@@ -115,8 +115,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Check\CheckArea.cs" />
-    <Compile Include="Project\BookNameEntry.cs" />
+    <Compile Include="Project\BookNameItem.cs" />
     <Compile Include="Project\FileManager.cs" />
+    <Compile Include="Text\BookIdItem.cs" />
     <Compile Include="Text\TextLocation.cs" />
     <Compile Include="Text\TextContext.cs" />
     <Compile Include="Check\CheckUpdatedArgs.cs" />
@@ -161,6 +162,7 @@
   <ItemGroup>
     <None Include="App.config" />
     <None Include="packages.config" />
+    <EmbeddedResource Include="Resources\book-ids-1.csv" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Form\IgnoreListForm.resx">

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace TvpMain.Project
 {
-    public class BookNameEntry
+    public class BookNameItem
     {
         /// <summary>
         /// Book code.
@@ -56,7 +56,7 @@ namespace TvpMain.Project
         /// <param name="abbreviation">Language-specific abbreviation (optional, may be null/empty).</param>
         /// <param name="shortName">Language-specific short name (optional, may be null/empty).</param>
         /// <param name="longName">Language-specific long name (optional, may be null/empty).</param>
-        public BookNameEntry(
+        public BookNameItem(
             string bookCode, int bookNum,
             string abbreviation, string shortName,
             string longName)

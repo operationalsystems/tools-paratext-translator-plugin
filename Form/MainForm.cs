@@ -149,16 +149,26 @@ namespace TvpMain.Form
             {
                 lock (_wordListFilter)
                 {
-                    _wordListFilter.SetKeyTerms(_host.GetProjectKeyTerms(
+                    var projectTerms = _host.GetProjectKeyTerms(
                         _activeProjectName,
-                        _host.GetProjectLanguageId(_activeProjectName, "translation validation")));
+                        _host.GetProjectLanguageId(_activeProjectName, "translation validation"));
+                    if (projectTerms != null
+                        && projectTerms.Count > 0)
+                    {
+                        _wordListFilter.SetKeyTerms(projectTerms);
+                    }
                 }
 
                 lock (_biblicalTermFilter)
                 {
-                    _biblicalTermFilter.SetKeyTerms(_host.GetFactoryKeyTerms(
+                    var factoryTerms = _host.GetFactoryKeyTerms(
                         _host.GetProjectKeyTermListType(_activeProjectName),
-                        _host.GetProjectLanguageId(_activeProjectName, "translation validation")));
+                        _host.GetProjectLanguageId(_activeProjectName, "translation validation"));
+                    if (factoryTerms != null
+                        && factoryTerms.Count > 0)
+                    {
+                        _biblicalTermFilter.SetKeyTerms(factoryTerms);
+                    }
                 }
             }
             catch (Exception ex)

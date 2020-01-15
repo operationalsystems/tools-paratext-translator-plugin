@@ -1,6 +1,14 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.IO;
 using System.Linq;
+using System.Reflection;
+using System.Text;
+using System.Text.RegularExpressions;
+using CsvHelper;
+using CsvHelper.Configuration;
+using TvpMain.Result;
 using TvpMain.Util;
 
 namespace TvpMain.Text
@@ -11,59 +19,80 @@ namespace TvpMain.Text
     public class TextUtil
     {
         /// <summary>
-        /// Abbreviations for bible book names.
+        /// List of note and reference regexes.
         /// </summary>
-        private static readonly string[] AbbrevNames = {
-            "GEN", "EXO", "LEV", "NUM", "DEU", "JOS",
-            "JDG", "RUT", "1SA", "2SA", "1KI", "2KI",
-            "1CH", "2CH", "EZR", "NEH", "EST", "JOB",
-            "PSA", "PRO", "ECC", "SNG", "ISA", "JER",
-            "LAM", "EZK", "DAN", "HOS", "JOL", "AMO",
-            "OBA", "JON", "MIC", "NAM", "HAB", "ZEP",
-            "HAG", "ZEC", "MAL", "MAT", "MRK", "LUK",
-            "JHN", "ACT", "ROM", "1CO", "2CO", "GAL",
-            "EPH", "PHP", "COL", "1TH", "2TH", "1TI",
-            "2TI", "TIT", "PHM", "HEB", "JAS", "1PE",
-            "2PE", "1JN", "2JN", "3JN", "JUD", "REV",
-            "TOB", "JDT", "ESG", "WIS", "SIR", "BAR",
-            "LJE", "S3Y", "SUS", "BEL", "1MA", "2MA",
-            "3MA", "4MA", "1ES", "2ES", "MAN", "PS2",
-            "ODA", "PSS", "JSA", "JDB", "TBS", "SST",
-            "DNT", "BLT", "XXA", "XXB", "XXC", "XXD",
-            "XXE", "XXF", "XXG", "FRT", "BAK", "OTH",
-            "3ES", "EZA", "5EZ", "6EZ", "INT", "CNC",
-            "GLO", "TDX", "NDX", "DAG", "PS3", "2BA",
-            "LBA", "JUB", "ENO", "1MQ", "2MQ", "3MQ",
-            "REP", "4BA", "LAO"
-        };
+        private static readonly IList<Regex> NoteAndReferenceRegexes
+            = new List<Regex>()
+            {
+                CreateNoteOrReferenceRegex("f"),
+                CreateNoteOrReferenceRegex("x"),
+                CreateNoteOrReferenceRegex("ef"),
+                CreateNoteOrReferenceRegex("ex"),
+                CreateNoteOrReferenceRegex("fe")
+            }.ToImmutableList();
+
+        /// <summary>
+        /// List of line-oriented intro regexes.
+        /// </summary>
+        private static readonly IList<Regex> IntroRegexes
+            = new List<Regex>()
+            {
+                CreateLineRegex("i", true),
+                CreateLineRegex("usfm", false),
+                CreateLineRegex("sts", false),
+                CreateLineRegex("rem", false),
+                CreateLineRegex("h", false),
+            }.ToImmutableList();
+
+        /// <summary>
+        /// List of line-oriented TOC regexes.
+        /// </summary>
+        private static readonly IList<Regex> TocRegexes
+            = new List<Regex>()
+            {
+                CreateLineRegex("toc", true)
+            }.ToImmutableList();
+
+        /// <summary>
+        /// All regexes that find text we _don't_ want in extracted "main" text,
+        /// needed because main scripture extractor will co-mingle everything.
+        /// </summary>
+        private static readonly IList<Regex> NonMainTextRegexes
+            = IntroRegexes.Concat(TocRegexes)
+                .ToImmutableList();
+
+        /// <summary>
+        /// Book id list, from resource file.
+        /// </summary>
+        public static readonly IList<BookIdItem> BookIdList;
 
         /// <summary>
         /// Map of book codes to numbers (1-based).
         /// </summary>
-        public static readonly IDictionary<string, int> BookNums =
-                AbbrevNames
-                    .Select((bookCode, indexItem) =>
-                    {
-                        var bookNum = (indexItem + 1);
-                        return new { bookCode, bookNum };
-                    })
-                    .ToImmutableDictionary(
-                        pairItem => pairItem.bookCode,
-                        pairItem => pairItem.bookNum);
+        public static readonly IDictionary<string, BookIdItem> BookIdsByCode;
 
         /// <summary>
         /// Map of book numbers (1-based) to codes.
         /// </summary>
-        public static readonly IDictionary<int, string> BookCodes =
-                AbbrevNames
-                    .Select((bookCode, indexItem) =>
-                    {
-                        var bookNum = (indexItem + 1);
-                        return new { bookCode, bookNum };
-                    })
-                    .ToImmutableDictionary(
-                        pairItem => pairItem.bookNum,
-                        pairItem => pairItem.bookCode);
+        public static readonly IDictionary<int, BookIdItem> BookIdsByNum;
+
+        static TextUtil()
+        {
+            var executingAssembly = Assembly.GetExecutingAssembly();
+
+            using var inputStream = executingAssembly.GetManifestResourceStream("TvpMain.Resources.book-ids-1.csv");
+            using var streamReader = new StreamReader(inputStream);
+            using var csvReader = new CsvReader(streamReader);
+
+            csvReader.Configuration.HasHeaderRecord = false;
+            csvReader.Configuration.IgnoreBlankLines = true;
+            csvReader.Configuration.TrimOptions = TrimOptions.Trim;
+            csvReader.Configuration.MissingFieldFound = null;
+
+            BookIdList = csvReader.GetRecords<BookIdItem>().ToImmutableList();
+            BookIdsByCode = BookIdList.ToImmutableDictionary(idItem => idItem.BookCode);
+            BookIdsByNum = BookIdList.ToImmutableDictionary(idItem => idItem.BookNum);
+        }
 
         /// <summary>
         /// Converts a Paratext coordinate reference to specific book, chapter, and verse.
@@ -92,6 +121,167 @@ namespace TvpMain.Text
             return (inputBook * MainConsts.BookRefMultiplier)
                    + (inputChapter * MainConsts.ChapRefMultiplier)
                    + inputVerse;
+        }
+
+        /// <summary>
+        /// Creates a note or reference regex from a tag name (note required interior non-space char).
+        /// </summary>
+        /// <param name="tagName">Tag name (required).</param>
+        /// <returns></returns>
+        private static Regex CreateNoteOrReferenceRegex(string tagName)
+        {
+            return new Regex($@"\\{tagName}\s*[\S](?:\s(?:(?!\\{tagName}).)*|\s*)\\{tagName}\*", RegexOptions.Singleline | RegexOptions.Compiled);
+        }
+
+        /// <summary>
+        /// Creates tag pair regex from a tag name.
+        /// </summary>
+        /// <param name="tagName">Tag name (required).</param>
+        /// <returns></returns>
+        private static Regex CreateTagPairRegex(string tagName)
+        {
+            return new Regex($@"\\{tagName}(?:\s(?:(?!\\{tagName}).)*|\s*)\\{tagName}\*", RegexOptions.Singleline | RegexOptions.Compiled);
+        }
+
+        /// <summary>
+        /// Creates a whole-line regex from a tag name (e.g., titles and tocs).
+        /// </summary>
+        /// <param name="tagName"></param>
+        /// <param name="isPartial">True to match partial tags, false otherwise.</param>
+        /// <returns></returns>
+        private static Regex CreateLineRegex(string tagName, bool isPartial)
+        {
+            return new Regex(isPartial ? $@"^\s*\\{tagName}.*\r?$" : $@"^\s*\\{tagName}(?:(?!\\{tagName}).)*\r?$",
+                RegexOptions.Multiline | RegexOptions.Compiled);
+        }
+
+        /// <summary>
+        /// Finds parts of main text from co-mingled content.
+        /// 
+        /// Needed because while scripture extractors returns several contexts co-mingled,
+        /// (e.g., main text, notes) we need them separated for context-sensitive checks.
+        /// </summary>
+        /// <param name="inputText">Input text containing mixed content (required).</param>
+        /// <param name="mainParts"></param>
+        /// <param name="introParts"></param>
+        /// <param name="tocParts"></param>
+        /// <returns></returns>
+        public static bool FindMainParts(string inputText,
+            ICollection<string> mainParts,
+            ICollection<string> introParts,
+            ICollection<string> tocParts)
+        {
+            var isFound = FindTextParts(inputText, NonMainTextRegexes, true, mainParts);
+            isFound = FindTextParts(inputText, IntroRegexes, false, introParts) || isFound;
+            isFound = FindTextParts(inputText, TocRegexes, false, tocParts) || isFound;
+
+            return isFound;
+        }
+
+        /// <summary>
+        /// Find note or reference parts within mixed content.
+        ///
+        /// Needed because while scripture extractors returns several contexts co-mingled,
+        /// (e.g., main text, notes) we need them separated for context-sensitive checks.
+        /// </summary>
+        /// <param name="inputText">Input text containing main, note, or reference content (required).</param>
+        /// <param name="noteParts">Destination collection for found note and reference parts.</param>
+        /// <returns>True if applicable content found, false otherwise.</returns>
+        public static bool FindNoteOrReferenceParts(string inputText, ICollection<string> noteParts)
+        {
+            return FindTextParts(inputText, NoteAndReferenceRegexes, false, noteParts);
+        }
+
+        /// <summary>
+        /// Find specific sub-elements within mixed content.
+        /// 
+        /// Needed because while scripture extractors returns several contexts co-mingled,
+        /// (e.g., main text, notes) we need them separated for context-sensitive checks.
+        /// </summary>
+        /// <param name="inputText">Input text containing mixed content (required).</param>
+        /// <param name="includeRegexes">Regexes to search for (required).</param>
+        /// <param name="isNegative">True to find parts _not) matching regexes, false to find matching.</param>
+        /// <param name="foundParts">Destination collection for found note and reference parts.</param>
+        /// <returns>True if applicable content found, false otherwise.</returns>
+        private static bool FindTextParts(
+            string inputText, IEnumerable<Regex> includeRegexes,
+            bool isNegative, ICollection<string> foundParts)
+        {
+            // create mask of note text
+            var workBuilder = new StringBuilder(inputText, inputText.Length);
+            var isFound = false;
+
+            foreach (var noteRegex in includeRegexes)
+            {
+                foreach (Match matchItem in noteRegex.Matches(inputText))
+                {
+                    for (var ctr = matchItem.Index;
+                        ctr < (matchItem.Index + matchItem.Length);
+                        ctr++)
+                    {
+                        workBuilder[ctr] = '\0';
+                        isFound = true;
+                    }
+                }
+            }
+
+            // filter out non-masked text (i.e., main text)
+            if (isFound)
+            {
+                var outputBuilder = new StringBuilder();
+                var isNewLine = false;
+                var isAdded = false;
+
+                for (var ctr = 0;
+                    ctr < workBuilder.Length;
+                    ctr++)
+                {
+                    if ((isNegative && workBuilder[ctr] != '\0')
+                        || (!isNegative && workBuilder[ctr] == '\0'))
+                    {
+                        if (isNewLine)
+                        {
+                            if (outputBuilder.Length > 0)
+                            {
+                                foundParts.Add(outputBuilder.ToString());
+                                isAdded = true;
+
+                                outputBuilder.Clear();
+                            }
+
+                            isNewLine = false;
+                        }
+                        outputBuilder.Append(inputText[ctr]);
+                    }
+                    else
+                    {
+                        isNewLine = true;
+                    }
+                }
+
+                if (isNewLine
+                    && outputBuilder.Length > 0)
+                {
+                    foundParts.Add(outputBuilder.ToString());
+                    isAdded = true;
+
+                    outputBuilder.Clear();
+                }
+
+                return isAdded;
+            }
+            else
+            {
+                if (isNegative)
+                {
+                    foundParts.Add(inputText);
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
         }
     }
 }

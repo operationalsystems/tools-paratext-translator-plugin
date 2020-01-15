@@ -15,6 +15,6 @@ namespace TvpMain.Check
         /// <param name="textLocation">Text location (required).</param>
         /// <param name="inputText">Input text (required).</param>
         /// <param name="checkResults">Result items list to populate.</param>
-        void CheckVerse(TextLocation textLocation, string inputText, IList<ResultItem> checkResults);
+        void CheckVerse(TextLocation textLocation, string inputText, ICollection<ResultItem> checkResults);
     }
 }
