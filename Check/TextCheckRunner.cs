@@ -257,11 +257,8 @@ namespace TvpMain.Check
                 {
                     // get utility items
                     var versificationName = _host.GetProjectVersificationName(_activeProjectName);
-                    var mainExtractor = _host.GetScriptureExtractor(
-                        _activeProjectName, ExtractorType.USFM);
-                    var noteExtractor = _host.GetScriptureExtractor(
-                        _activeProjectName, ExtractorType.USFM);
-                    noteExtractor.IncludeNotes = true;
+                    var scriptureExtractor = _host.GetScriptureExtractor(_activeProjectName, ExtractorType.USFM);
+                    scriptureExtractor.IncludeNotes = true;
 
                     var checkList = _runChecks.ToList();
                     string[] splitArray = { "" };
@@ -275,12 +272,16 @@ namespace TvpMain.Check
                         ? _host.GetLastChapter(inputBookNum, versificationName)
                         : _runChapterNum;
 
-                    var mainParts = new List<string>();
-                    var introParts = new List<string>();
-                    var tocParts = new List<string>();
-                    var noteParts = new List<string>();
-
                     var resultItems = new List<ResultItem>();
+                    var foundParts = new Dictionary<TextContext, ICollection<string>>();
+
+                    // set up lists to receive verse parts
+                    foreach (var contextItem in _runContexts)
+                    {
+                        foundParts[contextItem] = new List<string>();
+                    };
+
+                    // iterate chapters
                     for (var chapterNum = minChapter;
                         chapterNum <= maxChapter;
                         chapterNum++)
@@ -306,108 +307,56 @@ namespace TvpMain.Check
                             var checkRef = TextUtil.BcvToRef(inputBookNum, chapterNum, verseNum);
                             resultItems.Clear();
 
-                            string mainText = null;
-                            if (_runContexts.Contains(TextContext.MainText))
+                            try
                             {
-                                try
-                                {
-                                    mainText = mainExtractor.Extract(checkRef, checkRef);
+                                var verseText = scriptureExtractor.Extract(checkRef, checkRef);
 
-                                    // check main text, if present
-                                    if (!string.IsNullOrWhiteSpace(mainText))
+                                // empty text = consecutive check, in case we're looking at an empty chapter
+                                if (string.IsNullOrWhiteSpace(verseText))
+                                {
+                                    emptyVerseCtr++;
+                                    if (emptyVerseCtr > MainConsts.MAX_CONSECUTIVE_EMPTY_VERSES)
                                     {
-                                        mainParts.Clear();
-                                        tocParts.Clear();
-                                        introParts.Clear();
-
-                                        if (TextUtil.FindMainParts(mainText, mainParts, introParts, tocParts))
-                                        {
-                                            if (mainParts.Count > 0)
-                                            {
-                                                // run checks on main text
-                                                RunBookChecks(
-                                                    new TextLocation(inputBookNum, chapterNum, verseNum,
-                                                        TextContext.MainText),
-                                                    mainParts,
-                                                    resultItems);
-                                            }
-                                            if (introParts.Count > 0)
-                                            {
-                                                // run checks on intro lines
-                                                RunBookChecks(
-                                                    new TextLocation(inputBookNum, chapterNum, verseNum,
-                                                        TextContext.Introduction),
-                                                    introParts,
-                                                    resultItems);
-                                            }
-                                            if (tocParts.Count > 0)
-                                            {
-                                                // run checks on TOC lines
-                                                RunBookChecks(
-                                                    new TextLocation(inputBookNum, chapterNum, verseNum,
-                                                        TextContext.TableOfContents),
-                                                    introParts,
-                                                    resultItems);
-                                            }
-                                        }
+                                        break; // no beginning text = empty chapter (skip)
                                     }
-                                }
-                                catch (ArgumentException)
-                                {
-                                    // arg exceptions occur when verses are missing, 
-                                    // which they can be for given translations (ignore and move on)
-                                    continue;
-                                }
-                            }
-
-                            string noteText = null;
-                            if (_runContexts.Contains(TextContext.NoteOrReference))
-                            {
-                                try
-                                {
-                                    noteText = noteExtractor.Extract(checkRef, checkRef);
-
-                                    // check main+note text, if present (and) different from main text
-                                    if (!string.IsNullOrWhiteSpace(noteText)
-                                        && (string.IsNullOrWhiteSpace(mainText) || mainText != noteText))
-                                    {
-                                        // filter out non-note text
-                                        noteParts.Clear();
-                                        if (TextUtil.FindNoteOrReferenceParts(noteText, noteParts))
-                                        {
-                                            // run checks on notes or references
-                                            RunBookChecks(
-                                                new TextLocation(inputBookNum, chapterNum, verseNum,
-                                                    TextContext.NoteOrReference),
-                                                noteParts,
-                                                resultItems);
-                                        }
-                                    }
-                                }
-                                catch (ArgumentException)
-                                {
-                                    // arg exceptions occur when verses are missing, 
-                                    // which they can be for given translations (ignore and move on)
-                                    continue;
-                                }
-                            }
-
-                            if (string.IsNullOrWhiteSpace(mainText)
-                                && string.IsNullOrWhiteSpace(noteText))
-                            {
-                                emptyVerseCtr++;
-                                if (emptyVerseCtr > MainConsts.MAX_CONSECUTIVE_EMPTY_VERSES)
-                                {
-                                    break; // no beginning text = empty chapter (skip)
-                                }
+                                } // else, take apart text
                                 else
                                 {
-                                    continue; // else, next verse
+                                    emptyVerseCtr = 0;
+
+                                    // clear out part lists
+                                    foreach (var foundList in foundParts.Values)
+                                    {
+                                        foundList.Clear();
+                                    }
+
+                                    // find verse parts
+                                    if (VerseUtil.FindVerseParts(
+                                        verseText, _runContexts, foundParts))
+                                    {
+                                        // check each context
+                                        foreach (var contextItem in _runContexts)
+                                        {
+                                            if (foundParts.TryGetValue(contextItem,
+                                                    out var foundList)
+                                                && foundList.Count > 0)
+                                            {
+                                                // run checks on parts
+                                                RunBookChecks(
+                                                    new TextLocation(inputBookNum, chapterNum,
+                                                        verseNum, contextItem),
+                                                    foundList,
+                                                    resultItems);
+                                            }
+                                        }
+                                    }
                                 }
                             }
-                            else
+                            catch (ArgumentException)
                             {
-                                emptyVerseCtr = 0;
+                                // arg exceptions occur when verses are missing, 
+                                // which they can be for given translations (ignore and move on)
+                                continue;
                             }
 
                             resultItems.ForEach(resultItem =>
@@ -448,8 +397,7 @@ namespace TvpMain.Check
             ICollection<ResultItem> outputItems)
         {
             foreach (var partItem in inputParts
-                .Where(partItem => !string.IsNullOrWhiteSpace(partItem))
-                .Select(partItem => partItem.Trim()))
+                .Where(partItem => !string.IsNullOrWhiteSpace(partItem)))
             {
                 foreach (var checkItem in _runChecks)
                 {

@@ -512,7 +512,7 @@ namespace TvpMain.Form
         /// </summary>
         /// <param name="sender">Event sender (ignored).</param>
         /// <param name="e">Event args (ignored).</param>
-        private void OnCurrentProjectAreaMenuClick(object sender, EventArgs e)
+        private void OnCurrentProjectAreaMenuItemClick(object sender, EventArgs e)
         {
             ClearAreaMenuItems();
 
@@ -527,7 +527,7 @@ namespace TvpMain.Form
         /// </summary>
         /// <param name="sender">Event sender (ignored).</param>
         /// <param name="e">Event args (ignored).</param>
-        private void OnCurrentBookAreaMenuClick(object sender, EventArgs e)
+        private void OnCurrentBookAreaMenuItemClick(object sender, EventArgs e)
         {
             ClearAreaMenuItems();
 
@@ -542,7 +542,7 @@ namespace TvpMain.Form
         /// </summary>
         /// <param name="sender">Event sender (ignored).</param>
         /// <param name="e">Event args (ignored).</param>
-        private void OnCurrentChapterAreaMenuClick(object sender, EventArgs e)
+        private void OnCurrentChapterAreaMenuItemClick(object sender, EventArgs e)
         {
             ClearAreaMenuItems();
 
@@ -557,10 +557,28 @@ namespace TvpMain.Form
         /// </summary>
         /// <param name="sender">Event sender (ignored).</param>
         /// <param name="e">Event args (ignored).</param>
-        private void OnMainTextAreaMenuClick(object sender, EventArgs e)
+        private void OnMainTextAreaMenuItemClick(object sender, EventArgs e)
         {
-            mainTextToolStripMenuItem.Checked = !mainTextToolStripMenuItem.Checked;
-            mainTextToolStripMenuItem.CheckState = mainTextToolStripMenuItem.Checked
+            mainTextAreaMenuItem.Checked = !mainTextAreaMenuItem.Checked;
+            mainTextAreaMenuItem.CheckState = mainTextAreaMenuItem.Checked
+                ? CheckState.Checked : CheckState.Unchecked;
+
+            UpdateCheckContexts();
+        }
+
+        private void OnIntroductionsAreaMenuItemClick(object sender, EventArgs e)
+        {
+            introductionsAreaMenuItem.Checked = !introductionsAreaMenuItem.Checked;
+            introductionsAreaMenuItem.CheckState = introductionsAreaMenuItem.Checked
+                ? CheckState.Checked : CheckState.Unchecked;
+
+            UpdateCheckContexts();
+        }
+
+        private void OnOutlinesAreaMenuItemClick(object sender, EventArgs e)
+        {
+            outlinesAreaMenuItem.Checked = !outlinesAreaMenuItem.Checked;
+            outlinesAreaMenuItem.CheckState = outlinesAreaMenuItem.Checked
                 ? CheckState.Checked : CheckState.Unchecked;
 
             UpdateCheckContexts();
@@ -571,10 +589,10 @@ namespace TvpMain.Form
         /// </summary>
         /// <param name="sender">Event sender (ignored).</param>
         /// <param name="e">Event args (ignored).</param>
-        private void OnNotesAreaMenuClick(object sender, EventArgs e)
+        private void OnNotesAndReferencesAreaMenuItemClick(object sender, EventArgs e)
         {
-            notesToolStripMenuItem.Checked = !notesToolStripMenuItem.Checked;
-            notesToolStripMenuItem.CheckState = notesToolStripMenuItem.Checked
+            notesAndReferencesAreaMenuItem.Checked = !notesAndReferencesAreaMenuItem.Checked;
+            notesAndReferencesAreaMenuItem.CheckState = notesAndReferencesAreaMenuItem.Checked
                 ? CheckState.Checked : CheckState.Unchecked;
 
             UpdateCheckContexts();
@@ -586,11 +604,19 @@ namespace TvpMain.Form
         private void UpdateCheckContexts()
         {
             _checkContexts.Clear();
-            if (mainTextToolStripMenuItem.Checked)
+            if (mainTextAreaMenuItem.Checked)
             {
                 _checkContexts.Add(TextContext.MainText);
             }
-            if (notesToolStripMenuItem.Checked)
+            if (introductionsAreaMenuItem.Checked)
+            {
+                _checkContexts.Add(TextContext.Introductions);
+            }
+            if (outlinesAreaMenuItem.Checked)
+            {
+                _checkContexts.Add(TextContext.Outlines);
+            }
+            if (notesAndReferencesAreaMenuItem.Checked)
             {
                 _checkContexts.Add(TextContext.NoteOrReference);
             }

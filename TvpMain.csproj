@@ -118,6 +118,7 @@
     <Compile Include="Project\BookNameItem.cs" />
     <Compile Include="Project\FileManager.cs" />
     <Compile Include="Text\BookIdItem.cs" />
+    <Compile Include="Text\VerseUtil.cs" />
     <Compile Include="Text\TextLocation.cs" />
     <Compile Include="Text\TextContext.cs" />
     <Compile Include="Check\CheckUpdatedArgs.cs" />

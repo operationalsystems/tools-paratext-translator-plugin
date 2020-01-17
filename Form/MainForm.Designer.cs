@@ -47,8 +47,10 @@
             this.currentBookAreaMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.currentChapterAreaMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
-            this.mainTextToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.notesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.mainTextAreaMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.introductionsAreaMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.outlinesAreaMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.notesAndReferencesAreaMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.checkMenu = new System.Windows.Forms.ToolStripMenuItem();
             this.missingSentencePunctuationCheckMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -76,7 +78,7 @@
             // btnRunChecks
             // 
             this.btnRunChecks.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnRunChecks.Location = new System.Drawing.Point(542, 453);
+            this.btnRunChecks.Location = new System.Drawing.Point(542, 452);
             this.btnRunChecks.Name = "btnRunChecks";
             this.btnRunChecks.Size = new System.Drawing.Size(75, 23);
             this.btnRunChecks.TabIndex = 1;
@@ -103,7 +105,7 @@
             this.dgvCheckResults.Name = "dgvCheckResults";
             this.dgvCheckResults.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.AutoSizeToDisplayedHeaders;
             this.dgvCheckResults.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.dgvCheckResults.Size = new System.Drawing.Size(688, 407);
+            this.dgvCheckResults.Size = new System.Drawing.Size(688, 408);
             this.dgvCheckResults.TabIndex = 2;
             // 
             // bcv
@@ -201,8 +203,10 @@
             this.currentBookAreaMenuItem,
             this.currentChapterAreaMenuItem,
             this.toolStripSeparator2,
-            this.mainTextToolStripMenuItem,
-            this.notesToolStripMenuItem});
+            this.mainTextAreaMenuItem,
+            this.introductionsAreaMenuItem,
+            this.outlinesAreaMenuItem,
+            this.notesAndReferencesAreaMenuItem});
             this.areaMenu.Name = "areaMenu";
             this.areaMenu.Size = new System.Drawing.Size(43, 23);
             this.areaMenu.Text = "&Area";
@@ -212,44 +216,64 @@
             this.currentProjectAreaMenuItem.Checked = true;
             this.currentProjectAreaMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
             this.currentProjectAreaMenuItem.Name = "currentProjectAreaMenuItem";
-            this.currentProjectAreaMenuItem.Size = new System.Drawing.Size(159, 22);
+            this.currentProjectAreaMenuItem.Size = new System.Drawing.Size(180, 22);
             this.currentProjectAreaMenuItem.Text = "Current &Project";
-            this.currentProjectAreaMenuItem.Click += new System.EventHandler(this.OnCurrentProjectAreaMenuClick);
+            this.currentProjectAreaMenuItem.Click += new System.EventHandler(this.OnCurrentProjectAreaMenuItemClick);
             // 
             // currentBookAreaMenuItem
             // 
             this.currentBookAreaMenuItem.Name = "currentBookAreaMenuItem";
-            this.currentBookAreaMenuItem.Size = new System.Drawing.Size(159, 22);
+            this.currentBookAreaMenuItem.Size = new System.Drawing.Size(180, 22);
             this.currentBookAreaMenuItem.Text = "Current &Book";
-            this.currentBookAreaMenuItem.Click += new System.EventHandler(this.OnCurrentBookAreaMenuClick);
+            this.currentBookAreaMenuItem.Click += new System.EventHandler(this.OnCurrentBookAreaMenuItemClick);
             // 
             // currentChapterAreaMenuItem
             // 
             this.currentChapterAreaMenuItem.Name = "currentChapterAreaMenuItem";
-            this.currentChapterAreaMenuItem.Size = new System.Drawing.Size(159, 22);
+            this.currentChapterAreaMenuItem.Size = new System.Drawing.Size(180, 22);
             this.currentChapterAreaMenuItem.Text = "Current &Chapter";
-            this.currentChapterAreaMenuItem.Click += new System.EventHandler(this.OnCurrentChapterAreaMenuClick);
+            this.currentChapterAreaMenuItem.Click += new System.EventHandler(this.OnCurrentChapterAreaMenuItemClick);
             // 
             // toolStripSeparator2
             // 
             this.toolStripSeparator2.Name = "toolStripSeparator2";
-            this.toolStripSeparator2.Size = new System.Drawing.Size(156, 6);
+            this.toolStripSeparator2.Size = new System.Drawing.Size(177, 6);
             // 
-            // mainTextToolStripMenuItem
+            // mainTextAreaMenuItem
             // 
-            this.mainTextToolStripMenuItem.Checked = true;
-            this.mainTextToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.mainTextToolStripMenuItem.Name = "mainTextToolStripMenuItem";
-            this.mainTextToolStripMenuItem.Size = new System.Drawing.Size(159, 22);
-            this.mainTextToolStripMenuItem.Text = "&Main Text";
-            this.mainTextToolStripMenuItem.Click += new System.EventHandler(this.OnMainTextAreaMenuClick);
+            this.mainTextAreaMenuItem.Checked = true;
+            this.mainTextAreaMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.mainTextAreaMenuItem.Name = "mainTextAreaMenuItem";
+            this.mainTextAreaMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.mainTextAreaMenuItem.Text = "&Main Text";
+            this.mainTextAreaMenuItem.Click += new System.EventHandler(this.OnMainTextAreaMenuItemClick);
             // 
-            // notesToolStripMenuItem
+            // introductionsAreaMenuItem
             // 
-            this.notesToolStripMenuItem.Name = "notesToolStripMenuItem";
-            this.notesToolStripMenuItem.Size = new System.Drawing.Size(159, 22);
-            this.notesToolStripMenuItem.Text = "&Notes";
-            this.notesToolStripMenuItem.Click += new System.EventHandler(this.OnNotesAreaMenuClick);
+            this.introductionsAreaMenuItem.Checked = true;
+            this.introductionsAreaMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.introductionsAreaMenuItem.Name = "introductionsAreaMenuItem";
+            this.introductionsAreaMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.introductionsAreaMenuItem.Text = "&Introductions";
+            this.introductionsAreaMenuItem.Click += new System.EventHandler(this.OnIntroductionsAreaMenuItemClick);
+            // 
+            // outlinesAreaMenuItem
+            // 
+            this.outlinesAreaMenuItem.Checked = true;
+            this.outlinesAreaMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.outlinesAreaMenuItem.Name = "outlinesAreaMenuItem";
+            this.outlinesAreaMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.outlinesAreaMenuItem.Text = "&Outlines";
+            this.outlinesAreaMenuItem.Click += new System.EventHandler(this.OnOutlinesAreaMenuItemClick);
+            // 
+            // notesAndReferencesAreaMenuItem
+            // 
+            this.notesAndReferencesAreaMenuItem.Checked = true;
+            this.notesAndReferencesAreaMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.notesAndReferencesAreaMenuItem.Name = "notesAndReferencesAreaMenuItem";
+            this.notesAndReferencesAreaMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.notesAndReferencesAreaMenuItem.Text = "&Notes && References";
+            this.notesAndReferencesAreaMenuItem.Click += new System.EventHandler(this.OnNotesAndReferencesAreaMenuItemClick);
             // 
             // checkMenu
             // 
@@ -378,7 +402,7 @@
             // btnShowIgnoreList
             // 
             this.btnShowIgnoreList.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.btnShowIgnoreList.Location = new System.Drawing.Point(10, 453);
+            this.btnShowIgnoreList.Location = new System.Drawing.Point(10, 452);
             this.btnShowIgnoreList.Name = "btnShowIgnoreList";
             this.btnShowIgnoreList.Size = new System.Drawing.Size(75, 23);
             this.btnShowIgnoreList.TabIndex = 4;
@@ -390,7 +414,7 @@
             // 
             this.btnClose.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.btnClose.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.btnClose.Location = new System.Drawing.Point(623, 453);
+            this.btnClose.Location = new System.Drawing.Point(622, 452);
             this.btnClose.Name = "btnClose";
             this.btnClose.Size = new System.Drawing.Size(75, 23);
             this.btnClose.TabIndex = 5;
@@ -402,7 +426,7 @@
             // 
             this.statusLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.statusLabel.AutoSize = true;
-            this.statusLabel.Location = new System.Drawing.Point(91, 458);
+            this.statusLabel.Location = new System.Drawing.Point(91, 457);
             this.statusLabel.Name = "statusLabel";
             this.statusLabel.Size = new System.Drawing.Size(71, 13);
             this.statusLabel.TabIndex = 6;
@@ -476,8 +500,10 @@
         private System.Windows.Forms.ToolStripMenuItem addToIgnoreList;
         private System.Windows.Forms.ToolStripMenuItem removeFromIgnoreList;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
-        private System.Windows.Forms.ToolStripMenuItem mainTextToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem notesToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem mainTextAreaMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem notesAndReferencesAreaMenuItem;
         private System.Windows.Forms.ToolStripMenuItem biblicaTermsFiltersMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem introductionsAreaMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem outlinesAreaMenuItem;
     }
 }

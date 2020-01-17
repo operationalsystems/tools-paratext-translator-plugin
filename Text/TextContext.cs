@@ -12,8 +12,8 @@ namespace TvpMain.Text
     public enum TextContext
     {
         MainText,
-        TableOfContents,
-        Introduction,
+        Outlines,
+        Introductions,
         NoteOrReference
     }
 }
