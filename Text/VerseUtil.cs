@@ -169,7 +169,7 @@ namespace TvpMain.Text
             string inputText, IEnumerable<Regex> includeRegexes,
             bool isNegative, ICollection<string> foundParts)
         {
-            // create mask of note text
+            // create mask from text matching regexes
             var workBuilder = new StringBuilder(inputText, inputText.Length);
             var isFound = false;
 
@@ -187,7 +187,8 @@ namespace TvpMain.Text
                 }
             }
 
-            // filter out non-masked text (i.e., main text)
+            // filter out masked or non-masked text (per negative flag)
+            // to find result parts
             if (isFound)
             {
                 var outputBuilder = new StringBuilder();
@@ -198,6 +199,8 @@ namespace TvpMain.Text
                     ctr < workBuilder.Length;
                     ctr++)
                 {
+                    // every useful fraction of the mask
+                    // delimits a result part, breaking up composite input
                     if ((isNegative && workBuilder[ctr] != '\0')
                         || (!isNegative && workBuilder[ctr] == '\0'))
                     {
@@ -219,6 +222,7 @@ namespace TvpMain.Text
 
                             isNewLine = false;
                         }
+
                         outputBuilder.Append(inputText[ctr]);
                     }
                     else
@@ -227,8 +231,8 @@ namespace TvpMain.Text
                     }
                 }
 
-                if (isNewLine
-                    && outputBuilder.Length > 0)
+                // handle any last part
+                if (outputBuilder.Length > 0)
                 {
                     var partText = outputBuilder.ToString();
                     outputBuilder.Clear();
@@ -244,7 +248,7 @@ namespace TvpMain.Text
 
                 return isAdded;
             }
-            else
+            else // entire input is masked
             {
                 if (isNegative)
                 {
