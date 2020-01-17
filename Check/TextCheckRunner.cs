@@ -264,14 +264,6 @@ namespace TvpMain.Check
                     string[] splitArray = { "" };
                     var emptyVerseCtr = 0;
 
-                    // determine chapter range using check area and user's location in Paratext
-                    var minChapter = (_runArea != CheckArea.CurrentChapter)
-                        ? 1
-                        : _runChapterNum;
-                    var maxChapter = (_runArea != CheckArea.CurrentChapter)
-                        ? _host.GetLastChapter(inputBookNum, versificationName)
-                        : _runChapterNum;
-
                     var resultItems = new List<ResultItem>();
                     var foundParts = new Dictionary<TextContext, ICollection<string>>();
 
@@ -280,6 +272,14 @@ namespace TvpMain.Check
                     {
                         foundParts[contextItem] = new List<string>();
                     };
+
+                    // determine chapter range using check area and user's location in Paratext
+                    var minChapter = (_runArea == CheckArea.CurrentChapter)
+                        ? _runChapterNum
+                        : 1;
+                    var maxChapter = (_runArea == CheckArea.CurrentChapter)
+                        ? _runChapterNum
+                        : _host.GetLastChapter(inputBookNum, versificationName);
 
                     // iterate chapters
                     for (var chapterNum = minChapter;
@@ -292,9 +292,9 @@ namespace TvpMain.Check
                             return;
                         }
 
+                        // find verse number range & iterate
                         var lastVerseNum = _host.GetLastVerse(inputBookNum, chapterNum, versificationName);
-
-                        for (var verseNum = 0;
+                        for (var verseNum = 0; // verse 0 = intro text
                             verseNum <= lastVerseNum;
                             verseNum++)
                         {
