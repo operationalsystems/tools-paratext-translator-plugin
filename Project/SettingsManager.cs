@@ -33,42 +33,42 @@ namespace TvpMain.Project
         /// <summary>
         /// Readable chapter and verse separators.
         /// </summary>
-        public ISet<string> ChapterOrVerseSeparators { get; private set; }
+        public IList<string> ChapterOrVerseSeparators { get; private set; }
 
         /// <summary>
         /// Readable verse range separators.
         /// </summary>
-        public ISet<string> VerseRangeSeparators { get; private set; }
+        public IList<string> VerseRangeSeparators { get; private set; }
 
         /// <summary>
         /// Readable verse sequence separators.
         /// </summary>
-        public ISet<string> VerseSequenceSeparators { get; private set; }
+        public IList<string> VerseSequenceSeparators { get; private set; }
 
         /// <summary>
         /// Readable chapter or book range separators.
         /// </summary>
-        public ISet<string> BookOrChapterRangeSeparators { get; private set; }
+        public IList<string> BookOrChapterRangeSeparators { get; private set; }
 
         /// <summary>
         /// Readable book sequence separators.
         /// </summary>
-        public ISet<string> BookSequenceSeparators { get; private set; }
+        public IList<string> BookSequenceSeparators { get; private set; }
 
         /// <summary>
         /// Readable chapter sequence separators.
         /// </summary>
-        public ISet<string> ChapterSequenceSeparators { get; private set; }
+        public IList<string> ChapterSequenceSeparators { get; private set; }
 
         /// <summary>
         /// Extra reference prefixes or suffix options.
         /// </summary>
-        public ISet<string> ReferencePrefixesOrSuffixes { get; private set; }
+        public IList<string> ReferencePrefixesOrSuffixes { get; private set; }
 
         /// <summary>
         /// Final reference punctuation options.
         /// </summary>
-        public ISet<string> FinalReferencePunctuation { get; private set; }
+        public IList<string> FinalReferencePunctuation { get; private set; }
 
         /// <summary>
         /// Ordinal present books list (by 0-based book number).
@@ -174,35 +174,35 @@ namespace TvpMain.Project
         {
             ChapterOrVerseSeparators =
                 GetSeparatorSetting("ChapterVerseSeparator")
-                    .ToImmutableHashSet();
+                    .ToImmutableList();
 
             VerseRangeSeparators =
                 GetSeparatorSetting("RangeIndicator")
-                    .ToImmutableHashSet();
+                    .ToImmutableList();
 
             VerseSequenceSeparators =
                 GetSeparatorSetting("SequenceIndicator")
-                    .ToImmutableHashSet();
+                    .ToImmutableList();
 
             BookOrChapterRangeSeparators =
                 GetSeparatorSetting("ChapterRangeSeparator")
-                    .ToImmutableHashSet();
+                    .ToImmutableList();
 
             BookSequenceSeparators =
                 GetSeparatorSetting("BookSequenceSeparator")
-                    .ToImmutableHashSet();
+                    .ToImmutableList();
 
             ChapterSequenceSeparators =
                 GetSeparatorSetting("ChapterNumberSeparator")
-                    .ToImmutableHashSet();
+                    .ToImmutableList();
 
             ReferencePrefixesOrSuffixes =
                 GetSeparatorSetting("ReferenceExtraMaterial")
-                    .ToImmutableHashSet();
+                    .ToImmutableList();
 
             FinalReferencePunctuation =
                 GetSeparatorSetting("ReferenceFinalPunctuation")
-                    .ToImmutableHashSet();
+                    .ToImmutableList();
         }
 
         /// <summary>
