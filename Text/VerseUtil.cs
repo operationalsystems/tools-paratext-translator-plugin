@@ -66,13 +66,13 @@ namespace TvpMain.Text
         /// <summary>
         /// Context mapping list.
         /// </summary>
-        private static readonly IList<ContextMappingItem> ContextMappingList =
+        private static readonly IDictionary<TextContext, ContextMappingItem> ContextMappings =
             new List<ContextMappingItem>() {
                 new ContextMappingItem(TextContext.MainText, NonMainTextRegexes, true),
                 new ContextMappingItem(TextContext.Introductions, IntroductionRegexes, false),
                 new ContextMappingItem(TextContext.Outlines, OutlineRegexes, false),
                 new ContextMappingItem(TextContext.NoteOrReference, NoteOrReferenceRegexes, false),
-            };
+            }.ToImmutableDictionary(mappingItem => mappingItem.TextContext);
 
         /// <summary>
         /// Creates a note or reference regex from a tag name (note extra required interior non-space char).
@@ -133,18 +133,17 @@ namespace TvpMain.Text
             IDictionary<TextContext, ICollection<string>> outputParts)
         {
             var isFound = false;
-            foreach (var mappingItem in ContextMappingList)
+            foreach (var contextItem in inputContexts)
             {
-                // not requested = next
-                if (!inputContexts.Contains(mappingItem.TextContext))
+                if (!ContextMappings.TryGetValue(contextItem, out var mappingItem))
                 {
                     continue;
                 }
 
-                if (!outputParts.TryGetValue(mappingItem.TextContext, out var partsList))
+                if (!outputParts.TryGetValue(contextItem, out var partsList))
                 {
                     partsList = new List<string>();
-                    outputParts[mappingItem.TextContext] = partsList;
+                    outputParts[contextItem] = partsList;
                 }
 
                 isFound = FindTextParts(inputText, mappingItem.ContextRegexes,
