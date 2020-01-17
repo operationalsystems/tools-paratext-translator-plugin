@@ -103,7 +103,7 @@ namespace TvpMain.Text
         /// <returns>Compiled, multi-line regex.</returns>
         private static Regex CreateLineTagGroupRegex(params string[] tagNames)
         {
-            return CreateLineTagRegex(string.Concat("(", string.Join("|", tagNames), ")"));
+            return CreateLineTagRegex($"(?:{string.Join("|", tagNames)})");
         }
 
         /// <summary>
