@@ -7,12 +7,11 @@ namespace TvpMain.Check
     public class ScriptureReferenceCheck : ITextCheck
     {
         /// <summary>
-        /// Implements verse check for scripture references.
+        /// Check implementation.
         /// </summary>
-        /// <param name="textLocation">Text location (required).</param>
-        /// <param name="inputText">Input text.</param>
+        /// <param name="partData">Verse part data, including original verse, location, etc.</param>
         /// <param name="checkResults">Result items list to populate.</param>
-        public void CheckVerse(TextLocation textLocation, string inputText, ICollection<ResultItem> checkResults)
+        public void CheckText(PartData partData, ICollection<ResultItem> checkResults)
         {
             // do nothing, at this time.
         }

@@ -52,7 +52,7 @@ namespace TvpMain.Result
                 ISet<string> matchSet = new HashSet<string>();
                 foreach (var resultItem in resultItems)
                 {
-                    bookSet.Add(resultItem.TextLocation.BookNum);
+                    bookSet.Add(resultItem.PartData.VerseData.VerseLocation.BookNum);
                     matchSet.Add(resultItem.MatchText);
                 }
 

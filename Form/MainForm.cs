@@ -87,7 +87,7 @@ namespace TvpMain.Form
         /// <summary>
         /// Check contexts, per menu items.
         /// </summary>
-        private readonly ISet<TextContext> _checkContexts = new HashSet<TextContext>();
+        private readonly ISet<PartContext> _checkContexts = new HashSet<PartContext>();
 
         /// <summary>
         /// Current check area.
@@ -213,7 +213,7 @@ namespace TvpMain.Form
             foreach (var resultItem in _filteredResultItems)
             {
                 dgvCheckResults.Rows.Add(
-                    $"{resultItem.TextLocation.CoordinateText}",
+                    $"{resultItem.PartData.VerseData.VerseLocation.VerseCoordinateText}",
                     $"{resultItem.MatchText}",
                     $"{resultItem.CheckText}",
                     $"{resultItem.ErrorText}");
@@ -606,19 +606,19 @@ namespace TvpMain.Form
             _checkContexts.Clear();
             if (mainTextAreaMenuItem.Checked)
             {
-                _checkContexts.Add(TextContext.MainText);
+                _checkContexts.Add(PartContext.MainText);
             }
             if (introductionsAreaMenuItem.Checked)
             {
-                _checkContexts.Add(TextContext.Introductions);
+                _checkContexts.Add(PartContext.Introductions);
             }
             if (outlinesAreaMenuItem.Checked)
             {
-                _checkContexts.Add(TextContext.Outlines);
+                _checkContexts.Add(PartContext.Outlines);
             }
             if (notesAndReferencesAreaMenuItem.Checked)
             {
-                _checkContexts.Add(TextContext.NoteOrReference);
+                _checkContexts.Add(PartContext.NoteOrReference);
             }
         }
 

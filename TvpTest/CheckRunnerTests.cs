@@ -160,9 +160,9 @@ namespace TvpTest
         /// <summary>
         /// Test contexts.
         /// </summary>
-        private readonly ISet<TextContext> _testContexts = new HashSet<TextContext>()
+        private readonly ISet<PartContext> _testContexts = new HashSet<PartContext>()
         {
-            TextContext.MainText
+            PartContext.MainText
         };
 
         /// <summary>

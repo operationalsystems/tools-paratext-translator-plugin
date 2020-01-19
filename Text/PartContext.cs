@@ -9,7 +9,7 @@ namespace TvpMain.Text
     /// <summary>
     /// Context of checked text.
     /// </summary>
-    public enum TextContext
+    public enum PartContext
     {
         MainText,
         Outlines,

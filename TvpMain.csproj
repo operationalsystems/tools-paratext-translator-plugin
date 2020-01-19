@@ -118,9 +118,12 @@
     <Compile Include="Project\BookNameItem.cs" />
     <Compile Include="Project\FileManager.cs" />
     <Compile Include="Text\BookIdItem.cs" />
+    <Compile Include="Text\PartLocation.cs" />
+    <Compile Include="Text\VerseData.cs" />
+    <Compile Include="Text\PartData.cs" />
     <Compile Include="Text\VerseUtil.cs" />
-    <Compile Include="Text\TextLocation.cs" />
-    <Compile Include="Text\TextContext.cs" />
+    <Compile Include="Text\VerseLocation.cs" />
+    <Compile Include="Text\PartContext.cs" />
     <Compile Include="Check\CheckUpdatedArgs.cs" />
     <Compile Include="Check\CheckType.cs" />
     <Compile Include="Check\MissingSentencePunctuationCheck.cs" />
@@ -144,7 +147,7 @@
     <Compile Include="Form\ProgressForm.Designer.cs">
       <DependentUpon>ProgressForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="Text\TextUtil.cs" />
+    <Compile Include="Text\BookUtil.cs" />
     <Compile Include="Util\MainConsts.cs" />
     <Compile Include="Util\HostUtil.cs" />
     <Compile Include="Result\CheckResults.cs" />

@@ -15,9 +15,9 @@ namespace TvpMain.Result
     public class ResultItem
     {
         /// <summary>
-        /// Text location 
+        /// Verse part data, including original verse, location, etc.
         /// </summary>
-        public TextLocation TextLocation { get; }
+        public PartData PartData { get; }
 
         /// <summary>
         /// Error message describing the result
@@ -76,17 +76,17 @@ namespace TvpMain.Result
         /// <summary>
         /// Basic ctor.
         /// </summary>
-        /// <param name="textLocation">Text location (required).</param>
+        /// <param name="partData">Verse part data, including original verse, location, etc. (required).</param>
         /// <param name="errorText">Error text (required).</param>
         /// <param name="checkText">Input text (required).</param>
         /// <param name="matchText">Match text (required).</param>
         /// <param name="suggestionText">Suggestion text (optional, may be null).</param>
         /// <param name="checkType">Check type.</param>
-        public ResultItem(TextLocation textLocation,
-            string errorText, string checkText, string matchText,
+        public ResultItem(PartData partData, string errorText,
+            string checkText, string matchText,
             string suggestionText, CheckType checkType)
         {
-            this.TextLocation = textLocation ?? throw new ArgumentNullException(nameof(textLocation));
+            this.PartData = partData ?? throw new ArgumentNullException(nameof(partData));
             this.ErrorText = errorText ?? throw new ArgumentNullException(nameof(errorText));
             this.CheckText = checkText ?? throw new ArgumentNullException(nameof(checkText));
             this.MatchText = matchText ?? throw new ArgumentNullException(nameof(matchText));

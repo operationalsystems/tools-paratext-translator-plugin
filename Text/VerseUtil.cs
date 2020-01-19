@@ -66,13 +66,13 @@ namespace TvpMain.Text
         /// <summary>
         /// Context mapping list.
         /// </summary>
-        private static readonly IDictionary<TextContext, ContextMappingItem> ContextMappings =
+        private static readonly IDictionary<PartContext, ContextMappingItem> ContextMappings =
             new List<ContextMappingItem>() {
-                new ContextMappingItem(TextContext.MainText, NonMainTextRegexes, true),
-                new ContextMappingItem(TextContext.Introductions, IntroductionRegexes, false),
-                new ContextMappingItem(TextContext.Outlines, OutlineRegexes, false),
-                new ContextMappingItem(TextContext.NoteOrReference, NoteOrReferenceRegexes, false),
-            }.ToImmutableDictionary(mappingItem => mappingItem.TextContext);
+                new ContextMappingItem(PartContext.MainText, NonMainTextRegexes, true),
+                new ContextMappingItem(PartContext.Introductions, IntroductionRegexes, false),
+                new ContextMappingItem(PartContext.Outlines, OutlineRegexes, false),
+                new ContextMappingItem(PartContext.NoteOrReference, NoteOrReferenceRegexes, false),
+            }.ToImmutableDictionary(mappingItem => mappingItem.PartContext);
 
         /// <summary>
         /// Creates a note or reference regex from a tag name (note extra required interior non-space char).
@@ -123,14 +123,14 @@ namespace TvpMain.Text
         /// Needed because while scripture extractors returns several contexts co-mingled,
         /// (e.g., main text, notes) we need them separated for context-sensitive checks.
         /// </summary>
-        /// <param name="inputText">Input text containing mixed content (required).</param>
+        /// <param name="inputVerse">Input verse containing mixed content (required).</param>
         /// <param name="inputContexts">Set of allowable contexts to search for (required).</param>
         /// <param name="outputParts">Map of text contexts to lists of found parts (required).</param>
         /// <returns>True if any parts found, false otherwise.</returns>
         public static bool FindVerseParts(
-            string inputText,
-            ISet<TextContext> inputContexts,
-            IDictionary<TextContext, ICollection<string>> outputParts)
+            VerseData inputVerse,
+            ISet<PartContext> inputContexts,
+            ICollection<PartData> outputParts)
         {
             var isFound = false;
             foreach (var contextItem in inputContexts)
@@ -140,14 +140,8 @@ namespace TvpMain.Text
                     continue;
                 }
 
-                if (!outputParts.TryGetValue(contextItem, out var partsList))
-                {
-                    partsList = new List<string>();
-                    outputParts[contextItem] = partsList;
-                }
-
-                isFound = FindTextParts(inputText, mappingItem.ContextRegexes,
-                              mappingItem.IsNegative, partsList) || isFound;
+                isFound = FindContextParts(inputVerse, mappingItem.ContextRegexes,
+                              mappingItem.IsNegative, contextItem, outputParts) || isFound;
             }
 
             return isFound;
@@ -159,16 +153,19 @@ namespace TvpMain.Text
         /// Needed because while scripture extractors returns several contexts co-mingled,
         /// (e.g., main text, notes) we need them separated for context-sensitive checks.
         /// </summary>
-        /// <param name="inputText">Input text containing mixed content (required).</param>
+        /// <param name="inputVerse">Input verse data containing mixed content (required).</param>
         /// <param name="includeRegexes">Regexes to search for (required).</param>
         /// <param name="isNegative">True to find parts _not_ matching regexes, false to find matching.</param>
-        /// <param name="foundParts">Destination collection for found note and reference parts.</param>
+        /// <param name="outputContext">Context for newly-created parts.</param>
+        /// <param name="outputParts">Destination collection for found note and reference parts.</param>
         /// <returns>True if applicable content found, false otherwise.</returns>
-        private static bool FindTextParts(
-            string inputText, IEnumerable<Regex> includeRegexes,
-            bool isNegative, ICollection<string> foundParts)
+        private static bool FindContextParts(
+            VerseData inputVerse, IEnumerable<Regex> includeRegexes,
+            bool isNegative, PartContext outputContext,
+            ICollection<PartData> outputParts)
         {
             // create mask from text matching regexes
+            var inputText = inputVerse.VerseText;
             var workBuilder = new StringBuilder(inputText, inputText.Length);
             var isFound = false;
 
@@ -193,6 +190,7 @@ namespace TvpMain.Text
                 var outputBuilder = new StringBuilder();
                 var isNewLine = false;
                 var isAdded = false;
+                var partStart = 0;
 
                 for (var ctr = 0;
                     ctr < workBuilder.Length;
@@ -214,11 +212,14 @@ namespace TvpMain.Text
                                 if (!string.IsNullOrWhiteSpace(partText))
                                 {
                                     // ...but preserve spacing if non-empty
-                                    foundParts.Add(partText);
+                                    outputParts.Add(new PartData(inputVerse,
+                                        new PartLocation(partStart, partText.Length, outputContext),
+                                        partText));
                                     isAdded = true;
                                 }
                             }
 
+                            partStart = ctr;
                             isNewLine = false;
                         }
 
@@ -240,7 +241,9 @@ namespace TvpMain.Text
                     if (!string.IsNullOrWhiteSpace(partText))
                     {
                         // ...but preserve spacing if non-empty
-                        foundParts.Add(partText);
+                        outputParts.Add(new PartData(inputVerse,
+                            new PartLocation(partStart, partText.Length, outputContext),
+                            partText));
                         isAdded = true;
                     }
                 }
@@ -251,7 +254,9 @@ namespace TvpMain.Text
             {
                 if (isNegative)
                 {
-                    foundParts.Add(inputText);
+                    outputParts.Add(new PartData(inputVerse,
+                        new PartLocation(0, inputText.Length, outputContext),
+                        inputText));
                     return true;
                 }
                 else
@@ -269,7 +274,7 @@ namespace TvpMain.Text
             /// <summary>
             /// Text context (e.g., main text).
             /// </summary>
-            public TextContext TextContext { get; set; }
+            public PartContext PartContext { get; set; }
 
             /// <summary>
             /// Regexes identifying context.
@@ -284,15 +289,15 @@ namespace TvpMain.Text
             /// <summary>
             /// Basic ctor.
             /// </summary>
-            /// <param name="textContext">Text context (e.g., main text).</param>
+            /// <param name="partContext">Text context (e.g., main text).</param>
             /// <param name="contextRegexes">Regexes identifying context (required).</param>
             /// <param name="isNegative">True if negative match, false if positive.</param>
             public ContextMappingItem(
-               TextContext textContext,
+               PartContext partContext,
                IList<Regex> contextRegexes,
                bool isNegative)
             {
-                TextContext = textContext;
+                PartContext = partContext;
                 ContextRegexes = contextRegexes ?? throw new ArgumentNullException(nameof(contextRegexes));
                 this.IsNegative = isNegative;
             }

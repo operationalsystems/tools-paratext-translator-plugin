@@ -16,7 +16,7 @@ namespace TvpMain.Text
     /// <summary>
     /// Bible text-related utilities.
     /// </summary>
-    public class TextUtil
+    public class BookUtil
     {
         /// <summary>
         /// Book id list, from resource file.
@@ -33,7 +33,7 @@ namespace TvpMain.Text
         /// </summary>
         public static readonly IDictionary<int, BookIdItem> BookIdsByNum;
 
-        static TextUtil()
+        static BookUtil()
         {
             var executingAssembly = Assembly.GetExecutingAssembly();
 

@@ -88,7 +88,7 @@ namespace TvpMain.Check
         /// <summary>
         /// Current run's contexts.
         /// </summary>
-        private ISet<TextContext> _runContexts;
+        private ISet<PartContext> _runContexts;
 
         /// <summary>
         /// Current run's task semaphore.
@@ -154,7 +154,7 @@ namespace TvpMain.Check
         /// <returns>True if run completes normally, false otherwise.</returns>
         public bool RunChecks(CheckArea inputArea,
             IEnumerable<ITextCheck> inputChecks,
-            IEnumerable<TextContext> inputContexts,
+            IEnumerable<PartContext> inputContexts,
             out CheckResults outputResults)
         {
             // create run-based utilities
@@ -172,7 +172,7 @@ namespace TvpMain.Check
             _tokenSource = new CancellationTokenSource();
 
             // get user's location in Paratext
-            TextUtil.RefToBcv(_host.GetCurrentRef(versificationName),
+            BookUtil.RefToBcv(_host.GetCurrentRef(versificationName),
                 out _runBookNum, out _runChapterNum, out _runVerseNum);
 
             // set up semaphore for parallelism control, results set, and task list
@@ -265,13 +265,7 @@ namespace TvpMain.Check
                     var emptyVerseCtr = 0;
 
                     var resultItems = new List<ResultItem>();
-                    var foundParts = new Dictionary<TextContext, ICollection<string>>();
-
-                    // set up lists to receive verse parts
-                    foreach (var contextItem in _runContexts)
-                    {
-                        foundParts[contextItem] = new List<string>();
-                    };
+                    var foundParts = new List<PartData>();
 
                     // determine chapter range using check area and user's location in Paratext
                     var minChapter = (_runArea == CheckArea.CurrentChapter)
@@ -304,7 +298,7 @@ namespace TvpMain.Check
                                 return;
                             }
 
-                            var checkRef = TextUtil.BcvToRef(inputBookNum, chapterNum, verseNum);
+                            var checkRef = BookUtil.BcvToRef(inputBookNum, chapterNum, verseNum);
                             resultItems.Clear();
 
                             try
@@ -324,29 +318,23 @@ namespace TvpMain.Check
                                 {
                                     emptyVerseCtr = 0;
 
-                                    // clear out part lists
-                                    foreach (var foundList in foundParts.Values)
-                                    {
-                                        foundList.Clear();
-                                    }
+                                    // clear out part lists & get ready to create new ones
+                                    foundParts.Clear();
+                                    var verseData = VerseData.Create(
+                                        inputBookNum, chapterNum, verseNum,
+                                        verseText);
 
                                     // find verse parts
                                     if (VerseUtil.FindVerseParts(
-                                        verseText, _runContexts, foundParts))
+                                        verseData, _runContexts, foundParts))
                                     {
-                                        // check each context
-                                        foreach (var contextItem in _runContexts)
+                                        // run checks on each part
+                                        foreach (var partItem in foundParts
+                                            .Where(partItem => !string.IsNullOrWhiteSpace(partItem.PartText)))
                                         {
-                                            if (foundParts.TryGetValue(contextItem,
-                                                    out var foundList)
-                                                && foundList.Count > 0)
+                                            foreach (var checkItem in _runChecks)
                                             {
-                                                // run checks on parts
-                                                RunBookChecks(
-                                                    new TextLocation(inputBookNum, chapterNum,
-                                                        verseNum, contextItem),
-                                                    foundList,
-                                                    resultItems);
+                                                checkItem.CheckText(partItem, resultItems);
                                             }
                                         }
                                     }
@@ -383,27 +371,6 @@ namespace TvpMain.Check
                     _runSemaphore.Release();
                 }
             });
-        }
-
-        /// <summary>
-        /// Applies the current run's book checks to specific input.
-        /// </summary>
-        /// <param name="inputLocation">Input location (required).</param>
-        /// <param name="inputParts">Input parts (required).</param>
-        /// <param name="outputItems">Output result items (required).</param>
-        private void RunBookChecks(
-            TextLocation inputLocation,
-            IEnumerable<string> inputParts,
-            ICollection<ResultItem> outputItems)
-        {
-            foreach (var partItem in inputParts
-                .Where(partItem => !string.IsNullOrWhiteSpace(partItem)))
-            {
-                foreach (var checkItem in _runChecks)
-                {
-                    checkItem.CheckVerse(inputLocation, partItem, outputItems);
-                }
-            }
         }
     }
 

@@ -17,31 +17,31 @@ namespace TvpMain.Text
         /// Book number (1-based).
         /// </summary>
         [Index(0)]
-        public int BookNum { get; private set; }
+        public int BookNum { get; }
 
         /// <summary>
         /// USFM book number text (e.g., "B2").
         /// </summary>
         [Index(1)]
-        public string UsfmBookNum { get; private set; }
+        public string UsfmBookNum { get; }
 
         /// <summary>
         /// </summary>
         [Index(2)]
-        public string BookCode { get; private set; }
+        public string BookCode { get; }
 
         /// <summary>
         /// Non-unique book title (e.g., "Genesis", "Extra material").
         /// </summary>
         [Index(3)]
-        public string BookTitle { get; private set; }
+        public string BookTitle { get; }
 
         /// <summary>
         /// Book description text (optional, may be null).
         /// </summary>
         [Index(4)]
         [Default(null)]
-        public string BookComment { get; private set; }
+        public string BookComment { get; }
 
         /// <summary>
         /// Default ctor.

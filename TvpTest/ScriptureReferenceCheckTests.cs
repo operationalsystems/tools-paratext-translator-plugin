@@ -41,10 +41,12 @@ namespace TvpTest
 
             // Describes location and nature of the text being checked
             // Note: "TextContext" tells the check what it's looking at.
-            var textLocation = new TextLocation(1, 1, 1, TextContext.MainText);
+            var partData = PartData.Create(1, 1, 1,
+                "Testing 1...2...3...", 3, 3,
+                PartContext.MainText);
 
             // Executes the check
-            _referenceCheck.CheckVerse(textLocation, "Testing!", resultList);
+            _referenceCheck.CheckText(partData, resultList);
 
             // Empty results list = no exceptions
             Assert.IsTrue(resultList.Count == 0);

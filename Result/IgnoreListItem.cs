@@ -19,7 +19,7 @@ namespace TvpMain.Result
         /// </summary>
         [JsonProperty]
         [Index(0)]
-        public string CaseSensitiveText { get; private set; }
+        public string CaseSensitiveText { get; }
 
         /// <summary>
         /// True if item is meant to be case-insensitive (i.e., ignores case), false otherwise.
@@ -27,7 +27,7 @@ namespace TvpMain.Result
         [JsonProperty]
         [Index(1)]
         [Default(false)]
-        public bool IsIgnoreCase { get; private set; }
+        public bool IsIgnoreCase { get; }
 
         /// <summary>
         /// True if case-sensitive text contains any whitespace.

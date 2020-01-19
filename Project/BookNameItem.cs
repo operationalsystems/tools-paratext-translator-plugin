@@ -11,42 +11,42 @@ namespace TvpMain.Project
         /// <summary>
         /// Book code.
         /// </summary>
-        public string BookCode { get; private set; }
+        public string BookCode { get; }
 
         /// <summary>
         /// Book number (1-based).
         /// </summary>
-        public int BookNum { get; private set; }
+        public int BookNum { get; }
 
         /// <summary>
         /// Language-specific abbreviation text (may be null/empty).
         /// </summary>
-        public string Abbreviation { get; private set; }
+        public string Abbreviation { get; }
 
         /// <summary>
         /// True if abbreviation is not null, empty, or whitespace-only.
         /// </summary>
-        public bool IsAbbreviation { get; private set; }
+        public bool IsAbbreviation { get; }
 
         /// <summary>
         /// Language-specific short name text (may be null/empty).
         /// </summary>
-        public string ShortName { get; private set; }
+        public string ShortName { get; }
 
         /// <summary>
         /// True if short name is not null, empty, or whitespace-only.
         /// </summary>
-        public bool IsShortName { get; private set; }
+        public bool IsShortName { get; }
 
         /// <summary>
         /// Language-specific long name text (may be null/empty).
         /// </summary>
-        public string LongName { get; private set; }
+        public string LongName { get; }
 
         /// <summary>
         /// True if long name is not null, empty, or whitespace-only.
         /// </summary>
-        public bool IsLongName { get; private set; }
+        public bool IsLongName { get; }
 
         /// <summary>
         /// Basic ctor.

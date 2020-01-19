@@ -229,7 +229,7 @@ namespace TvpMain.Project
                             // no attributes or no/unusuable code = unusable
                             var codeAttrib = nodeItem.Attributes?["code"]?.Value?.Trim();
                             if (string.IsNullOrWhiteSpace(codeAttrib)
-                                || !TextUtil.BookIdsByCode.TryGetValue(codeAttrib, out var bookId))
+                                || !BookUtil.BookIdsByCode.TryGetValue(codeAttrib, out var bookId))
                             {
                                 continue;
                             }
