@@ -10,7 +10,7 @@ namespace TvpMain.Text
     /// <summary>
     /// A specific part of a verse.
     /// </summary>
-    public class PartData
+    public class VersePart
     {
         /// <summary>
         /// Source verse text.
@@ -40,7 +40,7 @@ namespace TvpMain.Text
         /// <param name="verseData">Source verse data (required).</param>
         /// <param name="partText">Part text within verse.</param>
         /// <param name="partLocation"></param>
-        public PartData(ProjectVerse verseData, PartLocation partLocation, string partText)
+        public VersePart(ProjectVerse verseData, PartLocation partLocation, string partText)
         {
             VerseData = verseData ?? throw new ArgumentNullException(nameof(verseData));
             PartLocation = partLocation ?? throw new ArgumentNullException(nameof(partLocation));
@@ -58,11 +58,11 @@ namespace TvpMain.Text
         /// <param name="partLength">Part length within verse text.</param>
         /// <param name="partContext">Part context (e.g., main text, footnote or reference).</param>
         /// <returns>Created part data.</returns>
-        public static PartData Create(
+        public static VersePart Create(
             int bookNum, int chapterNum, int verseNum, string verseText,
             int partStart, int partLength, PartContext partContext)
         {
-            return new PartData(
+            return new VersePart(
                 new ProjectVerse(
                     new VerseLocation(bookNum, chapterNum, verseNum),
                     verseText),
@@ -75,7 +75,7 @@ namespace TvpMain.Text
         /// </summary>
         /// <param name="other">Other part data (required).</param>
         /// <returns>True if equal, false otherwise</returns>
-        protected bool Equals(PartData other)
+        protected bool Equals(VersePart other)
         {
             return Equals(VerseData, other.VerseData)
                    && Equals(PartLocation, other.PartLocation)
@@ -92,7 +92,7 @@ namespace TvpMain.Text
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
             if (obj.GetType() != this.GetType()) return false;
-            return Equals((PartData)obj);
+            return Equals((VersePart)obj);
         }
 
         /// <summary>
@@ -116,7 +116,7 @@ namespace TvpMain.Text
         /// <param name="left">Left part data.</param>
         /// <param name="right">Right part data.</param>
         /// <returns>True if equal, false otherwise.</returns>
-        public static bool operator ==(PartData left, PartData right)
+        public static bool operator ==(VersePart left, VersePart right)
         {
             return Equals(left, right);
         }
@@ -127,7 +127,7 @@ namespace TvpMain.Text
         /// <param name="left">Left object.</param>
         /// <param name="right">Right object.</param>
         /// <returns>True if equal, false otherwise.</returns>
-        public static bool operator !=(PartData left, PartData right)
+        public static bool operator !=(VersePart left, VersePart right)
         {
             return !Equals(left, right);
         }

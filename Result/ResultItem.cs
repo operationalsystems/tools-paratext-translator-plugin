@@ -17,7 +17,7 @@ namespace TvpMain.Result
         /// <summary>
         /// Verse part data, including original verse, location, etc.
         /// </summary>
-        public PartData PartData { get; }
+        public VersePart PartData { get; }
 
         /// <summary>
         /// Error message describing the result
@@ -82,7 +82,7 @@ namespace TvpMain.Result
         /// <param name="matchText">Match text (required).</param>
         /// <param name="suggestionText">Suggestion text (optional, may be null).</param>
         /// <param name="checkType">Check type.</param>
-        public ResultItem(PartData partData, string errorText,
+        public ResultItem(VersePart partData, string errorText,
             string checkText, string matchText,
             string suggestionText, CheckType checkType)
         {

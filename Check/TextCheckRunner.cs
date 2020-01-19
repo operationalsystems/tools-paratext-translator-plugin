@@ -265,7 +265,7 @@ namespace TvpMain.Check
                     var emptyVerseCtr = 0;
 
                     var resultItems = new List<ResultItem>();
-                    var foundParts = new List<PartData>();
+                    var foundParts = new List<VersePart>();
 
                     // determine chapter range using check area and user's location in Paratext
                     var minChapter = (_runArea == CheckArea.CurrentChapter)

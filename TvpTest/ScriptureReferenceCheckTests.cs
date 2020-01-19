@@ -41,7 +41,7 @@ namespace TvpTest
 
             // Describes location and nature of the text being checked
             // Note: "TextContext" tells the check what it's looking at.
-            var partData = PartData.Create(1, 1, 1,
+            var partData = VersePart.Create(1, 1, 1,
                 "Testing 1...2...3...", 3, 3,
                 PartContext.MainText);
 

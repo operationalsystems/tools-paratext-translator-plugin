@@ -130,7 +130,7 @@ namespace TvpMain.Text
         public static bool FindVerseParts(
             ProjectVerse inputVerse,
             ISet<PartContext> inputContexts,
-            ICollection<PartData> outputParts)
+            ICollection<VersePart> outputParts)
         {
             var isFound = false;
             foreach (var contextItem in inputContexts)
@@ -160,7 +160,7 @@ namespace TvpMain.Text
         private static bool FindContextParts(
             ProjectVerse inputVerse, IEnumerable<Regex> includeRegexes,
             bool isNegative, PartContext outputContext,
-            ICollection<PartData> outputParts)
+            ICollection<VersePart> outputParts)
         {
             // create mask from text matching regexes
             var inputText = inputVerse.VerseText;
@@ -210,7 +210,7 @@ namespace TvpMain.Text
                                 if (!string.IsNullOrWhiteSpace(partText))
                                 {
                                     // ...but preserve spacing if non-empty
-                                    outputParts.Add(new PartData(inputVerse,
+                                    outputParts.Add(new VersePart(inputVerse,
                                         new PartLocation(partStart, partText.Length, outputContext),
                                         partText));
                                     isAdded = true;
@@ -239,7 +239,7 @@ namespace TvpMain.Text
                     if (!string.IsNullOrWhiteSpace(partText))
                     {
                         // ...but preserve spacing if non-empty
-                        outputParts.Add(new PartData(inputVerse,
+                        outputParts.Add(new VersePart(inputVerse,
                             new PartLocation(partStart, partText.Length, outputContext),
                             partText));
                         isAdded = true;
@@ -252,7 +252,7 @@ namespace TvpMain.Text
             {
                 if (isNegative)
                 {
-                    outputParts.Add(new PartData(inputVerse,
+                    outputParts.Add(new VersePart(inputVerse,
                         new PartLocation(0, inputText.Length, outputContext),
                         inputText));
                     return true;
