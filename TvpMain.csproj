@@ -119,8 +119,8 @@
     <Compile Include="Project\FileManager.cs" />
     <Compile Include="Text\BookIdItem.cs" />
     <Compile Include="Text\PartLocation.cs" />
-    <Compile Include="Text\VerseData.cs" />
-    <Compile Include="Text\PartData.cs" />
+    <Compile Include="Text\ProjectVerse.cs" />
+    <Compile Include="Text\VersePart.cs" />
     <Compile Include="Text\VerseUtil.cs" />
     <Compile Include="Text\VerseLocation.cs" />
     <Compile Include="Text\PartContext.cs" />

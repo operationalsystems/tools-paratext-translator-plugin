@@ -320,7 +320,7 @@ namespace TvpMain.Check
 
                                     // clear out part lists & get ready to create new ones
                                     foundParts.Clear();
-                                    var verseData = VerseData.Create(
+                                    var verseData = ProjectVerse.Create(
                                         inputBookNum, chapterNum, verseNum,
                                         verseText);
 

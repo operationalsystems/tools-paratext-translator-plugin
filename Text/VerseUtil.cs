@@ -128,7 +128,7 @@ namespace TvpMain.Text
         /// <param name="outputParts">Map of text contexts to lists of found parts (required).</param>
         /// <returns>True if any parts found, false otherwise.</returns>
         public static bool FindVerseParts(
-            VerseData inputVerse,
+            ProjectVerse inputVerse,
             ISet<PartContext> inputContexts,
             ICollection<PartData> outputParts)
         {
@@ -158,7 +158,7 @@ namespace TvpMain.Text
         /// <param name="outputParts">Destination collection for found note and reference parts.</param>
         /// <returns>True if applicable content found, false otherwise.</returns>
         private static bool FindContextParts(
-            VerseData inputVerse, IEnumerable<Regex> includeRegexes,
+            ProjectVerse inputVerse, IEnumerable<Regex> includeRegexes,
             bool isNegative, PartContext outputContext,
             ICollection<PartData> outputParts)
         {

@@ -15,7 +15,7 @@ namespace TvpMain.Text
         /// <summary>
         /// Source verse text.
         /// </summary>
-        public VerseData VerseData { get; }
+        public ProjectVerse VerseData { get; }
 
         /// <summary>
         /// Part location.
@@ -40,7 +40,7 @@ namespace TvpMain.Text
         /// <param name="verseData">Source verse data (required).</param>
         /// <param name="partText">Part text within verse.</param>
         /// <param name="partLocation"></param>
-        public PartData(VerseData verseData, PartLocation partLocation, string partText)
+        public PartData(ProjectVerse verseData, PartLocation partLocation, string partText)
         {
             VerseData = verseData ?? throw new ArgumentNullException(nameof(verseData));
             PartLocation = partLocation ?? throw new ArgumentNullException(nameof(partLocation));
@@ -63,7 +63,7 @@ namespace TvpMain.Text
             int partStart, int partLength, PartContext partContext)
         {
             return new PartData(
-                new VerseData(
+                new ProjectVerse(
                     new VerseLocation(bookNum, chapterNum, verseNum),
                     verseText),
                 new PartLocation(partStart, partLength, partContext),
