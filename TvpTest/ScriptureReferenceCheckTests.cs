@@ -1,10 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using AddInSideViews;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Moq;
 using TvpMain.Check;
+using TvpMain.Project;
 using TvpMain.Text;
 using TvpMain.Result;
 
@@ -14,7 +18,7 @@ namespace TvpTest
     /// Scripture reference tests.
     /// </summary>
     [TestClass]
-    public class ScriptureReferenceCheckTests
+    public class ScriptureReferenceCheckTests : AbstractCheckTests
     {
         /// <summary>
         /// Reference checker under test.
@@ -22,12 +26,14 @@ namespace TvpTest
         private ScriptureReferenceCheck _referenceCheck;
 
         /// <summary>
-        /// Test setup.
+        /// Test setup for verse lines and main mocks.
         /// </summary>
         [TestInitialize]
-        public void TestSetup()
+        public override void TestSetup()
         {
-            _referenceCheck = new ScriptureReferenceCheck();
+            base.TestSetup();
+
+            _referenceCheck = new ScriptureReferenceCheck(MockProjectManager.Object);
         }
 
         /// <summary>
@@ -40,7 +46,7 @@ namespace TvpTest
             var resultList = new List<ResultItem>();
 
             // Describes location and nature of the text being checked
-            // Note: "TextContext" tells the check what it's looking at.
+            // Note: "PartContext" tells the check what it's looking at.
             var partData = VersePart.Create(1, 1, 1,
                 "Testing 1...2...3...", 3, 3,
                 PartContext.MainText);

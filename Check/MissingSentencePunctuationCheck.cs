@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Text.RegularExpressions;
+using TvpMain.Project;
 using TvpMain.Result;
 using TvpMain.Text;
 
@@ -18,11 +20,27 @@ namespace TvpMain.Check
             RegexOptions.Multiline | RegexOptions.Compiled);
 
         /// <summary>
+        /// Provides project setting & metadata access.
+        /// </summary>
+        private ProjectManager _projectManager;
+
+        /// <summary>
+        /// Basic ctor.
+        /// </summary>
+        /// <param name="projectManager">Project manager (required).</param>
+        public MissingSentencePunctuationCheck(ProjectManager projectManager)
+        {
+            _projectManager = projectManager ?? throw new ArgumentNullException(nameof(projectManager));
+        }
+
+        /// <summary>
         /// Check implementation.
         /// </summary>
         /// <param name="partData">Verse part data, including original verse, location, etc.</param>
         /// <param name="checkResults">Result items list to populate.</param>
-        public void CheckText(VersePart partData, ICollection<ResultItem> checkResults)
+        public void CheckText(
+            VersePart partData,
+            ICollection<ResultItem> checkResults)
         {
             foreach (Match matchItem in CheckRegex.Matches(partData.PartText))
             {

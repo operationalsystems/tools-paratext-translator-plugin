@@ -64,13 +64,13 @@ namespace TvpMain.Project
             BookCode = bookCode;
             BookNum = bookNum;
 
-            Abbreviation = abbreviation;
+            Abbreviation = abbreviation?.Trim();
             IsAbbreviation = !string.IsNullOrWhiteSpace(Abbreviation);
 
-            ShortName = shortName;
+            ShortName = shortName?.Trim();
             IsShortName = !string.IsNullOrWhiteSpace(ShortName);
 
-            LongName = longName;
+            LongName = longName?.Trim();
             IsLongName = !string.IsNullOrWhiteSpace(LongName);
         }
     }

@@ -128,7 +128,7 @@
     <Compile Include="Check\CheckType.cs" />
     <Compile Include="Check\MissingSentencePunctuationCheck.cs" />
     <Compile Include="Check\ScriptureReferenceCheck.cs" />
-    <Compile Include="Project\SettingsManager.cs" />
+    <Compile Include="Project\ProjectManager.cs" />
     <Compile Include="Result\ResultState.cs" />
     <Compile Include="Result\IgnoreListItem.cs" />
     <Compile Include="Filter\AbstractTextFilter.cs" />

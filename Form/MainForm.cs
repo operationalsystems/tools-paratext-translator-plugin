@@ -43,11 +43,7 @@ namespace TvpMain.Form
         /// <summary>
         /// List of all checks to be performed.
         /// </summary>
-        private readonly IEnumerable<ITextCheck> _allChecks = new List<ITextCheck>()
-        {
-            new MissingSentencePunctuationCheck(),
-            new ScriptureReferenceCheck()
-        };
+        private readonly IEnumerable<ITextCheck> _allChecks;
 
         /// <summary>
         /// Ignore list filter.
@@ -90,6 +86,11 @@ namespace TvpMain.Form
         private readonly ISet<PartContext> _checkContexts = new HashSet<PartContext>();
 
         /// <summary>
+        /// Provides project setting & metadata access.
+        /// </summary>
+        private readonly ProjectManager _projectManager;
+
+        /// <summary>
         /// Current check area.
         /// </summary>
         private CheckArea _checkArea;
@@ -110,8 +111,15 @@ namespace TvpMain.Form
             _progressForm = new ProgressForm();
             _progressForm.Cancelled += OnProgressFormCancelled;
 
-            _textCheckRunner = new TextCheckRunner(_host, _activeProjectName,
-                new SettingsManager(host, activeProjectName));
+            _projectManager = new ProjectManager(host, activeProjectName);
+            _textCheckRunner = new TextCheckRunner(_host, _activeProjectName, _projectManager);
+
+            _allChecks = new List<ITextCheck>()
+            {
+                new MissingSentencePunctuationCheck(_projectManager),
+                new ScriptureReferenceCheck(_projectManager)
+            };
+
             _textCheckRunner.CheckUpdated += OnCheckUpdated;
 
             searchMenuTextBox.TextChanged += OnSearchTextChanged;

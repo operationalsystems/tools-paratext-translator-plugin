@@ -12,7 +12,10 @@ using TvpMain.Util;
 
 namespace TvpMain.Project
 {
-    public class SettingsManager
+    /// <summary>
+    /// Provides important project setting and metadata access.
+    /// </summary>
+    public class ProjectManager
     {
         /// <summary>
         /// Regex for splitting separator settings.
@@ -23,12 +26,17 @@ namespace TvpMain.Project
         /// <summary>
         /// Paratext host interface.
         /// </summary>
-        private readonly IHost _host;
+        private IHost Host { get; }
 
         /// <summary>
         /// Active project name.
         /// </summary>
-        private readonly string _activeProjectName;
+        private string ActiveProjectName { get; }
+
+        /// <summary>
+        /// Project file manager.
+        /// </summary>
+        private FileManager FileManager { get; }
 
         /// <summary>
         /// Readable chapter and verse separators.
@@ -96,22 +104,17 @@ namespace TvpMain.Project
         public IDictionary<int, BookNameItem> BookNames { get; private set; }
 
         /// <summary>
-        /// Project file manager.
-        /// </summary>
-        private readonly FileManager _fileManager;
-
-        /// <summary>
         /// Basic ctor.
         /// </summary>
         /// <param name="host">Paratext host interface (required).</param>
         /// <param name="activeProjectName">Active project name (required).</param>
-        public SettingsManager(IHost host, string activeProjectName)
+        public ProjectManager(IHost host, string activeProjectName)
         {
-            _host = host ?? throw new ArgumentNullException(nameof(host));
-            _activeProjectName = activeProjectName
+            Host = host ?? throw new ArgumentNullException(nameof(host));
+            ActiveProjectName = activeProjectName
                                  ?? throw new ArgumentNullException(nameof(activeProjectName));
 
-            _fileManager = new FileManager(_host, _activeProjectName);
+            FileManager = new FileManager(Host, ActiveProjectName);
 
             ReadBooksPresent();
             ReadSeparators();
@@ -123,7 +126,7 @@ namespace TvpMain.Project
         /// </summary>
         private void ReadBooksPresent()
         {
-            var settingText = _host.GetProjectSetting(_activeProjectName, "BooksPresent");
+            var settingText = Host.GetProjectSetting(ActiveProjectName, "BooksPresent");
             if (string.IsNullOrWhiteSpace(settingText))
             {
                 PresentBookFlags = Enumerable.Empty<bool>()
@@ -212,7 +215,7 @@ namespace TvpMain.Project
         {
             var tempBookNames = new Dictionary<int, BookNameItem>();
 
-            if (_fileManager.TryGetBookNamesFile(out var fileStream))
+            if (FileManager.TryGetBookNamesFile(out var fileStream))
             {
                 using (fileStream)
                 {
@@ -270,7 +273,7 @@ namespace TvpMain.Project
         /// <returns>List of setting values if found, empty list otherwise.</returns>
         private IEnumerable<string> GetSeparatorSetting(string settingKey)
         {
-            var settingValue = _host.GetProjectSetting(_activeProjectName, settingKey);
+            var settingValue = Host.GetProjectSetting(ActiveProjectName, settingKey);
             if (string.IsNullOrWhiteSpace(settingValue))
             {
                 return Enumerable.Empty<string>()

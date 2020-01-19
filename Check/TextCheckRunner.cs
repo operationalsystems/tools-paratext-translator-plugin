@@ -48,7 +48,7 @@ namespace TvpMain.Check
         /// <summary>
         /// Project settings manager.
         /// </summary>
-        private SettingsManager _settingsManager;
+        private readonly ProjectManager _projectManager;
 
         /// <summary>
         /// Current book number at run start (1-based).
@@ -115,15 +115,15 @@ namespace TvpMain.Check
         /// </summary>
         /// <param name="host">Paratext host interface (required).</param>
         /// <param name="activeProjectName">Active project name (required).</param>
-        /// <param name="settingsManager">Settings manager (required).</param>
-        public TextCheckRunner(IHost host, string activeProjectName, SettingsManager settingsManager)
+        /// <param name="projectManager">Settings manager (required).</param>
+        public TextCheckRunner(IHost host, string activeProjectName, ProjectManager projectManager)
         {
             this._host = host
                          ?? throw new ArgumentNullException(nameof(host));
             this._activeProjectName = activeProjectName
                                       ?? throw new ArgumentNullException(nameof(activeProjectName));
-            this._settingsManager = settingsManager
-                                    ?? throw new ArgumentNullException(nameof(settingsManager));
+            this._projectManager = projectManager
+                                    ?? throw new ArgumentNullException(nameof(projectManager));
         }
 
         /// <summary>
@@ -179,7 +179,7 @@ namespace TvpMain.Check
             var taskList = new List<Task>();
             if (_runArea == CheckArea.CurrentProject)
             {
-                var bookNums = _settingsManager.PresentBookNums.ToList();
+                var bookNums = _projectManager.PresentBookNums.ToList();
                 _runTotalBooks = bookNums.Count;
 
                 bookNums.Sort(); // sort to visually run in ~expected order
