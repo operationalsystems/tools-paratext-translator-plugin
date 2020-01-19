@@ -81,7 +81,7 @@ namespace TvpMain.Text
         /// <returns></returns>
         private static Regex CreateNoteOrReferenceRegex(string tagName)
         {
-            return new Regex($@"\\{tagName}\s*[\S](?:\s(?:(?!\\{tagName}).)*|\s*)\\{tagName}\*",
+            return new Regex($@"\\{tagName}\s+[\S](?:\s(?:(?!\\{tagName}\s).)*|\s*)\\{tagName}\*",
                 RegexOptions.Singleline | RegexOptions.Compiled);
         }
 
@@ -92,7 +92,7 @@ namespace TvpMain.Text
         /// <returns>Compiled, single-line regex.</returns>
         private static Regex CreatePairedTagRegex(string tagName)
         {
-            return new Regex($@"\\{tagName}(?:\s(?:(?!\\{tagName}).)*|\s*)\\{tagName}\*",
+            return new Regex($@"\\{tagName}(?:\s(?:(?!\\{tagName}\s).)*|\s*)\\{tagName}\*",
                 RegexOptions.Singleline | RegexOptions.Compiled);
         }
 
@@ -135,13 +135,11 @@ namespace TvpMain.Text
             var isFound = false;
             foreach (var contextItem in inputContexts)
             {
-                if (!ContextMappings.TryGetValue(contextItem, out var mappingItem))
+                if (ContextMappings.TryGetValue(contextItem, out var mappingItem))
                 {
-                    continue;
+                    isFound = FindContextParts(inputVerse, mappingItem.ContextRegexes,
+                                  mappingItem.IsNegative, contextItem, outputParts) || isFound;
                 }
-
-                isFound = FindContextParts(inputVerse, mappingItem.ContextRegexes,
-                              mappingItem.IsNegative, contextItem, outputParts) || isFound;
             }
 
             return isFound;
@@ -274,17 +272,17 @@ namespace TvpMain.Text
             /// <summary>
             /// Text context (e.g., main text).
             /// </summary>
-            public PartContext PartContext { get; set; }
+            public PartContext PartContext { get; }
 
             /// <summary>
             /// Regexes identifying context.
             /// </summary>
-            public IList<Regex> ContextRegexes { get; set; }
+            public IList<Regex> ContextRegexes { get; }
 
             /// <summary>
             /// True if negative match, false if positive.
             /// </summary>
-            public bool IsNegative { get; set; }
+            public bool IsNegative { get; }
 
             /// <summary>
             /// Basic ctor.
