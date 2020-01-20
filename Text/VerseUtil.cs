@@ -76,23 +76,51 @@ namespace TvpMain.Text
 
         /// <summary>
         /// Creates a note or reference regex from a tag name (note extra required interior non-space char).
+        ///
+        /// Note: This regex is set up to terminate either at a legitimate closing tag or the presence of
+        /// another opening tag _without_ capturing that opening in order for checks to work on the correct
+        /// range of content.
+        ///
+        /// This comes from the following in the USFM spec: The individual elements which make up the
+        /// footnote or cross reference content are defined as character level markers, which means that they
+        /// each define a beginning and a corresponding end marker. The Paratext translation editor will
+        /// interpret the presence of a new marker as an implicit closure of any preceding character level
+        /// marker. For this reason a majority of translation projects over the years have adopted the
+        /// approach of authoring footnote or cross reference content without supplying the explicit end
+        /// marker, since it reduces the volume of markup found within the notes.
+        ///
+        /// https://ubsicap.github.io/usfm/about/syntax.html#endmarkers-in-footnotes-and-cross-references
         /// </summary>
         /// <param name="tagName">Tag name (required).</param>
         /// <returns></returns>
         private static Regex CreateNoteOrReferenceRegex(string tagName)
         {
-            return new Regex($@"\\{tagName}\s+[\S](?:\s(?:(?!\\{tagName}\s).)*|\s*)\\{tagName}\*",
+            return new Regex($@"\\{tagName}\s+[\S]\s+(?:(?:(?!\\{tagName}).)*|\s*)(?:\\{tagName}\*)?",
                 RegexOptions.Singleline | RegexOptions.Compiled);
         }
 
         /// <summary>
         /// Creates tag pair regex from a tag name.
+        ///
+        /// Note: This regex is set up to terminate either at a legitimate closing tag or the presence of
+        /// another opening tag _without_ capturing that opening in order for checks to work on the correct
+        /// range of content.
+        ///
+        /// This comes from the following in the USFM spec: The individual elements which make up the
+        /// footnote or cross reference content are defined as character level markers, which means that they
+        /// each define a beginning and a corresponding end marker. The Paratext translation editor will
+        /// interpret the presence of a new marker as an implicit closure of any preceding character level
+        /// marker. For this reason a majority of translation projects over the years have adopted the
+        /// approach of authoring footnote or cross reference content without supplying the explicit end
+        /// marker, since it reduces the volume of markup found within the notes.
+        ///
+        /// https://ubsicap.github.io/usfm/about/syntax.html#endmarkers-in-footnotes-and-cross-references
         /// </summary>
         /// <param name="tagName">Tag name (required).</param>
         /// <returns>Compiled, single-line regex.</returns>
         private static Regex CreatePairedTagRegex(string tagName)
         {
-            return new Regex($@"\\{tagName}(?:\s(?:(?!\\{tagName}\s).)*|\s*)\\{tagName}\*",
+            return new Regex($@"\\{tagName}(?:(?:(?!\\{tagName}).)*|\s*)(?:\\{tagName}\*)?",
                 RegexOptions.Singleline | RegexOptions.Compiled);
         }
 

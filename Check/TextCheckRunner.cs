@@ -24,7 +24,6 @@ namespace TvpMain.Check
     /// </summary>
     public class TextCheckRunner
     {
-
         /// <summary>
         /// Lock for publishing check progress.
         /// </summary>
