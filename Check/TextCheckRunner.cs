@@ -261,7 +261,6 @@ namespace TvpMain.Check
                     scriptureExtractor.IncludeNotes = true;
 
                     var checkList = _runChecks.ToList();
-                    string[] splitArray = { "" };
                     var emptyVerseCtr = 0;
 
                     var resultItems = new List<ResultItem>();
