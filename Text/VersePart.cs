@@ -63,9 +63,7 @@ namespace TvpMain.Text
             int partStart, int partLength, PartContext partContext)
         {
             return new VersePart(
-                new ProjectVerse(
-                    new VerseLocation(bookNum, chapterNum, verseNum),
-                    verseText),
+                ProjectVerse.Create(bookNum, chapterNum, verseNum, verseText),
                 new PartLocation(partStart, partLength, partContext),
                 verseText.Substring(partStart, partLength));
         }
@@ -84,9 +82,7 @@ namespace TvpMain.Text
             PartContext partContext)
         {
             return new VersePart(
-                new ProjectVerse(
-                    new VerseLocation(bookNum, chapterNum, verseNum),
-                    verseText),
+                ProjectVerse.Create(bookNum, chapterNum, verseNum, verseText),
                 new PartLocation(0, verseText.Length, partContext),
                 verseText);
         }
