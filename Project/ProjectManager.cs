@@ -41,7 +41,7 @@ namespace TvpMain.Project
         /// <summary>
         /// Readable chapter and verse separators.
         /// </summary>
-        public IList<string> ChapterOrVerseSeparators { get; private set; }
+        public IList<string> ChapterAndVerseSeparators { get; private set; }
 
         /// <summary>
         /// Readable verse range separators.
@@ -175,7 +175,7 @@ namespace TvpMain.Project
         /// </summary>
         private void ReadSeparators()
         {
-            ChapterOrVerseSeparators =
+            ChapterAndVerseSeparators =
                 GetSeparatorSetting("ChapterVerseSeparator")
                     .ToImmutableList();
 

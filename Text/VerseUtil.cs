@@ -75,7 +75,8 @@ namespace TvpMain.Text
             }.ToImmutableDictionary(mappingItem => mappingItem.PartContext);
 
         /// <summary>
-        /// Creates a note or reference regex from a tag name (note extra required interior non-space char).
+        /// Creates a note or reference regex from a tag name, on their own or as a group (note extra required
+        /// interior non-space char, specific to reference tags).
         ///
         /// Note: This regex is set up to terminate either at a legitimate closing tag or the presence of
         /// another opening tag _without_ capturing that opening in order for checks to work on the correct
@@ -100,7 +101,7 @@ namespace TvpMain.Text
         }
 
         /// <summary>
-        /// Creates tag pair regex from a tag name.
+        /// Creates tag pair regex from a tag name, on their own or as a group.
         ///
         /// Note: This regex is set up to terminate either at a legitimate closing tag or the presence of
         /// another opening tag _without_ capturing that opening in order for checks to work on the correct
@@ -135,7 +136,8 @@ namespace TvpMain.Text
         }
 
         /// <summary>
-        /// Creates a whole-line regex from a tag name (e.g., titles and tocs).
+        /// Creates a whole-line regex from a tag name, on their own or as a group
+        /// (e.g., titles and tocs).
         /// </summary>
         /// <param name="tagName"></param>
         /// <returns>Compiled, multi-line regex.</returns>
