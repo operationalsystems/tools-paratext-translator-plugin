@@ -48,7 +48,7 @@ namespace TvpMain.Text
         }
 
         /// <summary>
-        /// Helper factory method.
+        /// Helper factory method that creates a part consisting of part of a verse.
         /// </summary>
         /// <param name="bookNum">Book number (1-based).</param>
         /// <param name="chapterNum">Chapter number (1-based).</param>
@@ -68,6 +68,27 @@ namespace TvpMain.Text
                     verseText),
                 new PartLocation(partStart, partLength, partContext),
                 verseText.Substring(partStart, partLength));
+        }
+
+        /// <summary>
+        /// Helper factory method that creates a part consisting of an entire verse.
+        /// </summary>
+        /// <param name="bookNum">Book number (1-based).</param>
+        /// <param name="chapterNum">Chapter number (1-based).</param>
+        /// <param name="verseNum">Verse number (generally 1-based; 0 = any intro).</param>
+        /// <param name="verseText">Verse text (required).</param>
+        /// <param name="partContext">Part context (e.g., main text, footnote or reference).</param>
+        /// <returns>Created part data.</returns>
+        public static VersePart Create(
+            int bookNum, int chapterNum, int verseNum, string verseText,
+            PartContext partContext)
+        {
+            return new VersePart(
+                new ProjectVerse(
+                    new VerseLocation(bookNum, chapterNum, verseNum),
+                    verseText),
+                new PartLocation(0, verseText.Length, partContext),
+                verseText);
         }
 
         /// <summary>
