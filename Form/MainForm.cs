@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -688,7 +689,7 @@ namespace TvpMain.Form
                 {
                     using var outputStream = saveFile.OpenFile();
                     using var streamWriter = new StreamWriter(outputStream);
-                    using var csvWriter = new CsvWriter(streamWriter);
+                    using var csvWriter = new CsvWriter(streamWriter, CultureInfo.CurrentCulture);
 
                     csvWriter.WriteRecords(_filteredResultItems);
                     csvWriter.Flush();

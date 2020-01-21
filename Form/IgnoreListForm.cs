@@ -2,6 +2,7 @@
 using CsvHelper.Configuration;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
@@ -80,7 +81,7 @@ namespace TvpMain.Form
                 {
                     using var inputStream = openFile.OpenFile();
                     using var streamReader = new StreamReader(inputStream);
-                    using var csvReader = new CsvReader(streamReader);
+                    using var csvReader = new CsvReader(streamReader, CultureInfo.CurrentCulture);
 
                     csvReader.Configuration.HasHeaderRecord = false;
                     csvReader.Configuration.IgnoreBlankLines = true;

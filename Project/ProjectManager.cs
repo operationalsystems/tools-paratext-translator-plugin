@@ -20,7 +20,7 @@ namespace TvpMain.Project
         /// <summary>
         /// Regex for splitting separator settings.
         /// </summary>
-        private static readonly Regex SeparatorRegex = new Regex("\\|",
+        public static readonly Regex SeparatorRegex = new Regex("\\|",
             RegexOptions.Multiline | RegexOptions.Compiled);
 
         /// <summary>
@@ -104,6 +104,12 @@ namespace TvpMain.Project
         public IDictionary<int, BookNameItem> BookNames { get; private set; }
 
         /// <summary>
+        /// Regexes to catch _possible_ target references in arbitrary text
+        /// with typical project-specific and English punctuation for error checking.
+        /// </summary>
+        public IList<Regex> TargetReferenceRegexes { get; private set; }
+
+        /// <summary>
         /// Basic ctor.
         /// </summary>
         /// <param name="host">Paratext host interface (required).</param>
@@ -119,6 +125,7 @@ namespace TvpMain.Project
             ReadBooksPresent();
             ReadSeparators();
             ReadBookNames();
+            CreateRegexes();
         }
 
         /// <summary>
@@ -262,6 +269,32 @@ namespace TvpMain.Project
             }
 
             BookNames = tempBookNames.ToImmutableDictionary();
+        }
+
+        /// <summary>
+        /// Creates project-specific regexes.
+        /// </summary>
+        private void CreateRegexes()
+        {
+            var punctuationParts =
+                ChapterAndVerseSeparators
+                    .Concat(VerseRangeSeparators)
+                    .Concat(VerseSequenceSeparators)
+                    .Concat(BookOrChapterRangeSeparators)
+                    .Concat(BookSequenceSeparators)
+                    .Concat(ChapterSequenceSeparators)
+                    .Select(punctuationItem => punctuationItem.Trim())
+                    .Select(punctuationItem => Regex.Escape(punctuationItem))
+                    .Distinct()
+                    .ToList();
+
+            TargetReferenceRegexes = new List<Regex>()
+                {
+                    VerseUtil.CreateTargetReferenceGroupRegex(
+                        new string[] { @"\w*\p{L}\w*" },
+                        punctuationParts),
+                }.Concat(VerseUtil.EnglishTargetReferenceRegexes)
+                .ToImmutableList();
         }
 
         /// <summary>
