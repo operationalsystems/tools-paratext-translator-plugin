@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace TvpMain.Project
 {
+    /// <summary>
+    /// Model class for project-specific book names (abbreviation, short, and long).
+    /// </summary>
     public class BookNameItem
     {
         /// <summary>

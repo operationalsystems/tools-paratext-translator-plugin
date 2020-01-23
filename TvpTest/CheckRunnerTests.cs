@@ -63,7 +63,7 @@ namespace TvpTest
         /// Test setup for verse lines and main mocks.
         /// </summary>
         [TestInitialize]
-        [DeploymentItem(@"Resources\test-verses.txt", "Resources")]
+        [DeploymentItem(@"Resources\test-verses-1.txt", "Resources")]
         public override void TestSetup()
         {
             base.TestSetup();

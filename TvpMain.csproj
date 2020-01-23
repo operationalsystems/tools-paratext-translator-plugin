@@ -129,6 +129,8 @@
     <Compile Include="Check\CheckArea.cs" />
     <Compile Include="Project\BookNameItem.cs" />
     <Compile Include="Project\FileManager.cs" />
+    <Compile Include="Reference\ScriptureReferenceBuilder.cs" />
+    <Compile Include="Reference\ScriptureReference.cs" />
     <Compile Include="Text\BookIdItem.cs" />
     <Compile Include="Text\PartLocation.cs" />
     <Compile Include="Text\ProjectVerse.cs" />

@@ -32,20 +32,27 @@ namespace TvpMain.Check
             VersePart partData,
             ICollection<ResultItem> checkResults)
         {
+            var matchedParts = new HashSet<VersePart>();
             foreach (var regexItem in _projectManager.TargetReferenceRegexes)
             {
                 foreach (Match matchItem in regexItem.Matches(partData.PartText))
                 {
-                    checkResults.Add
-                    (new ResultItem(partData,
-                        $"Found reference at {matchItem.Index}.",
-                        partData.PartText, matchItem.Value, "May be ok...",
-                        CheckType.ScriptureReference));
-
-                    break;
+                    var matchedPart = new VersePart(partData.VerseData,
+                        new PartLocation(partData.PartLocation.PartStart + matchItem.Index,
+                            matchItem.Length,
+                            partData.PartLocation.PartContext),
+                        matchItem.Value);
+                    if (!matchedParts.Contains(matchedPart))
+                    {
+                        matchedParts.Add(matchedPart);
+                        checkResults.Add
+                        (new ResultItem(matchedPart,
+                            $"Found reference at {matchItem.Index}.",
+                            partData.PartText, matchItem.Value, "May be ok...",
+                            CheckType.ScriptureReference));
+                    }
                 }
             }
-
         }
     }
 }

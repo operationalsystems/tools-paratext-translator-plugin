@@ -101,7 +101,12 @@ namespace TvpMain.Project
         /// <summary>
         /// Book names map, keyed by book number (1-based).
         /// </summary>
-        public IDictionary<int, BookNameItem> BookNames { get; private set; }
+        public virtual IDictionary<int, BookNameItem> BookNamesByNum { get; private set; }
+
+        /// <summary>
+        /// Book names map, keyed by all book names in lower case (i.e., code, abbreviation, short, long).
+        /// </summary>
+        public virtual IDictionary<string, BookNameItem> BookNamesByAllNames { get; private set; }
 
         /// <summary>
         /// Regexes to catch _possible_ target references in arbitrary text
@@ -220,8 +225,7 @@ namespace TvpMain.Project
         /// </summary>
         private void ReadBookNames()
         {
-            var tempBookNames = new Dictionary<int, BookNameItem>();
-
+            var tempBookNamesByNum = new Dictionary<int, BookNameItem>();
             if (FileManager.TryGetBookNamesFile(out var fileStream))
             {
                 using (fileStream)
@@ -256,7 +260,7 @@ namespace TvpMain.Project
                                 continue;
                             }
 
-                            tempBookNames[bookId.BookNum]
+                            tempBookNamesByNum[bookId.BookNum]
                                 = new BookNameItem(
                                     codeAttrib,
                                     bookId.BookNum,
@@ -267,8 +271,26 @@ namespace TvpMain.Project
                     }
                 }
             }
+            BookNamesByNum = tempBookNamesByNum.ToImmutableDictionary();
 
-            BookNames = tempBookNames.ToImmutableDictionary();
+            var tempBookNamesByAllNames = new Dictionary<string, BookNameItem>();
+            foreach (var nameItem in BookNamesByNum.Values)
+            {
+                tempBookNamesByAllNames[nameItem.BookCode.ToLower()] = nameItem;
+                if (nameItem.IsAbbreviation)
+                {
+                    tempBookNamesByAllNames[nameItem.Abbreviation.ToLower()] = nameItem;
+                }
+                if (nameItem.IsShortName)
+                {
+                    tempBookNamesByAllNames[nameItem.ShortName.ToLower()] = nameItem;
+                }
+                if (nameItem.IsLongName)
+                {
+                    tempBookNamesByAllNames[nameItem.LongName.ToLower()] = nameItem;
+                }
+            }
+            BookNamesByAllNames = tempBookNamesByAllNames.ToImmutableDictionary();
         }
 
         /// <summary>
@@ -291,6 +313,7 @@ namespace TvpMain.Project
             TargetReferenceRegexes = new List<Regex>()
                 {
                     VerseUtil.CreateTargetReferenceGroupRegex(
+                        new string[] { @"xt" },
                         new string[] { @"\w*\p{L}\w*" },
                         punctuationParts),
                 }.Concat(VerseUtil.EnglishTargetReferenceRegexes)

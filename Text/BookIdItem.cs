@@ -8,11 +8,10 @@ using CsvHelper.Configuration.Attributes;
 namespace TvpMain.Text
 {
     /// <summary>
-    /// Model class for ignore list entries.
+    /// Model class for the master list of book numbers, codes, titles, and descriptions.
     /// </summary>
     public class BookIdItem
     {
-
         /// <summary>
         /// Book number (1-based).
         /// </summary>
@@ -26,6 +25,7 @@ namespace TvpMain.Text
         public string UsfmBookNum { get; }
 
         /// <summary>
+        /// Unique book code (e.g., "GEN" for "Genesis").
         /// </summary>
         [Index(2)]
         public string BookCode { get; }

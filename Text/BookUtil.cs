@@ -25,12 +25,12 @@ namespace TvpMain.Text
         public static readonly IList<BookIdItem> BookIdList;
 
         /// <summary>
-        /// Map of book codes to numbers (1-based).
+        /// Map of book codes to IDs.
         /// </summary>
         public static readonly IDictionary<string, BookIdItem> BookIdsByCode;
 
         /// <summary>
-        /// Map of book numbers (1-based) to codes.
+        /// Map of book numbers (1-based) to IDs.
         /// </summary>
         public static readonly IDictionary<int, BookIdItem> BookIdsByNum;
 
