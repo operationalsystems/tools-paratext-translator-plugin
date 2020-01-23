@@ -108,7 +108,7 @@ namespace TvpMain.Check
                     var messageText = workMatch.Where(value => !char.IsWhiteSpace(value))
                         .Equals(standardFormat.Where(value => !char.IsWhiteSpace(value)))
                         ? $"Non-standard reference spacing at position {inputMatch.Index}."
-                        : $"Non-standard reference format at position {inputMatch.Index}.";
+                        : $"Non-standard reference content at position {inputMatch.Index}.";
 
                     result = true;
                     outputResults.Add(new ResultItem(inputPart, messageText,
