@@ -58,9 +58,10 @@ namespace TvpMain.Reference
 
         protected static Parser<char, VerseRange> PairedVerseRange(
             ReferenceSeparators referenceSeparators)
-            => Map((fromVerse, toVerse) => new VerseRange(fromVerse, toVerse),
-                    Tok(UnsignedInt(10))
-                        .Before(AnyTok(referenceSeparators.VerseRangeSeparators)),
+            => Map((fromVerse, verseSeparator, toVerse) =>
+                        new VerseRange(fromVerse, toVerse),
+                    Tok(UnsignedInt(10)),
+                    AnyTok(referenceSeparators.VerseRangeSeparators),
                     Tok(UnsignedInt(10)))
                 .Labelled("paired verse range");
 
@@ -73,26 +74,27 @@ namespace TvpMain.Reference
         protected static Parser<char, IList<VerseRange>> VerseRangeSequence(
             ReferenceSeparators referenceSeparators)
             => VerseRange(referenceSeparators)
-                .SeparatedAndOptionallyTerminatedAtLeastOnce(AnyTok(referenceSeparators.VerseSequenceSeparators))
+                .SeparatedAndOptionallyTerminated(AnyTok(referenceSeparators.VerseSequenceSeparators))
                 .Select<IList<VerseRange>>(values => values.ToImmutableList())
                 .Labelled("verse ranges");
 
         protected static Parser<char, BookOrChapterRange> SingletonBookOrChapterRange(
             ReferenceSeparators referenceSeparators)
-            => Map((chapterNum, verseRanges) => new BookOrChapterRange(chapterNum, verseRanges),
-                Tok(UnsignedInt(10))
-                    .Before(AnyTok(referenceSeparators.ChapterAndVerseSeparators)),
+            => Map((chapterNum, chapterSeparator, verseRanges) =>
+                        new BookOrChapterRange(chapterNum, verseRanges),
+                Tok(UnsignedInt(10)),
+                AnyTok(referenceSeparators.ChapterAndVerseSeparators),
                 VerseRangeSequence(referenceSeparators))
                 .Labelled("singleton book or chapter range");
 
         protected static Parser<char, BookOrChapterRange> PairedBookOrChapterRange(
             ReferenceSeparators referenceSeparators)
-            => Map((fromBookOrChapter, toBookOrChapter) => new BookOrChapterRange(
+            => Map((fromBookOrChapter, bookSeparator, toBookOrChapter) => new BookOrChapterRange(
                         fromBookOrChapter.FromChapter, fromBookOrChapter.FromVerseRanges,
                         toBookOrChapter.FromChapter, toBookOrChapter.FromVerseRanges),
-                    SingletonBookOrChapterRange(referenceSeparators)
-                        .Before(AnyTok(referenceSeparators.BookOrChapterRangeSeparators)),
-                    SingletonBookOrChapterRange(referenceSeparators))
+                        SingletonBookOrChapterRange(referenceSeparators),
+                        AnyTok(referenceSeparators.BookOrChapterRangeSeparators),
+                        SingletonBookOrChapterRange(referenceSeparators))
                 .Labelled("paired book or chapter range");
 
         protected static Parser<char, BookReferenceName> BookReferenceName(

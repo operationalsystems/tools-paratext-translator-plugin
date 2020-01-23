@@ -121,7 +121,7 @@ namespace TvpMain.Check
                 result = true;
                 outputResults.Add(new ResultItem(inputPart,
                     $"Invalid reference at position {inputMatch.Index} (can't parse).",
-                    inputPart.PartText, inputMatch.Value, "Verify reference and re-run checks (or) ignore.",
+                    inputPart.PartText, inputMatch.Value, null,
                     CheckType.ScriptureReference));
             }
 

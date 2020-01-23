@@ -35,7 +35,7 @@ namespace TvpMain.Result
         public string MatchText { get; }
 
         /// <summary>
-        /// Suggestion text (may be null).
+        /// Suggested replacement text (may be null).
         /// </summary>
         public string SuggestionText { get; }
 
@@ -80,7 +80,7 @@ namespace TvpMain.Result
         /// <param name="errorText">Error text (required).</param>
         /// <param name="checkText">Input text (required).</param>
         /// <param name="matchText">Match text (required).</param>
-        /// <param name="suggestionText">Suggestion text (optional, may be null).</param>
+        /// <param name="suggestionText">Suggested replacement text (optional, may be null).</param>
         /// <param name="checkType">Check type.</param>
         public ResultItem(VersePart partData, string errorText,
             string checkText, string matchText,
