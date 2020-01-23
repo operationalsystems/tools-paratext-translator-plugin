@@ -104,9 +104,14 @@ namespace TvpMain.Check
 
                 if (!workMatch.Equals(standardFormat))
                 {
+                    // check whether only difference is spacing
+                    var messageText = workMatch.Where(value => !char.IsWhiteSpace(value))
+                        .Equals(standardFormat.Where(value => !char.IsWhiteSpace(value)))
+                        ? $"Non-standard reference spacing at position {inputMatch.Index}."
+                        : $"Non-standard reference format at position {inputMatch.Index}.";
+
                     result = true;
-                    outputResults.Add(new ResultItem(inputPart,
-                        $"Non-standard reference at position {inputMatch.Index}.",
+                    outputResults.Add(new ResultItem(inputPart, messageText,
                         inputPart.PartText, inputMatch.Value, standardFormat,
                         CheckType.ScriptureReference));
                 }
