@@ -108,6 +108,16 @@ namespace TvpTest
         protected const string REFERENCE_FINAL_PUNCTUATION_SETTING = "";
 
         /// <summary>
+        /// Target reference name type setting.
+        /// </summary>
+        protected const string TARGET_NAME_TYPE_SETTING = "Abbreviation";
+
+        /// <summary>
+        /// Parallel passage name type setting.
+        /// </summary>
+        protected const string PASSAGE_NAME_TYPE_SETTING = "ShortName";
+
+        /// <summary>
         /// Map of book name items by book number (1-based), used by mock project manager.
         /// </summary>
         private IDictionary<int, BookNameItem> TestBookNamesByNum;
@@ -175,6 +185,10 @@ namespace TvpTest
                 .Returns<string, string>((projectName, settingsKey) => REFERENCE_FINAL_PUNCTUATION_SETTING);
             MockHost.Setup(hostItem => hostItem.GetFigurePath(TEST_PROJECT_NAME, false))
                 .Returns<string, bool>((projectName, localFlag) => Path.Combine(Directory.GetCurrentDirectory(), "test"));
+            MockHost.Setup(hostItem => hostItem.GetProjectSetting(TEST_PROJECT_NAME, "BookSourceForMarkerXt"))
+                .Returns<string, string>((projectName, settingsKey) => TARGET_NAME_TYPE_SETTING);
+            MockHost.Setup(hostItem => hostItem.GetProjectSetting(TEST_PROJECT_NAME, "BookSourceForMarkerR"))
+                .Returns<string, string>((projectName, settingsKey) => PASSAGE_NAME_TYPE_SETTING);
 
             // project manager setup
             TestBookNamesByNum = BookUtil.BookIdList

@@ -99,6 +99,16 @@ namespace TvpMain.Project
         public int MaxPresentBookNum { get; private set; }
 
         /// <summary>
+        /// Cross reference (\xt tag) book name type.
+        /// </summary>
+        public BookNameType TargetNameType { get; private set; }
+
+        /// <summary>
+        /// Parallel passage book name type.
+        /// </summary>
+        public BookNameType PassageNameType { get; private set; }
+
+        /// <summary>
         /// Book names map, keyed by book number (1-based).
         /// </summary>
         public virtual IDictionary<int, BookNameItem> BookNamesByNum { get; private set; }
@@ -110,7 +120,7 @@ namespace TvpMain.Project
 
         /// <summary>
         /// Regexes to catch _possible_ target references in arbitrary text
-        /// with typical project-specific and English punctuation for error checking.
+        /// with typical project- and language-specific and English punctuation for error checking.
         /// </summary>
         public IList<Regex> TargetReferenceRegexes { get; private set; }
 
@@ -291,6 +301,10 @@ namespace TvpMain.Project
                 }
             }
             BookNamesByAllNames = tempBookNamesByAllNames.ToImmutableDictionary();
+
+            // additional name-related settings
+            TargetNameType = GetBookNameTypeSetting("BookSourceForMarkerXt", BookNameType.Abbreviation);
+            PassageNameType = GetBookNameTypeSetting("BookSourceForMarkerR", BookNameType.ShortName);
         }
 
         /// <summary>
@@ -306,7 +320,7 @@ namespace TvpMain.Project
                     .Concat(BookSequenceSeparators)
                     .Concat(ChapterSequenceSeparators)
                     .Select(punctuationItem => punctuationItem.Trim())
-                    .Select(punctuationItem => Regex.Escape(punctuationItem))
+                    .Select(Regex.Escape)
                     .Distinct()
                     .ToList();
 
@@ -343,6 +357,40 @@ namespace TvpMain.Project
             }
         }
 
+
+        /// <summary>
+        /// Extract a book name type from a project setting.
+        /// </summary>
+        /// <param name="settingKey">Setting key (required).</param>
+        /// <param name="defaultType">Default book name type, if not found.</param>
+        /// <returns>Book name type if found, default type otherwise.</returns>
+        private BookNameType GetBookNameTypeSetting(string settingKey, BookNameType defaultType)
+        {
+            var settingValue = Host.GetProjectSetting(ActiveProjectName, settingKey);
+            if (string.IsNullOrWhiteSpace(settingValue))
+            {
+                return defaultType;
+            }
+            else
+            {
+                var workSettingValue = settingKey.Trim().ToLower();
+                switch (workSettingValue)
+                {
+                    case "abbreviation":
+                        return BookNameType.Abbreviation;
+
+                    case "shortname":
+                        return BookNameType.ShortName;
+
+                    case "longname":
+                        return BookNameType.LongName;
+
+                    default:
+                        return defaultType;
+                }
+            }
+        }
+
         /// <summary>
         /// Determines whether a book is present in the given project.
         /// </summary>
@@ -353,5 +401,15 @@ namespace TvpMain.Project
             return (bookNum >= 1 && bookNum <= PresentBookFlags.Count)
                    && PresentBookFlags[bookNum - 1];
         }
+    }
+
+    /// <summary>
+    /// Types of book names for (e.g.) target references.
+    /// </summary>
+    public enum BookNameType
+    {
+        Abbreviation,
+        ShortName,
+        LongName
     }
 }

@@ -68,7 +68,7 @@ namespace TvpTest
         {
             base.TestSetup();
 
-            VerseLines = File.ReadAllLines(@"Resources\test-verses.txt");
+            VerseLines = File.ReadAllLines(@"Resources\test-verses-1.txt");
             ExpectedRefs = new HashSet<int>();
             IsVersesDelayed = false;
 

@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text.RegularExpressions;
+using System.Windows.Forms.VisualStyles;
 using TvpMain.Project;
+using TvpMain.Reference;
 using TvpMain.Result;
 using TvpMain.Text;
 
@@ -12,7 +15,12 @@ namespace TvpMain.Check
         /// <summary>
         /// Provides project setting & metadata access.
         /// </summary>
-        private ProjectManager _projectManager;
+        private readonly ProjectManager _projectManager;
+
+        /// <summary>
+        /// Scripture reference builder.
+        /// </summary>
+        private readonly ScriptureReferenceBuilder _referenceBuilder;
 
         /// <summary>
         /// Basic ctor.
@@ -21,6 +29,7 @@ namespace TvpMain.Check
         public ScriptureReferenceCheck(ProjectManager projectManager)
         {
             _projectManager = projectManager ?? throw new ArgumentNullException(nameof(projectManager));
+            _referenceBuilder = new ScriptureReferenceBuilder(projectManager);
         }
 
         /// <summary>
@@ -32,6 +41,7 @@ namespace TvpMain.Check
             VersePart partData,
             ICollection<ResultItem> checkResults)
         {
+            // keep track of identified parts so we don't hit them again
             var matchedParts = new HashSet<VersePart>();
             foreach (var regexItem in _projectManager.TargetReferenceRegexes)
             {
@@ -42,17 +52,75 @@ namespace TvpMain.Check
                             matchItem.Length,
                             partData.PartLocation.PartContext),
                         matchItem.Value);
-                    if (!matchedParts.Contains(matchedPart))
+                    if (!matchedParts.Contains(matchedPart)
+                        && CheckVersePart(matchedPart, matchItem, checkResults))
                     {
                         matchedParts.Add(matchedPart);
-                        checkResults.Add
-                        (new ResultItem(matchedPart,
-                            $"Found reference at {matchItem.Index}.",
-                            partData.PartText, matchItem.Value, "May be ok...",
-                            CheckType.ScriptureReference));
                     }
                 }
             }
+        }
+
+        /// <summary>
+        /// Perform reference checks on a specific verse part identified as
+        /// reference text using regexes. 
+        /// </summary>
+        /// <param name="inputPart">Verse part (required).</param>
+        /// <param name="inputMatch">Regex match (required).</param>
+        /// <param name="outputResults">Result item list to add checks to.</param>
+        /// <returns>True if any result items added, false otherwise.</returns>
+        private bool CheckVersePart(VersePart inputPart,
+            Capture inputMatch,
+            ICollection<ResultItem> outputResults)
+        {
+            var result = false;
+
+            // check we can parse (loose match)
+            var workMatch = inputMatch.Value.Trim();
+            if (_referenceBuilder.TryParseScriptureReference(
+                workMatch,
+                out var foundWrapper))
+            {
+                // check for unknown books
+                var unknownBooks = string.Join(", ",
+                foundWrapper.ScriptureReference.BookReferences
+                            .Where(referenceItem => !referenceItem.IsLocalReference)
+                            .Select(referenceItem => referenceItem.BookReferenceName)
+                            .Where(rangeItem => !rangeItem.IsKnownBook)
+                            .Select(rangeItem => rangeItem.NameText));
+                if (!string.IsNullOrWhiteSpace(unknownBooks))
+                {
+                    result = true;
+                    outputResults.Add(new ResultItem(inputPart,
+                        $"Unknown book name(s) at position {inputMatch.Index}: {unknownBooks}.",
+                        inputPart.PartText, inputMatch.Value, "Verify reference and re-run checks.",
+                        CheckType.ScriptureReference));
+                }
+
+                // check format (tight match)
+                var standardFormat = _referenceBuilder.FormatStandardReference(
+                    inputPart.PartLocation.PartContext,
+                    foundWrapper);
+
+                if (!workMatch.Equals(standardFormat))
+                {
+                    result = true;
+                    outputResults.Add(new ResultItem(inputPart,
+                        $"Non-standard reference at position {inputMatch.Index}.",
+                        inputPart.PartText, inputMatch.Value, standardFormat,
+                        CheckType.ScriptureReference));
+                }
+            }
+            else
+            {
+                result = true;
+                outputResults.Add(new ResultItem(inputPart,
+                    $"Invalid reference at position {inputMatch.Index} (can't parse).",
+                    inputPart.PartText, inputMatch.Value, "Verify reference and re-run checks (or) ignore.",
+                    CheckType.ScriptureReference));
+            }
+
+            return result;
         }
     }
 }

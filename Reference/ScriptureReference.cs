@@ -3,11 +3,29 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 using TvpMain.Project;
 using TvpMain.Text;
 
 namespace TvpMain.Reference
 {
+    /// <summary>
+    /// Origin parser type for a scripture reference wrapper.
+    /// </summary>
+    public enum ParserType
+    {
+        Project,
+        Normalized,
+        Standard
+    }
+
+    /// <summary>
+    /// Container for a scripture reference with an optional open and closing tag.
+    ///
+    /// See scripture reference and lower-level docs for details.
+    ///
+    /// Top-level scripture reference parser result object.
+    /// </summary>
     public class ScriptureReferenceWrapper
     {
         public string OpeningTag { get; }
@@ -20,15 +38,23 @@ namespace TvpMain.Reference
 
         public bool IsClosingTag => !string.IsNullOrWhiteSpace(ClosingTag);
 
+        public ParserType ParserType { get; }
+
         public ScriptureReferenceWrapper(
+            ParserType parserType,
             string openingTag,
             ScriptureReference scriptureReference,
             string closingTag)
         {
+            ParserType = parserType;
             OpeningTag = openingTag;
-            ScriptureReference = scriptureReference;
+            ScriptureReference = scriptureReference ?? throw new ArgumentNullException(nameof(scriptureReference));
             ClosingTag = closingTag;
         }
+
+        public long Score => (OpeningTag == null ? 0L : 1000L)
+                          + (ScriptureReference.Score * 10L)
+                          + (ClosingTag == null ? 0L : 1000L);
 
         protected bool Equals(ScriptureReferenceWrapper other)
         {
@@ -69,23 +95,51 @@ namespace TvpMain.Reference
         /// <inheritdoc />
         public override string ToString()
         {
-            return $"{nameof(OpeningTag)}: {OpeningTag}, {nameof(IsOpeningTag)}: {IsOpeningTag}, {nameof(ScriptureReference)}: {ScriptureReference}, {nameof(ClosingTag)}: {ClosingTag}, {nameof(IsClosingTag)}: {IsClosingTag}";
+            return JsonConvert.SerializeObject(this);
         }
     }
 
+    /// <summary>
+    /// A complete scripture reference, including one or more book references.
+    ///
+    /// Each of the following is a complete scripture reference, consisting of
+    /// one or more book references. Actual references will be project- and
+    /// language-specific (i.e., "Gn" for "Genesis" in "spaNVI15").
+    /// 
+    /// E.g., single, non-local book references:
+    /// Mat 1:23
+    /// Mat 1:1-3
+    /// Mat 1:1,3
+    /// Mat 1:2–3:4
+    ///
+    /// Multiple, non-local book references:
+    /// Mat 1:2–3:4; 5:6–7:8; Luk 10:20–30:40; 50:60–70:80
+    /// Mat 1:2–3:4; 5:6–7:8; Mrk 10:20–30:40; 50:60–70:80,83,85,87
+    /// Mat 1:2–3:4; 5:6–7:8; Luk 10:20–30:40; 50:60–70:80; Mrk 11:21–31:41; 51:61–71:81-83,85,87
+    ///
+    /// Single, local book reference:
+    /// 1:2; 3:4
+    /// </summary>
     public class ScriptureReference
     {
         public IList<BookVerseReference> BookReferences { get; }
 
         public ScriptureReference(IList<BookVerseReference> bookReferences)
         {
-            BookReferences = bookReferences;
+            BookReferences = bookReferences ?? throw new ArgumentNullException(nameof(bookReferences)); ;
         }
 
+        public long Score
+        {
+            get { return BookReferences.Sum(value => value.Score) * 10L; }
+        }
+
+        /// <inheritdoc />
         public override string ToString()
         {
-            return $"{nameof(BookReferences)}: {BookReferences}";
+            return JsonConvert.SerializeObject(this);
         }
+
         protected bool Equals(ScriptureReference other)
         {
             return BookReferences.Equals(other.BookReferences);
@@ -115,11 +169,22 @@ namespace TvpMain.Reference
         }
     }
 
+    /// <summary>
+    /// The name element of a book reference, including what was entered and
+    /// a related book name from the project configuration, if found.
+    ///
+    /// E.g., in these book references:
+    /// Mat 1:2; Luk 3:4
+    ///
+    /// ..."Mat" and "Luk" are name elements.
+    /// </summary>
     public class BookReferenceName
     {
         public string NameText { get; }
 
         public BookNameItem NameItem { get; }
+
+        public bool IsKnownBook => NameItem != null;
 
         public BookReferenceName(string nameText, BookNameItem nameItem)
         {
@@ -127,9 +192,14 @@ namespace TvpMain.Reference
             NameItem = nameItem;
         }
 
+        public long Score =>
+            (NameText == null ? 0L : 1L)
+            + (NameItem == null ? 0L : 10L);
+
+        /// <inheritdoc />
         public override string ToString()
         {
-            return $"{nameof(NameText)}: {NameText}, {nameof(NameItem)}: {NameItem}";
+            return JsonConvert.SerializeObject(this);
         }
 
         protected bool Equals(BookReferenceName other)
@@ -164,25 +234,43 @@ namespace TvpMain.Reference
         }
     }
 
+    /// <summary>
+    /// A complete book reference, consisting of the name and chapter and verse elements.
+    ///
+    /// E.g., in this book reference:
+    /// Mat 1:2–3:4
+    ///
+    /// ..."Mat" is the name element, "1:2–3:4" are the chapter and verse elements.
+    /// </summary>
     public class BookVerseReference
     {
         public BookReferenceName BookReferenceName { get; }
 
         public bool IsLocalReference => BookReferenceName == null;
 
-        public BookOrChapterRange BookOrChapterRange { get; }
+        public IList<BookOrChapterRange> BookOrChapterRanges { get; }
 
-        public BookVerseReference(BookReferenceName bookReferenceName, BookOrChapterRange bookOrChapterRanges)
+        public BookVerseReference(BookReferenceName bookReferenceName, IList<BookOrChapterRange> bookOrChapterRanges)
         {
             BookReferenceName = bookReferenceName;
-            BookOrChapterRange = bookOrChapterRanges ?? throw new ArgumentNullException(nameof(bookOrChapterRanges));
+            BookOrChapterRanges = bookOrChapterRanges ?? throw new ArgumentNullException(nameof(bookOrChapterRanges));
+        }
+
+        public long Score
+        {
+            get
+            {
+                return (BookReferenceName == null ? 0L : BookReferenceName.Score * 10L)
+                        + (BookOrChapterRanges.Sum(value => value.Score) * 10L);
+            }
         }
 
         protected bool Equals(BookVerseReference other)
         {
-            return Equals(BookReferenceName, other.BookReferenceName) && Equals(BookOrChapterRange, other.BookOrChapterRange);
+            return Equals(BookReferenceName, other.BookReferenceName) && Equals(BookOrChapterRanges, other.BookOrChapterRanges);
         }
 
+        /// <inheritdoc />
         public override bool Equals(object obj)
         {
             if (ReferenceEquals(null, obj)) return false;
@@ -191,11 +279,12 @@ namespace TvpMain.Reference
             return Equals((BookVerseReference)obj);
         }
 
+        /// <inheritdoc />
         public override int GetHashCode()
         {
             unchecked
             {
-                return ((BookReferenceName != null ? BookReferenceName.GetHashCode() : 0) * 397) ^ (BookOrChapterRange != null ? BookOrChapterRange.GetHashCode() : 0);
+                return ((BookReferenceName != null ? BookReferenceName.GetHashCode() : 0) * 397) ^ (BookOrChapterRanges != null ? BookOrChapterRanges.GetHashCode() : 0);
             }
         }
 
@@ -209,12 +298,37 @@ namespace TvpMain.Reference
             return !Equals(left, right);
         }
 
+        /// <inheritdoc />
         public override string ToString()
         {
-            return $"{nameof(BookReferenceName)}: {BookReferenceName}, {nameof(IsLocalReference)}: {IsLocalReference}, {nameof(BookOrChapterRange)}: {BookOrChapterRange}";
+            return JsonConvert.SerializeObject(this);
         }
     }
 
+    /// <summary>
+    /// A book or chapter range, consisting of one or two chapters,
+    /// each including individual or ranges and sequences of verses.
+    ///
+    /// E.g., in these book references:
+    /// Mat 1:23
+    /// Mat 1:1-3
+    /// Mat 1:1,3
+    /// Mat 1:2–3:4
+    /// Mat 1:2–3:4; 5:6–7:8
+    ///
+    /// ...These are singleton book ranges:
+    /// 1:23
+    /// 1:1-3
+    /// 1:1,3
+    ///
+    /// ...These are paired book ranges:
+    /// 1:2–3:4
+    /// 1:2–3:4; 5:6–7:8
+    ///
+    /// ...The last example has two paired ranges, contained at the
+    /// book verse reference level.
+    /// 
+    /// </summary>
     public class BookOrChapterRange
     {
         public int FromChapter { get; }
@@ -224,6 +338,10 @@ namespace TvpMain.Reference
 
         public bool IsSingleton => FromVerseRanges == null
                                    || ToVerseRanges == null;
+
+        public bool IsFromChapter => FromChapter > 0;
+
+        public bool IsToChapter => ToChapter > 0;
 
         public BookOrChapterRange(int chapter, IList<VerseRange> verseRanges) :
             this(chapter, verseRanges, -1, null)
@@ -253,6 +371,17 @@ namespace TvpMain.Reference
                     ToVerseRanges = null;
                     ToChapter = -1;
                 }
+            }
+        }
+
+        public long Score
+        {
+            get
+            {
+                return (IsFromChapter ? 10L : 0L)
+                       + (FromVerseRanges?.Sum(value => value.Score) * 10L ?? 0L)
+                       + (IsToChapter ? 10L : 0L)
+                       + (ToVerseRanges?.Sum(value => value.Score) * 10L ?? 0L);
             }
         }
 
@@ -296,10 +425,29 @@ namespace TvpMain.Reference
         /// <inheritdoc />
         public override string ToString()
         {
-            return $"{nameof(FromChapter)}: {FromChapter}, {nameof(FromVerseRanges)}: {FromVerseRanges}, {nameof(ToChapter)}: {ToChapter}, {nameof(ToVerseRanges)}: {ToVerseRanges}, {nameof(IsSingleton)}: {IsSingleton}";
+            return JsonConvert.SerializeObject(this);
         }
     }
 
+    /// <summary>
+    /// One or a range of verses.
+    ///
+    /// Considered a singleton if both from and to verse numbers are equal.
+    ///
+    /// E.g., in the following book references:
+    /// Mat 1:23
+    /// Mat 1:1-3
+    /// Mat 1:1,3
+    /// Mat 1:2–3:4
+    ///
+    /// ...These are verse ranges:
+    /// 23 (singleton)
+    /// 1-3 (range)
+    /// 1,3 (two singletons, contained in a single book or chapter range)
+    /// 2,4 (two singletons, contained in the "from" and "to" verse ranges
+    /// of a single book or chapter range)
+    ///  
+    /// </summary>
     public class VerseRange
     {
         public int FromVerse { get; }
@@ -316,6 +464,8 @@ namespace TvpMain.Reference
             FromVerse = fromVerse;
             ToVerse = toVerse;
         }
+
+        public long Score => IsSingleton ? 1L : 2L;
 
         protected bool Equals(VerseRange other)
         {
@@ -348,9 +498,10 @@ namespace TvpMain.Reference
             return !Equals(left, right);
         }
 
+        /// <inheritdoc />
         public override string ToString()
         {
-            return $"{nameof(FromVerse)}: {FromVerse}, {nameof(ToVerse)}: {ToVerse}, {nameof(IsSingleton)}: {IsSingleton}";
+            return JsonConvert.SerializeObject(this);
         }
     }
 }
