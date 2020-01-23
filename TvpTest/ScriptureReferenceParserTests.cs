@@ -28,27 +28,17 @@ namespace TvpTest
         public void FirstTest()
         {
             var builder = new ScriptureReferenceBuilder(MockProjectManager.Object);
-            var parser1 = builder.OpeningScriptureReferenceTag();
-            string openingTag = parser1.ParseOrThrow(@"\xt");
-            openingTag = parser1.ParseOrThrow(@"\+xt");
-            openingTag = parser1.ParseOrThrow(@"\+xt foo");
-            openingTag = parser1.ParseOrThrow(@"\+xt foo \xt *");
+            ScriptureReferenceWrapper result = null;
 
-            var parser2 = builder.ClosingScriptureReferenceTag();
-            string closingTag = parser2.ParseOrThrow(@"\xt*");
-            closingTag = parser2.ParseOrThrow(@"\+xt*");
-            closingTag = parser2.ParseOrThrow(@"\+xt* foo");
-
-            var parser3 = builder.CreateParser();
-            ScriptureReferenceWrapper result = parser3.ParseOrThrow("mat 1:23");
-            result = parser3.ParseOrThrow("mat 1:1-3");
-            result = parser3.ParseOrThrow("mat 1:1,3");
-            result = parser3.ParseOrThrow("mat 1:2–3:4");
-            result = parser3.ParseOrThrow("mat 1:2; 3:4");
-            result = parser3.ParseOrThrow("Mat 1:2; Luk 3:4");
-            result = parser3.ParseOrThrow(@"\xt Mat 1:2; Luk 3:4 \xt*");
-            result = parser3.ParseOrThrow(@"\xt Mat 1:2; Luk 3:4");
-            result = parser3.ParseOrThrow(@"Mat 1:2; Luk 3:4 \xt*");
+            builder.TryParseScriptureReference("mat 1:23", out result);
+            builder.TryParseScriptureReference("mat 1:1-3", out result);
+            builder.TryParseScriptureReference("mat 1:1,3", out result);
+            builder.TryParseScriptureReference("mat 1:2–3:4", out result);
+            builder.TryParseScriptureReference("mat 1:2; 3:4", out result);
+            builder.TryParseScriptureReference("Mat 1:2; Luk 3:4", out result);
+            builder.TryParseScriptureReference(@"\xt Mat 1:2; Luk 3:4 \xt*", out result);
+            builder.TryParseScriptureReference(@"\xt Mat 1:2; Luk 3:4", out result);
+            builder.TryParseScriptureReference(@"Mat 1:2; Luk 3:4 \xt*", out result);
         }
     }
 }

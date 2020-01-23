@@ -27,148 +27,170 @@ namespace TvpMain.Reference
                 ' ','\t', '\r', '\n'
             }.ToImmutableList();
 
+        public static readonly IList<char> WhitespaceAndStarChars =
+            WhitespaceChars.Concat(new List<char>()
+            {
+                '*'
+            }).ToImmutableList();
+
         public ProjectManager ProjectManager { get; }
 
-        public IList<string> BookSequenceSeparators { get; private set; }
+        private IList<Parser<char, ScriptureReferenceWrapper>> ProjectParsers { get; }
 
-        public IList<string> ChapterSequenceSeparators { get; private set; }
+        private IList<Parser<char, ScriptureReferenceWrapper>> StandardParsers { get; }
 
-        public IList<string> BookOrChapterRangeSeparators { get; private set; }
-
-        public IList<string> ChapterAndVerseSeparators { get; private set; }
-
-        public IList<string> VerseSequenceSeparators { get; private set; }
-
-        public IList<string> VerseRangeSeparators { get; private set; }
-
-        public Parser<char, T> Tok<T>(Parser<char, T> token)
+        protected static Parser<char, T> Tok<T>(Parser<char, T> token)
             => Try(token).Before(SkipWhitespaces);
 
-        public Parser<char, string> Tok(string token)
+        protected static Parser<char, string> Tok(string token)
             => Tok(CIString(token));
 
-        public Parser<char, string> AnyTok(IEnumerable<string> values)
+        protected static Parser<char, string> AnyTok(IEnumerable<string> values)
         {
             return OneOf(values.Select(Tok)
                 .ToImmutableArray());
         }
 
-        public Parser<char, VerseRange> SingletonVerse()
+        protected static Parser<char, VerseRange> SingletonVerse()
             => Tok(UnsignedInt(10)
                 .Select<VerseRange>(value => new VerseRange(value))
                 .Labelled("singleton verse range"));
 
-        public Parser<char, VerseRange> PairedVerseRange()
+        protected static Parser<char, VerseRange> PairedVerseRange(
+            ReferenceSeparators referenceSeparators)
             => Map((fromVerse, toVerse) => new VerseRange(fromVerse, toVerse),
-                    Tok(UnsignedInt(10)).Before(AnyTok(VerseRangeSeparators)),
+                    Tok(UnsignedInt(10))
+                        .Before(AnyTok(referenceSeparators.VerseRangeSeparators)),
                     Tok(UnsignedInt(10)))
                 .Labelled("paired verse range");
 
-        public Parser<char, VerseRange> VerseRange()
-            => OneOf(Try(PairedVerseRange()),
+        protected static Parser<char, VerseRange> VerseRange(
+            ReferenceSeparators referenceSeparators)
+            => OneOf(Try(PairedVerseRange(referenceSeparators)),
                     Try(SingletonVerse()))
                 .Labelled("verse range");
 
-        public Parser<char, IList<VerseRange>> VerseRanges()
-            => VerseRange()
-                .Separated(AnyTok(VerseSequenceSeparators))
+        protected static Parser<char, IList<VerseRange>> VerseRanges(
+            ReferenceSeparators referenceSeparators)
+            => VerseRange(referenceSeparators)
+                .Separated(AnyTok(referenceSeparators.VerseSequenceSeparators))
                 .Select<IList<VerseRange>>(values => values.ToImmutableList())
                 .Labelled("verse ranges");
 
-        public Parser<char, BookOrChapterRange> SingletonBookOrChapterRange()
+        protected static Parser<char, BookOrChapterRange> SingletonBookOrChapterRange(
+            ReferenceSeparators referenceSeparators)
             => Map((chapterNum, verseRanges) => new BookOrChapterRange(chapterNum, verseRanges),
-                Tok(UnsignedInt(10)).Before(AnyTok(ChapterAndVerseSeparators)),
-                VerseRanges())
+                Tok(UnsignedInt(10))
+                    .Before(AnyTok(referenceSeparators.ChapterAndVerseSeparators)),
+                VerseRanges(referenceSeparators))
                 .Labelled("singleton book or chapter range");
 
-        public Parser<char, BookOrChapterRange> PairedBookOrChapterRange()
+        protected static Parser<char, BookOrChapterRange> PairedBookOrChapterRange(
+            ReferenceSeparators referenceSeparators)
             => Map((fromBookOrChapter, toBookOrChapter) => new BookOrChapterRange(
                         fromBookOrChapter.FromChapter, fromBookOrChapter.FromVerseRanges,
                         toBookOrChapter.FromChapter, toBookOrChapter.FromVerseRanges),
-                    SingletonBookOrChapterRange().Before(AnyTok(BookOrChapterRangeSeparators)),
-                    SingletonBookOrChapterRange())
+                    SingletonBookOrChapterRange(referenceSeparators)
+                        .Before(AnyTok(referenceSeparators.BookOrChapterRangeSeparators)),
+                    SingletonBookOrChapterRange(referenceSeparators))
                 .Labelled("paired book or chapter range");
 
-        public Parser<char, BookReferenceName> BookReferenceName()
-            => AnyTok(ProjectManager.BookNamesByAllNames.Keys)
-                .Select(value => new BookReferenceName(value, ProjectManager.BookNamesByAllNames[value.Trim().ToLower()]))
+        protected static Parser<char, BookReferenceName> BookReferenceName(
+            ProjectManager projectManager,
+            ReferenceSeparators referenceSeparators)
+            => AnyTok(projectManager.BookNamesByAllNames.Keys)
+                .Select(value => new BookReferenceName(value,
+                    projectManager.BookNamesByAllNames[value.Trim().ToLower()]))
                 .Labelled("book reference name");
 
-        public Parser<char, BookOrChapterRange> BookOrChapterRange()
-            => OneOf(Try(PairedBookOrChapterRange()),
-                    Try(SingletonBookOrChapterRange()))
+        protected static Parser<char, BookOrChapterRange> BookOrChapterRange(
+            ReferenceSeparators referenceSeparators)
+            => OneOf(Try(PairedBookOrChapterRange(referenceSeparators)),
+                    Try(SingletonBookOrChapterRange(referenceSeparators)))
                 .Labelled("book or chapter range");
 
-        public Parser<char, BookVerseReference> LocalBookVerseReference()
-            => BookOrChapterRange()
+        protected static Parser<char, BookVerseReference> LocalBookVerseReference(
+            ReferenceSeparators referenceSeparators)
+            => BookOrChapterRange(referenceSeparators)
                 .Select(value => new BookVerseReference(null, value))
             .Labelled("local book verse reference");
 
-        public Parser<char, BookVerseReference> OtherBookVerseReference()
+        protected static Parser<char, BookVerseReference> OtherBookVerseReference(
+            ProjectManager projectManager,
+            ReferenceSeparators referenceSeparators)
             => Map((referenceName, bookOrChapterRange) => new BookVerseReference(referenceName, bookOrChapterRange),
-                    BookReferenceName(),
-                    BookOrChapterRange())
+                    BookReferenceName(projectManager, referenceSeparators),
+                    BookOrChapterRange(referenceSeparators))
                 .Labelled("other (non-local) book verse reference");
 
-        public Parser<char, BookVerseReference> BookVerseReference()
-            => OneOf(Try(OtherBookVerseReference()),
-                Try(LocalBookVerseReference()))
-            .Labelled("book verse reference");
-
-        public Parser<char, ScriptureReference> ScriptureReference()
-            => BookVerseReference()
-                .Separated(AnyTok(BookSequenceSeparators))
-                .Select<ScriptureReference>(values => new ScriptureReference(values.ToImmutableList()))
+        protected static Parser<char, ScriptureReference> ScriptureReference(
+            ProjectManager projectManager,
+            ReferenceSeparators referenceSeparators)
+            => OneOf(
+                    Try(OtherBookVerseReference(projectManager, referenceSeparators)
+                        .Separated(AnyTok(referenceSeparators.BookSequenceSeparators))
+                        .Select<ScriptureReference>(values => new ScriptureReference(values.ToImmutableList()))),
+                    Try(LocalBookVerseReference(referenceSeparators)
+                        .Select<ScriptureReference>(value => new ScriptureReference(
+                            new List<BookVerseReference>() { value }.ToImmutableList()))))
                 .Labelled("scripture reference");
 
-        public Parser<char, string> OpeningScriptureReferenceTag()
-            => Tok(Map((part1, tagName) => tagName,
-                String(@"\"),
-                AnyCharExcept(WhitespaceChars)
-                    .AtLeastOnceString()))
+        protected static Parser<char, string> OpeningScriptureReferenceTag()
+            => Tok(Char('\\')
+                    .Then(AnyCharExcept(WhitespaceChars)
+                        .AtLeastOnceString()))
                 .Labelled("opening reference tag");
 
-        public Parser<char, string> ClosingScriptureReferenceTag()
-            => Tok(Map((part1, tagName, part4) => tagName,
-                String(@"\"),
-                AnyCharExcept(WhitespaceChars)
-                    .AtLeastOnceString(),
-                String("*")))
+        protected static Parser<char, string> ClosingScriptureReferenceTag()
+            => Tok(Char('\\')
+                    .Then(AnyCharExcept(WhitespaceAndStarChars)
+                        .AtLeastOnceString())
+                    .Before(Char('*')))
             .Labelled("closing reference tag");
 
-        public Parser<char, ScriptureReferenceWrapper> ScriptureReferenceWithNoTag()
-            => ScriptureReference()
+        protected static Parser<char, ScriptureReferenceWrapper> ScriptureReferenceWithNoTag(
+            ProjectManager projectManager,
+            ReferenceSeparators referenceSeparators)
+            => ScriptureReference(projectManager, referenceSeparators)
                 .Select(scriptureReference =>
                     new ScriptureReferenceWrapper(null, scriptureReference, null))
             .Labelled("scripture reference with no tag");
 
-        public Parser<char, ScriptureReferenceWrapper> ScriptureReferenceWithOpeningTag()
+        protected static Parser<char, ScriptureReferenceWrapper> ScriptureReferenceWithOpeningTag(
+            ProjectManager projectManager,
+            ReferenceSeparators referenceSeparators)
             => Map((openingTag, scriptureReference) =>
                     new ScriptureReferenceWrapper(openingTag, scriptureReference, null),
                 OpeningScriptureReferenceTag(),
-                ScriptureReference())
+                ScriptureReference(projectManager, referenceSeparators))
             .Labelled("scripture reference with opening tag");
 
-        public Parser<char, ScriptureReferenceWrapper> ScriptureReferenceWithClosingTag()
+        protected static Parser<char, ScriptureReferenceWrapper> ScriptureReferenceWithClosingTag(
+            ProjectManager projectManager,
+            ReferenceSeparators referenceSeparators)
             => Map((scriptureReference, closingTag) =>
                     new ScriptureReferenceWrapper(null, scriptureReference, closingTag),
-                ScriptureReference(),
+                ScriptureReference(projectManager, referenceSeparators),
                 ClosingScriptureReferenceTag())
             .Labelled("scripture reference with closing tag");
 
-        public Parser<char, ScriptureReferenceWrapper> ScriptureReferenceWithBothTags()
+        protected static Parser<char, ScriptureReferenceWrapper> ScriptureReferenceWithBothTags(
+            ProjectManager projectManager,
+            ReferenceSeparators referenceSeparators)
             => Map((openingTag, scriptureReference, closingTag) =>
                     new ScriptureReferenceWrapper(openingTag, scriptureReference, closingTag),
                 OpeningScriptureReferenceTag(),
-                ScriptureReference(),
+                ScriptureReference(projectManager, referenceSeparators),
                 ClosingScriptureReferenceTag())
             .Labelled("scripture reference with both tags");
 
-        public Parser<char, ScriptureReferenceWrapper> ScriptureReferenceWrapper()
-            => OneOf(Try(ScriptureReferenceWithBothTags()),
-                    Try(ScriptureReferenceWithClosingTag()),
-                    Try(ScriptureReferenceWithOpeningTag()),
-                    Try(ScriptureReferenceWithNoTag()))
+        protected static Parser<char, ScriptureReferenceWrapper> ScriptureReferenceWrapper(
+            ProjectManager projectManager,
+            ReferenceSeparators referenceSeparators)
+            => OneOf(Try(ScriptureReferenceWithBothTags(projectManager, referenceSeparators)),
+                    Try(ScriptureReferenceWithClosingTag(projectManager, referenceSeparators)),
+                    Try(ScriptureReferenceWithOpeningTag(projectManager, referenceSeparators)),
+                    Try(ScriptureReferenceWithNoTag(projectManager, referenceSeparators)))
             .Labelled("scripture reference wrapper");
 
         /// <summary>
@@ -178,20 +200,70 @@ namespace TvpMain.Reference
         public ScriptureReferenceBuilder(ProjectManager projectManager)
         {
             ProjectManager = projectManager ?? throw new ArgumentNullException(nameof(ProjectManager));
+            var tempProjectParserList = new List<Parser<char, ScriptureReferenceWrapper>>();
 
-            BuildProjectSeparators();
+            var denormalizedSeparators = new ReferenceSeparators(ProjectManager, false);
+            if (denormalizedSeparators.IsUsable)
+            {
+                tempProjectParserList.Add(
+                    ScriptureReferenceWrapper(ProjectManager, denormalizedSeparators));
+            }
+
+            if (denormalizedSeparators.IsAnyDuplicates)
+            {
+                var normalizedSeparators = new ReferenceSeparators(ProjectManager, true);
+                if (normalizedSeparators.IsUsable)
+                {
+                    tempProjectParserList.Add(
+                        ScriptureReferenceWrapper(ProjectManager, normalizedSeparators));
+                }
+            }
+
+            ProjectParsers = tempProjectParserList.ToImmutableList();
+            StandardParsers = new List<Parser<char, ScriptureReferenceWrapper>>()
+            {
+                ScriptureReferenceWrapper(ProjectManager,
+                    new ReferenceSeparators(
+                        new string[] {";"},
+                        new string[] {"&"},
+                        new string[] {"-"},
+                        new string[] {":"},
+                        new string[] {"-"},
+                        new string[] {":"},
+                        false))
+            }.ToImmutableList();
+        }
+
+        public bool TryParseScriptureReference(
+            string inputText,
+            out ScriptureReferenceWrapper outputWrapper)
+        {
+            foreach (var parserItem in ProjectParsers
+                .Concat(StandardParsers))
+            {
+                var parseResult = parserItem.Parse(inputText);
+                if (parseResult.Success)
+                {
+                    outputWrapper = parseResult.Value;
+                    return true;
+                }
+            }
+
+            outputWrapper = null;
+            return false;
         }
 
         /// <summary>
-        /// Builds de-conflicted separators.
+        /// Manages normalized (de-conflicted) or full separator sets.
         ///
         /// At least a few projects have higher-level separators that are the same as
         /// lower-level ones (e.g., lists of books and lists of verses, both of which
         /// include ";" for "spaNVI15").
         ///
         /// Keeping these in place makes for un-navigable grammar, since most of the
-        /// fields are indistinguishable integers so this step prevents higher-level
-        /// separators (e.g., lists of books) from being usable as lower-level ones
+        /// reference fields are indistinguishable integers without dubious classification
+        /// (e.g., book number ranges) so this step prevents higher-level separators
+        /// (e.g., lists of books) from being usable as lower-level ones
         /// (e.g., lists of verses).
         ///
         /// This is ok as we ultimately want a standard, parseable reference format and
@@ -203,62 +275,103 @@ namespace TvpMain.Reference
         /// like that will allow truly undesirable combinations in exchange).
         /// 
         /// </summary>
-        public void BuildProjectSeparators()
+        protected class ReferenceSeparators
         {
-            var excludedSeparators = new HashSet<string>();
+            public IList<string> BookSequenceSeparators { get; }
 
-            var tempBookSequenceSeparators =
-                ProjectManager.BookSequenceSeparators
-                    .Select(value => value.Trim().ToLower())
-                    .Where(value => !excludedSeparators.Contains(value))
-                    .ToImmutableList();
-            tempBookSequenceSeparators.ForEach(value => excludedSeparators.Add(value));
-            BookSequenceSeparators = tempBookSequenceSeparators;
+            public IList<string> ChapterSequenceSeparators { get; }
 
-            var tempChapterSequenceSeparators =
-                ProjectManager.ChapterSequenceSeparators
-                    .Select(value => value.Trim().ToLower())
-                    .Where(value => !excludedSeparators.Contains(value))
-                    .ToImmutableList();
-            tempChapterSequenceSeparators.ForEach(value => excludedSeparators.Add(value));
-            ChapterSequenceSeparators = tempChapterSequenceSeparators;
+            public IList<string> BookOrChapterRangeSeparators { get; }
 
-            var tempBookOrChapterRangeSeparators =
-                ProjectManager.BookOrChapterRangeSeparators
-                    .Select(value => value.Trim().ToLower())
-                    .Where(value => !excludedSeparators.Contains(value))
-                    .ToImmutableList();
-            tempBookOrChapterRangeSeparators.ForEach(value => excludedSeparators.Add(value));
-            BookOrChapterRangeSeparators = tempBookOrChapterRangeSeparators;
+            public IList<string> ChapterAndVerseSeparators { get; }
 
-            var tempChapterAndVerseSeparators =
-                ProjectManager.ChapterAndVerseSeparators
-                    .Select(value => value.Trim().ToLower())
-                    .Where(value => !excludedSeparators.Contains(value))
-                    .ToImmutableList();
-            tempChapterAndVerseSeparators.ForEach(value => excludedSeparators.Add(value));
-            ChapterAndVerseSeparators = tempChapterAndVerseSeparators;
+            public IList<string> VerseSequenceSeparators { get; }
 
-            var tempVerseSequenceSeparators =
-                ProjectManager.VerseSequenceSeparators
-                    .Select(value => value.Trim().ToLower())
-                    .Where(value => !excludedSeparators.Contains(value))
-                    .ToImmutableList();
-            tempVerseSequenceSeparators.ForEach(value => excludedSeparators.Add(value));
-            VerseSequenceSeparators = tempVerseSequenceSeparators;
+            public IList<string> VerseRangeSeparators { get; }
 
-            var tempVerseRangeSeparators =
-                ProjectManager.VerseRangeSeparators
-                    .Select(value => value.Trim().ToLower())
-                    .Where(value => !excludedSeparators.Contains(value))
-                    .ToImmutableList();
-            tempVerseRangeSeparators.ForEach(value => excludedSeparators.Add(value));
-            VerseRangeSeparators = tempVerseRangeSeparators;
-        }
+            public bool IsAnyDuplicates { get; }
 
-        public Parser<char, ScriptureReferenceWrapper> CreateParser()
-        {
-            return ScriptureReferenceWrapper();
+            public bool IsUsable =>
+                BookSequenceSeparators.Count > 0
+                && ChapterSequenceSeparators.Count > 0
+                && BookOrChapterRangeSeparators.Count > 0
+                && ChapterAndVerseSeparators.Count > 0
+                && VerseSequenceSeparators.Count > 0
+                && VerseRangeSeparators.Count > 0;
+
+            public ReferenceSeparators(
+                ProjectManager projectManager,
+                bool isNormalized)
+            : this(projectManager.BookSequenceSeparators,
+                projectManager.ChapterSequenceSeparators,
+                projectManager.BookOrChapterRangeSeparators,
+                projectManager.ChapterAndVerseSeparators,
+                projectManager.VerseSequenceSeparators,
+                projectManager.VerseRangeSeparators,
+                isNormalized)
+            { }
+
+            public ReferenceSeparators(
+                IEnumerable<string> bookSequenceSeparators,
+                IEnumerable<string> chapterSequenceSeparators,
+                IEnumerable<string> bookOrChapterRangeSeparators,
+                IEnumerable<string> chapterAndVerseSeparators,
+                IEnumerable<string> verseSequenceSeparators,
+                IEnumerable<string> verseRangeSeparators,
+                bool isNormalized)
+            {
+                var prevSeparators = new HashSet<string>();
+                var isAnyDuplicates = false;
+
+                BookSequenceSeparators = FilterSeparators(
+                    bookSequenceSeparators,
+                    prevSeparators, isNormalized, ref isAnyDuplicates);
+                ChapterSequenceSeparators = FilterSeparators(
+                    chapterSequenceSeparators,
+                    prevSeparators, isNormalized, ref isAnyDuplicates);
+                BookOrChapterRangeSeparators = FilterSeparators(
+                    bookOrChapterRangeSeparators,
+                    prevSeparators, isNormalized, ref isAnyDuplicates);
+                ChapterAndVerseSeparators = FilterSeparators(
+                    chapterAndVerseSeparators,
+                    prevSeparators, isNormalized, ref isAnyDuplicates);
+                VerseSequenceSeparators = FilterSeparators(
+                    verseSequenceSeparators,
+                    prevSeparators, isNormalized, ref isAnyDuplicates);
+                VerseRangeSeparators = FilterSeparators(
+                    verseRangeSeparators,
+                    prevSeparators, isNormalized, ref isAnyDuplicates);
+
+                IsAnyDuplicates = isAnyDuplicates;
+            }
+
+            private static IList<string> FilterSeparators(
+                IEnumerable<string> inputSeparators, ISet<string> prevSeparators,
+                bool isNormalized, ref bool isAnyDuplicate)
+            {
+                var isListDuplicates = false;
+                var result = inputSeparators
+                        .Select(value => value.Trim().ToLower())
+                        .Where(value =>
+                        {
+                            var isDuplicate = !prevSeparators.Add(value);
+                            isListDuplicates = isListDuplicates || isDuplicate;
+
+                            if (isNormalized)
+                            {
+                                return !isDuplicate;
+                            }
+                            else
+                            {
+                                return true;
+                            }
+                        })
+                        .ToImmutableList();
+                result.ForEach(value => prevSeparators.Add(value));
+                isAnyDuplicate = isAnyDuplicate || isListDuplicates;
+
+                return result;
+            }
         }
     }
 }
