@@ -62,8 +62,7 @@ namespace TvpTest
                 @"1,3",
                 @"\xt 23,1-3,1,3 \xt*",
                 @"\xt 23,1-3,1,3",
-                @"23,1-3,1,3 \xt*",
-                // @"1–3"
+                @"23,1-3,1,3 \xt*"
             })
             {
 
@@ -73,7 +72,7 @@ namespace TvpTest
                     $"Can't verify entry #{ctr + 1}, text: {testText}");
 
                 // Console.Out.WriteLine(result);
-                Console.Out.WriteLine(builder.FormatStandardReference(PartContext.MainText, result));
+                // Console.Out.WriteLine(builder.FormatStandardReference(PartContext.MainText, result));
 
                 ctr++;
             }

@@ -74,7 +74,7 @@ namespace TvpMain.Reference
         protected static Parser<char, IList<VerseRange>> VerseRangeSequence(
             ReferenceSeparators referenceSeparators)
             => VerseRange(referenceSeparators)
-                .SeparatedAndOptionallyTerminated(AnyTok(referenceSeparators.VerseSequenceSeparators))
+                .SeparatedAndOptionallyTerminatedAtLeastOnce(AnyTok(referenceSeparators.VerseSequenceSeparators))
                 .Select<IList<VerseRange>>(values => values.ToImmutableList())
                 .Labelled("verse ranges");
 
