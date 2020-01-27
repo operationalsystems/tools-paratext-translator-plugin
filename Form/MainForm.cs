@@ -224,7 +224,7 @@ namespace TvpMain.Form
                 dgvCheckResults.Rows.Add(
                     $"{resultItem.PartData.VerseData.VerseLocation.VerseCoordinateText}",
                     $"{resultItem.MatchText}",
-                    $"{resultItem.CheckText}",
+                    $"{resultItem.PartData.PartText}",
                     $"{resultItem.ErrorText}");
                 dgvCheckResults.Rows[(dgvCheckResults.Rows.Count - 1)].HeaderCell.Value =
                     $"{dgvCheckResults.Rows.Count:N0}";
@@ -253,7 +253,7 @@ namespace TvpMain.Form
                 {
                     _filteredResultItems = _filteredResultItems.Where(
                         resultItem => !_ignoreFilter.FilterText(isEntireVerse
-                        ? resultItem.CheckText : resultItem.MatchText)).ToList();
+                        ? resultItem.PartData.PartText : resultItem.MatchText)).ToList();
                 }
 
                 // lock in case the background worker hasn't finished yet
@@ -264,14 +264,14 @@ namespace TvpMain.Form
                     {
                         _filteredResultItems = _filteredResultItems.Where(
                             resultItem => !_wordListFilter.FilterText(isEntireVerse
-                        ? resultItem.CheckText : resultItem.MatchText)).ToList();
+                        ? resultItem.PartData.PartText : resultItem.MatchText)).ToList();
                     }
                     if (biblicaTermsFiltersMenuItem.Checked
                         && !_biblicalTermFilter.IsEmpty)
                     {
                         _filteredResultItems = _filteredResultItems.Where(
                             resultItem => !_biblicalTermFilter.FilterText(isEntireVerse
-                                ? resultItem.CheckText : resultItem.MatchText)).ToList();
+                                ? resultItem.PartData.PartText : resultItem.MatchText)).ToList();
                     }
                 }
 
@@ -283,13 +283,13 @@ namespace TvpMain.Form
                     if (searchText.Any(char.IsUpper))
                     {
                         _filteredResultItems = _filteredResultItems.Where(
-                                resultItem => (resultItem.CheckText.Contains(searchText)
+                                resultItem => (resultItem.PartData.PartText.Contains(searchText)
                                 || resultItem.ErrorText.Contains(searchText))).ToList();
                     }
                     else
                     {
                         _filteredResultItems = _filteredResultItems.Where(
-                                resultItem => (resultItem.CheckText.ToLower().Contains(searchText)
+                                resultItem => (resultItem.PartData.PartText.ToLower().Contains(searchText)
                                 || resultItem.ErrorText.ToLower().Contains(searchText))).ToList();
                     }
                 }

@@ -25,11 +25,6 @@ namespace TvpMain.Result
         public string ErrorText { get; }
 
         /// <summary>
-        /// Complete input containing the whatever was found.
-        /// </summary>
-        public string CheckText { get; }
-
-        /// <summary>
         /// Exact text triggering the result.
         /// </summary>
         public string MatchText { get; }
@@ -40,60 +35,60 @@ namespace TvpMain.Result
         public string SuggestionText { get; }
 
         /// <summary>
-        /// Check type.
+        /// Check type (i.e., source).
         /// </summary>
         public CheckType CheckType { get; }
 
         /// <summary>
-        /// Internal check state.
+        /// Result type (i.e., severity).
         /// </summary>
-        private ResultState _checkState;
+        public ResultType ResultType { get; }
 
         /// <summary>
-        /// External check state.
+        /// User-controlled result state.
         /// </summary>
-        public ResultState CheckState
-        {
-            get => _checkState;
-            set
-            {
-                _checkState = value;
-                _checkHistory.Add(new KeyValuePair<DateTime, ResultState>(DateTime.UtcNow, _checkState));
-            }
-        }
-
-        /// <summary>
-        /// Internal check history.
-        /// </summary>
-        private readonly IList<KeyValuePair<DateTime, ResultState>> _checkHistory =
-            new List<KeyValuePair<DateTime, ResultState>>();
-
-        /// <summary>
-        /// External check history.
-        /// </summary>
-        public IEnumerable<KeyValuePair<DateTime, ResultState>> CheckHistory => _checkHistory;
+        public ResultState ResultState { get; set; }
 
         /// <summary>
         /// Basic ctor.
         /// </summary>
         /// <param name="partData">Verse part data, including original verse, location, etc. (required).</param>
         /// <param name="errorText">Error text (required).</param>
-        /// <param name="checkText">Input text (required).</param>
         /// <param name="matchText">Match text (required).</param>
         /// <param name="suggestionText">Suggested replacement text (optional, may be null).</param>
-        /// <param name="checkType">Check type.</param>
+        /// <param name="checkType">Check type (i.e., source).</param>
+        /// <param name="resultType">Result type (i.e., severity).</param>
         public ResultItem(VersePart partData, string errorText,
-            string checkText, string matchText,
-            string suggestionText, CheckType checkType)
+            string matchText, string suggestionText,
+            CheckType checkType, ResultType resultType)
+        : this(partData, errorText,
+            matchText, suggestionText,
+            checkType, resultType,
+            ResultState.Found)
+        { }
+
+        /// <summary>
+        /// Basic ctor.
+        /// </summary>
+        /// <param name="partData">Verse part data, including original verse, location, etc. (required).</param>
+        /// <param name="errorText">Error text (required).</param>
+        /// <param name="matchText">Match text (required).</param>
+        /// <param name="suggestionText">Suggested replacement text (optional, may be null).</param>
+        /// <param name="checkType">Check type (i.e., source).</param>
+        /// <param name="resultType">Result type (i.e., severity).</param>
+        /// <param name="resultState">User-controlled result state.</param>
+        public ResultItem(VersePart partData, string errorText,
+        string matchText, string suggestionText,
+        CheckType checkType, ResultType resultType,
+        ResultState resultState)
         {
             this.PartData = partData ?? throw new ArgumentNullException(nameof(partData));
             this.ErrorText = errorText ?? throw new ArgumentNullException(nameof(errorText));
-            this.CheckText = checkText ?? throw new ArgumentNullException(nameof(checkText));
             this.MatchText = matchText ?? throw new ArgumentNullException(nameof(matchText));
             this.SuggestionText = suggestionText;
-
             this.CheckType = checkType;
-            this.CheckState = ResultState.Found;
+            this.ResultType = resultType;
+            this.ResultState = resultState;
         }
     }
 }

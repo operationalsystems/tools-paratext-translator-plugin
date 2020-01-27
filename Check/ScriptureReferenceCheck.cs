@@ -7,6 +7,7 @@ using TvpMain.Project;
 using TvpMain.Reference;
 using TvpMain.Result;
 using TvpMain.Text;
+using TvpMain.Util;
 
 namespace TvpMain.Check
 {
@@ -73,56 +74,69 @@ namespace TvpMain.Check
             Capture inputMatch,
             ICollection<ResultItem> outputResults)
         {
-            var result = false;
-
             // check we can parse (loose match)
-            var workMatch = inputMatch.Value.Trim();
+            var result = false;
+            var referenceText = inputMatch.Value.Trim();
             if (_referenceBuilder.TryParseScriptureReference(
-                workMatch,
-                out var foundWrapper))
+                referenceText, out var foundWrapper))
             {
-                // check for unknown books
-                var unknownBooks = string.Join(", ",
-                foundWrapper.ScriptureReference.BookReferences
-                            .Where(referenceItem => !referenceItem.IsLocalReference)
-                            .Select(referenceItem => referenceItem.BookReferenceName)
-                            .Where(rangeItem => !rangeItem.IsKnownBook)
-                            .Select(rangeItem => rangeItem.NameText));
-                if (!string.IsNullOrWhiteSpace(unknownBooks))
-                {
-                    result = true;
-                    outputResults.Add(new ResultItem(inputPart,
-                        $"Unknown book name(s) at position {inputMatch.Index}: {unknownBooks}.",
-                        inputPart.PartText, inputMatch.Value, "Verify reference and re-run checks.",
-                        CheckType.ScriptureReference));
-                }
-
-                // check format (tight match)
-                var standardFormat = _referenceBuilder.FormatStandardReference(
-                    inputPart.PartLocation.PartContext,
-                    foundWrapper);
-
-                if (!workMatch.Equals(standardFormat))
-                {
-                    // check whether only difference is spacing
-                    var messageText = workMatch.Where(value => !char.IsWhiteSpace(value))
-                        .Equals(standardFormat.Where(value => !char.IsWhiteSpace(value)))
-                        ? $"Non-standard reference spacing at position {inputMatch.Index}."
-                        : $"Non-standard reference content at position {inputMatch.Index}.";
-
-                    result = true;
-                    outputResults.Add(new ResultItem(inputPart, messageText,
-                        inputPart.PartText, inputMatch.Value, standardFormat,
-                        CheckType.ScriptureReference));
-                }
+                result = CheckFoundReference(
+                    inputPart, inputMatch,
+                    referenceText, foundWrapper,
+                    outputResults);
             }
             else
             {
                 result = true;
                 outputResults.Add(new ResultItem(inputPart,
                     $"Invalid reference at position {inputMatch.Index} (can't parse).",
-                    inputPart.PartText, inputMatch.Value, null,
-                    CheckType.ScriptureReference));
+                    inputMatch.Value, null,
+                    CheckType.ScriptureReference, ResultType.Exception));
+            }
+
+            return result;
+        }
+
+        private bool CheckFoundReference(
+            VersePart inputPart,
+            Capture inputMatch,
+            string inputText,
+            ScriptureReferenceWrapper inputReference,
+            ICollection<ResultItem> outputResults)
+        {
+            // check for unknown books
+            var result = false;
+            var unknownBooks = string.Join(", ",
+                inputReference.ScriptureReference.BookReferences
+                    .Where(referenceItem => !referenceItem.IsLocalReference)
+                    .Select(referenceItem => referenceItem.BookReferenceName)
+                    .Where(rangeItem => !rangeItem.IsKnownBook)
+                    .Select(rangeItem => rangeItem.NameText));
+            if (!string.IsNullOrWhiteSpace(unknownBooks))
+            {
+                result = true;
+                outputResults.Add(new ResultItem(inputPart,
+                    $"Unknown book name(s) at position {inputMatch.Index}: {unknownBooks}.",
+                    inputMatch.Value, "Verify reference and re-run checks.",
+                    CheckType.ScriptureReference, ResultType.Exception));
+            }
+
+            // check format (tight match)
+            var standardFormat = _referenceBuilder.FormatStandardReference(
+                inputPart.PartLocation.PartContext,
+                inputReference);
+
+            if (!inputMatch.Value.Equals(standardFormat))
+            {
+                // check whether only difference is spacing
+                var messageText = inputText.EqualsWithoutWhitespace(standardFormat)
+                    ? $"Non-standard reference spacing at position {inputMatch.Index}."
+                    : $"Non-standard reference content at position {inputMatch.Index}.";
+
+                result = true;
+                outputResults.Add(new ResultItem(inputPart, messageText,
+                    inputMatch.Value, standardFormat,
+                    CheckType.ScriptureReference, ResultType.Exception));
             }
 
             return result;

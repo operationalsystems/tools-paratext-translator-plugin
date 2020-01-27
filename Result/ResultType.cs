@@ -7,13 +7,11 @@ using System.Threading.Tasks;
 namespace TvpMain.Result
 {
     /// <summary>
-    /// User-controlled result state.
+    /// Check-controlled result type (i.e., severity). 
     /// </summary>
-    public enum ResultState
+    public enum ResultType
     {
-        Found,
-        Ignored,
-        ToBeFixed,
-        Fixed
+        Information,
+        Exception
     }
 }

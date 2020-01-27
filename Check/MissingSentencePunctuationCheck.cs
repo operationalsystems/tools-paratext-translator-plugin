@@ -47,8 +47,8 @@ namespace TvpMain.Check
                 checkResults.Add
                 (new ResultItem(partData,
                     $"Punctuation check failure at position {matchItem.Index}.",
-                    partData.PartText, matchItem.Value, null,
-                    CheckType.MissingSentencePunctuation));
+                    matchItem.Value, null,
+                    CheckType.MissingSentencePunctuation, ResultType.Exception));
             }
         }
     }
