@@ -22,16 +22,24 @@ namespace TvpTest
         /// </summary>
         protected string[] ParserLines;
 
+        /// <summary>
+        /// Test formatter output lines
+        /// </summary>
+        protected string[] FormatterLines;
+
         [TestInitialize]
         [DeploymentItem(@"Resources\parser-results-1.txt", "Resources")]
+        [DeploymentItem(@"Resources\formatter-results-1.txt", "Resources")]
         public override void TestSetup()
         {
             base.TestSetup();
+
             ParserLines = File.ReadAllLines(@"Resources\parser-results-1.txt");
+            FormatterLines = File.ReadAllLines(@"Resources\formatter-results-1.txt");
         }
 
         /// <summary>
-        /// A starter test.
+        /// A starter test for the parser.
         /// </summary>
         [TestMethod]
         public void PositiveParserTest()
@@ -39,7 +47,50 @@ namespace TvpTest
             var builder = new ScriptureReferenceBuilder(MockProjectManager.Object);
             var ctr = 0;
 
-            foreach (var testText in new string[]
+            foreach (var testText in CreateTestReferenceText())
+            {
+
+                Assert.IsTrue(builder.TryParseScriptureReference(testText, out var result),
+                    $"Can't parse entry #{ctr + 1}, text: {testText}");
+                Assert.AreEqual(ParserLines[ctr].Trim(),
+                    result.ToString().Trim(),
+                    $"Can't verify entry #{ctr + 1}, text: {testText}");
+
+                Console.Out.WriteLine(result);
+                Console.Out.WriteLine(builder.FormatStandardReference(PartContext.MainText, result));
+
+                ctr++;
+            }
+        }
+
+        /// <summary>
+        /// A starter test for the formatter.
+        /// </summary>
+        [TestMethod]
+        public void PositiveFormatterTest()
+        {
+            var builder = new ScriptureReferenceBuilder(MockProjectManager.Object);
+            var ctr = 0;
+
+            foreach (var testText in CreateTestReferenceText())
+            {
+
+                Assert.IsTrue(builder.TryParseScriptureReference(testText, out var result),
+                    $"Can't parse entry #{ctr + 1}, text: {testText}");
+                Assert.AreEqual(FormatterLines[ctr].Trim(),
+                    builder.FormatStandardReference(PartContext.MainText, result).Trim(),
+                    $"Can't verify entry #{ctr + 1}, text: {testText}");
+
+                // Console.Out.WriteLine(result);
+                // Console.Out.WriteLine(builder.FormatStandardReference(PartContext.MainText, result));
+
+                ctr++;
+            }
+        }
+
+        private IEnumerable<string> CreateTestReferenceText()
+        {
+            return new List<string>()
             {
                 @"mat 1:23",
                 @"mat 1:1-3",
@@ -66,19 +117,7 @@ namespace TvpTest
                 @"\xt foo 1:23,1-3,1,3 \xt*",
                 @"\xt foO 1:23,1-3,1,3",
                 @"Foo 1:23,1-3,1,3 \xt*"
-            })
-            {
-
-                Assert.IsTrue(builder.TryParseScriptureReference(testText, out var result),
-                    $"Can't parse entry #{ctr + 1}, text: {testText}");
-                Assert.AreEqual(ParserLines[ctr].Trim(), result.ToString().Trim(),
-                    $"Can't verify entry #{ctr + 1}, text: {testText}");
-
-                Console.Out.WriteLine(result);
-                Console.Out.WriteLine(builder.FormatStandardReference(PartContext.MainText, result));
-
-                ctr++;
-            }
+            };
         }
     }
 }

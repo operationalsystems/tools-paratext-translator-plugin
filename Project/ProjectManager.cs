@@ -44,9 +44,19 @@ namespace TvpMain.Project
         public IList<string> ChapterAndVerseSeparators { get; private set; }
 
         /// <summary>
+        /// Standard (the first, currently) chapter and verse separator.
+        /// </summary>
+        public string StandardChapterAndVerseSeparator { get; private set; }
+
+        /// <summary>
         /// Readable verse range separators.
         /// </summary>
         public IList<string> VerseRangeSeparators { get; private set; }
+
+        /// <summary>
+        /// Standard (the first, currently) verse range separator.
+        /// </summary>
+        public string StandardVerseRangeSeparator { get; private set; }
 
         /// <summary>
         /// Readable verse sequence separators.
@@ -54,9 +64,19 @@ namespace TvpMain.Project
         public IList<string> VerseSequenceSeparators { get; private set; }
 
         /// <summary>
+        /// Standard (the first, currently) verse sequence separator.
+        /// </summary>
+        public string StandardVerseSequenceSeparator { get; private set; }
+
+        /// <summary>
         /// Readable chapter or book range separators.
         /// </summary>
         public IList<string> BookOrChapterRangeSeparators { get; private set; }
+
+        /// <summary>
+        /// Standard (the first, currently) book or chapter range separator.
+        /// </summary>
+        public string StandardBookOrChapterRangeSeparator { get; private set; }
 
         /// <summary>
         /// Readable book sequence separators.
@@ -64,9 +84,19 @@ namespace TvpMain.Project
         public IList<string> BookSequenceSeparators { get; private set; }
 
         /// <summary>
+        /// Standard (the first, currently) book sequence separator.
+        /// </summary>
+        public string StandardBookSequenceSeparator { get; private set; }
+
+        /// <summary>
         /// Readable chapter sequence separators.
         /// </summary>
         public IList<string> ChapterSequenceSeparators { get; private set; }
+
+        /// <summary>
+        /// Standard (the first, currently) chapter sequence separator.
+        /// </summary>
+        public string StandardChapterSequenceSeparator { get; private set; }
 
         /// <summary>
         /// Extra reference prefixes or suffix options.
@@ -74,9 +104,19 @@ namespace TvpMain.Project
         public IList<string> ReferencePrefixesOrSuffixes { get; private set; }
 
         /// <summary>
+        /// Standard (the first, currently) reference prefixes or suffix.
+        /// </summary>
+        public string StandardReferencePrefixesOrSuffix { get; private set; }
+
+        /// <summary>
         /// Final reference punctuation options.
         /// </summary>
         public IList<string> FinalReferencePunctuation { get; private set; }
+
+        /// <summary>
+        /// Standard (the first, currently) final reference punctuation.
+        /// </summary>
+        public string StandardFinalReferencePunctuation { get; private set; }
 
         /// <summary>
         /// Ordinal present books list (by 0-based book number).
@@ -200,34 +240,50 @@ namespace TvpMain.Project
             ChapterAndVerseSeparators =
                 GetSeparatorSetting("ChapterVerseSeparator")
                     .ToImmutableList();
+            StandardChapterAndVerseSeparator = ChapterAndVerseSeparators.Count > 0
+                ? ChapterAndVerseSeparators[0] : MainConsts.DEFAULT_REFERENCE_CHAPTER_AND_VERSE_SEPARATOR;
 
             VerseRangeSeparators =
                 GetSeparatorSetting("RangeIndicator")
                     .ToImmutableList();
+            StandardVerseRangeSeparator = VerseRangeSeparators.Count > 0
+                ? VerseRangeSeparators[0] : MainConsts.DEFAULT_REFERENCE_VERSE_RANGE_SEPARATOR;
 
             VerseSequenceSeparators =
                 GetSeparatorSetting("SequenceIndicator")
                     .ToImmutableList();
+            StandardVerseSequenceSeparator = VerseSequenceSeparators.Count > 0
+                ? VerseSequenceSeparators[0] : MainConsts.DEFAULT_REFERENCE_VERSE_SEQUENCE_SEPARATOR;
 
             BookOrChapterRangeSeparators =
                 GetSeparatorSetting("ChapterRangeSeparator")
                     .ToImmutableList();
+            StandardBookOrChapterRangeSeparator = BookOrChapterRangeSeparators.Count > 0
+                ? BookOrChapterRangeSeparators[0] : MainConsts.DEFAULT_REFERENCE_BOOK_OR_CHAPTER_RANGE_SEPARATOR;
 
             BookSequenceSeparators =
                 GetSeparatorSetting("BookSequenceSeparator")
                     .ToImmutableList();
+            StandardBookSequenceSeparator = BookSequenceSeparators.Count > 0
+                ? BookSequenceSeparators[0] : MainConsts.DEFAULT_REFERENCE_BOOK_SEQUENCE_SEPARATOR;
 
             ChapterSequenceSeparators =
                 GetSeparatorSetting("ChapterNumberSeparator")
                     .ToImmutableList();
+            StandardChapterSequenceSeparator = ChapterSequenceSeparators.Count > 0
+                ? ChapterSequenceSeparators[0] : MainConsts.DEFAULT_REFERENCE_CHAPTER_SEQUENCE_SEPARATOR;
 
             ReferencePrefixesOrSuffixes =
                 GetSeparatorSetting("ReferenceExtraMaterial")
                     .ToImmutableList();
+            StandardReferencePrefixesOrSuffix = ReferencePrefixesOrSuffixes.Count > 0
+                ? ReferencePrefixesOrSuffixes[0] : MainConsts.DEFAULT_REFERENCE_PREFIX_OR_SUFFIX;
 
             FinalReferencePunctuation =
                 GetSeparatorSetting("ReferenceFinalPunctuation")
                     .ToImmutableList();
+            StandardFinalReferencePunctuation = FinalReferencePunctuation.Count > 0
+                ? FinalReferencePunctuation[0] : MainConsts.DEFAULT_REFERENCE_FINAL_PUNCTUATION;
         }
 
         /// <summary>

@@ -29,6 +29,15 @@ namespace TvpMain.Reference
         private IList<Parser<char, ScriptureReferenceWrapper>> StandardParsers { get; }
 
         /// <summary>
+        /// Tag names that must be paired.
+        /// </summary>
+        private static readonly ISet<string> PairedTagNames =
+            new HashSet<string>()
+            {
+                "xt", "ior"
+            }.ToImmutableHashSet();
+
+        /// <summary>
         /// Basic ctor.
         /// </summary>
         /// <param name="projectManager">Project manager (required).</param>
@@ -60,12 +69,12 @@ namespace TvpMain.Reference
             {
                 ScriptureReferenceParser.ScriptureReferenceWrapper(ParserType.Standard, ProjectManager,
                     new ScriptureReferenceSeparators(
-                        new string[] {";"},
-                        new string[] {";"},
-                        new string[] {"–"},
-                        new string[] {":"},
-                        new string[] {","},
-                        new string[] {"-"},
+                        new string[] {MainConsts.DEFAULT_REFERENCE_BOOK_SEQUENCE_SEPARATOR},
+                        new string[] {MainConsts.DEFAULT_REFERENCE_CHAPTER_SEQUENCE_SEPARATOR},
+                        new string[] {MainConsts.DEFAULT_REFERENCE_BOOK_OR_CHAPTER_RANGE_SEPARATOR},
+                        new string[] {MainConsts.DEFAULT_REFERENCE_CHAPTER_AND_VERSE_SEPARATOR},
+                        new string[] {MainConsts.DEFAULT_REFERENCE_VERSE_SEQUENCE_SEPARATOR},
+                        new string[] {MainConsts.DEFAULT_REFERENCE_VERSE_RANGE_SEPARATOR},
                         false))
             }.ToImmutableList();
         }
@@ -110,6 +119,7 @@ namespace TvpMain.Reference
             string inputText,
             out ScriptureReferenceWrapper outputWrapper)
         {
+            outputWrapper = null;
             ScriptureReferenceWrapper bestWrapper = null;
 
             foreach (var parserItem in ProjectParsers
@@ -148,8 +158,8 @@ namespace TvpMain.Reference
                 || !string.IsNullOrWhiteSpace(closingTag))
             {
                 var firstTag = (openingTag ?? closingTag).Trim().ToLower();
-                if (firstTag.Contains("xt")
-                    || firstTag.Contains("ior"))
+                if (PairedTagNames.Any(tagName =>
+                    firstTag.Contains(tagName)))
                 {
                     openingTag = firstTag;
                     closingTag = string.Concat(firstTag, "*");
@@ -168,7 +178,7 @@ namespace TvpMain.Reference
                 var bookVerseItem = inputWrapper.ScriptureReference.BookReferences[ctr1];
                 if (ctr1 > 0)
                 {
-                    resultBuilder.Append(ProjectManager.BookSequenceSeparators[0].Trim());
+                    resultBuilder.Append(ProjectManager.StandardBookSequenceSeparator);
                 }
 
                 if (!bookVerseItem.IsLocalReference)
@@ -184,7 +194,7 @@ namespace TvpMain.Reference
                     var bookOrChapterRange = bookVerseItem.BookOrChapterRanges[ctr2];
                     if (ctr2 > 0)
                     {
-                        resultBuilder.Append(ProjectManager.ChapterSequenceSeparators[0].Trim());
+                        resultBuilder.Append(ProjectManager.StandardChapterSequenceSeparator);
                     }
 
                     resultBuilder.AppendWithSpace(
@@ -235,7 +245,7 @@ namespace TvpMain.Reference
             if (inputRange.IsFromChapter)
             {
                 resultBuilder.Append(inputRange.FromChapter);
-                resultBuilder.Append(ProjectManager.ChapterAndVerseSeparators[0].Trim());
+                resultBuilder.Append(ProjectManager.StandardChapterAndVerseSeparator);
             }
 
             for (var ctr = 0;
@@ -245,13 +255,13 @@ namespace TvpMain.Reference
                 var verseRange = inputRange.FromVerseRanges[ctr];
                 if (ctr > 0)
                 {
-                    resultBuilder.Append(ProjectManager.VerseSequenceSeparators[0].Trim());
+                    resultBuilder.Append(ProjectManager.StandardVerseSequenceSeparator);
                 }
 
                 resultBuilder.Append(verseRange.FromVerse);
                 if (verseRange.IsSingleton) continue;
 
-                resultBuilder.Append(ProjectManager.VerseRangeSeparators[0].Trim());
+                resultBuilder.Append(ProjectManager.StandardVerseRangeSeparator);
                 resultBuilder.Append(verseRange.ToVerse);
             }
 
@@ -260,11 +270,11 @@ namespace TvpMain.Reference
                 return resultBuilder.ToString();
             }
 
-            resultBuilder.Append(ProjectManager.BookOrChapterRangeSeparators[0].Trim());
+            resultBuilder.Append(ProjectManager.StandardBookOrChapterRangeSeparator);
             if (inputRange.IsToChapter)
             {
                 resultBuilder.Append(inputRange.ToChapter);
-                resultBuilder.Append(ProjectManager.ChapterAndVerseSeparators[0].Trim());
+                resultBuilder.Append(ProjectManager.StandardChapterAndVerseSeparator);
             }
 
             for (var ctr = 0;
@@ -274,13 +284,13 @@ namespace TvpMain.Reference
                 var verseRange = inputRange.ToVerseRanges[ctr];
                 if (ctr > 0)
                 {
-                    resultBuilder.Append(ProjectManager.VerseSequenceSeparators[0].Trim());
+                    resultBuilder.Append(ProjectManager.StandardVerseSequenceSeparator);
                 }
 
                 resultBuilder.Append(verseRange.FromVerse);
                 if (verseRange.IsSingleton) continue;
 
-                resultBuilder.Append(ProjectManager.VerseRangeSeparators[0].Trim());
+                resultBuilder.Append(ProjectManager.StandardVerseRangeSeparator);
                 resultBuilder.Append(verseRange.ToVerse);
             }
 
