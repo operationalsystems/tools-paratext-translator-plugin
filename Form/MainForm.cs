@@ -1197,9 +1197,11 @@ namespace TvpMain.Form
                 if (verseLocation != null)
                 {
                     // reset the test so that pervious highlights are overwritten
-                    referencesTextBox.Text = _filteredReferencesResultMap[verseLocation][0].VersePart.ParatextVerse.VerseText;
+                    //referencesTextBox.Text = _filteredReferencesResultMap[verseLocation][0].VersePart.ParatextVerse.VerseText;
+                    referencesTextBox.DeselectAll();
                     Debug.WriteLine("referencesActionsGridView_SelectionChanged - Text Set");
-                } else
+                }
+                else
                 {
                     Debug.WriteLine("referencesActionsGridView_SelectionChanged - verseLocation NULL");
                 }
@@ -1237,6 +1239,8 @@ namespace TvpMain.Form
                         referencesActionsGridView.Rows[e.RowIndex].Cells[4].Value = "Un-Ignore";
                     }
 
+                    _projectManager.ResultManager.SetVerseResult(resultItem);
+
                     // update ui so that the change is reflected by re-running the filter
                     UpdateReferencesCheckUI();
                 }
@@ -1251,6 +1255,20 @@ namespace TvpMain.Form
         private void referencesActionsGridView_CellClick(object sender, DataGridViewCellEventArgs e)
         {
             Debug.WriteLine("referencesActionsGridView_CellClick");
+
+            highlightActiveResultItem();
+        }
+
+        private void referencesActionsGridView_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            Debug.WriteLine("referencesActionsGridView_KeyPress");
+
+            highlightActiveResultItem();
+        }
+
+        private void referencesTextBox_TextChanged(object sender, EventArgs e)
+        {
+            Debug.WriteLine("referencesTextBox_TextChanged");
 
             highlightActiveResultItem();
         }
@@ -1281,11 +1299,16 @@ namespace TvpMain.Form
 
                     if (resultItem != null)
                     {
-                        referencesTextBox.SelectionBackColor = Color.Yellow;
+                        referencesTextBox.SelectAll();
+                        referencesTextBox.SelectionBackColor = Color.White;
+
                         referencesTextBox.SelectionStart = resultItem.MatchStart;
                         referencesTextBox.SelectionLength = resultItem.MatchLength;
+                        referencesTextBox.SelectionBackColor = Color.Yellow;
 
-                        Debug.WriteLine("highlightActiveResultItem - Selection Set");
+                        Debug.WriteLine("highlightActiveResultItem - Selection Set: " + resultItem.MatchStart);
+
+                        referencesTextBox.Refresh();
 
                     } else
                     {
@@ -1413,5 +1436,6 @@ namespace TvpMain.Form
 
             UpdateReferencesCheckUI();
         }
+
     }
 }

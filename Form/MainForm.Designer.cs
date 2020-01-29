@@ -623,6 +623,7 @@
             this.referencesTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.referencesTextBox.BackColor = System.Drawing.Color.White;
             this.referencesTextBox.Cursor = System.Windows.Forms.Cursors.Default;
             this.referencesTextBox.Location = new System.Drawing.Point(0, 0);
             this.referencesTextBox.Name = "referencesTextBox";
@@ -630,6 +631,7 @@
             this.referencesTextBox.Size = new System.Drawing.Size(485, 647);
             this.referencesTextBox.TabIndex = 3;
             this.referencesTextBox.Text = "";
+            this.referencesTextBox.TextChanged += new System.EventHandler(this.referencesTextBox_TextChanged);
             // 
             // referencesActionsGridView
             // 
@@ -659,6 +661,7 @@
             this.referencesActionsGridView.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.referencesActionsGridView_CellClick);
             this.referencesActionsGridView.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.referencesActionsGridView_CellContentClick);
             this.referencesActionsGridView.SelectionChanged += new System.EventHandler(this.referencesActionsGridView_SelectionChanged);
+            this.referencesActionsGridView.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.referencesActionsGridView_KeyPress);
             // 
             // referencesActionsExceptionColumn
             // 
