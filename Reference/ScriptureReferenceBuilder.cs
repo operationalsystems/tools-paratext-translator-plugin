@@ -59,12 +59,12 @@ namespace TvpMain.Reference
         /// <summary>
         /// Separators relevant for local references consisting only of chapter range sequences.
         /// </summary>
-        private ISet<string> _chapterReferenceModeSeparators;
+        private readonly IList<string> _chapterReferenceModeSeparators;
 
         /// <summary>
         /// Separators relevant for local references consisting only of verse range sequences.
         /// </summary>
-        private ISet<string> _verseReferenceModeSeparators;
+        private readonly IList<string> _verseReferenceModeSeparators;
 
         /// <summary>
         /// Basic ctor.
@@ -137,13 +137,15 @@ namespace TvpMain.Reference
                     .Concat(ProjectManager.ChapterAndVerseSeparators)
                     .Where(separatorItem => !string.IsNullOrWhiteSpace(separatorItem))
                     .Select(separatorItem => separatorItem.Trim())
-                    .ToImmutableHashSet();
+                    .Distinct()
+                    .ToImmutableList();
             _verseReferenceModeSeparators =
                 ProjectManager.VerseRangeSeparators
                     .Concat(ProjectManager.VerseSequenceSeparators)
                     .Where(separatorItem => !string.IsNullOrWhiteSpace(separatorItem))
                     .Select(separatorItem => separatorItem.Trim())
-                    .ToImmutableHashSet();
+                    .Distinct()
+                    .ToImmutableList();
         }
 
         /// <summary>
