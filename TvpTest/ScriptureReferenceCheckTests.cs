@@ -74,7 +74,7 @@ namespace TvpTest
             // Describes location and nature of the text being checked
             // Note: "PartContext" tells the check what it's looking at.
             var partData = VersePart.Create(1, 1, 1,
-                @"(\ior Gen. 1;3 \ior*)", 1, 1,
+                @"(\ior Genesis 1;3 \ior*)", 1, 1,
                 PartContext.Outlines);
 
             // Executes the check
@@ -83,7 +83,9 @@ namespace TvpTest
 
             // Assert
             Assert.AreEqual(1, resultList.Count, "Reference is malformed.");
-            Assert.AreEqual(@"(\ior Gen. 1;3 \ior*)", resultList[0].MatchText);
+            var errorType = (ScriptureReferenceErrorType)resultList[0].ResultTypeCode;
+            Assert.AreEqual(ScriptureReferenceErrorType.LooseFormatting, errorType, "The reference has an error in spacing or punctuation.");
+            Assert.AreEqual(@"(\ior Genesis 1;3 \ior*)", resultList[0].MatchText);
 
         }
 
@@ -106,6 +108,8 @@ namespace TvpTest
 
             // Assert
             Assert.AreEqual(1, resultList.Count, @"Missing opening \ior tag in reference.");
+            var errorType = (ScriptureReferenceErrorType)resultList[0].ResultTypeCode;
+            Assert.AreEqual(ScriptureReferenceErrorType.MalformedTag, errorType, @"Reference is missing opening, closing tags or a \.");
             Assert.AreEqual(@"(Genesis 1:1-4 \ior*)", resultList[0].MatchText);
         }
 
@@ -128,6 +132,8 @@ namespace TvpTest
 
             // Assert
             Assert.AreEqual(1, resultList.Count, @"Missing closing \ior* tag in reference.");
+            var errorType = (ScriptureReferenceErrorType)resultList[0].ResultTypeCode;
+            Assert.AreEqual(ScriptureReferenceErrorType.MalformedTag, errorType, @"Reference is missing opening, closing tags or a \.");
             Assert.AreEqual(@"(\ior Genesis 1:1; 4:4)", resultList[0].MatchText);
         }
 
@@ -150,6 +156,8 @@ namespace TvpTest
 
             // Assert
             Assert.AreEqual(1, resultList.Count, @"Missing all \ior tags in reference.");
+            var errorType = (ScriptureReferenceErrorType)resultList[0].ResultTypeCode;
+            Assert.AreEqual(ScriptureReferenceErrorType.MissingTag, errorType, "Reference is missing tags.");
             Assert.AreEqual(@"(Genesis 1:14)", resultList[0].MatchText);
         }
 
@@ -164,7 +172,7 @@ namespace TvpTest
             // Describes location and nature of the text being checked
             // Note: "PartContext" tells the check what it's looking at.
             var partData = VersePart.Create(1, 1, 1,
-                @"(\ior Gen. 1:1; 4:4 \ior*)", 1, 1,
+                @"(\ior Genesis 1:1; 4:4 \ior*)", 1, 1,
                 PartContext.Outlines);
 
             // Executes the check
@@ -172,7 +180,9 @@ namespace TvpTest
 
             // Assert
             Assert.AreEqual(1, resultList.Count, @"Short name is used in reference.");
-            Assert.AreEqual(@"(\ior Gen. 1:1; 4:4 \ior*)", resultList[0].MatchText);
+            var errorType = (ScriptureReferenceErrorType)resultList[0].ResultTypeCode;
+            Assert.AreEqual(ScriptureReferenceErrorType.IncorrectNameStyle, errorType, "Incorrect name style is used in reference.");
+            Assert.AreEqual(@"(\ior Genesis 1:1; 4:4 \ior*)", resultList[0].MatchText);
         }
 
         /// <summary>
@@ -186,7 +196,7 @@ namespace TvpTest
             // Describes location and nature of the text being checked
             // Note: "PartContext" tells the check what it's looking at.
             var partData = VersePart.Create(1, 1, 1,
-                @"(\ior Ge 1:1; 4:3 \ior*)", 1, 1,
+                @"(\ior GEN 1:1; 4:3 \ior*)", 1, 1,
                 PartContext.Outlines);
 
             // Executes the check
@@ -194,7 +204,9 @@ namespace TvpTest
 
             // Assert
             Assert.AreEqual(1, resultList.Count, @"Abbreviated name is used in reference.");
-            Assert.AreEqual(@"(\ior Ge 1:1; 4:3 \ior*)", resultList[0].MatchText);
+            var errorType = (ScriptureReferenceErrorType)resultList[0].ResultTypeCode;
+            Assert.AreEqual(ScriptureReferenceErrorType.IncorrectNameStyle, errorType, "Incorrect name style is used in reference.");
+            Assert.AreEqual(@"(\ior GEN 1:1; 4:3 \ior*)", resultList[0].MatchText);
         }
 
         /// <summary>
@@ -208,7 +220,7 @@ namespace TvpTest
             // Describes location and nature of the text being checked
             // Note: "PartContext" tells the check what it's looking at.
             var partData = VersePart.Create(1, 1, 1,
-                @"(\fr \+xt Gen. 1:1\+xt*\fr*)", 1, 1,
+                @"(\fr \+xt Genesis 1:1\+xt*\fr*)", 1, 1,
                 PartContext.Outlines);
 
             // Executes the check
@@ -216,7 +228,9 @@ namespace TvpTest
 
             // Assert
             Assert.AreEqual(1, resultList.Count, @"An \fr tag surrounding a reference outside of footnotes area.");
-            Assert.AreEqual(@"(\fr \+xt Gen. 1:1\+xt*\fr*)", resultList[0].MatchText);
+            var errorType = (ScriptureReferenceErrorType)resultList[0].ResultTypeCode;
+            Assert.AreEqual(ScriptureReferenceErrorType.IncorrectTag, errorType, "The wrong tag is used for the context."); 
+            Assert.AreEqual(@"(\fr \+xt Genesis 1:1\+xt*\fr*)", resultList[0].MatchText);
         }
 
         /// <summary>
@@ -230,7 +244,7 @@ namespace TvpTest
             // Describes location and nature of the text being checked
             // Note: "PartContext" tells the check what it's looking at.
             var partData = VersePart.Create(1, 1, 1,
-                @"(\+xt Gen. 1:4\+xt*)", 1, 1,
+                @"(\+xt Genesis 1:4\+xt*)", 1, 1,
                 PartContext.Outlines);
 
             // Executes the check
@@ -238,7 +252,9 @@ namespace TvpTest
 
             // Assert
             Assert.AreEqual(1, resultList.Count, @"A +\xt tag surrounding a reference outside of footnotes area.");
-            Assert.AreEqual(@"(\+xt Gen. 1:4\+xt*)", resultList[0].MatchText);
+            var errorType = (ScriptureReferenceErrorType)resultList[0].ResultTypeCode;
+            Assert.AreEqual(ScriptureReferenceErrorType.IncorrectTag, errorType, "The wrong tag is used for the context.");
+            Assert.AreEqual(@"(\+xt Genesis 1:4\+xt*)", resultList[0].MatchText);
         }
 
         /// <summary>
@@ -252,7 +268,7 @@ namespace TvpTest
             // Describes location and nature of the text being checked
             // Note: "PartContext" tells the check what it's looking at.
             var partData = VersePart.Create(1, 1, 1,
-                @"(\ft \+xt Gen. 1:1\+xt* \ft*)", 1, 1,
+                @"(\ft \+xt Genesis 1:1\+xt* \ft*)", 1, 1,
                 PartContext.Outlines);
 
             // Executes the check
@@ -260,7 +276,9 @@ namespace TvpTest
 
             // Assert
             Assert.AreEqual(1, resultList.Count, @"A \ft tag surrounding a reference outside of footnotes area.");
-            Assert.AreEqual(@"(\ft \+xt Gen. 1:1\+xt* \ft*)", resultList[0].MatchText);
+            var errorType = (ScriptureReferenceErrorType)resultList[0].ResultTypeCode;
+            Assert.AreEqual(ScriptureReferenceErrorType.IncorrectTag, errorType, "The wrong tag is used for the context.");
+            Assert.AreEqual(@"(\ft \+xt Genesis 1:1\+xt* \ft*)", resultList[0].MatchText);
         }
 
         /// <summary>
@@ -274,7 +292,7 @@ namespace TvpTest
             // Describes location and nature of the text being checked
             // Note: "PartContext" tells the check what it's looking at.
             var partData = VersePart.Create(1, 1, 1,
-                @"(\xt Gen. 1:1; 4:3\xt*)", 1, 1,
+                @"(\xt Genesis 1:1; 4:3\xt*)", 1, 1,
                 PartContext.Outlines);
 
             // Executes the check
@@ -282,7 +300,9 @@ namespace TvpTest
 
             // Assert
             Assert.AreEqual(1, resultList.Count, @"A \xt tag surrounding a reference in table of contents area.");
-            Assert.AreEqual(@"(\xt Gen. 1:1; 4:3\xt*)", resultList[0].MatchText);
+            var errorType = (ScriptureReferenceErrorType)resultList[0].ResultTypeCode;
+            Assert.AreEqual(ScriptureReferenceErrorType.IncorrectTag, errorType, "The wrong tag is used for the context.");
+            Assert.AreEqual(@"(\xt Genesis 1:1; 4:3\xt*)", resultList[0].MatchText);
         }
 
         /// The following unit tests all pertain to the Introduction section of the text.
@@ -308,6 +328,8 @@ namespace TvpTest
 
             // Assert
             Assert.AreEqual(1, resultList.Count, "No results generated.");
+            var errorType = (ScriptureReferenceErrorType)resultList[0].ResultTypeCode;
+            Assert.AreEqual(ScriptureReferenceErrorType.LooseFormatting, errorType, "The reference has an error in spacing or punctuation.");
             Assert.AreEqual(@"\xt Luke1:0\xt*", resultList[0].MatchText);
             
         }
@@ -323,7 +345,7 @@ namespace TvpTest
             // Describes location and nature of the text being checked
             // Note: "PartContext" tells the check what it's looking at.
             var partData = VersePart.Create(1,1,1, 
-                @"Gen. 1:5\xt*", 1, 1,
+                @"Genesis 1:5\xt*", 1, 1,
                 PartContext.Introductions);
 
             // Executes the check
@@ -331,7 +353,9 @@ namespace TvpTest
 
             // Assert
             Assert.AreEqual(1, resultList.Count, @"Missing opening \xt tag in reference.");
-            Assert.AreEqual(@"Gen. 1:5\xt*", resultList[0].MatchText);
+            var errorType = (ScriptureReferenceErrorType)resultList[0].ResultTypeCode;
+            Assert.AreEqual(ScriptureReferenceErrorType.MalformedTag, errorType, @"Reference is missing opening, closing, or a \.");
+            Assert.AreEqual(@"Genesis 1:5\xt*", resultList[0].MatchText);
         }
 
         /// <summary>
@@ -345,7 +369,7 @@ namespace TvpTest
             // Describes location and nature of the text being checked
             // Note: "PartContext" tells the check what it's looking at.
             var partData = VersePart.Create(1,1,1, 
-                @"\xt Gen. 1:8", 1, 1,
+                @"\xt Genesis 1:8", 1, 1,
                 PartContext.Introductions);
 
             // Executes the check
@@ -353,7 +377,9 @@ namespace TvpTest
 
             // Assert
             Assert.AreEqual(1, resultList.Count, @"Missing closing \xt* tag in reference.");
-            Assert.AreEqual(@"\xt Gen. 1:8", resultList[0].MatchText);
+            var errorType = (ScriptureReferenceErrorType)resultList[0].ResultTypeCode;
+            Assert.AreEqual(ScriptureReferenceErrorType.MalformedTag, errorType, @"Reference is missing opening, closing, or a \.");
+            Assert.AreEqual(@"\xt Genesis 1:8", resultList[0].MatchText);
         }
 
         /// <summary>
@@ -375,6 +401,8 @@ namespace TvpTest
 
             // Assert
             Assert.AreEqual(1, resultList.Count, @"Missing all \xt tags in reference.");
+            var errorType = (ScriptureReferenceErrorType)resultList[0].ResultTypeCode;
+            Assert.AreEqual(ScriptureReferenceErrorType.MissingTag, errorType, "Reference is missing all tags.");
             Assert.AreEqual(@"Luke 1:12", resultList[0].MatchText);
         }
 
@@ -397,6 +425,8 @@ namespace TvpTest
 
             // Assert
             Assert.AreEqual(1, resultList.Count, @"Long name is used in reference.");
+            var errorType = (ScriptureReferenceErrorType)resultList[0].ResultTypeCode;
+            Assert.AreEqual(ScriptureReferenceErrorType.IncorrectNameStyle, errorType, "Reference is using an incorrect name style.");
             Assert.AreEqual(@"\xt Genesis 1:7\xt*", resultList[0].MatchText);
         }
 
@@ -411,7 +441,7 @@ namespace TvpTest
             // Describes location and nature of the text being checked
             // Note: "PartContext" tells the check what it's looking at.
             var partData = VersePart.Create(1, 1, 1,
-                @"\xt Ex. 5:1\xt*", 1, 1,
+                @"\xt EXO 5:1\xt*", 1, 1,
                 PartContext.Introductions);
 
             // Executes the check
@@ -419,7 +449,9 @@ namespace TvpTest
 
             // Assert
             Assert.AreEqual(1, resultList.Count, @"Abbreviated name is used in reference.");
-            Assert.AreEqual(@"\xt Ex. 5:1\xt*", resultList[0].MatchText);
+            var errorType = (ScriptureReferenceErrorType)resultList[0].ResultTypeCode;
+            Assert.AreEqual(ScriptureReferenceErrorType.IncorrectNameStyle, errorType, "Reference is using an incorrect name style.");
+            Assert.AreEqual(@"\xt EXO 5:1\xt*", resultList[0].MatchText);
         }
 
         /// <summary>
@@ -441,6 +473,8 @@ namespace TvpTest
 
             // Assert
             Assert.AreEqual(1, resultList.Count, @"An \ior tag surrounding a reference outside of ToC area.");
+            var errorType = (ScriptureReferenceErrorType)resultList[0].ResultTypeCode;
+            Assert.AreEqual(ScriptureReferenceErrorType.IncorrectTag, errorType, "The wrong tag is used for the context");
             Assert.AreEqual(@"\ior Exodus 3:1-4\ior*", resultList[0].MatchText);
         }
 
@@ -455,7 +489,7 @@ namespace TvpTest
             // Describes location and nature of the text being checked
             // Note: "PartContext" tells the check what it's looking at.
             var partData = VersePart.Create(1, 1, 1,
-                @"\+xt Num. 10:1\+xt*", 1, 1,
+                @"\+xt Nmbers 10:1\+xt*", 1, 1,
                 PartContext.Introductions);
 
             // Executes the check
@@ -463,7 +497,9 @@ namespace TvpTest
 
             // Assert
             Assert.AreEqual(1, resultList.Count, @"A +\xt tag surrounding a reference outside of footnotes area.");
-            Assert.AreEqual(@"\+xt Num. 10:1\+xt*", resultList[0].MatchText);
+            var errorType = (ScriptureReferenceErrorType)resultList[0].ResultTypeCode;
+            Assert.AreEqual(ScriptureReferenceErrorType.IncorrectTag, errorType, "The wrong tag is used for the context.");
+            Assert.AreEqual(@"\+xt Numbers 10:1\+xt*", resultList[0].MatchText);
         }
 
         /// <summary>
@@ -477,7 +513,7 @@ namespace TvpTest
             // Describes location and nature of the text being checked
             // Note: "PartContext" tells the check what it's looking at.
             var partData = VersePart.Create(1, 1, 1,
-                @"\fr \xt Num. 3:5\xt*\fr*", 1, 1,
+                @"\fr \xt Numbers 3:5\xt*\fr*", 1, 1,
                 PartContext.Introductions);
 
             // Executes the check
@@ -485,7 +521,9 @@ namespace TvpTest
 
             // Assert
             Assert.AreEqual(1, resultList.Count, @"A \fr tag surrounding a reference outside of footnotes area.");
-            Assert.AreEqual(@"\fr \xt Num. 3:5\xt*\fr*", resultList[0].MatchText);
+            var errorType = (ScriptureReferenceErrorType)resultList[0].ResultTypeCode;
+            Assert.AreEqual(ScriptureReferenceErrorType.IncorrectTag, errorType, "The wrong tag is used for the context.");
+            Assert.AreEqual(@"\fr \xt Numbers 3:5\xt*\fr*", resultList[0].MatchText);
         }
 
         /// <summary>
@@ -499,7 +537,7 @@ namespace TvpTest
             // Describes location and nature of the text being checked
             // Note: "PartContext" tells the check what it's looking at.
             var partData = VersePart.Create(1, 1, 1,
-                @"\ft \xt Deut. 3:2\xt*\ft*", 1, 1,
+                @"\ft \xt Deuteronomy 3:2\xt*\ft*", 1, 1,
                 PartContext.Introductions);
 
             // Executes the check
@@ -507,7 +545,9 @@ namespace TvpTest
 
             // Assert
             Assert.AreEqual(1, resultList.Count, @"A \fr tag surrounding a reference outside of footnotes area.");
-            Assert.AreEqual(@"\ft \xt Deut. 3:2\xt*\ft*", resultList[0].MatchText);
+            var errorType = (ScriptureReferenceErrorType)resultList[0].ResultTypeCode;
+            Assert.AreEqual(ScriptureReferenceErrorType.IncorrectTag, errorType, "The wrong tag is used for the context.");
+            Assert.AreEqual(@"\ft \xt Deuteronomy 3:2\xt*\ft*", resultList[0].MatchText);
         }
 
         /// The following unit tests all pertain to the Main Text section of the text.
@@ -519,12 +559,12 @@ namespace TvpTest
         public void MalformedMainTextReference()
         {
             // Arrange
-
+            
             var resultList = new List<ResultItem>();
             // Describes location and nature of the text being checked
             // Note: "PartContext" tells the check what it's looking at.
             var partData = VersePart.Create(1, 1, 1,
-                @"(\ior Gen. 1;3 \ior*)", 1, 1,
+                @"(\ior Genesis 1;3 \ior*)", 1, 1,
                 PartContext.Outlines);
 
             // Executes the check
@@ -533,7 +573,9 @@ namespace TvpTest
 
             // Assert
             Assert.AreEqual(1, resultList.Count, "Reference is malformed.");
-            Assert.AreEqual(@"(\ior Gen. 1;3 \ior*)", resultList[0].MatchText);
+            var errorType = (ScriptureReferenceErrorType)resultList[0].ResultTypeCode;
+            Assert.AreEqual(ScriptureReferenceErrorType.LooseFormatting, errorType, "The reference has an error in spacing or punctuation.");
+            Assert.AreEqual(@"(\ior Genesis 1;3 \ior*)", resultList[0].MatchText);
 
         }
 
@@ -548,7 +590,7 @@ namespace TvpTest
             // Describes location and nature of the text being checked
             // Note: "PartContext" tells the check what it's looking at.
             var partData = VersePart.Create(1, 1, 1,
-                @"Deut. 1:3\xt*", 1, 1,
+                @"Deuteronomy 1:3\xt*", 1, 1,
                 PartContext.MainText);
 
             // Executes the check
@@ -556,7 +598,9 @@ namespace TvpTest
 
             // Assert
             Assert.AreEqual(1, resultList.Count, @"Missing opening \xt tag in reference.");
-            Assert.AreEqual(@"Deut. 1:3\xt*", resultList[0].MatchText);
+            var errorType = (ScriptureReferenceErrorType)resultList[0].ResultTypeCode;
+            Assert.AreEqual(ScriptureReferenceErrorType.MalformedTag, errorType, @"The reference is missing opening, closing or a \.");
+            Assert.AreEqual(@"Deuteronomy 1:3\xt*", resultList[0].MatchText);
         }
 
         /// <summary>
@@ -570,7 +614,7 @@ namespace TvpTest
             // Describes location and nature of the text being checked
             // Note: "PartContext" tells the check what it's looking at.
             var partData = VersePart.Create(1, 1, 1,
-                @"\xt Deut. 3:1", 1, 1,
+                @"\xt Deuteronomy 3:1", 1, 1,
                 PartContext.MainText);
 
             // Executes the check
@@ -578,7 +622,9 @@ namespace TvpTest
 
             // Assert
             Assert.AreEqual(1, resultList.Count, @"Missing closing \xt* tag in reference.");
-            Assert.AreEqual(@"\xt Deut. 3:1", resultList[0].MatchText);
+            var errorType = (ScriptureReferenceErrorType)resultList[0].ResultTypeCode;
+            Assert.AreEqual(ScriptureReferenceErrorType.MalformedTag, errorType, @"The reference is missing opening, closing or a \.");
+            Assert.AreEqual(@"\xt Deuteronomy 3:1", resultList[0].MatchText);
         }
 
         /// <summary>
@@ -592,7 +638,7 @@ namespace TvpTest
             // Describes location and nature of the text being checked
             // Note: "PartContext" tells the check what it's looking at.
             var partData = VersePart.Create(1, 1, 1,
-                @"Num. 11:1", 1, 1,
+                @"Numbers 11:1", 1, 1,
                 PartContext.MainText);
 
             // Executes the check
@@ -600,7 +646,9 @@ namespace TvpTest
 
             // Assert
             Assert.AreEqual(1, resultList.Count, @"Missing all \xt tags in reference.");
-            Assert.AreEqual(@"Num. 11:1", resultList[0].MatchText);
+            var errorType = (ScriptureReferenceErrorType)resultList[0].ResultTypeCode;
+            Assert.AreEqual(ScriptureReferenceErrorType.MissingTag, errorType, "The reference has no tags, but should.");
+            Assert.AreEqual(@"Numbers 11:1", resultList[0].MatchText);
         }
 
         /// <summary>
@@ -622,6 +670,8 @@ namespace TvpTest
 
             // Assert
             Assert.AreEqual(1, resultList.Count, @"Long name is used in reference.");
+            var errorType = (ScriptureReferenceErrorType)resultList[0].ResultTypeCode;
+            Assert.AreEqual(ScriptureReferenceErrorType.IncorrectNameStyle, errorType, "Reference is using an incorrect name style.");
             Assert.AreEqual(@" \xt Leviticus 1:4 \xt*", resultList[0].MatchText);
         }
 
@@ -636,7 +686,7 @@ namespace TvpTest
             // Describes location and nature of the text being checked
             // Note: "PartContext" tells the check what it's looking at.
             var partData = VersePart.Create(1, 1, 1,
-                @"\xt Lev 2:4 \xt*", 1, 1,
+                @"\xt LEV 2:4 \xt*", 1, 1,
                 PartContext.MainText);
 
             // Executes the check
@@ -644,7 +694,9 @@ namespace TvpTest
 
             // Assert
             Assert.AreEqual(1, resultList.Count, @"Abbreviated name is used in reference.");
-            Assert.AreEqual(@"\xt Lev 2:4 \xt*", resultList[0].MatchText);
+            var errorType = (ScriptureReferenceErrorType)resultList[0].ResultTypeCode;
+            Assert.AreEqual(ScriptureReferenceErrorType.IncorrectNameStyle, errorType, "Reference is using an incorrect name style.");
+            Assert.AreEqual(@"\xt LEV 2:4 \xt*", resultList[0].MatchText);
         }
 
         /// <summary>
@@ -666,6 +718,8 @@ namespace TvpTest
 
             // Assert
             Assert.AreEqual(1, resultList.Count, @"An \ior tag surrounding a reference outside of table of contents area.");
+            var errorType = (ScriptureReferenceErrorType)resultList[0].ResultTypeCode;
+            Assert.AreEqual(ScriptureReferenceErrorType.IncorrectTag, errorType, "The wrong tag is used for the context.");
             Assert.AreEqual(@"\ior Genesis 5:1\ior*", resultList[0].MatchText);
         }
 
@@ -680,7 +734,7 @@ namespace TvpTest
             // Describes location and nature of the text being checked
             // Note: "PartContext" tells the check what it's looking at.
             var partData = VersePart.Create(1, 1, 1,
-                @" \+xt Num. 3:1\+xt*", 1, 1,
+                @" \+xt Numbers 3:1\+xt*", 1, 1,
                 PartContext.MainText);
 
             // Executes the check
@@ -688,7 +742,9 @@ namespace TvpTest
 
             // Assert
             Assert.AreEqual(1, resultList.Count, @"A +\xt tag surrounding a reference outside of footnotes area.");
-            Assert.AreEqual(@" \+xt Num. 3:1\+xt*", resultList[0].MatchText);
+            var errorType = (ScriptureReferenceErrorType)resultList[0].ResultTypeCode;
+            Assert.AreEqual(ScriptureReferenceErrorType.IncorrectTag, errorType, "The wrong tag is used for the context.");
+            Assert.AreEqual(@" \+xt Numbers 3:1\+xt*", resultList[0].MatchText);
         }
 
         /// <summary>
@@ -702,7 +758,7 @@ namespace TvpTest
             // Describes location and nature of the text being checked
             // Note: "PartContext" tells the check what it's looking at.
             var partData = VersePart.Create(1, 1, 1,
-                @"\ft \+xt Gen. 1:1\+xt* \ft*", 1, 1,
+                @"\ft \+xt Genesis 1:1\+xt* \ft*", 1, 1,
                 PartContext.MainText);
 
             // Executes the check
@@ -710,7 +766,9 @@ namespace TvpTest
 
             // Assert
             Assert.AreEqual(1, resultList.Count, @"A \ft tag surrounding a reference outside of footnotes area.");
-            Assert.AreEqual(@"\ft \+xt Gen. 1:1\+xt* \ft*", resultList[0].MatchText);
+            var errorType = (ScriptureReferenceErrorType)resultList[0].ResultTypeCode;
+            Assert.AreEqual(ScriptureReferenceErrorType.IncorrectTag, errorType, "The wrong tag is used for the context.");
+            Assert.AreEqual(@"\ft \+xt Genesis 1:1\+xt* \ft*", resultList[0].MatchText);
         }
 
         /// <summary>
@@ -724,7 +782,7 @@ namespace TvpTest
             // Describes location and nature of the text being checked
             // Note: "PartContext" tells the check what it's looking at.
             var partData = VersePart.Create(1, 1, 1,
-                @"\fr \xt Num. 3:5\xt*\fr*", 1, 1,
+                @"\fr \xt Numbers 3:5\xt*\fr*", 1, 1,
                 PartContext.MainText);
 
             // Executes the check
@@ -732,7 +790,9 @@ namespace TvpTest
 
             // Assert
             Assert.AreEqual(1, resultList.Count, @"A \fr tag surrounding a reference outside of footnotes area.");
-            Assert.AreEqual(@"\fr \xt Num. 3:5\xt*\fr*", resultList[0].MatchText);
+            var errorType = (ScriptureReferenceErrorType)resultList[0].ResultTypeCode;
+            Assert.AreEqual(ScriptureReferenceErrorType.IncorrectTag, errorType, "The wrong tag is used for the context.");
+            Assert.AreEqual(@"\fr \xt Numbers 3:5\xt*\fr*", resultList[0].MatchText);
         }
 
         /// The following unit tests all pertain to the Footnotes/References section of the text.
@@ -757,6 +817,8 @@ namespace TvpTest
 
             // Assert
             Assert.AreEqual(1, resultList.Count, "Reference is malformed.");
+            var errorType = (ScriptureReferenceErrorType)resultList[0].ResultTypeCode;
+            Assert.AreEqual(ScriptureReferenceErrorType.LooseFormatting, errorType, "The reference has an error in spacing or punctuation.");
             Assert.AreEqual(@"\fp \xt 7:1, 4\xt*\f*)", resultList[0].MatchText);
 
         }
@@ -772,7 +834,7 @@ namespace TvpTest
             // Describes location and nature of the text being checked
             // Note: "PartContext" tells the check what it's looking at.
             var partData = VersePart.Create(1, 1, 1,
-                @"\fp Gen. 1:1\+xt*", 1, 1,
+                @"\fp Genesis 1:1\+xt*", 1, 1,
                 PartContext.NoteOrReference);
 
             // Executes the check
@@ -780,7 +842,9 @@ namespace TvpTest
 
             // Assert
             Assert.AreEqual(1, resultList.Count, @"Missing opening \+xt tag in reference.");
-            Assert.AreEqual(@"\fp Gen. 1:1\+xt*", resultList[0].MatchText);
+            var errorType = (ScriptureReferenceErrorType)resultList[0].ResultTypeCode;
+            Assert.AreEqual(ScriptureReferenceErrorType.MalformedTag, errorType, @"The reference is missing opening, closing or a \.");
+            Assert.AreEqual(@"\fp Genesis 1:1\+xt*", resultList[0].MatchText);
         }
 
         /// <summary>
@@ -802,6 +866,8 @@ namespace TvpTest
 
             // Assert
             Assert.AreEqual(1, resultList.Count, @"Missing closing \+xt* tag in reference.");
+            var errorType = (ScriptureReferenceErrorType)resultList[0].ResultTypeCode;
+            Assert.AreEqual(ScriptureReferenceErrorType.MalformedTag, errorType, @"The reference is missing opening, closing or a \.");
             Assert.AreEqual(@"\fp \+xt Luke 3:4 \f*", resultList[0].MatchText);
         }
 
@@ -816,7 +882,7 @@ namespace TvpTest
             // Describes location and nature of the text being checked
             // Note: "PartContext" tells the check what it's looking at.
             var partData = VersePart.Create(1, 1, 1,
-                @"\fp Gen. 1:1\f*", 1, 1,
+                @"\fp Genesis 1:1\f*", 1, 1,
                 PartContext.NoteOrReference);
 
             // Executes the check
@@ -824,7 +890,9 @@ namespace TvpTest
 
             // Assert
             Assert.AreEqual(1, resultList.Count, @"Missing all \+xt \ft \fr tags in reference.");
-            Assert.AreEqual(@"\fp Gen. 1:1\f*", resultList[0].MatchText);
+            var errorType = (ScriptureReferenceErrorType)resultList[0].ResultTypeCode;
+            Assert.AreEqual(ScriptureReferenceErrorType.MissingTag, errorType, "The reference has no tags, but should.");
+            Assert.AreEqual(@"\fp Genesis 1:1\f*", resultList[0].MatchText);
         }
 
         /// <summary>
@@ -846,6 +914,8 @@ namespace TvpTest
 
             // Assert
             Assert.AreEqual(1, resultList.Count, @"Long name is used in reference.");
+            var errorType = (ScriptureReferenceErrorType)resultList[0].ResultTypeCode;
+            Assert.AreEqual(ScriptureReferenceErrorType.IncorrectNameStyle, errorType, "The reference is using the wrong name style.");
             Assert.AreEqual(@"\fp \+xt Numbers 5:1\+xt*", resultList[0].MatchText);
         }
 
@@ -860,7 +930,7 @@ namespace TvpTest
             // Describes location and nature of the text being checked
             // Note: "PartContext" tells the check what it's looking at.
             var partData = VersePart.Create(1, 1, 1,
-                @"\fp \+xt Nu 8:8\+xt*\f*", 1, 1,
+                @"\fp \+xt NUM 8:8\+xt*\f*", 1, 1,
                 PartContext.NoteOrReference);
 
             // Executes the check
@@ -868,7 +938,9 @@ namespace TvpTest
 
             // Assert
             Assert.AreEqual(1, resultList.Count, @"Abbreviated name is used in reference.");
-            Assert.AreEqual(@"\fp \+xt Nu 8:8\+xt*\f*", resultList[0].MatchText);
+            var errorType = (ScriptureReferenceErrorType)resultList[0].ResultTypeCode;
+            Assert.AreEqual(ScriptureReferenceErrorType.IncorrectNameStyle, errorType, "The reference is using the wrong name style.");
+            Assert.AreEqual(@"\fp \+xt NUM 8:8\+xt*\f*", resultList[0].MatchText);
         }
 
         /// <summary>
@@ -890,6 +962,8 @@ namespace TvpTest
 
             // Assert
             Assert.AreEqual(1, resultList.Count, @"A \xt tag surrounding a reference in table of footnotes/references area.");
+            var errorType = (ScriptureReferenceErrorType)resultList[0].ResultTypeCode;
+            Assert.AreEqual(ScriptureReferenceErrorType.IncorrectTag, errorType, "The wrong tag is used for the context.");
             Assert.AreEqual(@"\fp \xt Luke 3:3\xt*\f*", resultList[0].MatchText);
         }
 
@@ -898,13 +972,13 @@ namespace TvpTest
         /// <summary>
         /// A test case for a reference that is in the ignore list that should be ignored
         /// 
-        [TestMethod]
-        public void ReferenceInIgnoreList()
-        {
-            // Arrange
-            var ignoreList = new List<IgnoreList>();
+        //[TestMethod]
+        //PUBLIC VOID REFERENCEINIGNORELIST()
+        //{
+            // ARRANGE
+        //    VAR IGNORELIST = NEW LIST<IGNORELIST>();
 
             // 
-        }
+        //}
     }
 }
