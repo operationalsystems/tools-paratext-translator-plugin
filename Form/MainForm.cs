@@ -53,6 +53,11 @@ namespace TvpMain.Form
         private readonly IEnumerable<ITextCheck> _allChecks;
 
         /// <summary>
+        /// List with only punctuation check to be performed.
+        /// </summary>
+        private readonly IEnumerable<ITextCheck> _punctuationCheck;
+        
+        /// <summary>
         /// List with only references check to be performed.
         /// </summary>
         private readonly IEnumerable<ITextCheck> _referenceCheck;
@@ -137,6 +142,11 @@ namespace TvpMain.Form
                 new ScriptureReferenceCheck(_projectManager)
             };
 
+            _punctuationCheck = new List<ITextCheck>()
+            {
+                new MissingSentencePunctuationCheck(_projectManager)
+            };
+
             _textCheckRunner.CheckUpdated += OnCheckUpdated;
 
             searchMenuTextBox.TextChanged += OnSearchTextChanged;
@@ -186,7 +196,14 @@ namespace TvpMain.Form
         {
             try
             {
-                UpdateMainTable();
+                if (referencesCheckMenuItem.Checked)
+                {
+                    UpdateReferencesCheckUI();
+                }
+                else
+                {
+                    UpdateMainTable();
+                }
             }
             catch (Exception ex)
             {
@@ -401,7 +418,8 @@ namespace TvpMain.Form
             {
                 ShowProgress();
 
-                IEnumerable<ITextCheck> checksToRun = _allChecks;
+                // by default only run the punctuation check
+                IEnumerable<ITextCheck> checksToRun = _punctuationCheck;
 
                 // only run the references check if that's the mode
                 if (referencesCheckMenuItem.Checked)
@@ -916,108 +934,84 @@ namespace TvpMain.Form
             referencesListView.RowHeadersVisible = false;
             referencesActionsGridView.RowHeadersVisible = false;
 
-            // show punctuation view menu
-            viewMenu.Visible = true;
-
-            // show punctuation filter menu items
-            punctuationMenuSeparator.Visible = true;
-            wordListFiltersMenuItem.Visible = true;
-            ignoreListFiltersMenuItem.Visible = true;
-            biblicaTermsFiltersMenuItem.Visible = true;
-            entireVerseFiltersMenuItem.Visible = true;
-
-            // hide references filter menu items
-            referencesMenuSeparator.Visible = false;
-            showIgnoredToolStripMenuItem.Visible = false;
-            hideLooseMatchesToolStripMenuItem.Visible = false;
-            hideBadReferencesToolStripMenuItem.Visible = false;
-            hideMalformedTagToolStripMenuItem.Visible = false;
-            hideIncorrectTagToolStripMenuItem.Visible = false;
-            hideMissingTagToolStripMenuItem.Visible = false;
-            hideTagShouldntExistToolStripMenuItem.Visible = false;
-            hideIncorrectNameStyleToolStripMenuItem.Visible = false;
-
-            // show ignore list button
-            btnShowIgnoreList.Visible = true;
-
+            showScriptureReferencesCheckControls(false);
         }
 
-        private void referencesToolStripMenuItem_Click(object sender, EventArgs e)
+        /// <summary>
+        /// Switches b/t Scripture Reference check controls or punctuation controls
+        /// </summary>
+        private void showScriptureReferencesCheckControls(Boolean show)
         {
-            missingSentencePunctuationCheckMenuItem.Checked = false;
-            referencesCheckMenuItem.Checked = true;
+            missingSentencePunctuationCheckMenuItem.Checked = !show;
+            missingSentencePunctuationCheckMenuItem.CheckState = show ? CheckState.Unchecked : CheckState.Checked;
 
-            tabControl.SelectedTab = referencesTab;
+            referencesCheckMenuItem.Checked = show;
+            referencesCheckMenuItem.CheckState = show ? CheckState.Checked : CheckState.Unchecked;
 
-            // hide punctuation view menu
-            viewMenu.Visible = false;
+            if (show)
+            {
+                // switch to reference check tab
+                tabControl.SelectedTab = referencesTab;
+            } else
+            {
+                tabControl.SelectedTab = punctuationTab;
+            }
+
+            // show/hide punctuation view menu
+            viewMenu.Visible = !show;
 
             // hide punctuation filter menu items
-            punctuationMenuSeparator.Visible = false;
-            wordListFiltersMenuItem.Visible = false;
-            ignoreListFiltersMenuItem.Visible = false;
-            biblicaTermsFiltersMenuItem.Visible = false;
-            entireVerseFiltersMenuItem.Visible = false;
+            punctuationMenuSeparator.Visible = !show;
+            wordListFiltersMenuItem.Visible = !show;
+            ignoreListFiltersMenuItem.Visible = !show;
+            biblicaTermsFiltersMenuItem.Visible = !show;
+            entireVerseFiltersMenuItem.Visible = !show;
 
             // show references filter menu items
-            referencesMenuSeparator.Visible = true;
-            showIgnoredToolStripMenuItem.Visible = true;
-            hideLooseMatchesToolStripMenuItem.Visible = true;
-            hideBadReferencesToolStripMenuItem.Visible = true;
-            hideMalformedTagToolStripMenuItem.Visible = true;
-            hideIncorrectTagToolStripMenuItem.Visible = true;
-            hideMissingTagToolStripMenuItem.Visible = true;
-            hideTagShouldntExistToolStripMenuItem.Visible = true;
-            hideIncorrectNameStyleToolStripMenuItem.Visible = true;
+            referencesMenuSeparator.Visible = show;
+            showIgnoredToolStripMenuItem.Visible = show;
+            hideLooseMatchesToolStripMenuItem.Visible = show;
+            hideBadReferencesToolStripMenuItem.Visible = show;
+            hideMalformedTagToolStripMenuItem.Visible = show;
+            hideIncorrectTagToolStripMenuItem.Visible = show;
+            hideMissingTagToolStripMenuItem.Visible = show;
+            hideTagShouldntExistToolStripMenuItem.Visible = show;
+            hideIncorrectNameStyleToolStripMenuItem.Visible = show;
 
             // hide ignore list button
-            btnShowIgnoreList.Visible = false;
-
+            btnShowIgnoreList.Visible = !show;
         }
 
+        /// <summary>
+        /// Handles selection of controls based on menu selection
+        /// </summary>
+        private void referencesToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            showScriptureReferencesCheckControls(true);
+        }
+
+        /// <summary>
+        /// Handles selection of controls based on menu selection
+        /// </summary>
         private void missingSentencePunctuationCheckMenuItem_Click(object sender, EventArgs e)
         {
-            missingSentencePunctuationCheckMenuItem.Checked = true;
-            referencesCheckMenuItem.Checked = false;
-
-            tabControl.SelectedTab = punctuationTab;
-
-            // show punctuation view menu
-            viewMenu.Visible = true;
-
-            // show punctuation filter menu items
-            punctuationMenuSeparator.Visible = true;
-            wordListFiltersMenuItem.Visible = true;
-            ignoreListFiltersMenuItem.Visible = true;
-            biblicaTermsFiltersMenuItem.Visible = true;
-            entireVerseFiltersMenuItem.Visible = true;
-
-            // hide references filter menu items
-            referencesMenuSeparator.Visible = false;
-            showIgnoredToolStripMenuItem.Visible = false;
-            hideLooseMatchesToolStripMenuItem.Visible = false;
-            hideBadReferencesToolStripMenuItem.Visible = false;
-            hideMalformedTagToolStripMenuItem.Visible = false;
-            hideIncorrectTagToolStripMenuItem.Visible = false;
-            hideMissingTagToolStripMenuItem.Visible = false;
-            hideTagShouldntExistToolStripMenuItem.Visible = false;
-            hideIncorrectNameStyleToolStripMenuItem.Visible = false;
-
-            // show ignore list button
-            btnShowIgnoreList.Visible = true;
-
+            showScriptureReferencesCheckControls(false);
         }
 
+        /// <summary>
+        /// Kicks off updating the scripture reference controls update with the latest results
+        /// </summary>
         private void UpdateReferencesCheckUI()
         {
-            FilterReferencesCheckResults();
-
             referencesListView.Rows.Clear();
             referencesTextBox.Text = "";
             referencesActionsGridView.Rows.Clear();
 
             statusLabel.Text = CheckResults.GetSummaryText(_filteredResultItems);
 
+            FilterReferencesCheckResults();
+
+            // reset the result map
             _filteredReferencesResultMap = new Dictionary<VerseLocation, IList<ResultItem>>();
 
             // for each result, place into the dictionary at the same verse location
@@ -1037,22 +1031,30 @@ namespace TvpMain.Form
                 localList.Add(resultItem);
             }
 
+            // for each verse location in the map, update the left panel, the list of verses
             foreach (var verseLocation in _filteredReferencesResultMap.Keys)
             {
                 var rowIndex = referencesListView.Rows.Add();
 
                 IList<ResultItem> localList = _filteredReferencesResultMap[verseLocation];
+                // keep the list of exceptions with the row for use in the right-hand UI
                 referencesListView.Rows[rowIndex].Tag = localList;
                 referencesListView.Rows[rowIndex].Cells[0].Value = $"{verseLocation.VerseCoordinateText}";
+                // keep the verse location with the first cell so we can use later
                 referencesListView.Rows[rowIndex].Cells[0].Tag = verseLocation;
                 referencesListView.Rows[rowIndex].Cells[1].Value = $"{localList.Count}";
             }
 
+            // select the top of the list
             referencesListView.Rows[0].Selected = true;
-            updateReferencesUIRight();
 
+            // update the right portion of the UI, the text and list of exceptions
+            updateReferencesUIRight();
         }
 
+        /// <summary>
+        /// Apply filtering of the results
+        /// </summary>
         private void FilterReferencesCheckResults()
         {
 
@@ -1135,24 +1137,6 @@ namespace TvpMain.Form
             }
         }
 
-        private void hideLooseMatchesToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            hideLooseMatchesToolStripMenuItem.Checked = !hideLooseMatchesToolStripMenuItem.Checked;
-            hideLooseMatchesToolStripMenuItem.CheckState = hideLooseMatchesToolStripMenuItem.Checked
-                ? CheckState.Checked : CheckState.Unchecked;
-
-            UpdateReferencesCheckUI();
-        }
-
-        private void showIgnoredToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            showIgnoredToolStripMenuItem.Checked = !showIgnoredToolStripMenuItem.Checked;
-            showIgnoredToolStripMenuItem.CheckState = showIgnoredToolStripMenuItem.Checked
-                ? CheckState.Checked : CheckState.Unchecked;
-
-            UpdateReferencesCheckUI();
-        }
-
         /// <summary>
         /// Update the exception list and text when the selection changes in the main verse list
         /// </summary>
@@ -1187,6 +1171,7 @@ namespace TvpMain.Form
 
                     Debug.WriteLine("updateReferencesUIRight - Setting Tag resultItem for " + rowNum);
 
+                    // keep the result item with the row of excpetions for future reference
                     referencesActionsGridView.Rows[rowNum].Tag = resultItem;
                 }
 
@@ -1199,6 +1184,8 @@ namespace TvpMain.Form
         /// <summary>
         /// When something happens in the action grid, make sure the text and highlighting is up-to-date
         /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void referencesActionsGridView_SelectionChanged(object sender, EventArgs e)
         {
             Debug.WriteLine("referencesActionsGridView_SelectionChanged");
@@ -1209,17 +1196,20 @@ namespace TvpMain.Form
 
                 if (verseLocation != null)
                 {
+                    // reset the test so that pervious highlights are overwritten
                     referencesTextBox.Text = _filteredReferencesResultMap[verseLocation][0].VersePart.ParatextVerse.VerseText;
                     Debug.WriteLine("referencesActionsGridView_SelectionChanged - Text Set");
                 } else
                 {
                     Debug.WriteLine("referencesActionsGridView_SelectionChanged - verseLocation NULL");
                 }
-            } else
+            }
+            else
             {
                 Debug.WriteLine("referencesActionsGridView_SelectionChanged - Current Row NULL");
             }
 
+            // highlight the text based on new selection
             highlightActiveResultItem();
         }
 
@@ -1246,11 +1236,13 @@ namespace TvpMain.Form
                         resultItem.ResultState = ResultState.Ignored;
                         referencesActionsGridView.Rows[e.RowIndex].Cells[4].Value = "Un-Ignore";
                     }
+
+                    // update ui so that the change is reflected by re-running the filter
+                    UpdateReferencesCheckUI();
                 }
             }
 
-            UpdateReferencesCheckUI();
-
+            highlightActiveResultItem();
         }
 
         /// <summary>
@@ -1310,6 +1302,39 @@ namespace TvpMain.Form
             }
         }
 
+        /// <summary>
+        /// Filter checkbox
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void hideLooseMatchesToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            hideLooseMatchesToolStripMenuItem.Checked = !hideLooseMatchesToolStripMenuItem.Checked;
+            hideLooseMatchesToolStripMenuItem.CheckState = hideLooseMatchesToolStripMenuItem.Checked
+                ? CheckState.Checked : CheckState.Unchecked;
+
+            UpdateReferencesCheckUI();
+        }
+
+        /// <summary>
+        /// Filter checkbox
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void showIgnoredToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            showIgnoredToolStripMenuItem.Checked = !showIgnoredToolStripMenuItem.Checked;
+            showIgnoredToolStripMenuItem.CheckState = showIgnoredToolStripMenuItem.Checked
+                ? CheckState.Checked : CheckState.Unchecked;
+
+            UpdateReferencesCheckUI();
+        }
+
+        /// <summary>
+        /// Filter checkbox
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void hideIncorrectNameStyleToolStripMenuItem_Click(object sender, EventArgs e)
         {
             hideIncorrectNameStyleToolStripMenuItem.Checked = !hideIncorrectNameStyleToolStripMenuItem.Checked;
@@ -1319,6 +1344,11 @@ namespace TvpMain.Form
             UpdateReferencesCheckUI();
         }
 
+        /// <summary>
+        /// Filter checkbox
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void hideTagShouldntExistToolStripMenuItem_Click(object sender, EventArgs e)
         {
             hideTagShouldntExistToolStripMenuItem.Checked = !hideTagShouldntExistToolStripMenuItem.Checked;
@@ -1328,6 +1358,11 @@ namespace TvpMain.Form
             UpdateReferencesCheckUI();
         }
 
+        /// <summary>
+        /// Filter checkbox
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void hideMissingTagToolStripMenuItem_Click(object sender, EventArgs e)
         {
             hideMissingTagToolStripMenuItem.Checked = !hideMissingTagToolStripMenuItem.Checked;
@@ -1337,6 +1372,11 @@ namespace TvpMain.Form
             UpdateReferencesCheckUI();
         }
 
+        /// <summary>
+        /// Filter checkbox
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void hideIncorrectTagToolStripMenuItem_Click(object sender, EventArgs e)
         {
             hideIncorrectTagToolStripMenuItem.Checked = !hideIncorrectTagToolStripMenuItem.Checked;
@@ -1346,6 +1386,11 @@ namespace TvpMain.Form
             UpdateReferencesCheckUI();
         }
 
+        /// <summary>
+        /// Filter checkbox
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void hideMalformedTagToolStripMenuItem_Click(object sender, EventArgs e)
         {
             hideMalformedTagToolStripMenuItem.Checked = !hideMalformedTagToolStripMenuItem.Checked;
@@ -1355,6 +1400,11 @@ namespace TvpMain.Form
             UpdateReferencesCheckUI();
         }
 
+        /// <summary>
+        /// Filter checkbox
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void hideBadReferencesToolStripMenuItem_Click(object sender, EventArgs e)
         {
             hideBadReferencesToolStripMenuItem.Checked = !hideBadReferencesToolStripMenuItem.Checked;
