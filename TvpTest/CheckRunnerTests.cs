@@ -9,6 +9,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using TvpMain.Check;
 using TvpMain.Project;
+using TvpMain.Punctuation;
 using TvpMain.Text;
 using TvpMain.Result;
 using TvpMain.Util;
@@ -63,12 +64,12 @@ namespace TvpTest
         /// Test setup for verse lines and main mocks.
         /// </summary>
         [TestInitialize]
-        [DeploymentItem(@"Resources\test-verses.txt", "Resources")]
+        [DeploymentItem(@"Resources\test-verses-1.txt", "Resources")]
         public override void TestSetup()
         {
             base.TestSetup();
 
-            VerseLines = File.ReadAllLines(@"Resources\test-verses.txt");
+            VerseLines = File.ReadAllLines(@"Resources\test-verses-1.txt");
             ExpectedRefs = new HashSet<int>();
             IsVersesDelayed = false;
 
@@ -133,6 +134,7 @@ namespace TvpTest
                {
                    new MissingSentencePunctuationCheck(MockProjectManager.Object)
                }, TestContexts,
+               false,
                out var checkResult);
 
             // assert
@@ -165,6 +167,7 @@ namespace TvpTest
                 {
                     new MissingSentencePunctuationCheck(MockProjectManager.Object)
                 }, TestContexts,
+                false,
                 out var checkResult);
 
             // assert
@@ -194,6 +197,7 @@ namespace TvpTest
                 {
                     new MissingSentencePunctuationCheck(MockProjectManager.Object)
                 }, TestContexts,
+                false,
                 out var checkResult);
 
             // assert
@@ -233,6 +237,7 @@ namespace TvpTest
                         {
                             new MissingSentencePunctuationCheck(MockProjectManager.Object)
                         }, TestContexts,
+                        false,
                         out var checkResult))
             { IsBackground = true };
             workThread.Start();

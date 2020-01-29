@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using CsvHelper.Configuration.Attributes;
+using Newtonsoft.Json;
 using TvpMain.Text;
 using TvpMain.Util;
 
@@ -11,23 +12,30 @@ namespace TvpMain.Text
 {
     /// <summary>
     /// Specific verse location.
+    ///
+    /// Note "private set" fields support JSON serialization
+    /// while maintaining runtime immutability.
     /// </summary>
-    public class VerseLocation
+    [JsonObject(MemberSerialization.OptIn)]
+    public class VerseLocation : IComparable<VerseLocation>
     {
         /// <summary>
         /// Book number of result (1-based).
         /// </summary>
-        public int BookNum { get; }
+        [JsonProperty]
+        public int BookNum { get; private set; }
 
         /// <summary>
         /// Chapter number of result (1-based).
         /// </summary>
-        public int ChapterNum { get; }
+        [JsonProperty]
+        public int ChapterNum { get; private set; }
 
         /// <summary>
         /// Verse number of result (generally 1-based, 0=any intro).
         /// </summary>
-        public int VerseNum { get; }
+        [JsonProperty]
+        public int VerseNum { get; private set; }
 
         /// <summary>
         /// Coordinate in Paratext-specific format.
@@ -56,6 +64,15 @@ namespace TvpMain.Text
             ChapterNum = chapterNum;
             VerseNum = verseNum;
         }
+
+        /// <summary>
+        /// Private ctor for serialization.
+        /// </summary>
+        [JsonConstructor]
+        private VerseLocation()
+        {
+        }
+
         /// <summary>
         /// Typed equality method.
         /// </summary>
@@ -116,6 +133,18 @@ namespace TvpMain.Text
         public static bool operator !=(VerseLocation left, VerseLocation right)
         {
             return !Equals(left, right);
+        }
+
+        /// <inheritdoc />
+        public int CompareTo(VerseLocation other)
+        {
+            if (ReferenceEquals(this, other)) return 0;
+            if (ReferenceEquals(null, other)) return 1;
+            var bookNumComparison = BookNum.CompareTo(other.BookNum);
+            if (bookNumComparison != 0) return bookNumComparison;
+            var chapterNumComparison = ChapterNum.CompareTo(other.ChapterNum);
+            if (chapterNumComparison != 0) return chapterNumComparison;
+            return VerseNum.CompareTo(other.VerseNum);
         }
     }
 }

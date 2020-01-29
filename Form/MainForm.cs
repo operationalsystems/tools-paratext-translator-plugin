@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.ComponentModel;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Windows.Forms;
+using System.Windows.Threading;
 using AddInSideViews;
 using CsvHelper;
 using TvpMain.Check;
@@ -12,6 +15,8 @@ using TvpMain.Text;
 using TvpMain.Result;
 using TvpMain.Filter;
 using TvpMain.Project;
+using TvpMain.Punctuation;
+using TvpMain.Reference;
 using TvpMain.Util;
 using static System.Environment;
 
@@ -64,11 +69,6 @@ namespace TvpMain.Form
         /// Reusable progress form.
         /// </summary>
         private readonly ProgressForm _progressForm;
-
-        /// <summary>
-        /// Last check result (could be null).
-        /// </summary>
-        private CheckResults _lastResult;
 
         /// <summary>
         /// All result items from last result (defaults to empty).
@@ -130,10 +130,51 @@ namespace TvpMain.Form
             UpdateCheckArea();
             UpdateCheckContexts();
 
+            // Background worker to reload previous results at startup
+            resultWorker.DoWork += OnResultWorkerDoWork;
+            resultWorker.RunWorkerCompleted += OnResultWorkerCompleted;
+            resultWorker.RunWorkerAsync();
+
             // Background worker to build the biblical term list filter at startup
-            // (takes a few seconds, so should not hold up the UI).
-            termWorker.DoWork += OnSetupWorkerDoWork;
+            termWorker.DoWork += OnTermWorkerDoWork;
             termWorker.RunWorkerAsync();
+        }
+
+        /// <summary>
+        /// Loads existing result items on startup.
+        /// </summary>
+        /// <param name="sender">Event sender (ignored).</param>
+        /// <param name="e">Event args (ignored).</param>
+        private void OnResultWorkerDoWork(object sender, DoWorkEventArgs e)
+        {
+            try
+            {
+                _projectManager.ResultManager
+                    .LoadBooks(_projectManager.PresentBookNums);
+                _allResultItems = _projectManager.ResultManager
+                    .GetAllVerseResults(null, null);
+            }
+            catch (Exception ex)
+            {
+                HostUtil.Instance.ReportError(ex);
+            }
+        }
+
+        /// <summary>
+        /// Displays existing result items on startup.
+        /// </summary>
+        /// <param name="sender">Event sender (ignored).</param>
+        /// <param name="e">Event args (ignored).</param>
+        private void OnResultWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            try
+            {
+                UpdateMainTable();
+            }
+            catch (Exception ex)
+            {
+                HostUtil.Instance.ReportError(ex);
+            }
         }
 
         /// <summary>
@@ -151,7 +192,7 @@ namespace TvpMain.Form
         /// </summary>
         /// <param name="sender">Event sender (ignored).</param>
         /// <param name="e">Event args (ignored).</param>
-        private void OnSetupWorkerDoWork(object sender, DoWorkEventArgs e)
+        private void OnTermWorkerDoWork(object sender, DoWorkEventArgs e)
         {
             try
             {
@@ -221,9 +262,9 @@ namespace TvpMain.Form
             foreach (var resultItem in _filteredResultItems)
             {
                 dgvCheckResults.Rows.Add(
-                    $"{resultItem.PartData.VerseData.VerseLocation.VerseCoordinateText}",
+                    $"{resultItem.VerseLocation.VerseCoordinateText}",
                     $"{resultItem.MatchText}",
-                    $"{resultItem.CheckText}",
+                    $"{resultItem.VersePart.PartText}",
                     $"{resultItem.ErrorText}");
                 dgvCheckResults.Rows[(dgvCheckResults.Rows.Count - 1)].HeaderCell.Value =
                     $"{dgvCheckResults.Rows.Count:N0}";
@@ -252,7 +293,7 @@ namespace TvpMain.Form
                 {
                     _filteredResultItems = _filteredResultItems.Where(
                         resultItem => !_ignoreFilter.FilterText(isEntireVerse
-                        ? resultItem.CheckText : resultItem.MatchText)).ToList();
+                        ? resultItem.VersePart.PartText : resultItem.MatchText)).ToList();
                 }
 
                 // lock in case the background worker hasn't finished yet
@@ -263,14 +304,14 @@ namespace TvpMain.Form
                     {
                         _filteredResultItems = _filteredResultItems.Where(
                             resultItem => !_wordListFilter.FilterText(isEntireVerse
-                        ? resultItem.CheckText : resultItem.MatchText)).ToList();
+                        ? resultItem.VersePart.PartText : resultItem.MatchText)).ToList();
                     }
                     if (biblicaTermsFiltersMenuItem.Checked
                         && !_biblicalTermFilter.IsEmpty)
                     {
                         _filteredResultItems = _filteredResultItems.Where(
                             resultItem => !_biblicalTermFilter.FilterText(isEntireVerse
-                                ? resultItem.CheckText : resultItem.MatchText)).ToList();
+                                ? resultItem.VersePart.PartText : resultItem.MatchText)).ToList();
                     }
                 }
 
@@ -282,13 +323,13 @@ namespace TvpMain.Form
                     if (searchText.Any(char.IsUpper))
                     {
                         _filteredResultItems = _filteredResultItems.Where(
-                                resultItem => (resultItem.CheckText.Contains(searchText)
+                                resultItem => (resultItem.VersePart.PartText.Contains(searchText)
                                 || resultItem.ErrorText.Contains(searchText))).ToList();
                     }
                     else
                     {
                         _filteredResultItems = _filteredResultItems.Where(
-                                resultItem => (resultItem.CheckText.ToLower().Contains(searchText)
+                                resultItem => (resultItem.VersePart.PartText.ToLower().Contains(searchText)
                                 || resultItem.ErrorText.ToLower().Contains(searchText))).ToList();
                     }
                 }
@@ -337,16 +378,20 @@ namespace TvpMain.Form
             {
                 ShowProgress();
 
-                if (_textCheckRunner.RunChecks(_checkArea, _allChecks, _checkContexts, out var nextResults))
+                try
                 {
-                    _lastResult ??= nextResults;
-                }
-                HideProgress();
-
-                if (_lastResult != null)
-                {
-                    _allResultItems = new List<ResultItem>(_lastResult.ResultItems);
+                    if (_textCheckRunner.RunChecks(
+                        _checkArea, _allChecks,
+                        _checkContexts, true,
+                        out var nextResults))
+                    {
+                        _allResultItems = nextResults.ResultItems.ToImmutableList();
+                    }
                     UpdateMainTable();
+                }
+                finally
+                {
+                    HideProgress();
                 }
             }
             catch (Exception ex)
@@ -688,7 +733,7 @@ namespace TvpMain.Form
                 {
                     using var outputStream = saveFile.OpenFile();
                     using var streamWriter = new StreamWriter(outputStream);
-                    using var csvWriter = new CsvWriter(streamWriter);
+                    using var csvWriter = new CsvWriter(streamWriter, CultureInfo.CurrentCulture);
 
                     csvWriter.WriteRecords(_filteredResultItems);
                     csvWriter.Flush();

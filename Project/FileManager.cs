@@ -21,7 +21,7 @@ namespace TvpMain.Project
         /// <summary>
         /// Active project name.
         /// </summary>
-        private readonly string _activeProjectName;
+        private readonly string _projectName;
 
         /// <summary>
         /// Project directory.
@@ -32,14 +32,14 @@ namespace TvpMain.Project
         /// Basic ctor.
         /// </summary>
         /// <param name="host">Paratext host interface (required).</param>
-        /// <param name="activeProjectName">Active project name (required).</param>
-        public FileManager(IHost host, string activeProjectName)
+        /// <param name="projectName">Active project name (required).</param>
+        public FileManager(IHost host, string projectName)
         {
             _host = host ?? throw new ArgumentNullException(nameof(host));
-            _activeProjectName = activeProjectName
-                                 ?? throw new ArgumentNullException(nameof(activeProjectName));
+            _projectName = projectName
+                                 ?? throw new ArgumentNullException(nameof(projectName));
 
-            _projectDir = Directory.GetParent(_host.GetFigurePath(_activeProjectName, false));
+            _projectDir = Directory.GetParent(_host.GetFigurePath(_projectName, false));
         }
 
         /// <summary>

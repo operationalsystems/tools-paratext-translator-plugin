@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace TvpMain.Project
 {
+    /// <summary>
+    /// Model class for project-specific book names (abbreviation, short, and long).
+    /// </summary>
     public class BookNameItem
     {
         /// <summary>
@@ -72,6 +75,40 @@ namespace TvpMain.Project
 
             LongName = longName?.Trim();
             IsLongName = !string.IsNullOrWhiteSpace(LongName);
+        }
+
+        /// <summary>
+        /// Gets name string based on what's available, according to a specified precedence.
+        /// </summary>
+        /// <param name="inputTypes">Book name type precedence (required).</param>
+        /// <returns>First available name string or code string, whichever is first.</returns>
+        public string GetAvailableName(params BookNameType[] inputTypes)
+        {
+            foreach (var nameType in inputTypes)
+            {
+                switch (nameType)
+                {
+                    case BookNameType.Abbreviation:
+                        if (IsAbbreviation)
+                        {
+                            return Abbreviation;
+                        }
+                        break;
+                    case BookNameType.ShortName:
+                        if (IsShortName)
+                        {
+                            return ShortName;
+                        }
+                        break;
+                    case BookNameType.LongName:
+                        if (IsLongName)
+                        {
+                            return LongName;
+                        }
+                        break;
+                }
+            }
+            return BookCode;
         }
     }
 }

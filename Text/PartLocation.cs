@@ -4,28 +4,36 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using CsvHelper.Configuration.Attributes;
+using Newtonsoft.Json;
 
 namespace TvpMain.Text
 {
     /// <summary>
     /// Location of a specific part of a verse.
+    ///
+    /// Note "private set" fields support JSON serialization
+    /// while maintaining runtime immutability.
     /// </summary>
+    [JsonObject(MemberSerialization.OptIn)]
     public class PartLocation
     {
         /// <summary>
         /// Text context.
         /// </summary>
-        public PartContext PartContext { get; }
+        [JsonProperty]
+        public PartContext PartContext { get; private set; }
 
         /// <summary>
-        /// The start of content within a verse this refers to (0-based).
+        /// Start of the part, relative to verse start (0-based).
         /// </summary>
-        public int PartStart { get; }
+        [JsonProperty]
+        public int PartStart { get; private set; }
 
         /// <summary>
-        /// The length of content within a verse this refers to.
+        /// Length of the part.
         /// </summary>
-        public int PartLength { get; }
+        [JsonProperty]
+        public int PartLength { get; private set; }
 
         /// <summary>
         /// Inclusive part range (e.g., "1-4" = characters 1 through 4).
@@ -45,6 +53,14 @@ namespace TvpMain.Text
             PartStart = partStart;
             PartLength = partLength;
             PartContext = partContext;
+        }
+
+        /// <summary>
+        /// Private ctor for serialization.
+        /// </summary>
+        [JsonConstructor]
+        private PartLocation()
+        {
         }
 
         /// <summary>

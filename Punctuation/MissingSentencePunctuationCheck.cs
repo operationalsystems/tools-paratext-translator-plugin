@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
+using TvpMain.Check;
 using TvpMain.Project;
 using TvpMain.Result;
 using TvpMain.Text;
 
-namespace TvpMain.Check
+namespace TvpMain.Punctuation
 {
     /// <summary>
     /// Regex-based punctuation check.
@@ -33,6 +34,9 @@ namespace TvpMain.Check
             _projectManager = projectManager ?? throw new ArgumentNullException(nameof(projectManager));
         }
 
+        /// <inheritdoc />
+        public CheckType CheckType => CheckType.MissingSentencePunctuation;
+
         /// <summary>
         /// Check implementation.
         /// </summary>
@@ -47,8 +51,9 @@ namespace TvpMain.Check
                 checkResults.Add
                 (new ResultItem(partData,
                     $"Punctuation check failure at position {matchItem.Index}.",
-                    partData.PartText, matchItem.Value, null,
-                    CheckType.MissingSentencePunctuation));
+                    matchItem.Value, matchItem.Index, null,
+                    CheckType.MissingSentencePunctuation,
+                    (int)PunctuationErrorType.MissingSentenceEnd));
             }
         }
     }

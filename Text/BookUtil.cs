@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -24,12 +25,12 @@ namespace TvpMain.Text
         public static readonly IList<BookIdItem> BookIdList;
 
         /// <summary>
-        /// Map of book codes to numbers (1-based).
+        /// Map of book codes to IDs.
         /// </summary>
         public static readonly IDictionary<string, BookIdItem> BookIdsByCode;
 
         /// <summary>
-        /// Map of book numbers (1-based) to codes.
+        /// Map of book numbers (1-based) to IDs.
         /// </summary>
         public static readonly IDictionary<int, BookIdItem> BookIdsByNum;
 
@@ -39,7 +40,7 @@ namespace TvpMain.Text
 
             using var inputStream = executingAssembly.GetManifestResourceStream("TvpMain.Resources.book-ids-1.csv");
             using var streamReader = new StreamReader(inputStream);
-            using var csvReader = new CsvReader(streamReader);
+            using var csvReader = new CsvReader(streamReader, CultureInfo.CurrentCulture);
 
             csvReader.Configuration.HasHeaderRecord = false;
             csvReader.Configuration.IgnoreBlankLines = true;

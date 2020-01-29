@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -107,6 +108,26 @@ namespace TvpTest
         protected const string REFERENCE_FINAL_PUNCTUATION_SETTING = "";
 
         /// <summary>
+        /// Target reference name type setting.
+        /// </summary>
+        protected const string TARGET_NAME_TYPE_SETTING = "Abbreviation";
+
+        /// <summary>
+        /// Parallel passage name type setting.
+        /// </summary>
+        protected const string PASSAGE_NAME_TYPE_SETTING = "ShortName";
+
+        /// <summary>
+        /// Map of book name items by book number (1-based), used by mock project manager.
+        /// </summary>
+        private IDictionary<int, BookNameItem> TestBookNamesByNum;
+
+        /// <summary>
+        /// Map of book name items by all names, used by mock project manager.
+        /// </summary>
+        private IDictionary<string, BookNameItem> TestBookNamesByAllNames;
+
+        /// <summary>
         /// Mock Paratext scripture extractor.
         /// </summary>
         protected Mock<IScrExtractor> MockExtractor;
@@ -164,6 +185,31 @@ namespace TvpTest
                 .Returns<string, string>((projectName, settingsKey) => REFERENCE_FINAL_PUNCTUATION_SETTING);
             MockHost.Setup(hostItem => hostItem.GetFigurePath(TEST_PROJECT_NAME, false))
                 .Returns<string, bool>((projectName, localFlag) => Path.Combine(Directory.GetCurrentDirectory(), "test"));
+            MockHost.Setup(hostItem => hostItem.GetProjectSetting(TEST_PROJECT_NAME, "BookSourceForMarkerXt"))
+                .Returns<string, string>((projectName, settingsKey) => TARGET_NAME_TYPE_SETTING);
+            MockHost.Setup(hostItem => hostItem.GetProjectSetting(TEST_PROJECT_NAME, "BookSourceForMarkerR"))
+                .Returns<string, string>((projectName, settingsKey) => PASSAGE_NAME_TYPE_SETTING);
+
+            // project manager setup
+            TestBookNamesByNum = BookUtil.BookIdList
+                .Select(value =>
+                    new BookNameItem(value.BookCode, value.BookNum, value.BookCode, value.BookTitle, value.BookTitle))
+                .ToImmutableDictionary(value => value.BookNum);
+
+            var tempTestBookNamesByAllNames = new Dictionary<string, BookNameItem>();
+            foreach (var nameItem in TestBookNamesByNum.Values)
+            {
+                tempTestBookNamesByAllNames[nameItem.BookCode.ToLower()] = nameItem;
+                tempTestBookNamesByAllNames[nameItem.Abbreviation.ToLower()] = nameItem;
+                tempTestBookNamesByAllNames[nameItem.ShortName.ToLower()] = nameItem;
+                tempTestBookNamesByAllNames[nameItem.LongName.ToLower()] = nameItem;
+            }
+            TestBookNamesByAllNames = tempTestBookNamesByAllNames.ToImmutableDictionary();
+
+            MockProjectManager.Setup(managerItem => managerItem.BookNamesByNum)
+                .Returns(TestBookNamesByNum);
+            MockProjectManager.Setup(managerItem => managerItem.BookNamesByAllNames)
+                .Returns(TestBookNamesByAllNames);
         }
 
         /// <summary>

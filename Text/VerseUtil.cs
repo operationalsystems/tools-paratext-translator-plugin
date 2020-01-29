@@ -15,9 +15,19 @@ namespace TvpMain.Text
     public class VerseUtil
     {
         /// <summary>
+        /// Regexes to catch _possible_ target references in arbitrary text
+        /// with typical English punctuation for error checking.
+        /// </summary>
+        public static readonly IList<Regex> EnglishTargetReferenceRegexes =
+            new List<Regex>()
+            {
+                CreateTargetReferenceRegex(@"xt", @"\w*\p{L}\w*",@"[ \t\p{P}]")
+            }.ToImmutableList();
+
+        /// <summary>
         /// List of note and reference regexes.
         /// </summary>
-        private static readonly IList<Regex> NoteOrReferenceRegexes
+        public static readonly IList<Regex> NoteOrReferenceRegexes
             = new List<Regex>()
             {
                 CreateNoteOrReferenceRegex("f"),
@@ -32,7 +42,7 @@ namespace TvpMain.Text
         /// <summary>
         /// List of line-oriented intro regexes.
         /// </summary>
-        private static readonly IList<Regex> IntroductionRegexes
+        public static readonly IList<Regex> IntroductionRegexes
             = new List<Regex>()
             {
                 CreateLineTagGroupRegex(
@@ -46,7 +56,7 @@ namespace TvpMain.Text
         /// <summary>
         /// List of line-oriented TOC regexes.
         /// </summary>
-        private static readonly IList<Regex> OutlineRegexes
+        public static readonly IList<Regex> OutlineRegexes
             = new List<Regex>()
             {
                 CreateLineTagGroupRegex(
@@ -57,7 +67,7 @@ namespace TvpMain.Text
         /// All regexes that find text we _don't_ want in extracted "main" text,
         /// needed because main scripture extractor will co-mingle everything.
         /// </summary>
-        private static readonly IList<Regex> NonMainTextRegexes
+        public static readonly IList<Regex> NonMainTextRegexes
             = NoteOrReferenceRegexes
                 .Concat(IntroductionRegexes)
                 .Concat(OutlineRegexes)
@@ -94,7 +104,7 @@ namespace TvpMain.Text
         /// </summary>
         /// <param name="tagName">Tag name (required).</param>
         /// <returns></returns>
-        private static Regex CreateNoteOrReferenceRegex(string tagName)
+        public static Regex CreateNoteOrReferenceRegex(string tagName)
         {
             return new Regex($@"\\{tagName}\s+[\S]\s+(?:(?:(?!\\{tagName}).)*|\s*)(?:\\{tagName}\*)?",
                 RegexOptions.Singleline | RegexOptions.Compiled);
@@ -119,7 +129,7 @@ namespace TvpMain.Text
         /// </summary>
         /// <param name="tagName">Tag name (required).</param>
         /// <returns>Compiled, single-line regex.</returns>
-        private static Regex CreatePairedTagRegex(string tagName)
+        public static Regex CreatePairedTagRegex(string tagName)
         {
             return new Regex($@"\\{tagName}(?:(?:(?!\\{tagName}).)*|\s*)(?:\\{tagName}\*)?",
                 RegexOptions.Singleline | RegexOptions.Compiled);
@@ -130,7 +140,7 @@ namespace TvpMain.Text
         /// </summary>
         /// <param name="tagNames">Tag names to match (required).</param>
         /// <returns>Compiled, multi-line regex.</returns>
-        private static Regex CreateLineTagGroupRegex(params string[] tagNames)
+        public static Regex CreateLineTagGroupRegex(params string[] tagNames)
         {
             return CreateLineTagRegex($"(?:{string.Join("|", tagNames)})");
         }
@@ -139,12 +149,54 @@ namespace TvpMain.Text
         /// Creates a whole-line regex from a tag name, on their own or as a group
         /// (e.g., titles and tocs).
         /// </summary>
-        /// <param name="tagName"></param>
+        /// <param name="tagName">Enclosing tag (required).</param>
         /// <returns>Compiled, multi-line regex.</returns>
-        private static Regex CreateLineTagRegex(string tagName)
+        public static Regex CreateLineTagRegex(string tagName)
         {
             return new Regex($@"^\s*\\{tagName}(?:\s.*)?\r?$",
                 RegexOptions.Multiline | RegexOptions.Compiled);
+        }
+
+        /// <summary>
+        /// Creates regex to catch _possible_ target references in arbitrary text
+        /// with groups of specified book identifiers and punctuation for error checking.
+        ///
+        /// Note: Escape and trim any potential, un-intentional argument meta-characters
+        /// (e.g., from book names or settings config files).
+        /// </summary>
+        /// <param name="tagParts">Enclosing tag regex sub-elements (e.g., "xt"; required).</param>
+        /// <param name="bookParts">Book regex sub-elements (e.g., a non-capturing group w/ORed elements; required).</param>
+        /// <param name="punctuationParts">Punctuation regex sub-elements (required).</param>
+        /// <returns>Compiled, case-insensitive regex.</returns>
+        public static Regex CreateTargetReferenceGroupRegex(
+            IEnumerable<string> tagParts,
+            IEnumerable<string> bookParts,
+            IEnumerable<string> punctuationParts)
+        {
+            return CreateTargetReferenceRegex(
+                $"(?:{string.Join("|", tagParts)})",
+                $"(?:{string.Join("|", bookParts)})",
+                $"(?:{string.Join("|", punctuationParts)})");
+        }
+
+        /// <summary>
+        /// Creates regex to catch _possible_ target references in arbitrary text
+        /// with specified book identifiers and punctuation for error checking.
+        /// 
+        /// Note: Escape and trim any potential, un-intentional argument meta-characters
+        /// (e.g., from book names or settings config files).
+        /// </summary>
+        /// <param name="tagPart">Enclosing tag regex sub-element (e.g., "xt"; required).</param>
+        /// <param name="bookPart">Book regex sub-element (e.g., a non-capturing group w/ORed elements; required).</param>
+        /// <param name="punctuationPart">Punctuation regex sub-element (required).</param>
+        /// <returns>Compiled, case-insensitive regex.</returns>
+        public static Regex CreateTargetReferenceRegex(
+            string tagPart,
+            string bookPart,
+            string punctuationPart)
+        {
+            return new Regex($@"(?:\\\S*{tagPart}\s*)?(?:(?:\\)?(?:{bookPart})?\s*[0-9]+(?:\s*{punctuationPart}\s*[0-9]+)+)(?:\s*{punctuationPart}\s*(?:\\)?(?:{bookPart})?\s*[0-9]+(?:\s*{punctuationPart}\s*[0-9]+)+)*(?:\s*\\\S*{tagPart}\*?)?",
+                RegexOptions.IgnoreCase | RegexOptions.Compiled);
         }
 
         /// <summary>
@@ -154,12 +206,12 @@ namespace TvpMain.Text
         /// (e.g., main text, notes) we need them separated for context-sensitive checks.
         /// </summary>
         /// <param name="inputVerse">Input verse containing mixed content (required).</param>
-        /// <param name="inputContexts">Set of allowable contexts to search for (required).</param>
+        /// <param name="inputContexts">List of allowable contexts to search for (required).</param>
         /// <param name="outputParts">Map of text contexts to lists of found parts (required).</param>
         /// <returns>True if any parts found, false otherwise.</returns>
         public static bool FindVerseParts(
             ProjectVerse inputVerse,
-            ISet<PartContext> inputContexts,
+            IEnumerable<PartContext> inputContexts,
             ICollection<VersePart> outputParts)
         {
             var isFound = false;
@@ -184,10 +236,10 @@ namespace TvpMain.Text
         /// <param name="inputVerse">Input verse data containing mixed content (required).</param>
         /// <param name="includeRegexes">Regexes to search for (required).</param>
         /// <param name="isNegative">True to find parts _not_ matching regexes, false to find matching.</param>
-        /// <param name="outputContext">Context for newly-created parts.</param>
-        /// <param name="outputParts">Destination collection for found note and reference parts.</param>
+        /// <param name="outputContext">Context for newly-created parts (required).</param>
+        /// <param name="outputParts">Destination collection for found note and reference parts (required).</param>
         /// <returns>True if applicable content found, false otherwise.</returns>
-        private static bool FindContextParts(
+        public static bool FindContextParts(
             ProjectVerse inputVerse, IEnumerable<Regex> includeRegexes,
             bool isNegative, PartContext outputContext,
             ICollection<VersePart> outputParts)

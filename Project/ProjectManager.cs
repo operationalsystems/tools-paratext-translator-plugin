@@ -7,6 +7,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Xml;
 using AddInSideViews;
+using TvpMain.Result;
 using TvpMain.Text;
 using TvpMain.Util;
 
@@ -20,23 +21,28 @@ namespace TvpMain.Project
         /// <summary>
         /// Regex for splitting separator settings.
         /// </summary>
-        private static readonly Regex SeparatorRegex = new Regex("\\|",
+        public static readonly Regex SeparatorRegex = new Regex("\\|",
             RegexOptions.Multiline | RegexOptions.Compiled);
 
         /// <summary>
         /// Paratext host interface.
         /// </summary>
-        private IHost Host { get; }
+        public IHost Host { get; }
 
         /// <summary>
         /// Active project name.
         /// </summary>
-        private string ActiveProjectName { get; }
+        public string ProjectName { get; }
 
         /// <summary>
         /// Project file manager.
         /// </summary>
-        private FileManager FileManager { get; }
+        public FileManager FileManager { get; }
+
+        /// <summary>
+        /// Provides access to results.
+        /// </summary>
+        public ResultManager ResultManager { get; }
 
         /// <summary>
         /// Readable chapter and verse separators.
@@ -44,9 +50,19 @@ namespace TvpMain.Project
         public IList<string> ChapterAndVerseSeparators { get; private set; }
 
         /// <summary>
+        /// Standard (the first, currently) chapter and verse separator.
+        /// </summary>
+        public string StandardChapterAndVerseSeparator { get; private set; }
+
+        /// <summary>
         /// Readable verse range separators.
         /// </summary>
         public IList<string> VerseRangeSeparators { get; private set; }
+
+        /// <summary>
+        /// Standard (the first, currently) verse range separator.
+        /// </summary>
+        public string StandardVerseRangeSeparator { get; private set; }
 
         /// <summary>
         /// Readable verse sequence separators.
@@ -54,9 +70,19 @@ namespace TvpMain.Project
         public IList<string> VerseSequenceSeparators { get; private set; }
 
         /// <summary>
+        /// Standard (the first, currently) verse sequence separator.
+        /// </summary>
+        public string StandardVerseSequenceSeparator { get; private set; }
+
+        /// <summary>
         /// Readable chapter or book range separators.
         /// </summary>
         public IList<string> BookOrChapterRangeSeparators { get; private set; }
+
+        /// <summary>
+        /// Standard (the first, currently) book or chapter range separator.
+        /// </summary>
+        public string StandardBookOrChapterRangeSeparator { get; private set; }
 
         /// <summary>
         /// Readable book sequence separators.
@@ -64,9 +90,19 @@ namespace TvpMain.Project
         public IList<string> BookSequenceSeparators { get; private set; }
 
         /// <summary>
+        /// Standard (the first, currently) book sequence separator.
+        /// </summary>
+        public string StandardBookSequenceSeparator { get; private set; }
+
+        /// <summary>
         /// Readable chapter sequence separators.
         /// </summary>
         public IList<string> ChapterSequenceSeparators { get; private set; }
+
+        /// <summary>
+        /// Standard (the first, currently) chapter sequence separator.
+        /// </summary>
+        public string StandardChapterSequenceSeparator { get; private set; }
 
         /// <summary>
         /// Extra reference prefixes or suffix options.
@@ -74,9 +110,19 @@ namespace TvpMain.Project
         public IList<string> ReferencePrefixesOrSuffixes { get; private set; }
 
         /// <summary>
+        /// Standard (the first, currently) reference prefixes or suffix.
+        /// </summary>
+        public string StandardReferencePrefixesOrSuffix { get; private set; }
+
+        /// <summary>
         /// Final reference punctuation options.
         /// </summary>
         public IList<string> FinalReferencePunctuation { get; private set; }
+
+        /// <summary>
+        /// Standard (the first, currently) final reference punctuation.
+        /// </summary>
+        public string StandardFinalReferencePunctuation { get; private set; }
 
         /// <summary>
         /// Ordinal present books list (by 0-based book number).
@@ -99,9 +145,30 @@ namespace TvpMain.Project
         public int MaxPresentBookNum { get; private set; }
 
         /// <summary>
+        /// Cross reference (\xt tag) book name type.
+        /// </summary>
+        public BookNameType TargetNameType { get; private set; }
+
+        /// <summary>
+        /// Parallel passage book name type.
+        /// </summary>
+        public BookNameType PassageNameType { get; private set; }
+
+        /// <summary>
         /// Book names map, keyed by book number (1-based).
         /// </summary>
-        public IDictionary<int, BookNameItem> BookNames { get; private set; }
+        public virtual IDictionary<int, BookNameItem> BookNamesByNum { get; private set; }
+
+        /// <summary>
+        /// Book names map, keyed by all book names in lower case (i.e., code, abbreviation, short, long).
+        /// </summary>
+        public virtual IDictionary<string, BookNameItem> BookNamesByAllNames { get; private set; }
+
+        /// <summary>
+        /// Regexes to catch _possible_ target references in arbitrary text
+        /// with typical project- and language-specific and English punctuation for error checking.
+        /// </summary>
+        public IList<Regex> TargetReferenceRegexes { get; private set; }
 
         /// <summary>
         /// Basic ctor.
@@ -111,14 +178,16 @@ namespace TvpMain.Project
         public ProjectManager(IHost host, string activeProjectName)
         {
             Host = host ?? throw new ArgumentNullException(nameof(host));
-            ActiveProjectName = activeProjectName
+            ProjectName = activeProjectName
                                  ?? throw new ArgumentNullException(nameof(activeProjectName));
 
-            FileManager = new FileManager(Host, ActiveProjectName);
+            FileManager = new FileManager(Host, ProjectName);
+            ResultManager = new ResultManager(Host, ProjectName);
 
             ReadBooksPresent();
             ReadSeparators();
             ReadBookNames();
+            CreateRegexes();
         }
 
         /// <summary>
@@ -126,7 +195,7 @@ namespace TvpMain.Project
         /// </summary>
         private void ReadBooksPresent()
         {
-            var settingText = Host.GetProjectSetting(ActiveProjectName, "BooksPresent");
+            var settingText = Host.GetProjectSetting(ProjectName, "BooksPresent");
             if (string.IsNullOrWhiteSpace(settingText))
             {
                 PresentBookFlags = Enumerable.Empty<bool>()
@@ -178,34 +247,50 @@ namespace TvpMain.Project
             ChapterAndVerseSeparators =
                 GetSeparatorSetting("ChapterVerseSeparator")
                     .ToImmutableList();
+            StandardChapterAndVerseSeparator = ChapterAndVerseSeparators.Count > 0
+                ? ChapterAndVerseSeparators[0].Trim() : MainConsts.DEFAULT_REFERENCE_CHAPTER_AND_VERSE_SEPARATOR;
 
             VerseRangeSeparators =
                 GetSeparatorSetting("RangeIndicator")
                     .ToImmutableList();
+            StandardVerseRangeSeparator = VerseRangeSeparators.Count > 0
+                ? VerseRangeSeparators[0].Trim() : MainConsts.DEFAULT_REFERENCE_VERSE_RANGE_SEPARATOR;
 
             VerseSequenceSeparators =
                 GetSeparatorSetting("SequenceIndicator")
                     .ToImmutableList();
+            StandardVerseSequenceSeparator = VerseSequenceSeparators.Count > 0
+                ? VerseSequenceSeparators[0].Trim() : MainConsts.DEFAULT_REFERENCE_VERSE_SEQUENCE_SEPARATOR;
 
             BookOrChapterRangeSeparators =
                 GetSeparatorSetting("ChapterRangeSeparator")
                     .ToImmutableList();
+            StandardBookOrChapterRangeSeparator = BookOrChapterRangeSeparators.Count > 0
+                ? BookOrChapterRangeSeparators[0].Trim() : MainConsts.DEFAULT_REFERENCE_BOOK_OR_CHAPTER_RANGE_SEPARATOR;
 
             BookSequenceSeparators =
                 GetSeparatorSetting("BookSequenceSeparator")
                     .ToImmutableList();
+            StandardBookSequenceSeparator = BookSequenceSeparators.Count > 0
+                ? BookSequenceSeparators[0].Trim() : MainConsts.DEFAULT_REFERENCE_BOOK_SEQUENCE_SEPARATOR;
 
             ChapterSequenceSeparators =
                 GetSeparatorSetting("ChapterNumberSeparator")
                     .ToImmutableList();
+            StandardChapterSequenceSeparator = ChapterSequenceSeparators.Count > 0
+                ? ChapterSequenceSeparators[0].Trim() : MainConsts.DEFAULT_REFERENCE_CHAPTER_SEQUENCE_SEPARATOR;
 
             ReferencePrefixesOrSuffixes =
                 GetSeparatorSetting("ReferenceExtraMaterial")
                     .ToImmutableList();
+            StandardReferencePrefixesOrSuffix = ReferencePrefixesOrSuffixes.Count > 0
+                ? ReferencePrefixesOrSuffixes[0].Trim() : MainConsts.DEFAULT_REFERENCE_PREFIX_OR_SUFFIX;
 
             FinalReferencePunctuation =
                 GetSeparatorSetting("ReferenceFinalPunctuation")
                     .ToImmutableList();
+            StandardFinalReferencePunctuation = FinalReferencePunctuation.Count > 0
+                ? FinalReferencePunctuation[0].Trim() : MainConsts.DEFAULT_REFERENCE_FINAL_PUNCTUATION;
         }
 
         /// <summary>
@@ -213,8 +298,7 @@ namespace TvpMain.Project
         /// </summary>
         private void ReadBookNames()
         {
-            var tempBookNames = new Dictionary<int, BookNameItem>();
-
+            var tempBookNamesByNum = new Dictionary<int, BookNameItem>();
             if (FileManager.TryGetBookNamesFile(out var fileStream))
             {
                 using (fileStream)
@@ -249,7 +333,7 @@ namespace TvpMain.Project
                                 continue;
                             }
 
-                            tempBookNames[bookId.BookNum]
+                            tempBookNamesByNum[bookId.BookNum]
                                 = new BookNameItem(
                                     codeAttrib,
                                     bookId.BookNum,
@@ -260,8 +344,57 @@ namespace TvpMain.Project
                     }
                 }
             }
+            BookNamesByNum = tempBookNamesByNum.ToImmutableDictionary();
 
-            BookNames = tempBookNames.ToImmutableDictionary();
+            var tempBookNamesByAllNames = new Dictionary<string, BookNameItem>();
+            foreach (var nameItem in BookNamesByNum.Values)
+            {
+                tempBookNamesByAllNames[nameItem.BookCode.ToLower()] = nameItem;
+                if (nameItem.IsAbbreviation)
+                {
+                    tempBookNamesByAllNames[nameItem.Abbreviation.ToLower()] = nameItem;
+                }
+                if (nameItem.IsShortName)
+                {
+                    tempBookNamesByAllNames[nameItem.ShortName.ToLower()] = nameItem;
+                }
+                if (nameItem.IsLongName)
+                {
+                    tempBookNamesByAllNames[nameItem.LongName.ToLower()] = nameItem;
+                }
+            }
+            BookNamesByAllNames = tempBookNamesByAllNames.ToImmutableDictionary();
+
+            // additional name-related settings
+            TargetNameType = GetBookNameTypeSetting("BookSourceForMarkerXt", BookNameType.Abbreviation);
+            PassageNameType = GetBookNameTypeSetting("BookSourceForMarkerR", BookNameType.ShortName);
+        }
+
+        /// <summary>
+        /// Creates project-specific regexes.
+        /// </summary>
+        private void CreateRegexes()
+        {
+            var punctuationParts =
+                ChapterAndVerseSeparators
+                    .Concat(VerseRangeSeparators)
+                    .Concat(VerseSequenceSeparators)
+                    .Concat(BookOrChapterRangeSeparators)
+                    .Concat(BookSequenceSeparators)
+                    .Concat(ChapterSequenceSeparators)
+                    .Select(punctuationItem => punctuationItem.Trim())
+                    .Select(Regex.Escape)
+                    .Distinct()
+                    .ToList();
+
+            TargetReferenceRegexes = new List<Regex>()
+                {
+                    VerseUtil.CreateTargetReferenceGroupRegex(
+                        new string[] { @"xt" },
+                        new string[] { @"\w*\p{L}\w*" },
+                        punctuationParts),
+                }.Concat(VerseUtil.EnglishTargetReferenceRegexes)
+                .ToImmutableList();
         }
 
         /// <summary>
@@ -273,7 +406,7 @@ namespace TvpMain.Project
         /// <returns>List of setting values if found, empty list otherwise.</returns>
         private IEnumerable<string> GetSeparatorSetting(string settingKey)
         {
-            var settingValue = Host.GetProjectSetting(ActiveProjectName, settingKey);
+            var settingValue = Host.GetProjectSetting(ProjectName, settingKey);
             if (string.IsNullOrWhiteSpace(settingValue))
             {
                 return Enumerable.Empty<string>()
@@ -287,6 +420,40 @@ namespace TvpMain.Project
             }
         }
 
+
+        /// <summary>
+        /// Extract a book name type from a project setting.
+        /// </summary>
+        /// <param name="settingKey">Setting key (required).</param>
+        /// <param name="defaultType">Default book name type, if not found.</param>
+        /// <returns>Book name type if found, default type otherwise.</returns>
+        private BookNameType GetBookNameTypeSetting(string settingKey, BookNameType defaultType)
+        {
+            var settingValue = Host.GetProjectSetting(ProjectName, settingKey);
+            if (string.IsNullOrWhiteSpace(settingValue))
+            {
+                return defaultType;
+            }
+            else
+            {
+                var workSettingValue = settingKey.Trim().ToLower();
+                switch (workSettingValue)
+                {
+                    case "abbreviation":
+                        return BookNameType.Abbreviation;
+
+                    case "shortname":
+                        return BookNameType.ShortName;
+
+                    case "longname":
+                        return BookNameType.LongName;
+
+                    default:
+                        return defaultType;
+                }
+            }
+        }
+
         /// <summary>
         /// Determines whether a book is present in the given project.
         /// </summary>
@@ -297,5 +464,15 @@ namespace TvpMain.Project
             return (bookNum >= 1 && bookNum <= PresentBookFlags.Count)
                    && PresentBookFlags[bookNum - 1];
         }
+    }
+
+    /// <summary>
+    /// Types of book names for (e.g.) target references.
+    /// </summary>
+    public enum BookNameType
+    {
+        Abbreviation,
+        ShortName,
+        LongName
     }
 }

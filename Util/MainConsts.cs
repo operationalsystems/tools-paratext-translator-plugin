@@ -9,9 +9,54 @@ namespace TvpMain.Util
     public class MainConsts
     {
         /// <summary>
+        /// Default separator for a sequence of book names.
+        /// </summary>
+        public const string DEFAULT_REFERENCE_BOOK_SEQUENCE_SEPARATOR = ";";
+
+        /// <summary>
+        /// Default separator for a sequence of chapter numbers.
+        /// </summary>
+        public const string DEFAULT_REFERENCE_CHAPTER_SEQUENCE_SEPARATOR = ";";
+
+        /// <summary>
+        /// Default separator for a range of chapter numbers.
+        /// </summary>
+        public const string DEFAULT_REFERENCE_BOOK_OR_CHAPTER_RANGE_SEPARATOR = "–";
+
+        /// <summary>
+        /// Default separator for chapters and verses.
+        /// </summary>
+        public const string DEFAULT_REFERENCE_CHAPTER_AND_VERSE_SEPARATOR = ":";
+
+        /// <summary>
+        /// Default separator for verse sequences.
+        /// </summary>
+        public const string DEFAULT_REFERENCE_VERSE_SEQUENCE_SEPARATOR = ",";
+
+        /// <summary>
+        /// Default separator for verse ranges.
+        /// </summary>
+        public const string DEFAULT_REFERENCE_VERSE_RANGE_SEPARATOR = "-";
+
+        /// <summary>
+        /// Default prefix or suffix for references.
+        /// </summary>
+        public const string DEFAULT_REFERENCE_PREFIX_OR_SUFFIX = "";
+
+        /// <summary>
+        /// Default final punctuation for references.
+        /// </summary>
+        public const string DEFAULT_REFERENCE_FINAL_PUNCTUATION = "";
+
+        /// <summary>
         /// Plugin data identifier for ignore list items.
         /// </summary>
-        public const string IGNORE_LIST_ITEMS_ID = "IgnoreListItems";
+        public const string IGNORE_LIST_ITEMS_DATA_ID = "IgnoreListItems.json";
+
+        /// <summary>
+        /// Plugin data identifier format for result items.
+        /// </summary>
+        public const string RESULT_ITEMS_DATA_ID_FORMAT = "ResultItems-{0}.json";
 
         /// <summary>
         /// Update rate for progress form and similar loops.
@@ -42,5 +87,10 @@ namespace TvpMain.Util
         /// Range ref parts (i.e., chapters, verses).
         /// </summary>
         public static readonly int RefPartRange = 1000;
+
+        /// <summary>
+        /// Number of seconds to wait after changes to save result items.
+        /// </summary>
+        public const int RESULT_ITEM_SAVE_DELAY_IN_SEC = 5;
     }
 }
