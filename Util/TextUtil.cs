@@ -37,10 +37,8 @@ namespace TvpMain.Util
         /// <param name="thisText">This string (provided).</param>
         /// <param name="otherText">String to compare (required).</param>
         /// <returns></returns>
-        public static bool EqualsWithoutWhitespace(this string thisText, string otherText)
-        {
-            return thisText.Where(value => !char.IsWhiteSpace(value))
-                .Equals(otherText.Where(value => !char.IsWhiteSpace(value)));
-        }
+        public static bool EqualsIgnoringWhitespace(this string thisText, string otherText) =>
+            thisText.Where(value => !char.IsWhiteSpace(value))
+                .SequenceEqual(otherText.Where(value => !char.IsWhiteSpace(value)));
     }
 }

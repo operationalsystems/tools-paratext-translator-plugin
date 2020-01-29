@@ -129,11 +129,13 @@
     <Compile Include="Check\CheckArea.cs" />
     <Compile Include="Project\BookNameItem.cs" />
     <Compile Include="Project\FileManager.cs" />
+    <Compile Include="Punctuation\PunctuationErrorType.cs" />
+    <Compile Include="Reference\ScriptureReferenceErrorType.cs" />
     <Compile Include="Reference\ScriptureReferenceSeparators.cs" />
     <Compile Include="Reference\ScriptureReferenceBuilder.cs" />
     <Compile Include="Reference\ScriptureReference.cs" />
     <Compile Include="Reference\ScriptureReferenceParser.cs" />
-    <Compile Include="Result\ResultType.cs" />
+    <Compile Include="Result\ResultManager.cs" />
     <Compile Include="Text\BookIdItem.cs" />
     <Compile Include="Text\PartLocation.cs" />
     <Compile Include="Text\ProjectVerse.cs" />
@@ -143,8 +145,8 @@
     <Compile Include="Text\PartContext.cs" />
     <Compile Include="Check\CheckUpdatedArgs.cs" />
     <Compile Include="Check\CheckType.cs" />
-    <Compile Include="Check\MissingSentencePunctuationCheck.cs" />
-    <Compile Include="Check\ScriptureReferenceCheck.cs" />
+    <Compile Include="Punctuation\MissingSentencePunctuationCheck.cs" />
+    <Compile Include="Reference\ScriptureReferenceCheck.cs" />
     <Compile Include="Project\ProjectManager.cs" />
     <Compile Include="Result\ResultState.cs" />
     <Compile Include="Result\IgnoreListItem.cs" />

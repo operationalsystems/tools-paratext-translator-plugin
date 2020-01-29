@@ -100,25 +100,56 @@ namespace TvpMain.Util
         /// <summary>
         /// Retrieve the ignore list from the host's plugin data storage.
         /// </summary>
-        /// <param name="activeProjectName">Active project name (required).</param>
+        /// <param name="projectName">Active project name (required).</param>
         /// <returns>Ignore list.</returns>
-        public IList<IgnoreListItem> GetIgnoreList(string activeProjectName)
+        public IList<IgnoreListItem> GetIgnoreList(string projectName)
         {
             var inputData =
-                    _host.GetPlugInData(_translationValidationPlugin,
-                activeProjectName, MainConsts.IGNORE_LIST_ITEMS_ID);
-            return inputData == null ? Enumerable.Empty<IgnoreListItem>().ToList() : JsonConvert.DeserializeObject<List<IgnoreListItem>>(inputData);
+                _host.GetPlugInData(_translationValidationPlugin,
+                    projectName, MainConsts.IGNORE_LIST_ITEMS_DATA_ID);
+            return inputData == null
+                ? Enumerable.Empty<IgnoreListItem>().ToList()
+                : JsonConvert.DeserializeObject<List<IgnoreListItem>>(inputData);
         }
 
         /// <summary>
         /// Stores the ignore list to the host's plugin data storage.
         /// </summary>
-        /// <param name="activeProjectName">Active project name (required).</param>
+        /// <param name="projectName">Active project name (required).</param>
         /// <param name="outputItems">Ignore list.</param>
-        public void PutIgnoreList(string activeProjectName, IList<IgnoreListItem> outputItems)
+        public void PutIgnoreList(string projectName, IEnumerable<IgnoreListItem> outputItems)
         {
             _host.PutPlugInData(_translationValidationPlugin,
-                activeProjectName, MainConsts.IGNORE_LIST_ITEMS_ID,
+                projectName, MainConsts.IGNORE_LIST_ITEMS_DATA_ID,
+                JsonConvert.SerializeObject(outputItems));
+        }
+
+        /// <summary>
+        /// Retrieve the ignore list from the host's plugin data storage.
+        /// </summary>
+        /// <param name="projectName">Active project name (required).</param>
+        /// <param name="bookId"></param>
+        /// <returns>Ignore list.</returns>
+        public IList<ResultItem> GetResultItems(string projectName, string bookId)
+        {
+            var inputData =
+                _host.GetPlugInData(_translationValidationPlugin, projectName,
+                    string.Format(MainConsts.RESULT_ITEMS_DATA_ID_FORMAT, bookId));
+            return inputData == null
+                ? Enumerable.Empty<ResultItem>().ToList()
+                : JsonConvert.DeserializeObject<List<ResultItem>>(inputData);
+        }
+
+        /// <summary>
+        /// Stores the ignore list to the host's plugin data storage.
+        /// </summary>
+        /// <param name="projectName">Active project name (required).</param>
+        /// <param name="bookId"></param>
+        /// <param name="outputItems">Ignore list.</param>
+        public void PutResultItems(string projectName, string bookId, IEnumerable<ResultItem> outputItems)
+        {
+            _host.PutPlugInData(_translationValidationPlugin, projectName,
+                string.Format(MainConsts.RESULT_ITEMS_DATA_ID_FORMAT, bookId),
                 JsonConvert.SerializeObject(outputItems));
         }
     }

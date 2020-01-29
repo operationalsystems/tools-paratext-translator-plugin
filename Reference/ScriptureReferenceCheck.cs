@@ -1,18 +1,27 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Text.RegularExpressions;
-using System.Windows.Forms.VisualStyles;
+using TvpMain.Check;
 using TvpMain.Project;
-using TvpMain.Reference;
 using TvpMain.Result;
 using TvpMain.Text;
 using TvpMain.Util;
 
-namespace TvpMain.Check
+namespace TvpMain.Reference
 {
+    /// <summary>
+    /// Scripture reference check.
+    /// </summary>
     public class ScriptureReferenceCheck : ITextCheck
     {
+        /// <summary>
+        /// All part contexts, for iteration.
+        /// </summary>
+        private static readonly IEnumerable<PartContext> AllContexts
+            = Enum.GetValues(typeof(PartContext)).Cast<PartContext>();
+
         /// <summary>
         /// Provides project setting & metadata access.
         /// </summary>
@@ -33,6 +42,9 @@ namespace TvpMain.Check
             _referenceBuilder = new ScriptureReferenceBuilder(projectManager);
         }
 
+        /// <inheritdoc />
+        public CheckType CheckType => CheckType.ScriptureReference;
+
         /// <summary>
         /// Check implementation.
         /// </summary>
@@ -48,7 +60,7 @@ namespace TvpMain.Check
             {
                 foreach (Match matchItem in regexItem.Matches(partData.PartText))
                 {
-                    var matchedPart = new VersePart(partData.VerseData,
+                    var matchedPart = new VersePart(partData.ParatextVerse,
                         new PartLocation(partData.PartLocation.PartStart + matchItem.Index,
                             matchItem.Length,
                             partData.PartLocation.PartContext),
@@ -69,38 +81,49 @@ namespace TvpMain.Check
         /// <param name="inputPart">Verse part (required).</param>
         /// <param name="inputMatch">Regex match (required).</param>
         /// <param name="outputResults">Result item list to add checks to.</param>
-        /// <returns>True if any result items added, false otherwise.</returns>
+        /// <returns>True if results added, false otherwise.</returns>
         private bool CheckVersePart(VersePart inputPart,
             Capture inputMatch,
             ICollection<ResultItem> outputResults)
         {
-            // check we can parse (loose match)
             var result = false;
-            var referenceText = inputMatch.Value.Trim();
+            var matchText = inputMatch.Value.Trim();
+            var matchStart = inputPart.PartLocation.PartStart + inputMatch.Index;
+
+            // check we can parse (loose match)
             if (_referenceBuilder.TryParseScriptureReference(
-                referenceText, out var foundWrapper))
+                matchText, out var foundWrapper))
             {
                 result = CheckFoundReference(
-                    inputPart, inputMatch,
-                    referenceText, foundWrapper,
+                    inputPart, matchText,
+                    matchStart, foundWrapper,
                     outputResults);
             }
             else
             {
                 result = true;
                 outputResults.Add(new ResultItem(inputPart,
-                    $"Invalid reference at position {inputMatch.Index} (can't parse).",
-                    inputMatch.Value, null,
-                    CheckType.ScriptureReference, ResultType.Exception));
+                    $"Invalid reference at position {matchStart} (can't parse).",
+                    matchText, matchStart, null,
+                    CheckType.ScriptureReference, (int)ScriptureReferenceErrorType.MalformedTag));
             }
 
             return result;
         }
 
+        /// <summary>
+        /// Check a parsed reference for correctness.
+        /// </summary>
+        /// <param name="inputPart">Input verse part (required).</param>
+        /// <param name="inputText">Input text (required).</param>
+        /// <param name="inputStart">Input text position, from verse start (0-based).</param>
+        /// <param name="inputReference">Input scripture reference (required).</param>
+        /// <param name="outputResults">Output result destination (required).</param>
+        /// <returns>True if results added, false otherwise.</returns>
         private bool CheckFoundReference(
             VersePart inputPart,
-            Capture inputMatch,
             string inputText,
+            int inputStart,
             ScriptureReferenceWrapper inputReference,
             ICollection<ResultItem> outputResults)
         {
@@ -116,9 +139,10 @@ namespace TvpMain.Check
             {
                 result = true;
                 outputResults.Add(new ResultItem(inputPart,
-                    $"Unknown book name(s) at position {inputMatch.Index}: {unknownBooks}.",
-                    inputMatch.Value, "Verify reference and re-run checks.",
-                    CheckType.ScriptureReference, ResultType.Exception));
+                    $"Unknown book name(s) at position {inputStart}: {unknownBooks}.",
+                    inputText, inputStart,
+                    null, CheckType.ScriptureReference,
+                    (int)ScriptureReferenceErrorType.BadReference));
             }
 
             // check format (tight match)
@@ -126,19 +150,49 @@ namespace TvpMain.Check
                 inputPart.PartLocation.PartContext,
                 inputReference);
 
-            if (!inputMatch.Value.Equals(standardFormat))
+            // Same as standard = done
+            if (!inputText.Equals(standardFormat))
             {
                 // check whether only difference is spacing
-                var messageText = inputText.EqualsWithoutWhitespace(standardFormat)
-                    ? $"Non-standard reference spacing at position {inputMatch.Index}."
-                    : $"Non-standard reference content at position {inputMatch.Index}.";
+                string messageText = null;
+                var typeCode = 0;
+
+                // check for spacing-only miss
+                if (inputText.EqualsIgnoringWhitespace(standardFormat))
+                {
+                    messageText = $"Non-standard reference spacing at position {inputStart}.";
+                    typeCode = (int)ScriptureReferenceErrorType.LooseFormatting;
+                }
+                else
+                {
+                    // check other possible styles for this reference
+                    var otherFormats =
+                        AllContexts.Where(contextItem =>
+                            contextItem != inputPart.PartLocation.PartContext)
+                        .Select(contextItem =>
+                            _referenceBuilder.FormatStandardReference(
+                                inputPart.PartLocation.PartContext,
+                                inputReference))
+                        .ToImmutableHashSet();
+
+                    if (otherFormats.Contains(inputText))
+                    {
+                        messageText = $"Non-standard name style at position {inputStart}.";
+                        typeCode = (int)ScriptureReferenceErrorType.IncorrectNameStyle;
+                    }
+                    else
+                    {
+                        messageText = $"Non-standard reference content at position {inputStart}.";
+                        typeCode = (int)ScriptureReferenceErrorType.BadReference;
+                    }
+                }
 
                 result = true;
                 outputResults.Add(new ResultItem(inputPart, messageText,
-                    inputMatch.Value, standardFormat,
-                    CheckType.ScriptureReference, ResultType.Exception));
+                    inputText, inputStart,
+                    standardFormat, CheckType.ScriptureReference,
+                    typeCode));
             }
-
             return result;
         }
     }

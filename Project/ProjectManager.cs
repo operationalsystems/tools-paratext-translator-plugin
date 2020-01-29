@@ -7,6 +7,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Xml;
 using AddInSideViews;
+using TvpMain.Result;
 using TvpMain.Text;
 using TvpMain.Util;
 
@@ -26,17 +27,22 @@ namespace TvpMain.Project
         /// <summary>
         /// Paratext host interface.
         /// </summary>
-        private IHost Host { get; }
+        public IHost Host { get; }
 
         /// <summary>
         /// Active project name.
         /// </summary>
-        private string ActiveProjectName { get; }
+        public string ProjectName { get; }
 
         /// <summary>
         /// Project file manager.
         /// </summary>
-        private FileManager FileManager { get; }
+        public FileManager FileManager { get; }
+
+        /// <summary>
+        /// Provides access to results.
+        /// </summary>
+        public ResultManager ResultManager { get; }
 
         /// <summary>
         /// Readable chapter and verse separators.
@@ -172,10 +178,11 @@ namespace TvpMain.Project
         public ProjectManager(IHost host, string activeProjectName)
         {
             Host = host ?? throw new ArgumentNullException(nameof(host));
-            ActiveProjectName = activeProjectName
+            ProjectName = activeProjectName
                                  ?? throw new ArgumentNullException(nameof(activeProjectName));
 
-            FileManager = new FileManager(Host, ActiveProjectName);
+            FileManager = new FileManager(Host, ProjectName);
+            ResultManager = new ResultManager(Host, ProjectName);
 
             ReadBooksPresent();
             ReadSeparators();
@@ -188,7 +195,7 @@ namespace TvpMain.Project
         /// </summary>
         private void ReadBooksPresent()
         {
-            var settingText = Host.GetProjectSetting(ActiveProjectName, "BooksPresent");
+            var settingText = Host.GetProjectSetting(ProjectName, "BooksPresent");
             if (string.IsNullOrWhiteSpace(settingText))
             {
                 PresentBookFlags = Enumerable.Empty<bool>()
@@ -241,49 +248,49 @@ namespace TvpMain.Project
                 GetSeparatorSetting("ChapterVerseSeparator")
                     .ToImmutableList();
             StandardChapterAndVerseSeparator = ChapterAndVerseSeparators.Count > 0
-                ? ChapterAndVerseSeparators[0] : MainConsts.DEFAULT_REFERENCE_CHAPTER_AND_VERSE_SEPARATOR;
+                ? ChapterAndVerseSeparators[0].Trim() : MainConsts.DEFAULT_REFERENCE_CHAPTER_AND_VERSE_SEPARATOR;
 
             VerseRangeSeparators =
                 GetSeparatorSetting("RangeIndicator")
                     .ToImmutableList();
             StandardVerseRangeSeparator = VerseRangeSeparators.Count > 0
-                ? VerseRangeSeparators[0] : MainConsts.DEFAULT_REFERENCE_VERSE_RANGE_SEPARATOR;
+                ? VerseRangeSeparators[0].Trim() : MainConsts.DEFAULT_REFERENCE_VERSE_RANGE_SEPARATOR;
 
             VerseSequenceSeparators =
                 GetSeparatorSetting("SequenceIndicator")
                     .ToImmutableList();
             StandardVerseSequenceSeparator = VerseSequenceSeparators.Count > 0
-                ? VerseSequenceSeparators[0] : MainConsts.DEFAULT_REFERENCE_VERSE_SEQUENCE_SEPARATOR;
+                ? VerseSequenceSeparators[0].Trim() : MainConsts.DEFAULT_REFERENCE_VERSE_SEQUENCE_SEPARATOR;
 
             BookOrChapterRangeSeparators =
                 GetSeparatorSetting("ChapterRangeSeparator")
                     .ToImmutableList();
             StandardBookOrChapterRangeSeparator = BookOrChapterRangeSeparators.Count > 0
-                ? BookOrChapterRangeSeparators[0] : MainConsts.DEFAULT_REFERENCE_BOOK_OR_CHAPTER_RANGE_SEPARATOR;
+                ? BookOrChapterRangeSeparators[0].Trim() : MainConsts.DEFAULT_REFERENCE_BOOK_OR_CHAPTER_RANGE_SEPARATOR;
 
             BookSequenceSeparators =
                 GetSeparatorSetting("BookSequenceSeparator")
                     .ToImmutableList();
             StandardBookSequenceSeparator = BookSequenceSeparators.Count > 0
-                ? BookSequenceSeparators[0] : MainConsts.DEFAULT_REFERENCE_BOOK_SEQUENCE_SEPARATOR;
+                ? BookSequenceSeparators[0].Trim() : MainConsts.DEFAULT_REFERENCE_BOOK_SEQUENCE_SEPARATOR;
 
             ChapterSequenceSeparators =
                 GetSeparatorSetting("ChapterNumberSeparator")
                     .ToImmutableList();
             StandardChapterSequenceSeparator = ChapterSequenceSeparators.Count > 0
-                ? ChapterSequenceSeparators[0] : MainConsts.DEFAULT_REFERENCE_CHAPTER_SEQUENCE_SEPARATOR;
+                ? ChapterSequenceSeparators[0].Trim() : MainConsts.DEFAULT_REFERENCE_CHAPTER_SEQUENCE_SEPARATOR;
 
             ReferencePrefixesOrSuffixes =
                 GetSeparatorSetting("ReferenceExtraMaterial")
                     .ToImmutableList();
             StandardReferencePrefixesOrSuffix = ReferencePrefixesOrSuffixes.Count > 0
-                ? ReferencePrefixesOrSuffixes[0] : MainConsts.DEFAULT_REFERENCE_PREFIX_OR_SUFFIX;
+                ? ReferencePrefixesOrSuffixes[0].Trim() : MainConsts.DEFAULT_REFERENCE_PREFIX_OR_SUFFIX;
 
             FinalReferencePunctuation =
                 GetSeparatorSetting("ReferenceFinalPunctuation")
                     .ToImmutableList();
             StandardFinalReferencePunctuation = FinalReferencePunctuation.Count > 0
-                ? FinalReferencePunctuation[0] : MainConsts.DEFAULT_REFERENCE_FINAL_PUNCTUATION;
+                ? FinalReferencePunctuation[0].Trim() : MainConsts.DEFAULT_REFERENCE_FINAL_PUNCTUATION;
         }
 
         /// <summary>
@@ -399,7 +406,7 @@ namespace TvpMain.Project
         /// <returns>List of setting values if found, empty list otherwise.</returns>
         private IEnumerable<string> GetSeparatorSetting(string settingKey)
         {
-            var settingValue = Host.GetProjectSetting(ActiveProjectName, settingKey);
+            var settingValue = Host.GetProjectSetting(ProjectName, settingKey);
             if (string.IsNullOrWhiteSpace(settingValue))
             {
                 return Enumerable.Empty<string>()
@@ -422,7 +429,7 @@ namespace TvpMain.Project
         /// <returns>Book name type if found, default type otherwise.</returns>
         private BookNameType GetBookNameTypeSetting(string settingKey, BookNameType defaultType)
         {
-            var settingValue = Host.GetProjectSetting(ActiveProjectName, settingKey);
+            var settingValue = Host.GetProjectSetting(ProjectName, settingKey);
             if (string.IsNullOrWhiteSpace(settingValue))
             {
                 return defaultType;

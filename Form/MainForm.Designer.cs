@@ -70,6 +70,7 @@
             this.btnClose = new System.Windows.Forms.Button();
             this.termWorker = new System.ComponentModel.BackgroundWorker();
             this.statusLabel = new System.Windows.Forms.Label();
+            this.resultWorker = new System.ComponentModel.BackgroundWorker();
             ((System.ComponentModel.ISupportInitialize)(this.dgvCheckResults)).BeginInit();
             this.contextMenu.SuspendLayout();
             this.mainMenu.SuspendLayout();
@@ -216,35 +217,35 @@
             this.currentProjectAreaMenuItem.Checked = true;
             this.currentProjectAreaMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
             this.currentProjectAreaMenuItem.Name = "currentProjectAreaMenuItem";
-            this.currentProjectAreaMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.currentProjectAreaMenuItem.Size = new System.Drawing.Size(178, 22);
             this.currentProjectAreaMenuItem.Text = "Current &Project";
             this.currentProjectAreaMenuItem.Click += new System.EventHandler(this.OnCurrentProjectAreaMenuItemClick);
             // 
             // currentBookAreaMenuItem
             // 
             this.currentBookAreaMenuItem.Name = "currentBookAreaMenuItem";
-            this.currentBookAreaMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.currentBookAreaMenuItem.Size = new System.Drawing.Size(178, 22);
             this.currentBookAreaMenuItem.Text = "Current &Book";
             this.currentBookAreaMenuItem.Click += new System.EventHandler(this.OnCurrentBookAreaMenuItemClick);
             // 
             // currentChapterAreaMenuItem
             // 
             this.currentChapterAreaMenuItem.Name = "currentChapterAreaMenuItem";
-            this.currentChapterAreaMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.currentChapterAreaMenuItem.Size = new System.Drawing.Size(178, 22);
             this.currentChapterAreaMenuItem.Text = "Current &Chapter";
             this.currentChapterAreaMenuItem.Click += new System.EventHandler(this.OnCurrentChapterAreaMenuItemClick);
             // 
             // toolStripSeparator2
             // 
             this.toolStripSeparator2.Name = "toolStripSeparator2";
-            this.toolStripSeparator2.Size = new System.Drawing.Size(177, 6);
+            this.toolStripSeparator2.Size = new System.Drawing.Size(175, 6);
             // 
             // mainTextAreaMenuItem
             // 
             this.mainTextAreaMenuItem.Checked = true;
             this.mainTextAreaMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
             this.mainTextAreaMenuItem.Name = "mainTextAreaMenuItem";
-            this.mainTextAreaMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.mainTextAreaMenuItem.Size = new System.Drawing.Size(178, 22);
             this.mainTextAreaMenuItem.Text = "&Main Text";
             this.mainTextAreaMenuItem.Click += new System.EventHandler(this.OnMainTextAreaMenuItemClick);
             // 
@@ -253,7 +254,7 @@
             this.introductionsAreaMenuItem.Checked = true;
             this.introductionsAreaMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
             this.introductionsAreaMenuItem.Name = "introductionsAreaMenuItem";
-            this.introductionsAreaMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.introductionsAreaMenuItem.Size = new System.Drawing.Size(178, 22);
             this.introductionsAreaMenuItem.Text = "&Introductions";
             this.introductionsAreaMenuItem.Click += new System.EventHandler(this.OnIntroductionsAreaMenuItemClick);
             // 
@@ -262,7 +263,7 @@
             this.outlinesAreaMenuItem.Checked = true;
             this.outlinesAreaMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
             this.outlinesAreaMenuItem.Name = "outlinesAreaMenuItem";
-            this.outlinesAreaMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.outlinesAreaMenuItem.Size = new System.Drawing.Size(178, 22);
             this.outlinesAreaMenuItem.Text = "&Outlines";
             this.outlinesAreaMenuItem.Click += new System.EventHandler(this.OnOutlinesAreaMenuItemClick);
             // 
@@ -271,7 +272,7 @@
             this.notesAndReferencesAreaMenuItem.Checked = true;
             this.notesAndReferencesAreaMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
             this.notesAndReferencesAreaMenuItem.Name = "notesAndReferencesAreaMenuItem";
-            this.notesAndReferencesAreaMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.notesAndReferencesAreaMenuItem.Size = new System.Drawing.Size(178, 22);
             this.notesAndReferencesAreaMenuItem.Text = "&Notes && References";
             this.notesAndReferencesAreaMenuItem.Click += new System.EventHandler(this.OnNotesAndReferencesAreaMenuItemClick);
             // 
@@ -307,33 +308,33 @@
             // wordListFiltersMenuItem
             // 
             this.wordListFiltersMenuItem.Name = "wordListFiltersMenuItem";
-            this.wordListFiltersMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.wordListFiltersMenuItem.Size = new System.Drawing.Size(146, 22);
             this.wordListFiltersMenuItem.Text = "&Word List";
             this.wordListFiltersMenuItem.Click += new System.EventHandler(this.OnWordListFilterToolMenuClick);
             // 
             // biblicaTermsFiltersMenuItem
             // 
             this.biblicaTermsFiltersMenuItem.Name = "biblicaTermsFiltersMenuItem";
-            this.biblicaTermsFiltersMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.biblicaTermsFiltersMenuItem.Size = new System.Drawing.Size(146, 22);
             this.biblicaTermsFiltersMenuItem.Text = "&Biblical Terms";
             this.biblicaTermsFiltersMenuItem.Click += new System.EventHandler(this.OnBiblicalTermsFilterToolMenuClick);
             // 
             // ignoreListFiltersMenuItem
             // 
             this.ignoreListFiltersMenuItem.Name = "ignoreListFiltersMenuItem";
-            this.ignoreListFiltersMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.ignoreListFiltersMenuItem.Size = new System.Drawing.Size(146, 22);
             this.ignoreListFiltersMenuItem.Text = "&Ignore List";
             this.ignoreListFiltersMenuItem.Click += new System.EventHandler(this.IgnoreListToolStripMenuItem_Click);
             // 
             // toolStripSeparator1
             // 
             this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(177, 6);
+            this.toolStripSeparator1.Size = new System.Drawing.Size(143, 6);
             // 
             // entireVerseFiltersMenuItem
             // 
             this.entireVerseFiltersMenuItem.Name = "entireVerseFiltersMenuItem";
-            this.entireVerseFiltersMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.entireVerseFiltersMenuItem.Size = new System.Drawing.Size(146, 22);
             this.entireVerseFiltersMenuItem.Text = "Entire &Verse";
             this.entireVerseFiltersMenuItem.Click += new System.EventHandler(this.OnEntireVerseFiltersMenuClick);
             // 
@@ -505,5 +506,6 @@
         private System.Windows.Forms.ToolStripMenuItem biblicaTermsFiltersMenuItem;
         private System.Windows.Forms.ToolStripMenuItem introductionsAreaMenuItem;
         private System.Windows.Forms.ToolStripMenuItem outlinesAreaMenuItem;
+        private System.ComponentModel.BackgroundWorker resultWorker;
     }
 }

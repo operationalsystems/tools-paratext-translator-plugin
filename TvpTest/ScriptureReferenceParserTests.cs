@@ -40,6 +40,9 @@ namespace TvpTest
 
         /// <summary>
         /// A starter test for the parser.
+        /// 
+        /// Parses from the test references, then serializes as JSON
+        /// and compares with expected results in resource content file.
         /// </summary>
         [TestMethod]
         public void PositiveParserTest()
@@ -49,15 +52,14 @@ namespace TvpTest
 
             foreach (var testText in CreateTestReferenceText())
             {
-
                 Assert.IsTrue(builder.TryParseScriptureReference(testText, out var result),
                     $"Can't parse entry #{ctr + 1}, text: {testText}");
                 Assert.AreEqual(ParserLines[ctr].Trim(),
                     result.ToString().Trim(),
                     $"Can't verify entry #{ctr + 1}, text: {testText}");
 
-                Console.Out.WriteLine(result);
-                Console.Out.WriteLine(builder.FormatStandardReference(PartContext.MainText, result));
+                // Console.Out.WriteLine(result);
+                // Console.Out.WriteLine(builder.FormatStandardReference(PartContext.MainText, result));
 
                 ctr++;
             }
@@ -65,6 +67,9 @@ namespace TvpTest
 
         /// <summary>
         /// A starter test for the formatter.
+        ///
+        /// Parses from the test references, re-renders as standard references,
+        /// then compares with expected results in resource content file.
         /// </summary>
         [TestMethod]
         public void PositiveFormatterTest()
@@ -74,7 +79,6 @@ namespace TvpTest
 
             foreach (var testText in CreateTestReferenceText())
             {
-
                 Assert.IsTrue(builder.TryParseScriptureReference(testText, out var result),
                     $"Can't parse entry #{ctr + 1}, text: {testText}");
                 Assert.AreEqual(FormatterLines[ctr].Trim(),
@@ -88,6 +92,10 @@ namespace TvpTest
             }
         }
 
+        /// <summary>
+        /// Provides some typical test reference text.
+        /// </summary>
+        /// <returns>List of test references.</returns>
         private IEnumerable<string> CreateTestReferenceText()
         {
             return new List<string>()
