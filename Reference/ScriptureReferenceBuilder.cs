@@ -127,9 +127,10 @@ namespace TvpMain.Reference
                         referenceMode)
                 }.ToImmutableList();
 
-                ProjectParsers = tempProjectParsers.ToImmutableDictionary();
-                StandardParsers = tempStandardParsers.ToImmutableDictionary();
             }
+
+            ProjectParsers = tempProjectParsers.ToImmutableDictionary();
+            StandardParsers = tempStandardParsers.ToImmutableDictionary();
 
             _chapterReferenceModeSeparators =
                 ProjectManager.BookOrChapterRangeSeparators
