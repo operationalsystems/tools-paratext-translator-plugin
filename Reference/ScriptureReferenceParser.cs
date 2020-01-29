@@ -2,10 +2,12 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+using System.Runtime.Remoting.Messaging;
 using System.Text;
 using System.Threading.Tasks;
 using Pidgin;
 using TvpMain.Project;
+using TvpMain.Util;
 
 namespace TvpMain.Reference
 {
@@ -42,13 +44,16 @@ namespace TvpMain.Reference
         public static Parser<char, VerseRange> SingletonVerse()
             =>
                 Tok(Parser.UnsignedInt(10)
-                    .Select<VerseRange>(value => new VerseRange(value))
+                        .Select<VerseRange>(value => new VerseRange(value))
                     .Labelled("singleton verse range"));
 
         public static Parser<char, VerseRange> PairedVerseRange(
             ScriptureReferenceSeparators referenceSeparators)
             => Parser.Map((fromVerse, verseSeparator, toVerse) =>
-                    new VerseRange(fromVerse, toVerse), Tok(Parser.UnsignedInt(10)), AnyTok(referenceSeparators.VerseRangeSeparators), Tok(Parser.UnsignedInt(10)))
+                    new VerseRange(fromVerse.FromVerse, toVerse.FromVerse),
+                    SingletonVerse(),
+                    AnyTok(referenceSeparators.VerseRangeSeparators),
+                    SingletonVerse())
                 .Labelled("paired verse range");
 
         public static Parser<char, VerseRange> VerseRange(
@@ -59,65 +64,95 @@ namespace TvpMain.Reference
 
         public static Parser<char, IList<VerseRange>> VerseRangeSequence(
             ScriptureReferenceSeparators referenceSeparators)
-            =>
-                VerseRange(referenceSeparators)
+            => VerseRange(referenceSeparators)
                     .SeparatedAndOptionallyTerminatedAtLeastOnce(AnyTok(referenceSeparators.VerseSequenceSeparators))
                     .Select<IList<VerseRange>>(values => values.ToImmutableList())
-                    .Labelled("verse ranges");
+                    .Labelled("verse range sequence");
 
-        public static Parser<char, BookOrChapterRange> SingletonBookOrChapterRange(
+        public static Parser<char, ChapterRange> SingletonChapterRangeWithVerses(
             ScriptureReferenceSeparators referenceSeparators)
             => Parser.Map((chapterNum, chapterSeparator, verseRanges) =>
-                    new BookOrChapterRange(chapterNum, verseRanges), Tok(Parser.UnsignedInt(10)), AnyTok(referenceSeparators.ChapterAndVerseSeparators), VerseRangeSequence(referenceSeparators))
-                .Labelled("singleton book or chapter range");
+                        new ChapterRange(chapterNum, verseRanges),
+                    Tok(Parser.UnsignedInt(10)),
+                    AnyTok(referenceSeparators.ChapterAndVerseSeparators),
+                    VerseRangeSequence(referenceSeparators))
+                .Labelled("singleton chapter range with verses");
 
-        public static Parser<char, BookOrChapterRange> PairedBookOrChapterRange(
+        public static Parser<char, ChapterRange> SingletonChapterRangeWithoutVerses(
             ScriptureReferenceSeparators referenceSeparators)
-            => Parser.Map((fromBookOrChapter, bookSeparator, toBookOrChapter) => new BookOrChapterRange(
-                    fromBookOrChapter.FromChapter, fromBookOrChapter.FromVerseRanges,
-                    toBookOrChapter.FromChapter, toBookOrChapter.FromVerseRanges), SingletonBookOrChapterRange(referenceSeparators), AnyTok(referenceSeparators.BookOrChapterRangeSeparators), SingletonBookOrChapterRange(referenceSeparators))
-                .Labelled("paired book or chapter range");
+            => Tok(Parser.UnsignedInt(10))
+                    .Select(value => new ChapterRange(value, null))
+                .Labelled("singleton chapter range without verses");
+
+        public static Parser<char, ChapterRange> SingletonChapterRange(
+            ScriptureReferenceSeparators referenceSeparators)
+            => Parser.OneOf(Parser.Try(SingletonChapterRangeWithVerses(referenceSeparators)),
+                    Parser.Try(SingletonChapterRangeWithoutVerses(referenceSeparators)))
+                .Labelled("singleton chapter range");
+
+        public static Parser<char, ChapterRange> PairedChapterRange(
+            ScriptureReferenceSeparators referenceSeparators)
+            => Parser.Map((fromChapter, bookSeparator, toChapter) => new ChapterRange(
+                    fromChapter.FromChapter, fromChapter.FromVerseRanges,
+                    toChapter.FromChapter, toChapter.FromVerseRanges),
+                    SingletonChapterRange(referenceSeparators),
+                    AnyTok(referenceSeparators.BookOrChapterRangeSeparators),
+                    SingletonChapterRange(referenceSeparators))
+                .Labelled("paired chapter range");
 
         public static Parser<char, BookReferenceName> BookReferenceName(
             ProjectManager projectManager,
             ScriptureReferenceSeparators referenceSeparators)
             =>
                 Tok(Parser.LetterOrDigit.AtLeastOnceString()
-                    .Where(inputText => inputText.Any(Char.IsLetter))
+                    .Where(inputText => inputText.Any(char.IsLetter))
                     .Select(inputText =>
                         projectManager.BookNamesByAllNames.TryGetValue(inputText.Trim().ToLower(), out var nameItem)
                             ? new BookReferenceName(inputText, nameItem)
                             : new BookReferenceName(inputText, null))
                     .Labelled("book reference name"));
 
-        public static Parser<char, BookOrChapterRange> BookOrChapterRange(
+        public static Parser<char, ChapterRange> ChapterRange(
             ScriptureReferenceSeparators referenceSeparators)
-            => Parser.OneOf(Parser.Try(PairedBookOrChapterRange(referenceSeparators)),
-                    Parser.Try(SingletonBookOrChapterRange(referenceSeparators)))
-                .Labelled("book or chapter range");
+            => Parser.OneOf(Parser.Try(PairedChapterRange(referenceSeparators)),
+                    Parser.Try(SingletonChapterRange(referenceSeparators)))
+                .Labelled("chapter range");
 
-        public static Parser<char, IList<BookOrChapterRange>> BookOrChapterRangeSequence(
+        public static Parser<char, IList<ChapterRange>> ChapterRangeSequence(
             ScriptureReferenceSeparators referenceSeparators)
-            =>
-                BookOrChapterRange(referenceSeparators)
+            => ChapterRange(referenceSeparators)
                     .SeparatedAndOptionallyTerminatedAtLeastOnce(AnyTok(referenceSeparators.ChapterSequenceSeparators))
-                    .Select<IList<BookOrChapterRange>>(values => values.ToImmutableList())
-                    .Labelled("book or chapter ranges");
+                    .Select<IList<ChapterRange>>(values => values.ToImmutableList())
+                    .Labelled("chapter range sequence");
 
         public static Parser<char, BookVerseReference> LocalBookVerseReference(
-            ScriptureReferenceSeparators referenceSeparators)
-            => Parser.OneOf(Parser.Try(BookOrChapterRangeSequence(referenceSeparators)
-                        .Select(value => new BookVerseReference(null, value))),
-                    Parser.Try(VerseRangeSequence(referenceSeparators)
-                        .Select(value => new BookVerseReference(null,
-                            Enumerable.Repeat(new BookOrChapterRange(-1, value), 1).ToImmutableList()))))
-                .Labelled("local book verse reference");
+            ScriptureReferenceSeparators referenceSeparators,
+            LocalReferenceMode referenceMode)
+            => (referenceMode == LocalReferenceMode.ChapterRangeSequence)
+                ? Parser.OneOf(
+                        Parser.Try(ChapterRangeSequence(referenceSeparators)
+                            .Select(value => new BookVerseReference(null, value))),
+                        Parser.Try(VerseRangeSequence(referenceSeparators)
+                            .Select(value => new BookVerseReference(null,
+                                new ChapterRange(-1, value).ToSingletonList()))))
+                    .Labelled("local book verse reference (chapter > verse)")
+                : Parser.OneOf(
+                        Parser.Try(VerseRangeSequence(referenceSeparators)
+                            .Select(value => new BookVerseReference(null,
+                                new ChapterRange(-1, value).ToSingletonList()))),
+                        Parser.Try(ChapterRangeSequence(referenceSeparators)
+                            .Select(value => new BookVerseReference(null, value))))
+                    .Labelled("local book verse reference (verse > chapter)");
+
 
         public static Parser<char, BookVerseReference> OtherBookVerseReference(
             ProjectManager projectManager,
             ScriptureReferenceSeparators referenceSeparators)
-            => Parser.Map((referenceName, bookOrChapterRange, optionalSeparator) =>
-                    new BookVerseReference(referenceName, bookOrChapterRange), BookReferenceName(projectManager, referenceSeparators), BookOrChapterRangeSequence(referenceSeparators), AnyTok(referenceSeparators.BookSequenceSeparators).Optional())
+            => Parser.Map((referenceName, chapterRange, optionalSeparator) =>
+                    new BookVerseReference(referenceName, chapterRange),
+                    BookReferenceName(projectManager, referenceSeparators),
+                    ChapterRangeSequence(referenceSeparators),
+                    AnyTok(referenceSeparators.BookSequenceSeparators).Optional())
                 .Labelled("other (non-local) book verse reference");
 
         public static Parser<char, IList<BookVerseReference>> OtherBookVerseReferenceSequence(
@@ -131,13 +166,14 @@ namespace TvpMain.Reference
 
         public static Parser<char, ScriptureReference> ScriptureReference(
             ProjectManager projectManager,
-            ScriptureReferenceSeparators referenceSeparators)
+            ScriptureReferenceSeparators referenceSeparators,
+            LocalReferenceMode referenceMode)
             => Parser.OneOf(
                     Parser.Try(OtherBookVerseReferenceSequence(projectManager, referenceSeparators)
                         .Select<ScriptureReference>(values => new ScriptureReference(values))),
-                    Parser.Try(LocalBookVerseReference(referenceSeparators)
+                    Parser.Try(LocalBookVerseReference(referenceSeparators, referenceMode)
                         .Select<ScriptureReference>(value => new ScriptureReference(
-                            Enumerable.Repeat(value, 1).ToImmutableList()))))
+                            value.ToSingletonList()))))
                 .Labelled("scripture reference");
 
         public static Parser<char, string> OpeningScriptureReferenceTag()
@@ -158,45 +194,67 @@ namespace TvpMain.Reference
         public static Parser<char, ScriptureReferenceWrapper> ScriptureReferenceWithNoTag(
             ParserType parserType,
             ProjectManager projectManager,
-            ScriptureReferenceSeparators referenceSeparators)
+            ScriptureReferenceSeparators referenceSeparators,
+            LocalReferenceMode referenceMode)
             =>
-                ScriptureReference(projectManager, referenceSeparators)
+                ScriptureReference(projectManager, referenceSeparators, referenceMode)
                     .Select(scriptureReference =>
-                        new ScriptureReferenceWrapper(parserType, null, scriptureReference, null))
+                        new ScriptureReferenceWrapper(parserType, referenceMode, null, scriptureReference, null))
                     .Labelled("scripture reference with no tag");
 
         public static Parser<char, ScriptureReferenceWrapper> ScriptureReferenceWithOpeningTag(
             ParserType parserType,
             ProjectManager projectManager,
-            ScriptureReferenceSeparators referenceSeparators)
+            ScriptureReferenceSeparators referenceSeparators,
+            LocalReferenceMode referenceMode)
             => Parser.Map((openingTag, scriptureReference) =>
-                    new ScriptureReferenceWrapper(parserType, openingTag, scriptureReference, null), OpeningScriptureReferenceTag(), ScriptureReference(projectManager, referenceSeparators))
+                    new ScriptureReferenceWrapper(parserType, referenceMode, openingTag, scriptureReference, null),
+                    OpeningScriptureReferenceTag(),
+                    ScriptureReference(projectManager, referenceSeparators, referenceMode))
                 .Labelled("scripture reference with opening tag");
 
         public static Parser<char, ScriptureReferenceWrapper> ScriptureReferenceWithClosingTag(
             ParserType parserType,
             ProjectManager projectManager,
-            ScriptureReferenceSeparators referenceSeparators)
+            ScriptureReferenceSeparators referenceSeparators,
+            LocalReferenceMode referenceMode)
             => Parser.Map((scriptureReference, closingTag) =>
-                    new ScriptureReferenceWrapper(parserType, null, scriptureReference, closingTag), ScriptureReference(projectManager, referenceSeparators), ClosingScriptureReferenceTag())
+                    new ScriptureReferenceWrapper(parserType, referenceMode, null, scriptureReference, closingTag),
+                    ScriptureReference(projectManager, referenceSeparators, referenceMode),
+                    ClosingScriptureReferenceTag())
                 .Labelled("scripture reference with closing tag");
 
         public static Parser<char, ScriptureReferenceWrapper> ScriptureReferenceWithBothTags(
             ParserType parserType,
             ProjectManager projectManager,
-            ScriptureReferenceSeparators referenceSeparators)
+            ScriptureReferenceSeparators referenceSeparators,
+            LocalReferenceMode referenceMode)
             => Parser.Map((openingTag, scriptureReference, closingTag) =>
-                    new ScriptureReferenceWrapper(parserType, openingTag, scriptureReference, closingTag), OpeningScriptureReferenceTag(), ScriptureReference(projectManager, referenceSeparators), ClosingScriptureReferenceTag())
+                    new ScriptureReferenceWrapper(parserType, referenceMode, openingTag, scriptureReference, closingTag),
+                    OpeningScriptureReferenceTag(),
+                    ScriptureReference(projectManager, referenceSeparators, referenceMode),
+                    ClosingScriptureReferenceTag())
                 .Labelled("scripture reference with both tags");
 
         public static Parser<char, ScriptureReferenceWrapper> ScriptureReferenceWrapper(
             ParserType parserType,
             ProjectManager projectManager,
-            ScriptureReferenceSeparators referenceSeparators)
-            => Parser.OneOf(Parser.Try(ScriptureReferenceWithBothTags(parserType, projectManager, referenceSeparators)),
-                    Parser.Try(ScriptureReferenceWithClosingTag(parserType, projectManager, referenceSeparators)),
-                    Parser.Try(ScriptureReferenceWithOpeningTag(parserType, projectManager, referenceSeparators)),
-                    Parser.Try(ScriptureReferenceWithNoTag(parserType, projectManager, referenceSeparators)))
+            ScriptureReferenceSeparators referenceSeparators,
+            LocalReferenceMode referenceMode)
+            => Parser.OneOf(Parser.Try(ScriptureReferenceWithBothTags(parserType, projectManager, referenceSeparators, referenceMode)),
+                    Parser.Try(ScriptureReferenceWithClosingTag(parserType, projectManager, referenceSeparators, referenceMode)),
+                    Parser.Try(ScriptureReferenceWithOpeningTag(parserType, projectManager, referenceSeparators, referenceMode)),
+                    Parser.Try(ScriptureReferenceWithNoTag(parserType, projectManager, referenceSeparators, referenceMode)))
                 .Labelled("scripture reference wrapper");
+    }
+
+    /// <summary>
+    /// Which sequence type to favor for local references,
+    /// based on filtered input.
+    /// </summary>
+    public enum LocalReferenceMode
+    {
+        VerseRangeSequence,
+        ChapterRangeSequence
     }
 }

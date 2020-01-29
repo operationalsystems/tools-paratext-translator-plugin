@@ -10,15 +10,15 @@ using System.Threading.Tasks;
 namespace TvpMain.Text
 {
     /// <summary>
-    /// Regex-related utilities.
+    /// Verse Regex-related utilities.
     /// </summary>
-    public class VerseUtil
+    public class VerseRegexUtil
     {
         /// <summary>
         /// Regexes to catch _possible_ target references in arbitrary text
         /// with typical English punctuation for error checking.
         /// </summary>
-        public static readonly IList<Regex> EnglishTargetReferenceRegexes =
+        public static readonly IList<Regex> StandardTargetReferenceRegexes =
             new List<Regex>()
             {
                 CreateTargetReferenceRegex(@"xt", @"\w*\p{L}\w*",@"[ \t\p{P}]")
@@ -347,7 +347,10 @@ namespace TvpMain.Text
         }
 
         /// <summary>
-        /// Context mapping item.
+        /// Maps a part context to a list of positive- or negative-matching regexes.
+        ///
+        /// Positive = Matched ranges included (e.g., introduction paragraph-level tags)
+        /// Negative = Matched ranges excluded (e.g., main text, everything not matched by other tags)
         /// </summary>
         private class ContextMappingItem
         {

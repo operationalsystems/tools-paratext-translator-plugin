@@ -389,11 +389,11 @@ namespace TvpMain.Project
 
             TargetReferenceRegexes = new List<Regex>()
                 {
-                    VerseUtil.CreateTargetReferenceGroupRegex(
+                    VerseRegexUtil.CreateTargetReferenceGroupRegex(
                         new string[] { @"xt" },
                         new string[] { @"\w*\p{L}\w*" },
                         punctuationParts),
-                }.Concat(VerseUtil.EnglishTargetReferenceRegexes)
+                }.Concat(VerseRegexUtil.StandardTargetReferenceRegexes)
                 .ToImmutableList();
         }
 
