@@ -20,6 +20,7 @@ namespace TvpMain.Reference
         MissingTag, // Reference should have tag, but does not (e.g., in body footnote)
         IncorrectTag, // Wrong tag for context (e.g., \xt in footnote instead of \+xt)
         MalformedTag, // Missing slash(es), unmatched tag pair, etc.
-        BadReference // Book name or chapter number incorrect or doesn't exist
+        BadReference, // Book name or chapter number incorrect or doesn't exist
+        Unknown
     }
 }

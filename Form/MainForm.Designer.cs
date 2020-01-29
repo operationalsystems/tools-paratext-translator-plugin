@@ -63,7 +63,6 @@
             this.showIgnoredToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.referencesMenuSeparator = new System.Windows.Forms.ToolStripSeparator();
             this.hideLooseMatchesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.hideIgnoreListExceptionsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.viewMenu = new System.Windows.Forms.ToolStripMenuItem();
             this.bcvViewMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.matchViewMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -85,13 +84,19 @@
             this.referencesInnerSplitContainer = new System.Windows.Forms.SplitContainer();
             this.referencesTextBox = new System.Windows.Forms.RichTextBox();
             this.referencesActionsGridView = new System.Windows.Forms.DataGridView();
-            this.bindingSource1 = new System.Windows.Forms.BindingSource(this.components);
             this.referencesActionsExceptionColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.referencesActionsProblemColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.referencesActionsSuggestionColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.referencesActionsAcceptColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.referencesActionsIgnoreColumn = new System.Windows.Forms.DataGridViewButtonColumn();
+            this.bindingSource1 = new System.Windows.Forms.BindingSource(this.components);
             this.resultWorker = new System.ComponentModel.BackgroundWorker();
+            this.hideIncorrectNameStyleToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.hideTagShouldntExistToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.hideMissingTagToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.hideIncorrectTagToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.hideMalformedTagToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.hideBadReferencesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.dgvCheckResults)).BeginInit();
             this.contextMenu.SuspendLayout();
             this.mainMenu.SuspendLayout();
@@ -347,7 +352,12 @@
             this.showIgnoredToolStripMenuItem,
             this.referencesMenuSeparator,
             this.hideLooseMatchesToolStripMenuItem,
-            this.hideIgnoreListExceptionsToolStripMenuItem});
+            this.hideIncorrectNameStyleToolStripMenuItem,
+            this.hideTagShouldntExistToolStripMenuItem,
+            this.hideMissingTagToolStripMenuItem,
+            this.hideIncorrectTagToolStripMenuItem,
+            this.hideMalformedTagToolStripMenuItem,
+            this.hideBadReferencesToolStripMenuItem});
             this.toolsToolStripMenuItem.Name = "toolsToolStripMenuItem";
             this.toolsToolStripMenuItem.Size = new System.Drawing.Size(50, 23);
             this.toolsToolStripMenuItem.Text = "&Filters";
@@ -403,13 +413,6 @@
             this.hideLooseMatchesToolStripMenuItem.Size = new System.Drawing.Size(217, 22);
             this.hideLooseMatchesToolStripMenuItem.Text = "Hide Loose Matches";
             this.hideLooseMatchesToolStripMenuItem.Click += new System.EventHandler(this.hideLooseMatchesToolStripMenuItem_Click);
-            // 
-            // hideIgnoreListExceptionsToolStripMenuItem
-            // 
-            this.hideIgnoreListExceptionsToolStripMenuItem.Name = "hideIgnoreListExceptionsToolStripMenuItem";
-            this.hideIgnoreListExceptionsToolStripMenuItem.Size = new System.Drawing.Size(217, 22);
-            this.hideIgnoreListExceptionsToolStripMenuItem.Text = "Hide Ignore List Exceptions";
-            this.hideIgnoreListExceptionsToolStripMenuItem.Click += new System.EventHandler(this.hideIgnoreListExceptionsToolStripMenuItem_Click);
             // 
             // viewMenu
             // 
@@ -620,6 +623,7 @@
             this.referencesTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.referencesTextBox.Cursor = System.Windows.Forms.Cursors.Default;
             this.referencesTextBox.Location = new System.Drawing.Point(0, 0);
             this.referencesTextBox.Name = "referencesTextBox";
             this.referencesTextBox.ReadOnly = true;
@@ -652,6 +656,7 @@
             this.referencesActionsGridView.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.referencesActionsGridView.Size = new System.Drawing.Size(455, 647);
             this.referencesActionsGridView.TabIndex = 0;
+            this.referencesActionsGridView.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.referencesActionsGridView_CellClick);
             this.referencesActionsGridView.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.referencesActionsGridView_CellContentClick);
             this.referencesActionsGridView.SelectionChanged += new System.EventHandler(this.referencesActionsGridView_SelectionChanged);
             // 
@@ -700,6 +705,48 @@
             this.referencesActionsIgnoreColumn.Text = "Ignore";
             this.referencesActionsIgnoreColumn.ToolTipText = "Ignore this exception in the future.";
             this.referencesActionsIgnoreColumn.Width = 5;
+            // 
+            // hideIncorrectNameStyleToolStripMenuItem
+            // 
+            this.hideIncorrectNameStyleToolStripMenuItem.Name = "hideIncorrectNameStyleToolStripMenuItem";
+            this.hideIncorrectNameStyleToolStripMenuItem.Size = new System.Drawing.Size(217, 22);
+            this.hideIncorrectNameStyleToolStripMenuItem.Text = "Hide Incorrect Name Style";
+            this.hideIncorrectNameStyleToolStripMenuItem.Click += new System.EventHandler(this.hideIncorrectNameStyleToolStripMenuItem_Click);
+            // 
+            // hideTagShouldntExistToolStripMenuItem
+            // 
+            this.hideTagShouldntExistToolStripMenuItem.Name = "hideTagShouldntExistToolStripMenuItem";
+            this.hideTagShouldntExistToolStripMenuItem.Size = new System.Drawing.Size(217, 22);
+            this.hideTagShouldntExistToolStripMenuItem.Text = "Hide Tag Shouldn\'t Exist";
+            this.hideTagShouldntExistToolStripMenuItem.Click += new System.EventHandler(this.hideTagShouldntExistToolStripMenuItem_Click);
+            // 
+            // hideMissingTagToolStripMenuItem
+            // 
+            this.hideMissingTagToolStripMenuItem.Name = "hideMissingTagToolStripMenuItem";
+            this.hideMissingTagToolStripMenuItem.Size = new System.Drawing.Size(217, 22);
+            this.hideMissingTagToolStripMenuItem.Text = "Hide Missing Tag";
+            this.hideMissingTagToolStripMenuItem.Click += new System.EventHandler(this.hideMissingTagToolStripMenuItem_Click);
+            // 
+            // hideIncorrectTagToolStripMenuItem
+            // 
+            this.hideIncorrectTagToolStripMenuItem.Name = "hideIncorrectTagToolStripMenuItem";
+            this.hideIncorrectTagToolStripMenuItem.Size = new System.Drawing.Size(217, 22);
+            this.hideIncorrectTagToolStripMenuItem.Text = "Hide Incorrect Tag";
+            this.hideIncorrectTagToolStripMenuItem.Click += new System.EventHandler(this.hideIncorrectTagToolStripMenuItem_Click);
+            // 
+            // hideMalformedTagToolStripMenuItem
+            // 
+            this.hideMalformedTagToolStripMenuItem.Name = "hideMalformedTagToolStripMenuItem";
+            this.hideMalformedTagToolStripMenuItem.Size = new System.Drawing.Size(217, 22);
+            this.hideMalformedTagToolStripMenuItem.Text = "Hide Malformed Tag";
+            this.hideMalformedTagToolStripMenuItem.Click += new System.EventHandler(this.hideMalformedTagToolStripMenuItem_Click);
+            // 
+            // hideBadReferencesToolStripMenuItem
+            // 
+            this.hideBadReferencesToolStripMenuItem.Name = "hideBadReferencesToolStripMenuItem";
+            this.hideBadReferencesToolStripMenuItem.Size = new System.Drawing.Size(217, 22);
+            this.hideBadReferencesToolStripMenuItem.Text = "Hide Bad References";
+            this.hideBadReferencesToolStripMenuItem.Click += new System.EventHandler(this.hideBadReferencesToolStripMenuItem_Click);
             // 
             // MainForm
             // 
@@ -803,7 +850,6 @@
         private System.Windows.Forms.ToolStripMenuItem showIgnoredToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator referencesMenuSeparator;
         private System.Windows.Forms.ToolStripMenuItem hideLooseMatchesToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem hideIgnoreListExceptionsToolStripMenuItem;
         private System.Windows.Forms.BindingSource bindingSource1;
         private System.Windows.Forms.DataGridViewTextBoxColumn referencesActionsExceptionColumn;
         private System.Windows.Forms.DataGridViewTextBoxColumn referencesActionsProblemColumn;
@@ -811,5 +857,11 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn referencesActionsAcceptColumn;
         private System.Windows.Forms.DataGridViewButtonColumn referencesActionsIgnoreColumn;
         private System.ComponentModel.BackgroundWorker resultWorker;
+        private System.Windows.Forms.ToolStripMenuItem hideIncorrectNameStyleToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem hideTagShouldntExistToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem hideMissingTagToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem hideIncorrectTagToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem hideMalformedTagToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem hideBadReferencesToolStripMenuItem;
     }
 }
