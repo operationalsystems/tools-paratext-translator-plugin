@@ -30,12 +30,12 @@ namespace TvpMain.Reference
         /// <summary>
         /// Project-specific parsers.
         /// </summary>
-        private IList<Parser<char, ScriptureReferenceWrapper>> ProjectParsers { get; }
+        private IDictionary<LocalReferenceMode, IList<Parser<char, ScriptureReferenceWrapper>>> ProjectParsers { get; }
 
         /// <summary>
         /// Standard (backup) parsers.
         /// </summary>
-        private IList<Parser<char, ScriptureReferenceWrapper>> StandardParsers { get; }
+        private IDictionary<LocalReferenceMode, IList<Parser<char, ScriptureReferenceWrapper>>> StandardParsers { get; }
 
         /// <summary>
         /// Tag names that must be paired.
@@ -47,6 +47,26 @@ namespace TvpMain.Reference
             }.ToImmutableHashSet();
 
         /// <summary>
+        /// Part contexts that require target-specific book name formats.
+        /// </summary>
+        private static readonly ISet<PartContext> TargetNameContexts =
+            new HashSet<PartContext>()
+            {
+                PartContext.MainText,
+                PartContext.NoteOrReference
+            }.ToImmutableHashSet();
+
+        /// <summary>
+        /// Separators relevant for local references consisting only of chapter range sequences.
+        /// </summary>
+        private ISet<string> _chapterReferenceModeSeparators;
+
+        /// <summary>
+        /// Separators relevant for local references consisting only of verse range sequences.
+        /// </summary>
+        private ISet<string> _verseReferenceModeSeparators;
+
+        /// <summary>
         /// Basic ctor.
         ///
         /// Creates project-specific and standard parsers.
@@ -55,39 +75,75 @@ namespace TvpMain.Reference
         public ScriptureReferenceBuilder(ProjectManager projectManager)
         {
             ProjectManager = projectManager ?? throw new ArgumentNullException(nameof(ProjectManager));
-            var tempProjectParserList = new List<Parser<char, ScriptureReferenceWrapper>>();
 
-            var projectSeparators = new ScriptureReferenceSeparators(ProjectManager, false);
-            if (projectSeparators.IsUsable)
-            {
-                tempProjectParserList.Add(
-                    ScriptureReferenceParser.ScriptureReferenceWrapper(ParserType.Project, ProjectManager,
-                        projectSeparators));
-            }
+            var tempProjectParsers = new Dictionary<LocalReferenceMode, IList<Parser<char, ScriptureReferenceWrapper>>>();
+            var tempStandardParsers = new Dictionary<LocalReferenceMode, IList<Parser<char, ScriptureReferenceWrapper>>>();
 
-            if (projectSeparators.IsAnyDuplicates)
+            foreach (var referenceMode in
+                Enum.GetValues(typeof(LocalReferenceMode)).Cast<LocalReferenceMode>())
             {
-                var normalizedSeparators = new ScriptureReferenceSeparators(ProjectManager, true);
-                if (normalizedSeparators.IsUsable)
+                var tempProjectParserList = new List<Parser<char, ScriptureReferenceWrapper>>();
+                var projectSeparators = new ScriptureReferenceSeparators(ProjectManager, false);
+
+                if (projectSeparators.IsUsable)
                 {
-                    tempProjectParserList.Add(ScriptureReferenceParser.ScriptureReferenceWrapper(ParserType.Normalized,
-                        ProjectManager, normalizedSeparators));
+                    tempProjectParserList.Add(
+                        ScriptureReferenceParser.ScriptureReferenceWrapper(
+                            ParserType.Project,
+                            ProjectManager,
+                            projectSeparators,
+                            referenceMode));
                 }
+
+                if (projectSeparators.IsAnyDuplicates)
+                {
+                    var normalizedSeparators = new ScriptureReferenceSeparators(ProjectManager, true);
+                    if (normalizedSeparators.IsUsable)
+                    {
+                        tempProjectParserList.Add(
+                            ScriptureReferenceParser.ScriptureReferenceWrapper(
+                            ParserType.Normalized,
+                            ProjectManager,
+                            normalizedSeparators,
+                            referenceMode));
+                    }
+                }
+
+                tempProjectParsers[referenceMode] = tempProjectParserList.ToImmutableList();
+                tempStandardParsers[referenceMode] =
+                    new List<Parser<char, ScriptureReferenceWrapper>>()
+                {
+                    ScriptureReferenceParser.ScriptureReferenceWrapper(
+                        ParserType.Standard,
+                        ProjectManager,
+                        new ScriptureReferenceSeparators(
+                            new string[] {MainConsts.DEFAULT_REFERENCE_BOOK_SEQUENCE_SEPARATOR},
+                            new string[] {MainConsts.DEFAULT_REFERENCE_CHAPTER_SEQUENCE_SEPARATOR},
+                            new string[] {MainConsts.DEFAULT_REFERENCE_BOOK_OR_CHAPTER_RANGE_SEPARATOR},
+                            new string[] {MainConsts.DEFAULT_REFERENCE_CHAPTER_AND_VERSE_SEPARATOR},
+                            new string[] {MainConsts.DEFAULT_REFERENCE_VERSE_SEQUENCE_SEPARATOR},
+                            new string[] {MainConsts.DEFAULT_REFERENCE_VERSE_RANGE_SEPARATOR},
+                            false),
+                        referenceMode)
+                }.ToImmutableList();
+
+                ProjectParsers = tempProjectParsers.ToImmutableDictionary();
+                StandardParsers = tempStandardParsers.ToImmutableDictionary();
             }
 
-            ProjectParsers = tempProjectParserList.ToImmutableList();
-            StandardParsers = new List<Parser<char, ScriptureReferenceWrapper>>()
-            {
-                ScriptureReferenceParser.ScriptureReferenceWrapper(ParserType.Standard, ProjectManager,
-                    new ScriptureReferenceSeparators(
-                        new string[] {MainConsts.DEFAULT_REFERENCE_BOOK_SEQUENCE_SEPARATOR},
-                        new string[] {MainConsts.DEFAULT_REFERENCE_CHAPTER_SEQUENCE_SEPARATOR},
-                        new string[] {MainConsts.DEFAULT_REFERENCE_BOOK_OR_CHAPTER_RANGE_SEPARATOR},
-                        new string[] {MainConsts.DEFAULT_REFERENCE_CHAPTER_AND_VERSE_SEPARATOR},
-                        new string[] {MainConsts.DEFAULT_REFERENCE_VERSE_SEQUENCE_SEPARATOR},
-                        new string[] {MainConsts.DEFAULT_REFERENCE_VERSE_RANGE_SEPARATOR},
-                        false))
-            }.ToImmutableList();
+            _chapterReferenceModeSeparators =
+                ProjectManager.BookOrChapterRangeSeparators
+                    .Concat(ProjectManager.ChapterSequenceSeparators)
+                    .Concat(ProjectManager.ChapterAndVerseSeparators)
+                    .Where(separatorItem => !string.IsNullOrWhiteSpace(separatorItem))
+                    .Select(separatorItem => separatorItem.Trim())
+                    .ToImmutableHashSet();
+            _verseReferenceModeSeparators =
+                ProjectManager.VerseRangeSeparators
+                    .Concat(ProjectManager.VerseSequenceSeparators)
+                    .Where(separatorItem => !string.IsNullOrWhiteSpace(separatorItem))
+                    .Select(separatorItem => separatorItem.Trim())
+                    .ToImmutableHashSet();
         }
 
         /// <summary>
@@ -133,8 +189,36 @@ namespace TvpMain.Reference
             outputWrapper = null;
             ScriptureReferenceWrapper bestWrapper = null;
 
-            foreach (var parserItem in ProjectParsers
-                .Concat(StandardParsers))
+            // figure whether chapter or verse separators come first,
+            // to help choose the right parsers for local references
+            var minChapterSeparator = inputText.MinIndexOf(
+                true, false,
+                _chapterReferenceModeSeparators);
+            var minVerseSeparator = inputText.MinIndexOf(
+                true, false,
+                _verseReferenceModeSeparators);
+
+            // select whether to emphasize chapter or verse parsing
+            // in local references
+            var referenceMode = LocalReferenceMode.ChapterRangeSequence;
+            if (minChapterSeparator < 0 && minVerseSeparator >= 0)
+            {
+                referenceMode = LocalReferenceMode.VerseRangeSequence;
+            }
+            else if (minVerseSeparator < 0 && minChapterSeparator > 0)
+            {
+                referenceMode = LocalReferenceMode.ChapterRangeSequence;
+            }
+            else if (minChapterSeparator >= 0 && minVerseSeparator >= 0)
+            {
+                referenceMode = (minVerseSeparator < minChapterSeparator)
+                    ? LocalReferenceMode.VerseRangeSequence
+                    : LocalReferenceMode.ChapterRangeSequence;
+            }
+
+            // iterate parsers and retain the highest-value result
+            foreach (var parserItem in ProjectParsers[referenceMode]
+                        .Concat(StandardParsers[referenceMode]))
             {
                 var parseResult = parserItem.Parse(inputText);
                 if (parseResult.Success)
@@ -197,15 +281,15 @@ namespace TvpMain.Reference
                 if (!bookVerseItem.IsLocalReference)
                 {
                     resultBuilder.AppendWithSpace(
-                        FormatBookName(openingTag, bookVerseItem.BookReferenceName));
+                        FormatBookName(inputContext, bookVerseItem.BookReferenceName));
                 }
 
                 // iterate chapter ranges, each including verse references
                 for (var ctr2 = 0;
-                    ctr2 < bookVerseItem.BookOrChapterRanges.Count;
+                    ctr2 < bookVerseItem.ChapterRanges.Count;
                     ctr2++)
                 {
-                    var bookOrChapterRange = bookVerseItem.BookOrChapterRanges[ctr2];
+                    var bookOrChapterRange = bookVerseItem.ChapterRanges[ctr2];
                     if (ctr2 > 0)
                     {
                         resultBuilder.Append(ProjectManager.StandardChapterSequenceSeparator);
@@ -228,18 +312,16 @@ namespace TvpMain.Reference
         /// Format book name from reference, based on text context.
         /// </summary>
         /// <param name="inputContext">Input context (required).</param>
-        /// <param name="tagName">Enclosing tag name if present (optional, may be null).</param>
         /// <param name="inputName">Input name object (required).</param>
         private string FormatBookName(
-            string tagName,
+            PartContext inputContext,
             BookReferenceName inputName)
         {
             if (inputName.IsKnownBook)
             {
-                var nameType =
-                    (tagName != null && tagName.Contains("xt"))
-                        ? ProjectManager.TargetNameType
-                        : ProjectManager.PassageNameType;
+                var nameType = TargetNameContexts.Contains(inputContext)
+                    ? ProjectManager.TargetNameType
+                    : ProjectManager.PassageNameType;
                 switch (nameType)
                 {
                     case BookNameType.Abbreviation:
@@ -275,30 +357,36 @@ namespace TvpMain.Reference
         /// <returns></returns>
         private string FormatBookOrChapterRange(
             PartContext inputContext,
-            BookOrChapterRange inputRange)
+            ChapterRange inputRange)
         {
             var resultBuilder = new StringBuilder();
             if (inputRange.IsFromChapter)
             {
                 resultBuilder.Append(inputRange.FromChapter);
-                resultBuilder.Append(ProjectManager.StandardChapterAndVerseSeparator);
             }
 
-            for (var ctr = 0;
-                ctr < inputRange.FromVerseRanges.Count;
-                ctr++)
+            if (inputRange.IsFromVerseRanges)
             {
-                var verseRange = inputRange.FromVerseRanges[ctr];
-                if (ctr > 0)
+                if (inputRange.IsFromChapter)
                 {
-                    resultBuilder.Append(ProjectManager.StandardVerseSequenceSeparator);
+                    resultBuilder.Append(ProjectManager.StandardChapterAndVerseSeparator);
                 }
+                for (var ctr = 0;
+                    ctr < inputRange.FromVerseRanges.Count;
+                    ctr++)
+                {
+                    var verseRange = inputRange.FromVerseRanges[ctr];
+                    if (ctr > 0)
+                    {
+                        resultBuilder.Append(ProjectManager.StandardVerseSequenceSeparator);
+                    }
 
-                resultBuilder.Append(verseRange.FromVerse);
-                if (verseRange.IsSingleton) continue;
+                    resultBuilder.Append(verseRange.FromVerse);
+                    if (verseRange.IsSingleton) continue;
 
-                resultBuilder.Append(ProjectManager.StandardVerseRangeSeparator);
-                resultBuilder.Append(verseRange.ToVerse);
+                    resultBuilder.Append(ProjectManager.StandardVerseRangeSeparator);
+                    resultBuilder.Append(verseRange.ToVerse);
+                }
             }
 
             if (inputRange.IsSingleton)
@@ -307,27 +395,35 @@ namespace TvpMain.Reference
             }
 
             resultBuilder.Append(ProjectManager.StandardBookOrChapterRangeSeparator);
+
             if (inputRange.IsToChapter)
             {
                 resultBuilder.Append(inputRange.ToChapter);
-                resultBuilder.Append(ProjectManager.StandardChapterAndVerseSeparator);
             }
 
-            for (var ctr = 0;
-                ctr < inputRange.ToVerseRanges.Count;
-                ctr++)
+            if (inputRange.IsToVerseRanges)
             {
-                var verseRange = inputRange.ToVerseRanges[ctr];
-                if (ctr > 0)
+                if (inputRange.IsToChapter)
                 {
-                    resultBuilder.Append(ProjectManager.StandardVerseSequenceSeparator);
+                    resultBuilder.Append(ProjectManager.StandardChapterAndVerseSeparator);
                 }
 
-                resultBuilder.Append(verseRange.FromVerse);
-                if (verseRange.IsSingleton) continue;
+                for (var ctr = 0;
+                    ctr < inputRange.ToVerseRanges.Count;
+                    ctr++)
+                {
+                    var verseRange = inputRange.ToVerseRanges[ctr];
+                    if (ctr > 0)
+                    {
+                        resultBuilder.Append(ProjectManager.StandardVerseSequenceSeparator);
+                    }
 
-                resultBuilder.Append(ProjectManager.StandardVerseRangeSeparator);
-                resultBuilder.Append(verseRange.ToVerse);
+                    resultBuilder.Append(verseRange.FromVerse);
+                    if (verseRange.IsSingleton) continue;
+
+                    resultBuilder.Append(ProjectManager.StandardVerseRangeSeparator);
+                    resultBuilder.Append(verseRange.ToVerse);
+                }
             }
 
             return resultBuilder.ToString();

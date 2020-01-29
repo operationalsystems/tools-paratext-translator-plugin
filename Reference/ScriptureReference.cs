@@ -40,13 +40,17 @@ namespace TvpMain.Reference
 
         public ParserType ParserType { get; }
 
+        public LocalReferenceMode ReferenceMode { get; }
+
         public ScriptureReferenceWrapper(
             ParserType parserType,
+            LocalReferenceMode referenceMode,
             string openingTag,
             ScriptureReference scriptureReference,
             string closingTag)
         {
             ParserType = parserType;
+            ReferenceMode = referenceMode;
             OpeningTag = openingTag;
             ScriptureReference = scriptureReference ?? throw new ArgumentNullException(nameof(scriptureReference));
             ClosingTag = closingTag;
@@ -248,12 +252,12 @@ namespace TvpMain.Reference
 
         public bool IsLocalReference => BookReferenceName == null;
 
-        public IList<BookOrChapterRange> BookOrChapterRanges { get; }
+        public IList<ChapterRange> ChapterRanges { get; }
 
-        public BookVerseReference(BookReferenceName bookReferenceName, IList<BookOrChapterRange> bookOrChapterRanges)
+        public BookVerseReference(BookReferenceName bookReferenceName, IList<ChapterRange> chapterRanges)
         {
             BookReferenceName = bookReferenceName;
-            BookOrChapterRanges = bookOrChapterRanges ?? throw new ArgumentNullException(nameof(bookOrChapterRanges));
+            ChapterRanges = chapterRanges ?? throw new ArgumentNullException(nameof(chapterRanges));
         }
 
         public long Score
@@ -261,13 +265,13 @@ namespace TvpMain.Reference
             get
             {
                 return (BookReferenceName == null ? 0L : BookReferenceName.Score * 10L)
-                        + (BookOrChapterRanges.Sum(value => value.Score) * 10L);
+                        + (ChapterRanges.Sum(value => value.Score) * 10L);
             }
         }
 
         protected bool Equals(BookVerseReference other)
         {
-            return Equals(BookReferenceName, other.BookReferenceName) && Equals(BookOrChapterRanges, other.BookOrChapterRanges);
+            return Equals(BookReferenceName, other.BookReferenceName) && Equals(ChapterRanges, other.ChapterRanges);
         }
 
         /// <inheritdoc />
@@ -284,7 +288,7 @@ namespace TvpMain.Reference
         {
             unchecked
             {
-                return ((BookReferenceName != null ? BookReferenceName.GetHashCode() : 0) * 397) ^ (BookOrChapterRanges != null ? BookOrChapterRanges.GetHashCode() : 0);
+                return ((BookReferenceName != null ? BookReferenceName.GetHashCode() : 0) * 397) ^ (ChapterRanges != null ? ChapterRanges.GetHashCode() : 0);
             }
         }
 
@@ -329,25 +333,30 @@ namespace TvpMain.Reference
     /// book verse reference level.
     /// 
     /// </summary>
-    public class BookOrChapterRange
+    public class ChapterRange
     {
         public int FromChapter { get; }
         public IList<VerseRange> FromVerseRanges { get; }
         public int ToChapter { get; }
         public IList<VerseRange> ToVerseRanges { get; }
 
-        public bool IsSingleton => FromVerseRanges == null
-                                   || ToVerseRanges == null;
+        public bool IsSingleton => !IsToChapter;
 
         public bool IsFromChapter => FromChapter > 0;
 
         public bool IsToChapter => ToChapter > 0;
 
-        public BookOrChapterRange(int chapter, IList<VerseRange> verseRanges) :
+        public bool IsFromVerseRanges => FromVerseRanges != null;
+
+        public bool IsToVerseRanges => ToVerseRanges != null;
+
+        public ChapterRange(int chapter, IList<VerseRange> verseRanges) :
             this(chapter, verseRanges, -1, null)
         { }
 
-        public BookOrChapterRange(int fromChapter, IList<VerseRange> fromVerseRanges, int chapter, IList<VerseRange> verseRanges)
+        public ChapterRange(
+            int fromChapter, IList<VerseRange> fromVerseRanges,
+            int chapter, IList<VerseRange> verseRanges)
         {
             FromChapter = fromChapter;
             FromVerseRanges = fromVerseRanges;
@@ -355,22 +364,10 @@ namespace TvpMain.Reference
             ToChapter = chapter;
             ToVerseRanges = verseRanges;
 
-            if (FromVerseRanges == null
-                && ToVerseRanges == null)
+            if (!IsFromChapter && !IsToChapter
+                && !IsFromVerseRanges && !IsToVerseRanges)
             {
-                throw new ArgumentNullException(nameof(FromVerseRanges));
-            }
-            else if (FromVerseRanges == null
-                     || ToVerseRanges == null)
-            {
-                if (FromVerseRanges == null)
-                {
-                    FromVerseRanges = ToVerseRanges;
-                    FromChapter = ToChapter;
-
-                    ToVerseRanges = null;
-                    ToChapter = -1;
-                }
+                throw new ArgumentException("Invalid chapter range (empty).");
             }
         }
 
@@ -385,7 +382,7 @@ namespace TvpMain.Reference
             }
         }
 
-        protected bool Equals(BookOrChapterRange other)
+        protected bool Equals(ChapterRange other)
         {
             return FromChapter == other.FromChapter && Equals(FromVerseRanges, other.FromVerseRanges) && ToChapter == other.ToChapter && Equals(ToVerseRanges, other.ToVerseRanges);
         }
@@ -396,7 +393,7 @@ namespace TvpMain.Reference
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
             if (obj.GetType() != this.GetType()) return false;
-            return Equals((BookOrChapterRange)obj);
+            return Equals((ChapterRange)obj);
         }
 
         /// <inheritdoc />
@@ -412,12 +409,12 @@ namespace TvpMain.Reference
             }
         }
 
-        public static bool operator ==(BookOrChapterRange left, BookOrChapterRange right)
+        public static bool operator ==(ChapterRange left, ChapterRange right)
         {
             return Equals(left, right);
         }
 
-        public static bool operator !=(BookOrChapterRange left, BookOrChapterRange right)
+        public static bool operator !=(ChapterRange left, ChapterRange right)
         {
             return !Equals(left, right);
         }
@@ -454,22 +451,33 @@ namespace TvpMain.Reference
 
         public int ToVerse { get; }
 
-        public bool IsSingleton => FromVerse == ToVerse;
+        public bool IsSingleton => !IsToVerse;
+
+        public bool IsFromVerse => FromVerse >= 0;
+
+        public bool IsToVerse => ToVerse >= 0;
 
         public VerseRange(int verse)
-            : this(verse, verse) { }
+            : this(verse, -1) { }
 
         public VerseRange(int fromVerse, int toVerse)
         {
             FromVerse = fromVerse;
             ToVerse = toVerse;
+
+            if (!IsFromVerse
+                && !IsToVerse)
+            {
+                throw new ArgumentException("Invalid verse range (empty).");
+            }
         }
 
         public long Score => IsSingleton ? 1L : 2L;
 
         protected bool Equals(VerseRange other)
         {
-            return FromVerse == other.FromVerse && ToVerse == other.ToVerse;
+            return FromVerse == other.FromVerse
+                   && ToVerse == other.ToVerse;
         }
 
         public override bool Equals(object obj)

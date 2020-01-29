@@ -140,7 +140,7 @@
     <Compile Include="Text\PartLocation.cs" />
     <Compile Include="Text\ProjectVerse.cs" />
     <Compile Include="Text\VersePart.cs" />
-    <Compile Include="Text\VerseUtil.cs" />
+    <Compile Include="Text\VerseRegexUtil.cs" />
     <Compile Include="Text\VerseLocation.cs" />
     <Compile Include="Text\PartContext.cs" />
     <Compile Include="Check\CheckUpdatedArgs.cs" />
@@ -181,6 +181,7 @@
       <DependentUpon>MainForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Util\ObjectUtil.cs" />
     <Compile Include="Util\TextUtil.cs" />
   </ItemGroup>
   <ItemGroup>

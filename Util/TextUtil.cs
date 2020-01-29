@@ -26,6 +26,7 @@ namespace TvpMain.Util
                 {
                     thisBuilder.Append(" ");
                 }
+
                 thisBuilder.Append(inputData);
             }
         }
@@ -40,5 +41,31 @@ namespace TvpMain.Util
         public static bool EqualsIgnoringWhitespace(this string thisText, string otherText) =>
             thisText.Where(value => !char.IsWhiteSpace(value))
                 .SequenceEqual(otherText.Where(value => !char.IsWhiteSpace(value)));
+
+        /// <summary>
+        /// Find the lowest index (position) of any supplied items,
+        /// optionally trimming input and ignoring case.
+        /// </summary>
+        /// <typeparam name="T">Input type (provided).</typeparam>
+        /// <param name="thisText">This text (provided).</param>
+        /// <param name="isIgnoreCase">True to ignore case, false otherwise.</param>
+        /// <param name="isTrimInput">True to trim input, false otherwise.</param>
+        /// <param name="inputItems">Input items to evaluate.</param>
+        /// <returns>Lowest index (position) of any supplied items if found, -1 otherwise.</returns>
+        public static int MinIndexOf<T>(
+            this string thisText,
+            bool isIgnoreCase,
+            bool isTrimInput,
+            IEnumerable<T> inputItems) =>
+            inputItems
+                .Select(inputItem => isTrimInput
+                    ? inputItem.ToString().Trim()
+                    : inputItem.ToString())
+                .Select(inputItem => thisText.IndexOf(inputItem, isIgnoreCase
+                        ? StringComparison.InvariantCultureIgnoreCase
+                        : StringComparison.InvariantCulture))
+                .Where(inputIndex => inputIndex >= 0) // exclude missing items
+                .DefaultIfEmpty(-1) // default to -1, if nothing found
+                .Min(); // find lowest, regardless
     }
 }
