@@ -4,14 +4,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace TvpMain.Result
+namespace TvpMain.Punctuation
 {
     /// <summary>
-    /// Check-controlled result type (i.e., severity). 
+    /// Punctuation error types,
+    /// used for ResultTypeCode field in ResultItem.
     /// </summary>
-    public enum ResultType
+    public enum PunctuationErrorType
     {
-        Information,
-        Exception
+        MissingSentenceEnd
     }
 }

@@ -206,12 +206,12 @@ namespace TvpMain.Text
         /// (e.g., main text, notes) we need them separated for context-sensitive checks.
         /// </summary>
         /// <param name="inputVerse">Input verse containing mixed content (required).</param>
-        /// <param name="inputContexts">Set of allowable contexts to search for (required).</param>
+        /// <param name="inputContexts">List of allowable contexts to search for (required).</param>
         /// <param name="outputParts">Map of text contexts to lists of found parts (required).</param>
         /// <returns>True if any parts found, false otherwise.</returns>
         public static bool FindVerseParts(
             ProjectVerse inputVerse,
-            ISet<PartContext> inputContexts,
+            IEnumerable<PartContext> inputContexts,
             ICollection<VersePart> outputParts)
         {
             var isFound = false;

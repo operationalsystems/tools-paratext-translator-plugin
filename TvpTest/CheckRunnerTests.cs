@@ -9,6 +9,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using TvpMain.Check;
 using TvpMain.Project;
+using TvpMain.Punctuation;
 using TvpMain.Text;
 using TvpMain.Result;
 using TvpMain.Util;
@@ -133,6 +134,7 @@ namespace TvpTest
                {
                    new MissingSentencePunctuationCheck(MockProjectManager.Object)
                }, TestContexts,
+               false,
                out var checkResult);
 
             // assert
@@ -165,6 +167,7 @@ namespace TvpTest
                 {
                     new MissingSentencePunctuationCheck(MockProjectManager.Object)
                 }, TestContexts,
+                false,
                 out var checkResult);
 
             // assert
@@ -194,6 +197,7 @@ namespace TvpTest
                 {
                     new MissingSentencePunctuationCheck(MockProjectManager.Object)
                 }, TestContexts,
+                false,
                 out var checkResult);
 
             // assert
@@ -233,6 +237,7 @@ namespace TvpTest
                         {
                             new MissingSentencePunctuationCheck(MockProjectManager.Object)
                         }, TestContexts,
+                        false,
                         out var checkResult))
             { IsBackground = true };
             workThread.Start();

@@ -3,23 +3,30 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 
 namespace TvpMain.Text
 {
     /// <summary>
     /// Paratext verse data.
+    ///
+    /// Note "private set" fields support JSON serialization
+    /// while maintaining runtime immutability.
     /// </summary>
+    [JsonObject(MemberSerialization.OptIn)]
     public class ProjectVerse
     {
         /// <summary>
         /// Verse location.
         /// </summary>
-        public VerseLocation VerseLocation { get; }
+        [JsonProperty]
+        public VerseLocation VerseLocation { get; private set; }
 
         /// <summary>
         /// Verse text, containing any combination of main text, footnotes or references, etc.
         /// </summary>
-        public string VerseText { get; }
+        [JsonProperty]
+        public string VerseText { get; private set; }
 
         /// <summary>
         /// Basic ctor.
@@ -30,6 +37,14 @@ namespace TvpMain.Text
         {
             VerseLocation = verseLocation ?? throw new ArgumentNullException(nameof(verseLocation));
             VerseText = verseText ?? throw new ArgumentNullException(nameof(verseText));
+        }
+
+        /// <summary>
+        /// Private ctor for serialization.
+        /// </summary>
+        [JsonConstructor]
+        private ProjectVerse()
+        {
         }
 
         /// <summary>

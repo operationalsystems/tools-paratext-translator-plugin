@@ -11,6 +11,11 @@ namespace TvpMain.Check
     public interface ITextCheck
     {
         /// <summary>
+        /// Type discriminator, for filtering results.
+        /// </summary>
+        CheckType CheckType { get; }
+
+        /// <summary>
         /// Check implementation.
         /// </summary>
         /// <param name="partData">Verse part data, including original verse, location, etc.</param>

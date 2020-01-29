@@ -78,9 +78,14 @@ namespace TvpMain.Check
         private CheckArea _runArea;
 
         /// <summary>
-        /// Current run's check list.
+        /// Current run's list of checks.
         /// </summary>
         private IList<ITextCheck> _runChecks;
+
+        /// <summary>
+        /// Current run's list of check types.
+        /// </summary>
+        private ISet<CheckType> _runCheckTypes;
 
         /// <summary>
         /// Current run's contexts.
@@ -101,6 +106,12 @@ namespace TvpMain.Check
         /// Current run's earliest exception.
         /// </summary>
         private Exception _runEx;
+
+        /// <summary>
+        /// True to merge and save results with previous,
+        /// false to only return current results.
+        /// </summary>
+        private bool _runSaveResults;
 
         /// <summary>
         /// Check updated event handler.
@@ -147,17 +158,22 @@ namespace TvpMain.Check
         /// <param name="inputArea">Check area (i.e., scope; required).</param>
         /// <param name="inputChecks">List of checks to execute (required).</param>
         /// <param name="inputContexts">Text contexts (>0 required).</param>
+        /// <param name="isSaveResults">True to merge and save results with previous, false to only return current results.</param>
         /// <param name="outputResults">Output results (populated if run completes normally, null otherwise).</param>
         /// <returns>True if run completes normally, false otherwise.</returns>
         public bool RunChecks(CheckArea inputArea,
             IEnumerable<ITextCheck> inputChecks,
             IEnumerable<PartContext> inputContexts,
+            bool isSaveResults,
             out CheckResults outputResults)
         {
             // create run-based utilities
             _runArea = inputArea;
             _runChecks = inputChecks.ToImmutableList();
+            _runCheckTypes = _runChecks.Select(value => value.CheckType)
+                .ToImmutableHashSet();
             _runContexts = inputContexts.ToImmutableHashSet();
+            _runSaveResults = isSaveResults;
             _runResults = new CheckResults();
             _runEx = null;
             _runBookCtr = 0;
@@ -334,6 +350,19 @@ namespace TvpMain.Check
                                             }
                                         }
                                     }
+
+                                    IList<ResultItem> outputItems = resultItems;
+                                    if (_runSaveResults)
+                                    {
+                                        _projectManager.ResultManager.SetVerseResults(
+                                            _runCheckTypes, _runContexts,
+                                            verseData.VerseLocation, resultItems,
+                                            out outputItems);
+                                    }
+                                    foreach (var outputItem in outputItems)
+                                    {
+                                        _runResults.ResultItems.Enqueue(outputItem);
+                                    }
                                 }
                             }
                             catch (ArgumentException)
@@ -342,9 +371,6 @@ namespace TvpMain.Check
                                 // which they can be for given translations (ignore and move on)
                                 continue;
                             }
-
-                            resultItems.ForEach(resultItem =>
-                                _runResults.ResultItems.Enqueue(resultItem));
                         }
                     }
 

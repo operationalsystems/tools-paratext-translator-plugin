@@ -4,35 +4,43 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using CsvHelper.Configuration.Attributes;
+using Newtonsoft.Json;
 
 namespace TvpMain.Text
 {
     /// <summary>
     /// A specific part of a verse.
+    ///
+    /// Note "private set" fields support JSON serialization
+    /// while maintaining runtime immutability.
     /// </summary>
+    [JsonObject(MemberSerialization.OptIn)]
     public class VersePart
     {
         /// <summary>
         /// Source verse text.
         /// </summary>
-        public ProjectVerse VerseData { get; }
+        [JsonProperty]
+        public ProjectVerse ParatextVerse { get; private set; }
 
         /// <summary>
         /// Part location.
         /// </summary>
-        public PartLocation PartLocation { get; }
+        [JsonProperty]
+        public PartLocation PartLocation { get; private set; }
 
         /// <summary>
         /// Part text within verse.
         /// </summary>
-        public string PartText { get; }
+        [JsonProperty]
+        public string PartText { get; private set; }
 
         /// <summary>
         /// B/C/V summary text, including part range.
         /// </summary>
         [Ignore]
         public string PartCoordinateText =>
-            $"{VerseData.VerseLocation.VerseCoordinateText + "." + PartLocation.PartRangeText}";
+            $"{ParatextVerse.VerseLocation.VerseCoordinateText + "." + PartLocation.PartRangeText}";
 
         /// <summary>
         /// Basic ctor.
@@ -42,9 +50,17 @@ namespace TvpMain.Text
         /// <param name="partLocation"></param>
         public VersePart(ProjectVerse verseData, PartLocation partLocation, string partText)
         {
-            VerseData = verseData ?? throw new ArgumentNullException(nameof(verseData));
+            ParatextVerse = verseData ?? throw new ArgumentNullException(nameof(verseData));
             PartLocation = partLocation ?? throw new ArgumentNullException(nameof(partLocation));
             PartText = partText ?? throw new ArgumentNullException(nameof(partText));
+        }
+
+        /// <summary>
+        /// Private ctor for serialization.
+        /// </summary>
+        [JsonConstructor]
+        private VersePart()
+        {
         }
 
         /// <summary>
@@ -94,7 +110,7 @@ namespace TvpMain.Text
         /// <returns>True if equal, false otherwise</returns>
         protected bool Equals(VersePart other)
         {
-            return Equals(VerseData, other.VerseData)
+            return Equals(ParatextVerse, other.ParatextVerse)
                    && Equals(PartLocation, other.PartLocation)
                    && PartText == other.PartText;
         }
@@ -120,7 +136,7 @@ namespace TvpMain.Text
         {
             unchecked
             {
-                var hashCode = (VerseData != null ? VerseData.GetHashCode() : 0);
+                var hashCode = (ParatextVerse != null ? ParatextVerse.GetHashCode() : 0);
                 hashCode = (hashCode * 397) ^ (PartLocation != null ? PartLocation.GetHashCode() : 0);
                 hashCode = (hashCode * 397) ^ (PartText != null ? PartText.GetHashCode() : 0);
                 return hashCode;

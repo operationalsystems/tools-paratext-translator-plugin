@@ -91,6 +91,7 @@
             this.referencesActionsSuggestionColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.referencesActionsAcceptColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.referencesActionsIgnoreColumn = new System.Windows.Forms.DataGridViewButtonColumn();
+            this.resultWorker = new System.ComponentModel.BackgroundWorker();
             ((System.ComponentModel.ISupportInitialize)(this.dgvCheckResults)).BeginInit();
             this.contextMenu.SuspendLayout();
             this.mainMenu.SuspendLayout();
@@ -809,5 +810,6 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn referencesActionsSuggestionColumn;
         private System.Windows.Forms.DataGridViewTextBoxColumn referencesActionsAcceptColumn;
         private System.Windows.Forms.DataGridViewButtonColumn referencesActionsIgnoreColumn;
+        private System.ComponentModel.BackgroundWorker resultWorker;
     }
 }

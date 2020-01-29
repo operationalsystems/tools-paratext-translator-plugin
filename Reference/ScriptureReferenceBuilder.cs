@@ -21,10 +21,19 @@ namespace TvpMain.Reference
     /// </summary>
     public class ScriptureReferenceBuilder
     {
+        /// <summary>
+        /// Project manager with needed settings and metadata.
+        /// </summary>
         public ProjectManager ProjectManager { get; }
 
+        /// <summary>
+        /// Project-specific parsers.
+        /// </summary>
         private IList<Parser<char, ScriptureReferenceWrapper>> ProjectParsers { get; }
 
+        /// <summary>
+        /// Standard (backup) parsers.
+        /// </summary>
         private IList<Parser<char, ScriptureReferenceWrapper>> StandardParsers { get; }
 
         /// <summary>
@@ -38,6 +47,8 @@ namespace TvpMain.Reference
 
         /// <summary>
         /// Basic ctor.
+        ///
+        /// Creates project-specific and standard parsers.
         /// </summary>
         /// <param name="projectManager">Project manager (required).</param>
         public ScriptureReferenceBuilder(ProjectManager projectManager)
@@ -165,11 +176,13 @@ namespace TvpMain.Reference
                 }
             }
 
+            // prepend tag, if present
             if (!string.IsNullOrWhiteSpace(openingTag))
             {
                 resultBuilder.AppendWithSpace($@"\{openingTag}");
             }
 
+            // iterate book references, each including chapter and verse references
             for (var ctr1 = 0;
                 ctr1 < inputWrapper.ScriptureReference.BookReferences.Count;
                 ctr1++)
@@ -183,9 +196,10 @@ namespace TvpMain.Reference
                 if (!bookVerseItem.IsLocalReference)
                 {
                     resultBuilder.AppendWithSpace(
-                        FormatBookName(inputContext, bookVerseItem.BookReferenceName));
+                        FormatBookName(openingTag, bookVerseItem.BookReferenceName));
                 }
 
+                // iterate chapter ranges, each including verse references
                 for (var ctr2 = 0;
                     ctr2 < bookVerseItem.BookOrChapterRanges.Count;
                     ctr2++)
@@ -203,7 +217,7 @@ namespace TvpMain.Reference
 
             if (!string.IsNullOrWhiteSpace(closingTag))
             {
-                resultBuilder.AppendWithSpace($@"\{closingTag}");
+                resultBuilder.Append($@"\{closingTag}");
             }
 
             return resultBuilder.ToString();
@@ -213,16 +227,38 @@ namespace TvpMain.Reference
         /// Format book name from reference, based on text context.
         /// </summary>
         /// <param name="inputContext">Input context (required).</param>
+        /// <param name="tagName">Enclosing tag name if present (optional, may be null).</param>
         /// <param name="inputName">Input name object (required).</param>
         private string FormatBookName(
-            PartContext inputContext,
+            string tagName,
             BookReferenceName inputName)
         {
             if (inputName.IsKnownBook)
             {
-                return inputContext == PartContext.Introductions
-                    ? inputName.NameItem.LongName
-                    : inputName.NameItem.ShortName;
+                var nameType =
+                    (tagName != null && tagName.Contains("xt"))
+                        ? ProjectManager.TargetNameType
+                        : ProjectManager.PassageNameType;
+                switch (nameType)
+                {
+                    case BookNameType.Abbreviation:
+                        return inputName.NameItem.GetAvailableName(
+                            BookNameType.Abbreviation,
+                            BookNameType.ShortName,
+                            BookNameType.LongName);
+                    case BookNameType.ShortName:
+                        return inputName.NameItem.GetAvailableName(
+                            BookNameType.ShortName,
+                            BookNameType.Abbreviation,
+                            BookNameType.LongName);
+                    case BookNameType.LongName:
+                        return inputName.NameItem.GetAvailableName(
+                            BookNameType.LongName,
+                            BookNameType.Abbreviation,
+                            BookNameType.ShortName);
+                    default:
+                        return inputName.NameItem.BookCode;
+                }
             }
             else
             {
