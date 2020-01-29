@@ -58,6 +58,7 @@ namespace TvpTest
                     result.ToString().Trim(),
                     $"Can't verify entry #{ctr + 1}, text: {testText}");
 
+                // Console.Out.WriteLine(testText);
                 // Console.Out.WriteLine(result);
                 // Console.Out.WriteLine(builder.FormatStandardReference(PartContext.MainText, result));
 
@@ -85,6 +86,7 @@ namespace TvpTest
                     builder.FormatStandardReference(PartContext.MainText, result).Trim(),
                     $"Can't verify entry #{ctr + 1}, text: {testText}");
 
+                // Console.Out.WriteLine(testText);
                 // Console.Out.WriteLine(result);
                 // Console.Out.WriteLine(builder.FormatStandardReference(PartContext.MainText, result));
 
@@ -100,6 +102,12 @@ namespace TvpTest
         {
             return new List<string>()
             {
+                @"19–20;21–23;25",
+                @"1-20",
+                @"1-20,21,22",
+                @"1,20,21,22",
+                @"20,21,22",
+                @"20;21;22",
                 @"mat 1:23",
                 @"mat 1:1-3",
                 @"mat 1:1,3",

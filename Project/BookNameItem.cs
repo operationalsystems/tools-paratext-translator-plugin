@@ -106,6 +106,8 @@ namespace TvpMain.Project
                             return LongName;
                         }
                         break;
+                    default:
+                        return BookCode;
                 }
             }
             return BookCode;

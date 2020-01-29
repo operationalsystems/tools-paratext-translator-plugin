@@ -337,7 +337,7 @@ namespace TvpMain.Check
                                         verseText);
 
                                     // find verse parts
-                                    if (VerseUtil.FindVerseParts(
+                                    if (VerseRegexUtil.FindVerseParts(
                                         verseData, _runContexts, foundParts))
                                     {
                                         // run checks on each part
