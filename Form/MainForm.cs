@@ -1188,29 +1188,6 @@ namespace TvpMain.Form
         /// <param name="e"></param>
         private void referencesActionsGridView_SelectionChanged(object sender, EventArgs e)
         {
-            Debug.WriteLine("referencesActionsGridView_SelectionChanged");
-
-            if (referencesListView.CurrentRow != null)
-            {
-                VerseLocation verseLocation = (VerseLocation)referencesListView.CurrentRow.Cells[0].Tag;
-
-                if (verseLocation != null)
-                {
-                    // reset the test so that pervious highlights are overwritten
-                    //referencesTextBox.Text = _filteredReferencesResultMap[verseLocation][0].VersePart.ParatextVerse.VerseText;
-                    referencesTextBox.DeselectAll();
-                    Debug.WriteLine("referencesActionsGridView_SelectionChanged - Text Set");
-                }
-                else
-                {
-                    Debug.WriteLine("referencesActionsGridView_SelectionChanged - verseLocation NULL");
-                }
-            }
-            else
-            {
-                Debug.WriteLine("referencesActionsGridView_SelectionChanged - Current Row NULL");
-            }
-
             // highlight the text based on new selection
             highlightActiveResultItem();
         }
