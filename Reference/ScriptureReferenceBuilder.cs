@@ -117,12 +117,12 @@ namespace TvpMain.Reference
                         ParserType.Standard,
                         ProjectManager,
                         new ScriptureReferenceSeparators(
-                            new string[] {MainConsts.DEFAULT_REFERENCE_BOOK_SEQUENCE_SEPARATOR},
-                            new string[] {MainConsts.DEFAULT_REFERENCE_CHAPTER_SEQUENCE_SEPARATOR},
-                            new string[] {MainConsts.DEFAULT_REFERENCE_BOOK_OR_CHAPTER_RANGE_SEPARATOR},
-                            new string[] {MainConsts.DEFAULT_REFERENCE_CHAPTER_AND_VERSE_SEPARATOR},
-                            new string[] {MainConsts.DEFAULT_REFERENCE_VERSE_SEQUENCE_SEPARATOR},
-                            new string[] {MainConsts.DEFAULT_REFERENCE_VERSE_RANGE_SEPARATOR},
+                            MainConsts.DEFAULT_REFERENCE_BOOK_SEQUENCE_SEPARATOR.ToSingletonList(),
+                            MainConsts.DEFAULT_REFERENCE_CHAPTER_SEQUENCE_SEPARATOR.ToSingletonList(),
+                            MainConsts.DEFAULT_REFERENCE_BOOK_OR_CHAPTER_RANGE_SEPARATOR.ToSingletonList(),
+                            MainConsts.DEFAULT_REFERENCE_CHAPTER_AND_VERSE_SEPARATOR.ToSingletonList(),
+                            MainConsts.DEFAULT_REFERENCE_VERSE_SEQUENCE_SEPARATOR.ToSingletonList(),
+                            MainConsts.DEFAULT_REFERENCE_VERSE_RANGE_SEPARATOR.ToSingletonList(),
                             false),
                         referenceMode)
                 }.ToImmutableList();
