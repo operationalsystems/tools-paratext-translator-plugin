@@ -8,7 +8,6 @@ using System.Text;
 using System.Threading.Tasks;
 using Pidgin;
 using Pidgin.Expression;
-using Pidgin;
 using TvpMain.Project;
 using TvpMain.Text;
 using TvpMain.Util;
