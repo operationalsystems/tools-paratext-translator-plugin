@@ -40,16 +40,16 @@ namespace TvpMain.Punctuation
         /// <summary>
         /// Check implementation.
         /// </summary>
-        /// <param name="partData">Verse part data, including original verse, location, etc.</param>
+        /// <param name="versePart">Verse part data, including original verse, location, etc.</param>
         /// <param name="checkResults">Result items list to populate.</param>
         public void CheckText(
-            VersePart partData,
+            VersePart versePart,
             ICollection<ResultItem> checkResults)
         {
-            foreach (Match matchItem in CheckRegex.Matches(partData.PartText))
+            foreach (Match matchItem in CheckRegex.Matches(versePart.PartText))
             {
                 checkResults.Add
-                (new ResultItem(partData,
+                (new ResultItem(versePart,
                     $"Punctuation check failure at position {matchItem.Index}.",
                     matchItem.Value, matchItem.Index, null,
                     CheckType.MissingSentencePunctuation,

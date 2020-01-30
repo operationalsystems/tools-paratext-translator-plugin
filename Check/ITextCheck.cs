@@ -18,8 +18,8 @@ namespace TvpMain.Check
         /// <summary>
         /// Check implementation.
         /// </summary>
-        /// <param name="partData">Verse part data, including original verse, location, etc.</param>
+        /// <param name="versePart">Verse part data, including original verse, location, etc.</param>
         /// <param name="checkResults">Result items list to populate.</param>
-        void CheckText(VersePart partData, ICollection<ResultItem> checkResults);
+        void CheckText(VersePart versePart, ICollection<ResultItem> checkResults);
     }
 }

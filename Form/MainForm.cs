@@ -56,7 +56,7 @@ namespace TvpMain.Form
         /// List with only punctuation check to be performed.
         /// </summary>
         private readonly IEnumerable<ITextCheck> _punctuationCheck;
-        
+
         /// <summary>
         /// List with only references check to be performed.
         /// </summary>
@@ -221,7 +221,8 @@ namespace TvpMain.Form
             if (referencesCheckMenuItem.Checked)
             {
                 UpdateReferencesCheckUI();
-            } else
+            }
+            else
             {
                 UpdateMainTable();
             }
@@ -952,7 +953,8 @@ namespace TvpMain.Form
             {
                 // switch to reference check tab
                 tabControl.SelectedTab = referencesTab;
-            } else
+            }
+            else
             {
                 tabControl.SelectedTab = punctuationTab;
             }
@@ -1023,7 +1025,8 @@ namespace TvpMain.Form
                 if (_filteredReferencesResultMap.ContainsKey(verseLocation))
                 {
                     localList = _filteredReferencesResultMap[verseLocation];
-                } else
+                }
+                else
                 {
                     localList = Enumerable.Empty<ResultItem>().ToList();
                     _filteredReferencesResultMap.Add(verseLocation, localList);
@@ -1206,11 +1209,12 @@ namespace TvpMain.Form
                 if (resultItem != null)
                 {
                     // set ignored state
-                    if(resultItem.ResultState == ResultState.Ignored)
+                    if (resultItem.ResultState == ResultState.Ignored)
                     {
                         resultItem.ResultState = ResultState.Found;
                         referencesActionsGridView.Rows[e.RowIndex].Cells[4].Value = "Ignore";
-                    } else
+                    }
+                    else
                     {
                         resultItem.ResultState = ResultState.Ignored;
                         referencesActionsGridView.Rows[e.RowIndex].Cells[4].Value = "Un-Ignore";
@@ -1279,7 +1283,10 @@ namespace TvpMain.Form
                         referencesTextBox.SelectAll();
                         referencesTextBox.SelectionBackColor = Color.White;
 
-                        referencesTextBox.SelectionStart = resultItem.MatchStart;
+                        referencesTextBox.SelectionStart = MinusPrecedingChar(
+                            resultItem.VersePart.ParatextVerse.VerseText,
+                            resultItem.MatchStart,
+                            '\r');
                         referencesTextBox.SelectionLength = resultItem.MatchLength;
                         referencesTextBox.SelectionBackColor = Color.Yellow;
 
@@ -1287,19 +1294,45 @@ namespace TvpMain.Form
 
                         referencesTextBox.Refresh();
 
-                    } else
+                    }
+                    else
                     {
                         Debug.WriteLine("highlightActiveResultItem - result item NULL - Setting Selection");
 
                         referencesActionsGridView.Rows[0].Selected = true;
                     }
-                } else
+                }
+                else
                 {
                     Debug.WriteLine("highlightActiveResultItem - CurrentRow.Tag NULL");
 
                     referencesActionsGridView.Rows[0].Selected = true;
                 }
             }
+        }
+
+        /// <summary>
+        /// Subtract the occurences of a search char from before an input position.
+        ///
+        /// Used to deal with rich text control's filtering out '\r' from input text.
+        /// </summary>
+        /// <param name="inputText">Text to search (required).</param>
+        /// <param name="inputPosition">Position to search up to (0-based).</param>
+        /// <param name="searchChar">Character to search for.</param>
+        /// <returns>Input position minus occurences of search char before it.</returns>
+        private static int MinusPrecedingChar(string inputText, int inputPosition, char searchChar)
+        {
+            var searchPosition = inputText.IndexOf(searchChar);
+            var charCtr = 0;
+
+            while (searchPosition >= 0
+                   && searchPosition < inputPosition)
+            {
+                charCtr++;
+                searchPosition = inputText.IndexOf(searchChar, searchPosition + 1);
+            }
+
+            return Math.Max(inputPosition - charCtr, 0);
         }
 
         /// <summary>

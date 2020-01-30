@@ -48,27 +48,23 @@ namespace TvpMain.Reference
         /// <summary>
         /// Check implementation.
         /// </summary>
-        /// <param name="partData">Verse part data, including original verse, location, etc.</param>
+        /// <param name="versePart">Verse part data, including original verse, location, etc.</param>
         /// <param name="checkResults">Result items list to populate.</param>
         public void CheckText(
-            VersePart partData,
+            VersePart versePart,
             ICollection<ResultItem> checkResults)
         {
-            // keep track of identified parts so we don't hit them again
-            var matchedParts = new HashSet<VersePart>();
+            // keep track of identified matches so we don't hit them again
+            var matchedParts = new HashSet<Tuple<int, int>>();
             foreach (var regexItem in _projectManager.TargetReferenceRegexes)
             {
-                foreach (Match matchItem in regexItem.Matches(partData.PartText))
+                foreach (Match matchItem in regexItem.Matches(versePart.PartText))
                 {
-                    var matchedPart = new VersePart(partData.ParatextVerse,
-                        new PartLocation(partData.PartLocation.PartStart + matchItem.Index,
-                            matchItem.Length,
-                            partData.PartLocation.PartContext),
-                        matchItem.Value);
-                    if (!matchedParts.Contains(matchedPart)
-                        && CheckVersePart(matchedPart, matchItem, checkResults))
+                    if (matchedParts.Add(new Tuple<int, int>(
+                        versePart.PartLocation.PartStart,
+                        versePart.PartLocation.PartLength)))
                     {
-                        matchedParts.Add(matchedPart);
+                        CheckVersePart(versePart, matchItem, checkResults);
                     }
                 }
             }
@@ -82,7 +78,8 @@ namespace TvpMain.Reference
         /// <param name="inputMatch">Regex match (required).</param>
         /// <param name="outputResults">Result item list to add checks to.</param>
         /// <returns>True if results added, false otherwise.</returns>
-        private bool CheckVersePart(VersePart inputPart,
+        private bool CheckVersePart(
+            VersePart inputPart,
             Capture inputMatch,
             ICollection<ResultItem> outputResults)
         {
