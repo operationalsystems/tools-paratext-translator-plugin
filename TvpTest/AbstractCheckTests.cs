@@ -117,15 +117,16 @@ namespace TvpTest
         /// </summary>
         protected const string PASSAGE_NAME_TYPE_SETTING = "ShortName";
 
+
         /// <summary>
         /// Map of book name items by book number (1-based), used by mock project manager.
         /// </summary>
-        private IDictionary<int, BookNameItem> TestBookNamesByNum;
+        private IDictionary<int, BookNameItem> _testBookNamesByNum;
 
         /// <summary>
         /// Map of book name items by all names, used by mock project manager.
         /// </summary>
-        private IDictionary<string, BookNameItem> TestBookNamesByAllNames;
+        private IDictionary<string, BookNameItem> _testBookNamesByAllNames;
 
         /// <summary>
         /// Mock Paratext scripture extractor.
@@ -191,25 +192,25 @@ namespace TvpTest
                 .Returns<string, string>((projectName, settingsKey) => PASSAGE_NAME_TYPE_SETTING);
 
             // project manager setup
-            TestBookNamesByNum = BookUtil.BookIdList
+            _testBookNamesByNum = BookUtil.BookIdList
                 .Select(value =>
                     new BookNameItem(value.BookCode, value.BookNum, value.BookCode, value.BookTitle, value.BookTitle))
                 .ToImmutableDictionary(value => value.BookNum);
 
             var tempTestBookNamesByAllNames = new Dictionary<string, BookNameItem>();
-            foreach (var nameItem in TestBookNamesByNum.Values)
+            foreach (var nameItem in _testBookNamesByNum.Values)
             {
                 tempTestBookNamesByAllNames[nameItem.BookCode.ToLower()] = nameItem;
                 tempTestBookNamesByAllNames[nameItem.Abbreviation.ToLower()] = nameItem;
                 tempTestBookNamesByAllNames[nameItem.ShortName.ToLower()] = nameItem;
                 tempTestBookNamesByAllNames[nameItem.LongName.ToLower()] = nameItem;
             }
-            TestBookNamesByAllNames = tempTestBookNamesByAllNames.ToImmutableDictionary();
+            _testBookNamesByAllNames = tempTestBookNamesByAllNames.ToImmutableDictionary();
 
             MockProjectManager.Setup(managerItem => managerItem.BookNamesByNum)
-                .Returns(TestBookNamesByNum);
+                .Returns(_testBookNamesByNum);
             MockProjectManager.Setup(managerItem => managerItem.BookNamesByAllNames)
-                .Returns(TestBookNamesByAllNames);
+                .Returns(_testBookNamesByAllNames);
         }
 
         /// <summary>

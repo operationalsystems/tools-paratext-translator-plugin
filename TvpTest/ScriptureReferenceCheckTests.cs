@@ -61,10 +61,10 @@ namespace TvpTest
 
 
         /// The following unit tests all pertain to the table of contents section of the text.
-        
+
         /// <summary>
         /// A test for a wrong verse separator malformation reference in the table of contents.
-        /// <summary>
+        /// </summary>
         [TestMethod]
         public void MalformedToCReferenceCheck()
         {
@@ -74,7 +74,7 @@ namespace TvpTest
             // Describes location and nature of the text being checked
             // Note: "PartContext" tells the check what it's looking at.
             var partData = VersePart.Create(1, 1, 1,
-                @"(\ior Genesis 1;3 \ior*)", 1, 1,
+                @"(\ior Genesis 1;3 \ior*)",
                 PartContext.Outlines);
 
             // Executes the check
@@ -91,7 +91,7 @@ namespace TvpTest
 
         /// <summary>
         /// A test case for a reference missing an opening \ior tag in the table of contents.
-        ///
+        ///</summary>
         [TestMethod]
         public void MissingOpeningTagInToC()
         {
@@ -100,7 +100,7 @@ namespace TvpTest
             // Describes location and nature of the text being checked
             // Note: "PartContext" tells the check what it's looking at.
             var partData = VersePart.Create(1, 1, 1,
-                @"(Genesis 1:1-4 \ior)*", 1, 1,
+                @"(Genesis 1:1-4 \ior)*",
                 PartContext.Outlines);
 
             // Executes the check
@@ -115,7 +115,7 @@ namespace TvpTest
 
         /// <summary>
         /// A test case for missing an closing \ior* tag in the table of contents.
-        ///
+        ///</summary>
         [TestMethod]
         public void MissingClosingTagInToC()
         {
@@ -124,7 +124,7 @@ namespace TvpTest
             // Describes location and nature of the text being checked
             // Note: "PartContext" tells the check what it's looking at.
             var partData = VersePart.Create(1, 1, 1,
-                @"(\ior Genesis 1:1; 4:4)", 1, 1,
+                @"(\ior Genesis 1:1; 4:4)",
                 PartContext.Outlines);
 
             // Executes the check
@@ -139,7 +139,7 @@ namespace TvpTest
 
         /// <summary>
         /// A test case for missing all \ior tags in the table of contents.
-        ///
+        ///</summary>
         [TestMethod]
         public void MissingAllTagsInToC()
         {
@@ -148,7 +148,7 @@ namespace TvpTest
             // Describes location and nature of the text being checked
             // Note: "PartContext" tells the check what it's looking at.
             var partData = VersePart.Create(1, 1, 1,
-                @"(Genesis 1:14)", 1, 1,
+                @"(Genesis 1:14)",
                 PartContext.Outlines);
 
             // Executes the check
@@ -163,7 +163,7 @@ namespace TvpTest
 
         /// <summary>
         /// A test case for a reference using a short name in the table of contents.
-        ///
+        ///</summary>
         [TestMethod]
         public void ShortNameReferenceInToC()
         {
@@ -172,7 +172,7 @@ namespace TvpTest
             // Describes location and nature of the text being checked
             // Note: "PartContext" tells the check what it's looking at.
             var partData = VersePart.Create(1, 1, 1,
-                @"(\ior Genesis 1:1; 4:4 \ior*)", 1, 1,
+                @"(\ior Genesis 1:1; 4:4 \ior*)",
                 PartContext.Outlines);
 
             // Executes the check
@@ -187,7 +187,7 @@ namespace TvpTest
 
         /// <summary>
         /// A test case for a reference using an abbreviated name in the table of contents.
-        ///
+        ///</summary>
         [TestMethod]
         public void AbbreviatedNameReferenceInToC()
         {
@@ -196,7 +196,7 @@ namespace TvpTest
             // Describes location and nature of the text being checked
             // Note: "PartContext" tells the check what it's looking at.
             var partData = VersePart.Create(1, 1, 1,
-                @"(\ior GEN 1:1; 4:3 \ior*)", 1, 1,
+                @"(\ior GEN 1:1; 4:3 \ior*)",
                 PartContext.Outlines);
 
             // Executes the check
@@ -206,7 +206,7 @@ namespace TvpTest
             Assert.AreEqual(1, resultList.Count, @"Abbreviated name is used in reference.");
             var errorType = (ScriptureReferenceErrorType)resultList[0].ResultTypeCode;
             Assert.AreEqual(ScriptureReferenceErrorType.IncorrectNameStyle, errorType, "Incorrect name style is used in reference.");
-            Assert.AreEqual(@"(\ior GEN 1:1; 4:3 \ior*)", resultList[0].MatchText);
+            Assert.AreEqual(@"GEN 1:1; 4:3", resultList[0].MatchText);
         }
 
         /// <summary>
@@ -220,7 +220,7 @@ namespace TvpTest
             // Describes location and nature of the text being checked
             // Note: "PartContext" tells the check what it's looking at.
             var partData = VersePart.Create(1, 1, 1,
-                @"(\fr \+xt Genesis 1:1\+xt*\fr*)", 1, 1,
+                @"(\fr \+xt Genesis 1:1\+xt*\fr*)",
                 PartContext.Outlines);
 
             // Executes the check
@@ -229,7 +229,7 @@ namespace TvpTest
             // Assert
             Assert.AreEqual(1, resultList.Count, @"An \fr tag surrounding a reference outside of footnotes area.");
             var errorType = (ScriptureReferenceErrorType)resultList[0].ResultTypeCode;
-            Assert.AreEqual(ScriptureReferenceErrorType.IncorrectTag, errorType, "The wrong tag is used for the context."); 
+            Assert.AreEqual(ScriptureReferenceErrorType.IncorrectTag, errorType, "The wrong tag is used for the context.");
             Assert.AreEqual(@"(\fr \+xt Genesis 1:1\+xt*\fr*)", resultList[0].MatchText);
         }
 
@@ -244,7 +244,7 @@ namespace TvpTest
             // Describes location and nature of the text being checked
             // Note: "PartContext" tells the check what it's looking at.
             var partData = VersePart.Create(1, 1, 1,
-                @"(\+xt Genesis 1:4\+xt*)", 1, 1,
+                @"(\+xt Genesis 1:4\+xt*)",
                 PartContext.Outlines);
 
             // Executes the check
@@ -268,7 +268,7 @@ namespace TvpTest
             // Describes location and nature of the text being checked
             // Note: "PartContext" tells the check what it's looking at.
             var partData = VersePart.Create(1, 1, 1,
-                @"(\ft \+xt Genesis 1:1\+xt* \ft*)", 1, 1,
+                @"(\ft \+xt Genesis 1:1\+xt* \ft*)",
                 PartContext.Outlines);
 
             // Executes the check
@@ -292,7 +292,7 @@ namespace TvpTest
             // Describes location and nature of the text being checked
             // Note: "PartContext" tells the check what it's looking at.
             var partData = VersePart.Create(1, 1, 1,
-                @"(\xt Genesis 1:1; 4:3\xt*)", 1, 1,
+                @"(\xt Genesis 1:1; 4:3\xt*)",
                 PartContext.Outlines);
 
             // Executes the check
@@ -314,24 +314,24 @@ namespace TvpTest
         public void MalformedIntroductionReference()
         {
             // Arrange
-           
+
             var resultList = new List<ResultItem>();
             // Describes location and nature of the text being checked
             // Note: "PartContext" tells the check what it's looking at.
             var partData = VersePart.Create(1, 1, 1,
-                @"\xt Luke1:0\xt*", 1, 1,
+                @"\xt Luke1:0\xt*",
                 PartContext.Introductions);
 
             // Executes the check
             _referenceCheck.CheckText(partData, resultList);
-          
+
 
             // Assert
             Assert.AreEqual(1, resultList.Count, "No results generated.");
             var errorType = (ScriptureReferenceErrorType)resultList[0].ResultTypeCode;
             Assert.AreEqual(ScriptureReferenceErrorType.LooseFormatting, errorType, "The reference has an error in spacing or punctuation.");
             Assert.AreEqual(@"\xt Luke1:0\xt*", resultList[0].MatchText);
-            
+
         }
 
         /// <summary>
@@ -344,8 +344,8 @@ namespace TvpTest
             var resultList = new List<ResultItem>();
             // Describes location and nature of the text being checked
             // Note: "PartContext" tells the check what it's looking at.
-            var partData = VersePart.Create(1,1,1, 
-                @"Genesis 1:5\xt*", 1, 1,
+            var partData = VersePart.Create(1, 1, 1,
+                @"Genesis 1:5\xt*",
                 PartContext.Introductions);
 
             // Executes the check
@@ -368,8 +368,8 @@ namespace TvpTest
             var resultList = new List<ResultItem>();
             // Describes location and nature of the text being checked
             // Note: "PartContext" tells the check what it's looking at.
-            var partData = VersePart.Create(1,1,1, 
-                @"\xt Genesis 1:8", 1, 1,
+            var partData = VersePart.Create(1, 1, 1,
+                @"\xt Genesis 1:8",
                 PartContext.Introductions);
 
             // Executes the check
@@ -392,8 +392,8 @@ namespace TvpTest
             var resultList = new List<ResultItem>();
             // Describes location and nature of the text being checked
             // Note: "PartContext" tells the check what it's looking at.
-            var partData = VersePart.Create(1,1,1, 
-                @"Luke 1:12", 1, 1,
+            var partData = VersePart.Create(1, 1, 1,
+                @"Luke 1:12",
                 PartContext.Introductions);
 
             // Executes the check
@@ -417,7 +417,7 @@ namespace TvpTest
             // Describes location and nature of the text being checked
             // Note: "PartContext" tells the check what it's looking at.
             var partData = VersePart.Create(1, 1, 1,
-                @"\xt Genesis 1:7\xt*", 1, 1,
+                @"\xt Genesis 1:7\xt*",
                 PartContext.Introductions);
 
             // Executes the check
@@ -432,7 +432,7 @@ namespace TvpTest
 
         /// <summary>
         /// A test case for a reference using an abbreviated name in the introduction.
-        ///
+        ///</summary>
         [TestMethod]
         public void AbbreviatedNameReferenceInIntroduction()
         {
@@ -441,7 +441,7 @@ namespace TvpTest
             // Describes location and nature of the text being checked
             // Note: "PartContext" tells the check what it's looking at.
             var partData = VersePart.Create(1, 1, 1,
-                @"\xt EXO 5:1\xt*", 1, 1,
+                @"\xt EXO 5:1\xt*",
                 PartContext.Introductions);
 
             // Executes the check
@@ -465,7 +465,7 @@ namespace TvpTest
             // Describes location and nature of the text being checked
             // Note: "PartContext" tells the check what it's looking at.
             var partData = VersePart.Create(1, 1, 1,
-                @"\ior Exodus 3:1-4\ior*", 1, 1,
+                @"\ior Exodus 3:1-4\ior*",
                 PartContext.Introductions);
 
             // Executes the check
@@ -489,7 +489,7 @@ namespace TvpTest
             // Describes location and nature of the text being checked
             // Note: "PartContext" tells the check what it's looking at.
             var partData = VersePart.Create(1, 1, 1,
-                @"\+xt Nmbers 10:1\+xt*", 1, 1,
+                @"\+xt Nmbers 10:1\+xt*",
                 PartContext.Introductions);
 
             // Executes the check
@@ -513,7 +513,7 @@ namespace TvpTest
             // Describes location and nature of the text being checked
             // Note: "PartContext" tells the check what it's looking at.
             var partData = VersePart.Create(1, 1, 1,
-                @"\fr \xt Numbers 3:5\xt*\fr*", 1, 1,
+                @"\fr \xt Numbers 3:5\xt*\fr*",
                 PartContext.Introductions);
 
             // Executes the check
@@ -537,7 +537,7 @@ namespace TvpTest
             // Describes location and nature of the text being checked
             // Note: "PartContext" tells the check what it's looking at.
             var partData = VersePart.Create(1, 1, 1,
-                @"\ft \xt Deuteronomy 3:2\xt*\ft*", 1, 1,
+                @"\ft \xt Deuteronomy 3:2\xt*\ft*",
                 PartContext.Introductions);
 
             // Executes the check
@@ -559,12 +559,12 @@ namespace TvpTest
         public void MalformedMainTextReference()
         {
             // Arrange
-            
+
             var resultList = new List<ResultItem>();
             // Describes location and nature of the text being checked
             // Note: "PartContext" tells the check what it's looking at.
             var partData = VersePart.Create(1, 1, 1,
-                @"(\ior Genesis 1;3 \ior*)", 1, 1,
+                @"(\ior Genesis 1;3 \ior*)",
                 PartContext.Outlines);
 
             // Executes the check
@@ -590,7 +590,7 @@ namespace TvpTest
             // Describes location and nature of the text being checked
             // Note: "PartContext" tells the check what it's looking at.
             var partData = VersePart.Create(1, 1, 1,
-                @"Deuteronomy 1:3\xt*", 1, 1,
+                @"Deuteronomy 1:3\xt*",
                 PartContext.MainText);
 
             // Executes the check
@@ -614,7 +614,7 @@ namespace TvpTest
             // Describes location and nature of the text being checked
             // Note: "PartContext" tells the check what it's looking at.
             var partData = VersePart.Create(1, 1, 1,
-                @"\xt Deuteronomy 3:1", 1, 1,
+                @"\xt Deuteronomy 3:1",
                 PartContext.MainText);
 
             // Executes the check
@@ -638,7 +638,7 @@ namespace TvpTest
             // Describes location and nature of the text being checked
             // Note: "PartContext" tells the check what it's looking at.
             var partData = VersePart.Create(1, 1, 1,
-                @"Numbers 11:1", 1, 1,
+                @"Numbers 11:1",
                 PartContext.MainText);
 
             // Executes the check
@@ -662,7 +662,7 @@ namespace TvpTest
             // Describes location and nature of the text being checked
             // Note: "PartContext" tells the check what it's looking at.
             var partData = VersePart.Create(1, 1, 1,
-                @" \xt Leviticus 1:4 \xt*", 1, 1,
+                @" \xt Leviticus 1:4 \xt*",
                 PartContext.MainText);
 
             // Executes the check
@@ -679,14 +679,14 @@ namespace TvpTest
         /// A test case for a reference using an abbreviated name in the main text.
         ///
         [TestMethod]
-        public void AbbreviatedNameReferenceInMainText()
+        public void ShortNameReferenceInMainText()
         {
             // Arrange
             var resultList = new List<ResultItem>();
             // Describes location and nature of the text being checked
             // Note: "PartContext" tells the check what it's looking at.
             var partData = VersePart.Create(1, 1, 1,
-                @"\xt LEV 2:4 \xt*", 1, 1,
+                @"\xt Leviticus 2:4 \xt*",
                 PartContext.MainText);
 
             // Executes the check
@@ -696,7 +696,7 @@ namespace TvpTest
             Assert.AreEqual(1, resultList.Count, @"Abbreviated name is used in reference.");
             var errorType = (ScriptureReferenceErrorType)resultList[0].ResultTypeCode;
             Assert.AreEqual(ScriptureReferenceErrorType.IncorrectNameStyle, errorType, "Reference is using an incorrect name style.");
-            Assert.AreEqual(@"\xt LEV 2:4 \xt*", resultList[0].MatchText);
+            Assert.AreEqual(@"\xt Leviticus 2:4 \xt*", resultList[0].MatchText);
         }
 
         /// <summary>
@@ -710,7 +710,7 @@ namespace TvpTest
             // Describes location and nature of the text being checked
             // Note: "PartContext" tells the check what it's looking at.
             var partData = VersePart.Create(1, 1, 1,
-                @"\ior Genesis 5:1\ior*", 1, 1,
+                @"\ior Genesis 5:1\ior*",
                 PartContext.MainText);
 
             // Executes the check
@@ -734,7 +734,7 @@ namespace TvpTest
             // Describes location and nature of the text being checked
             // Note: "PartContext" tells the check what it's looking at.
             var partData = VersePart.Create(1, 1, 1,
-                @" \+xt Numbers 3:1\+xt*", 1, 1,
+                @" \+xt Numbers 3:1\+xt*",
                 PartContext.MainText);
 
             // Executes the check
@@ -758,7 +758,7 @@ namespace TvpTest
             // Describes location and nature of the text being checked
             // Note: "PartContext" tells the check what it's looking at.
             var partData = VersePart.Create(1, 1, 1,
-                @"\ft \+xt Genesis 1:1\+xt* \ft*", 1, 1,
+                @"\ft \+xt Genesis 1:1\+xt* \ft*",
                 PartContext.MainText);
 
             // Executes the check
@@ -782,7 +782,7 @@ namespace TvpTest
             // Describes location and nature of the text being checked
             // Note: "PartContext" tells the check what it's looking at.
             var partData = VersePart.Create(1, 1, 1,
-                @"\fr \xt Numbers 3:5\xt*\fr*", 1, 1,
+                @"\fr \xt Numbers 3:5\xt*\fr*",
                 PartContext.MainText);
 
             // Executes the check
@@ -808,7 +808,7 @@ namespace TvpTest
             // Describes location and nature of the text being checked
             // Note: "PartContext" tells the check what it's looking at.
             var partData = VersePart.Create(1, 1, 1,
-                @"\fp \xt 7:1, 4\xt*\f*", 1, 1,
+                @"\fp \xt 7:1, 4\xt*\f*",
                 PartContext.NoteOrReference);
 
             // Executes the check
@@ -834,7 +834,7 @@ namespace TvpTest
             // Describes location and nature of the text being checked
             // Note: "PartContext" tells the check what it's looking at.
             var partData = VersePart.Create(1, 1, 1,
-                @"\fp Genesis 1:1\+xt*", 1, 1,
+                @"\fp Genesis 1:1\+xt*",
                 PartContext.NoteOrReference);
 
             // Executes the check
@@ -858,7 +858,7 @@ namespace TvpTest
             // Describes location and nature of the text being checked
             // Note: "PartContext" tells the check what it's looking at.
             var partData = VersePart.Create(1, 1, 1,
-                @"\fp \+xt Luke 3:4 \f*", 1, 1,
+                @"\fp \+xt Luke 3:4 \f*",
                 PartContext.NoteOrReference);
 
             // Executes the check
@@ -882,7 +882,7 @@ namespace TvpTest
             // Describes location and nature of the text being checked
             // Note: "PartContext" tells the check what it's looking at.
             var partData = VersePart.Create(1, 1, 1,
-                @"\fp Genesis 1:1\f*", 1, 1,
+                @"\fp Genesis 1:1\f*",
                 PartContext.NoteOrReference);
 
             // Executes the check
@@ -906,7 +906,7 @@ namespace TvpTest
             // Describes location and nature of the text being checked
             // Note: "PartContext" tells the check what it's looking at.
             var partData = VersePart.Create(1, 1, 1,
-                @"\fp \+xt Numbers 5:1\+xt*", 1, 1,
+                @"\fp \+xt Numbers 5:1\+xt*",
                 PartContext.NoteOrReference);
 
             // Executes the check
@@ -921,26 +921,26 @@ namespace TvpTest
 
         /// <summary>
         /// A test case for a reference using an abbreviated name in the footnotes/references area.
-        ///
+        ///</summary>
         [TestMethod]
-        public void AbbreviatedNameReferenceInFootnoteReference()
+        public void ShortNameReferenceInFootnoteReference()
         {
             // Arrange
             var resultList = new List<ResultItem>();
             // Describes location and nature of the text being checked
             // Note: "PartContext" tells the check what it's looking at.
             var partData = VersePart.Create(1, 1, 1,
-                @"\fp \+xt NUM 8:8\+xt*\f*", 1, 1,
+                @"\fp \+xt Numbers 8:8\+xt*\f*",
                 PartContext.NoteOrReference);
 
             // Executes the check
             _referenceCheck.CheckText(partData, resultList);
 
             // Assert
-            Assert.AreEqual(1, resultList.Count, @"Abbreviated name is used in reference.");
+            Assert.AreEqual(1, resultList.Count, @"Short name is used in reference.");
             var errorType = (ScriptureReferenceErrorType)resultList[0].ResultTypeCode;
             Assert.AreEqual(ScriptureReferenceErrorType.IncorrectNameStyle, errorType, "The reference is using the wrong name style.");
-            Assert.AreEqual(@"\fp \+xt NUM 8:8\+xt*\f*", resultList[0].MatchText);
+            Assert.AreEqual(@"\+xt Numbers 8:8\+xt*", resultList[0].MatchText);
         }
 
         /// <summary>
@@ -954,7 +954,7 @@ namespace TvpTest
             // Describes location and nature of the text being checked
             // Note: "PartContext" tells the check what it's looking at.
             var partData = VersePart.Create(1, 1, 1,
-                @"\fp \xt Luke 3:3\xt*\f*", 1, 1,
+                @"\fp \xt Luke 3:3\xt*\f*",
                 PartContext.NoteOrReference);
 
             // Executes the check
@@ -968,17 +968,17 @@ namespace TvpTest
         }
 
         /// The following unit tests all pertain to the Ignore list section of the text.
-        
+
         /// <summary>
         /// A test case for a reference that is in the ignore list that should be ignored
         /// 
         //[TestMethod]
         //PUBLIC VOID REFERENCEINIGNORELIST()
         //{
-            // ARRANGE
+        // ARRANGE
         //    VAR IGNORELIST = NEW LIST<IGNORELIST>();
 
-            // 
+        // 
         //}
     }
 }

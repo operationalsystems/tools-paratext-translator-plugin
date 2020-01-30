@@ -37,10 +37,18 @@ namespace TvpMain.Util
         /// </summary>
         /// <param name="thisText">This string (provided).</param>
         /// <param name="otherText">String to compare (required).</param>
-        /// <returns></returns>
+        /// <returns>True if strings are equal excluding whitespace, false otherwise.</returns>
         public static bool EqualsIgnoringWhitespace(this string thisText, string otherText) =>
             thisText.Where(value => !char.IsWhiteSpace(value))
                 .SequenceEqual(otherText.Where(value => !char.IsWhiteSpace(value)));
+
+        /// <summary>
+        /// Returns string copy with all whitespace removed.
+        /// </summary>
+        /// <param name="thisText">This string (provided).</param>
+        /// <returns>Copy of this string with all whitespace removed.</returns>
+        public static string RemoveWhitespace(this string thisText) =>
+            string.Concat(thisText.Where(value => !char.IsWhiteSpace(value)));
 
         /// <summary>
         /// Find the lowest index (position) of any supplied items,

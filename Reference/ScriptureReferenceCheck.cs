@@ -168,11 +168,15 @@ namespace TvpMain.Reference
                             contextItem != inputPart.PartLocation.PartContext)
                         .Select(contextItem =>
                             _referenceBuilder.FormatStandardReference(
-                                inputPart.PartLocation.PartContext,
+                                contextItem,
                                 inputReference))
+                        .Select(formatItem =>
+                            formatItem.RemoveWhitespace())
                         .ToImmutableHashSet();
 
-                    if (otherFormats.Contains(inputText))
+                    // check with whitespace removed, as wrong name type
+                    // is more important than a whitespace miss
+                    if (otherFormats.Contains(inputText.RemoveWhitespace()))
                     {
                         messageText = $"Non-standard name style at position {inputStart}.";
                         typeCode = (int)ScriptureReferenceErrorType.IncorrectNameStyle;
