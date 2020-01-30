@@ -23,6 +23,18 @@ namespace TvpMain.Reference
             = Enum.GetValues(typeof(PartContext)).Cast<PartContext>();
 
         /// <summary>
+        /// Text titles for different part contexts.
+        /// </summary>
+        private static readonly IDictionary<PartContext, string> ContextTitles
+            = new Dictionary<PartContext, string>()
+            {
+                {PartContext.Introductions, "introduction"},
+                {PartContext.Outlines, "outline"},
+                {PartContext.MainText, "main"},
+                {PartContext.NoteOrReference, "note or reference"}
+            }.ToImmutableDictionary();
+
+        /// <summary>
         /// Provides project setting & metadata access.
         /// </summary>
         private readonly ProjectManager _projectManager;
@@ -136,7 +148,7 @@ namespace TvpMain.Reference
             {
                 result = true;
                 outputResults.Add(new ResultItem(inputPart,
-                    $"Unknown book name(s) at position {inputStart}: {unknownBooks}.",
+                    $"Invalid book name(s) at position {inputStart}: {unknownBooks}.",
                     inputText, inputStart,
                     null, CheckType.ScriptureReference,
                     (int)ScriptureReferenceErrorType.BadReference));
@@ -176,14 +188,15 @@ namespace TvpMain.Reference
 
                     // check with whitespace removed, as wrong name type
                     // is more important than a whitespace miss
+                    var contextTitle = ContextTitles[inputPart.PartLocation.PartContext];
                     if (otherFormats.Contains(inputText.RemoveWhitespace()))
                     {
-                        messageText = $"Non-standard name style at position {inputStart}.";
+                        messageText = $"Non-standard book name style for {contextTitle} text at position {inputStart}.";
                         typeCode = (int)ScriptureReferenceErrorType.IncorrectNameStyle;
                     }
                     else
                     {
-                        messageText = $"Non-standard reference content at position {inputStart}.";
+                        messageText = $"Non-standard reference content for {contextTitle} text at position {inputStart}.";
                         typeCode = (int)ScriptureReferenceErrorType.BadReference;
                     }
                 }
