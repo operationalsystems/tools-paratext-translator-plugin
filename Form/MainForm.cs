@@ -1283,7 +1283,7 @@ namespace TvpMain.Form
                         referencesTextBox.SelectAll();
                         referencesTextBox.SelectionBackColor = Color.White;
 
-                        referencesTextBox.SelectionStart = MinusPrecedingChar(
+                        referencesTextBox.SelectionStart = MinusPrecedingChars(
                             resultItem.VersePart.ParatextVerse.VerseText,
                             resultItem.MatchStart,
                             '\r');
@@ -1320,7 +1320,7 @@ namespace TvpMain.Form
         /// <param name="inputPosition">Position to search up to (0-based).</param>
         /// <param name="searchChar">Character to search for.</param>
         /// <returns>Input position minus occurences of search char before it.</returns>
-        private static int MinusPrecedingChar(string inputText, int inputPosition, char searchChar)
+        private static int MinusPrecedingChars(string inputText, int inputPosition, char searchChar)
         {
             var searchPosition = inputText.IndexOf(searchChar);
             var charCtr = 0;
