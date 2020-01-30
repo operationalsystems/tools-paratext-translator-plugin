@@ -968,6 +968,7 @@ namespace TvpMain.Form
             ignoreListFiltersMenuItem.Visible = !show;
             biblicaTermsFiltersMenuItem.Visible = !show;
             entireVerseFiltersMenuItem.Visible = !show;
+            statusLabel.Visible = !show;
 
             // show references filter menu items
             referencesMenuSeparator.Visible = show;
@@ -1008,8 +1009,6 @@ namespace TvpMain.Form
             referencesListView.Rows.Clear();
             referencesTextBox.Text = "";
             referencesActionsGridView.Rows.Clear();
-
-            statusLabel.Text = CheckResults.GetSummaryText(_filteredResultItems);
 
             FilterReferencesCheckResults();
 

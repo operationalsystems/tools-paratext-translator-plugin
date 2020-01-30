@@ -63,6 +63,12 @@
             this.showIgnoredToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.referencesMenuSeparator = new System.Windows.Forms.ToolStripSeparator();
             this.hideLooseMatchesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.hideIncorrectNameStyleToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.hideTagShouldntExistToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.hideMissingTagToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.hideIncorrectTagToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.hideMalformedTagToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.hideBadReferencesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.viewMenu = new System.Windows.Forms.ToolStripMenuItem();
             this.bcvViewMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.matchViewMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -79,24 +85,18 @@
             this.referencesTab = new System.Windows.Forms.TabPage();
             this.referencesOuterSplitContainer = new System.Windows.Forms.SplitContainer();
             this.referencesListView = new System.Windows.Forms.DataGridView();
-            this.referencesListViewReferenceColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.referencesListViewCountColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.referencesInnerSplitContainer = new System.Windows.Forms.SplitContainer();
-            this.referencesTextBox = new System.Windows.Forms.RichTextBox();
             this.referencesActionsGridView = new System.Windows.Forms.DataGridView();
             this.referencesActionsExceptionColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.referencesActionsProblemColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.referencesActionsSuggestionColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.referencesActionsAcceptColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.referencesActionsIgnoreColumn = new System.Windows.Forms.DataGridViewButtonColumn();
+            this.referencesTextBox = new System.Windows.Forms.RichTextBox();
             this.bindingSource1 = new System.Windows.Forms.BindingSource(this.components);
             this.resultWorker = new System.ComponentModel.BackgroundWorker();
-            this.hideIncorrectNameStyleToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.hideTagShouldntExistToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.hideMissingTagToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.hideIncorrectTagToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.hideMalformedTagToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.hideBadReferencesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.referencesListViewReferenceColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.referencesListViewCountColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             ((System.ComponentModel.ISupportInitialize)(this.dgvCheckResults)).BeginInit();
             this.contextMenu.SuspendLayout();
             this.mainMenu.SuspendLayout();
@@ -365,54 +365,96 @@
             // wordListFiltersMenuItem
             // 
             this.wordListFiltersMenuItem.Name = "wordListFiltersMenuItem";
-            this.wordListFiltersMenuItem.Size = new System.Drawing.Size(217, 22);
+            this.wordListFiltersMenuItem.Size = new System.Drawing.Size(212, 22);
             this.wordListFiltersMenuItem.Text = "&Word List";
             this.wordListFiltersMenuItem.Click += new System.EventHandler(this.OnWordListFilterToolMenuClick);
             // 
             // biblicaTermsFiltersMenuItem
             // 
             this.biblicaTermsFiltersMenuItem.Name = "biblicaTermsFiltersMenuItem";
-            this.biblicaTermsFiltersMenuItem.Size = new System.Drawing.Size(217, 22);
+            this.biblicaTermsFiltersMenuItem.Size = new System.Drawing.Size(212, 22);
             this.biblicaTermsFiltersMenuItem.Text = "&Biblical Terms";
             this.biblicaTermsFiltersMenuItem.Click += new System.EventHandler(this.OnBiblicalTermsFilterToolMenuClick);
             // 
             // ignoreListFiltersMenuItem
             // 
             this.ignoreListFiltersMenuItem.Name = "ignoreListFiltersMenuItem";
-            this.ignoreListFiltersMenuItem.Size = new System.Drawing.Size(217, 22);
+            this.ignoreListFiltersMenuItem.Size = new System.Drawing.Size(212, 22);
             this.ignoreListFiltersMenuItem.Text = "&Ignore List";
             this.ignoreListFiltersMenuItem.Click += new System.EventHandler(this.IgnoreListToolStripMenuItem_Click);
             // 
             // punctuationMenuSeparator
             // 
             this.punctuationMenuSeparator.Name = "punctuationMenuSeparator";
-            this.punctuationMenuSeparator.Size = new System.Drawing.Size(214, 6);
+            this.punctuationMenuSeparator.Size = new System.Drawing.Size(209, 6);
             // 
             // entireVerseFiltersMenuItem
             // 
             this.entireVerseFiltersMenuItem.Name = "entireVerseFiltersMenuItem";
-            this.entireVerseFiltersMenuItem.Size = new System.Drawing.Size(217, 22);
+            this.entireVerseFiltersMenuItem.Size = new System.Drawing.Size(212, 22);
             this.entireVerseFiltersMenuItem.Text = "Entire &Verse";
             this.entireVerseFiltersMenuItem.Click += new System.EventHandler(this.OnEntireVerseFiltersMenuClick);
             // 
             // showIgnoredToolStripMenuItem
             // 
             this.showIgnoredToolStripMenuItem.Name = "showIgnoredToolStripMenuItem";
-            this.showIgnoredToolStripMenuItem.Size = new System.Drawing.Size(217, 22);
+            this.showIgnoredToolStripMenuItem.Size = new System.Drawing.Size(212, 22);
             this.showIgnoredToolStripMenuItem.Text = "Show Ignored";
             this.showIgnoredToolStripMenuItem.Click += new System.EventHandler(this.showIgnoredToolStripMenuItem_Click);
             // 
             // referencesMenuSeparator
             // 
             this.referencesMenuSeparator.Name = "referencesMenuSeparator";
-            this.referencesMenuSeparator.Size = new System.Drawing.Size(214, 6);
+            this.referencesMenuSeparator.Size = new System.Drawing.Size(209, 6);
             // 
             // hideLooseMatchesToolStripMenuItem
             // 
             this.hideLooseMatchesToolStripMenuItem.Name = "hideLooseMatchesToolStripMenuItem";
-            this.hideLooseMatchesToolStripMenuItem.Size = new System.Drawing.Size(217, 22);
+            this.hideLooseMatchesToolStripMenuItem.Size = new System.Drawing.Size(212, 22);
             this.hideLooseMatchesToolStripMenuItem.Text = "Hide Loose Matches";
             this.hideLooseMatchesToolStripMenuItem.Click += new System.EventHandler(this.hideLooseMatchesToolStripMenuItem_Click);
+            // 
+            // hideIncorrectNameStyleToolStripMenuItem
+            // 
+            this.hideIncorrectNameStyleToolStripMenuItem.Name = "hideIncorrectNameStyleToolStripMenuItem";
+            this.hideIncorrectNameStyleToolStripMenuItem.Size = new System.Drawing.Size(212, 22);
+            this.hideIncorrectNameStyleToolStripMenuItem.Text = "Hide Incorrect Name Style";
+            this.hideIncorrectNameStyleToolStripMenuItem.Click += new System.EventHandler(this.hideIncorrectNameStyleToolStripMenuItem_Click);
+            // 
+            // hideTagShouldntExistToolStripMenuItem
+            // 
+            this.hideTagShouldntExistToolStripMenuItem.Name = "hideTagShouldntExistToolStripMenuItem";
+            this.hideTagShouldntExistToolStripMenuItem.Size = new System.Drawing.Size(212, 22);
+            this.hideTagShouldntExistToolStripMenuItem.Text = "Hide Tag Shouldn\'t Exist";
+            this.hideTagShouldntExistToolStripMenuItem.Click += new System.EventHandler(this.hideTagShouldntExistToolStripMenuItem_Click);
+            // 
+            // hideMissingTagToolStripMenuItem
+            // 
+            this.hideMissingTagToolStripMenuItem.Name = "hideMissingTagToolStripMenuItem";
+            this.hideMissingTagToolStripMenuItem.Size = new System.Drawing.Size(212, 22);
+            this.hideMissingTagToolStripMenuItem.Text = "Hide Missing Tag";
+            this.hideMissingTagToolStripMenuItem.Click += new System.EventHandler(this.hideMissingTagToolStripMenuItem_Click);
+            // 
+            // hideIncorrectTagToolStripMenuItem
+            // 
+            this.hideIncorrectTagToolStripMenuItem.Name = "hideIncorrectTagToolStripMenuItem";
+            this.hideIncorrectTagToolStripMenuItem.Size = new System.Drawing.Size(212, 22);
+            this.hideIncorrectTagToolStripMenuItem.Text = "Hide Incorrect Tag";
+            this.hideIncorrectTagToolStripMenuItem.Click += new System.EventHandler(this.hideIncorrectTagToolStripMenuItem_Click);
+            // 
+            // hideMalformedTagToolStripMenuItem
+            // 
+            this.hideMalformedTagToolStripMenuItem.Name = "hideMalformedTagToolStripMenuItem";
+            this.hideMalformedTagToolStripMenuItem.Size = new System.Drawing.Size(212, 22);
+            this.hideMalformedTagToolStripMenuItem.Text = "Hide Malformed Tag";
+            this.hideMalformedTagToolStripMenuItem.Click += new System.EventHandler(this.hideMalformedTagToolStripMenuItem_Click);
+            // 
+            // hideBadReferencesToolStripMenuItem
+            // 
+            this.hideBadReferencesToolStripMenuItem.Name = "hideBadReferencesToolStripMenuItem";
+            this.hideBadReferencesToolStripMenuItem.Size = new System.Drawing.Size(212, 22);
+            this.hideBadReferencesToolStripMenuItem.Text = "Hide Bad References";
+            this.hideBadReferencesToolStripMenuItem.Click += new System.EventHandler(this.hideBadReferencesToolStripMenuItem_Click);
             // 
             // viewMenu
             // 
@@ -464,7 +506,6 @@
             // searchMenuTextBox
             // 
             this.searchMenuTextBox.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
-            this.searchMenuTextBox.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.searchMenuTextBox.Name = "searchMenuTextBox";
             this.searchMenuTextBox.Size = new System.Drawing.Size(200, 23);
             // 
@@ -560,7 +601,7 @@
             // 
             this.referencesOuterSplitContainer.Panel2.Controls.Add(this.referencesInnerSplitContainer);
             this.referencesOuterSplitContainer.Size = new System.Drawing.Size(1200, 647);
-            this.referencesOuterSplitContainer.SplitterDistance = 251;
+            this.referencesOuterSplitContainer.SplitterDistance = 165;
             this.referencesOuterSplitContainer.TabIndex = 4;
             // 
             // referencesListView
@@ -583,21 +624,9 @@
             this.referencesListView.ReadOnly = true;
             this.referencesListView.RowHeadersVisible = false;
             this.referencesListView.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.referencesListView.Size = new System.Drawing.Size(249, 647);
+            this.referencesListView.Size = new System.Drawing.Size(163, 647);
             this.referencesListView.TabIndex = 0;
             this.referencesListView.SelectionChanged += new System.EventHandler(this.referencesListView_SelectionChanged);
-            // 
-            // referencesListViewReferenceColumn
-            // 
-            this.referencesListViewReferenceColumn.HeaderText = "Reference";
-            this.referencesListViewReferenceColumn.Name = "referencesListViewReferenceColumn";
-            this.referencesListViewReferenceColumn.ReadOnly = true;
-            // 
-            // referencesListViewCountColumn
-            // 
-            this.referencesListViewCountColumn.HeaderText = "# Exceptions";
-            this.referencesListViewCountColumn.Name = "referencesListViewCountColumn";
-            this.referencesListViewCountColumn.ReadOnly = true;
             // 
             // referencesInnerSplitContainer
             // 
@@ -609,29 +638,14 @@
             // 
             // referencesInnerSplitContainer.Panel1
             // 
-            this.referencesInnerSplitContainer.Panel1.Controls.Add(this.referencesTextBox);
+            this.referencesInnerSplitContainer.Panel1.Controls.Add(this.referencesActionsGridView);
             // 
             // referencesInnerSplitContainer.Panel2
             // 
-            this.referencesInnerSplitContainer.Panel2.Controls.Add(this.referencesActionsGridView);
-            this.referencesInnerSplitContainer.Size = new System.Drawing.Size(946, 647);
-            this.referencesInnerSplitContainer.SplitterDistance = 487;
+            this.referencesInnerSplitContainer.Panel2.Controls.Add(this.referencesTextBox);
+            this.referencesInnerSplitContainer.Size = new System.Drawing.Size(1032, 647);
+            this.referencesInnerSplitContainer.SplitterDistance = 420;
             this.referencesInnerSplitContainer.TabIndex = 0;
-            // 
-            // referencesTextBox
-            // 
-            this.referencesTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.referencesTextBox.BackColor = System.Drawing.Color.White;
-            this.referencesTextBox.Cursor = System.Windows.Forms.Cursors.Default;
-            this.referencesTextBox.Location = new System.Drawing.Point(0, 0);
-            this.referencesTextBox.Name = "referencesTextBox";
-            this.referencesTextBox.ReadOnly = true;
-            this.referencesTextBox.Size = new System.Drawing.Size(485, 647);
-            this.referencesTextBox.TabIndex = 3;
-            this.referencesTextBox.Text = "";
-            this.referencesTextBox.TextChanged += new System.EventHandler(this.referencesTextBox_TextChanged);
             // 
             // referencesActionsGridView
             // 
@@ -650,13 +664,13 @@
             this.referencesActionsSuggestionColumn,
             this.referencesActionsAcceptColumn,
             this.referencesActionsIgnoreColumn});
-            this.referencesActionsGridView.Location = new System.Drawing.Point(0, 0);
+            this.referencesActionsGridView.Location = new System.Drawing.Point(3, 0);
             this.referencesActionsGridView.MultiSelect = false;
             this.referencesActionsGridView.Name = "referencesActionsGridView";
             this.referencesActionsGridView.ReadOnly = true;
             this.referencesActionsGridView.RowHeadersVisible = false;
             this.referencesActionsGridView.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.referencesActionsGridView.Size = new System.Drawing.Size(455, 647);
+            this.referencesActionsGridView.Size = new System.Drawing.Size(414, 647);
             this.referencesActionsGridView.TabIndex = 0;
             this.referencesActionsGridView.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.referencesActionsGridView_CellClick);
             this.referencesActionsGridView.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.referencesActionsGridView_CellContentClick);
@@ -666,7 +680,6 @@
             // referencesActionsExceptionColumn
             // 
             this.referencesActionsExceptionColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
-            this.referencesActionsExceptionColumn.FillWeight = 50F;
             this.referencesActionsExceptionColumn.HeaderText = "Exception";
             this.referencesActionsExceptionColumn.Name = "referencesActionsExceptionColumn";
             this.referencesActionsExceptionColumn.ReadOnly = true;
@@ -674,82 +687,68 @@
             // 
             // referencesActionsProblemColumn
             // 
-            this.referencesActionsProblemColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
             this.referencesActionsProblemColumn.HeaderText = "Issue";
             this.referencesActionsProblemColumn.Name = "referencesActionsProblemColumn";
             this.referencesActionsProblemColumn.ReadOnly = true;
-            this.referencesActionsProblemColumn.Width = 57;
             // 
             // referencesActionsSuggestionColumn
             // 
-            this.referencesActionsSuggestionColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
             this.referencesActionsSuggestionColumn.HeaderText = "Suggested Fix";
             this.referencesActionsSuggestionColumn.Name = "referencesActionsSuggestionColumn";
             this.referencesActionsSuggestionColumn.ReadOnly = true;
-            this.referencesActionsSuggestionColumn.Width = 99;
             // 
             // referencesActionsAcceptColumn
             // 
             this.referencesActionsAcceptColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
             this.referencesActionsAcceptColumn.HeaderText = "Actions";
+            this.referencesActionsAcceptColumn.MinimumWidth = 50;
             this.referencesActionsAcceptColumn.Name = "referencesActionsAcceptColumn";
             this.referencesActionsAcceptColumn.ReadOnly = true;
             this.referencesActionsAcceptColumn.Resizable = System.Windows.Forms.DataGridViewTriState.True;
             this.referencesActionsAcceptColumn.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
             this.referencesActionsAcceptColumn.ToolTipText = "Future capability";
-            this.referencesActionsAcceptColumn.Width = 48;
+            this.referencesActionsAcceptColumn.Width = 50;
             // 
             // referencesActionsIgnoreColumn
             // 
             this.referencesActionsIgnoreColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
             this.referencesActionsIgnoreColumn.HeaderText = "";
+            this.referencesActionsIgnoreColumn.MinimumWidth = 50;
             this.referencesActionsIgnoreColumn.Name = "referencesActionsIgnoreColumn";
             this.referencesActionsIgnoreColumn.ReadOnly = true;
             this.referencesActionsIgnoreColumn.Text = "Ignore";
             this.referencesActionsIgnoreColumn.ToolTipText = "Ignore this exception in the future.";
-            this.referencesActionsIgnoreColumn.Width = 5;
+            this.referencesActionsIgnoreColumn.Width = 50;
             // 
-            // hideIncorrectNameStyleToolStripMenuItem
+            // referencesTextBox
             // 
-            this.hideIncorrectNameStyleToolStripMenuItem.Name = "hideIncorrectNameStyleToolStripMenuItem";
-            this.hideIncorrectNameStyleToolStripMenuItem.Size = new System.Drawing.Size(217, 22);
-            this.hideIncorrectNameStyleToolStripMenuItem.Text = "Hide Incorrect Name Style";
-            this.hideIncorrectNameStyleToolStripMenuItem.Click += new System.EventHandler(this.hideIncorrectNameStyleToolStripMenuItem_Click);
+            this.referencesTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.referencesTextBox.BackColor = System.Drawing.Color.White;
+            this.referencesTextBox.Cursor = System.Windows.Forms.Cursors.Default;
+            this.referencesTextBox.Location = new System.Drawing.Point(3, 0);
+            this.referencesTextBox.Name = "referencesTextBox";
+            this.referencesTextBox.ReadOnly = true;
+            this.referencesTextBox.Size = new System.Drawing.Size(605, 647);
+            this.referencesTextBox.TabIndex = 3;
+            this.referencesTextBox.Text = "";
+            this.referencesTextBox.TextChanged += new System.EventHandler(this.referencesTextBox_TextChanged);
             // 
-            // hideTagShouldntExistToolStripMenuItem
+            // referencesListViewReferenceColumn
             // 
-            this.hideTagShouldntExistToolStripMenuItem.Name = "hideTagShouldntExistToolStripMenuItem";
-            this.hideTagShouldntExistToolStripMenuItem.Size = new System.Drawing.Size(217, 22);
-            this.hideTagShouldntExistToolStripMenuItem.Text = "Hide Tag Shouldn\'t Exist";
-            this.hideTagShouldntExistToolStripMenuItem.Click += new System.EventHandler(this.hideTagShouldntExistToolStripMenuItem_Click);
+            this.referencesListViewReferenceColumn.HeaderText = "Reference";
+            this.referencesListViewReferenceColumn.Name = "referencesListViewReferenceColumn";
+            this.referencesListViewReferenceColumn.ReadOnly = true;
             // 
-            // hideMissingTagToolStripMenuItem
+            // referencesListViewCountColumn
             // 
-            this.hideMissingTagToolStripMenuItem.Name = "hideMissingTagToolStripMenuItem";
-            this.hideMissingTagToolStripMenuItem.Size = new System.Drawing.Size(217, 22);
-            this.hideMissingTagToolStripMenuItem.Text = "Hide Missing Tag";
-            this.hideMissingTagToolStripMenuItem.Click += new System.EventHandler(this.hideMissingTagToolStripMenuItem_Click);
-            // 
-            // hideIncorrectTagToolStripMenuItem
-            // 
-            this.hideIncorrectTagToolStripMenuItem.Name = "hideIncorrectTagToolStripMenuItem";
-            this.hideIncorrectTagToolStripMenuItem.Size = new System.Drawing.Size(217, 22);
-            this.hideIncorrectTagToolStripMenuItem.Text = "Hide Incorrect Tag";
-            this.hideIncorrectTagToolStripMenuItem.Click += new System.EventHandler(this.hideIncorrectTagToolStripMenuItem_Click);
-            // 
-            // hideMalformedTagToolStripMenuItem
-            // 
-            this.hideMalformedTagToolStripMenuItem.Name = "hideMalformedTagToolStripMenuItem";
-            this.hideMalformedTagToolStripMenuItem.Size = new System.Drawing.Size(217, 22);
-            this.hideMalformedTagToolStripMenuItem.Text = "Hide Malformed Tag";
-            this.hideMalformedTagToolStripMenuItem.Click += new System.EventHandler(this.hideMalformedTagToolStripMenuItem_Click);
-            // 
-            // hideBadReferencesToolStripMenuItem
-            // 
-            this.hideBadReferencesToolStripMenuItem.Name = "hideBadReferencesToolStripMenuItem";
-            this.hideBadReferencesToolStripMenuItem.Size = new System.Drawing.Size(217, 22);
-            this.hideBadReferencesToolStripMenuItem.Text = "Hide Bad References";
-            this.hideBadReferencesToolStripMenuItem.Click += new System.EventHandler(this.hideBadReferencesToolStripMenuItem_Click);
+            this.referencesListViewCountColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
+            this.referencesListViewCountColumn.FillWeight = 50F;
+            this.referencesListViewCountColumn.HeaderText = "# Exceptions";
+            this.referencesListViewCountColumn.Name = "referencesListViewCountColumn";
+            this.referencesListViewCountColumn.ReadOnly = true;
+            this.referencesListViewCountColumn.Width = 94;
             // 
             // MainForm
             // 
@@ -848,17 +847,10 @@
         private System.Windows.Forms.SplitContainer referencesInnerSplitContainer;
         private System.Windows.Forms.DataGridView referencesActionsGridView;
         private System.Windows.Forms.DataGridView referencesListView;
-        private System.Windows.Forms.DataGridViewTextBoxColumn referencesListViewReferenceColumn;
-        private System.Windows.Forms.DataGridViewTextBoxColumn referencesListViewCountColumn;
         private System.Windows.Forms.ToolStripMenuItem showIgnoredToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator referencesMenuSeparator;
         private System.Windows.Forms.ToolStripMenuItem hideLooseMatchesToolStripMenuItem;
         private System.Windows.Forms.BindingSource bindingSource1;
-        private System.Windows.Forms.DataGridViewTextBoxColumn referencesActionsExceptionColumn;
-        private System.Windows.Forms.DataGridViewTextBoxColumn referencesActionsProblemColumn;
-        private System.Windows.Forms.DataGridViewTextBoxColumn referencesActionsSuggestionColumn;
-        private System.Windows.Forms.DataGridViewTextBoxColumn referencesActionsAcceptColumn;
-        private System.Windows.Forms.DataGridViewButtonColumn referencesActionsIgnoreColumn;
         private System.ComponentModel.BackgroundWorker resultWorker;
         private System.Windows.Forms.ToolStripMenuItem hideIncorrectNameStyleToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem hideTagShouldntExistToolStripMenuItem;
@@ -866,5 +858,12 @@
         private System.Windows.Forms.ToolStripMenuItem hideIncorrectTagToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem hideMalformedTagToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem hideBadReferencesToolStripMenuItem;
+        private System.Windows.Forms.DataGridViewTextBoxColumn referencesActionsExceptionColumn;
+        private System.Windows.Forms.DataGridViewTextBoxColumn referencesActionsProblemColumn;
+        private System.Windows.Forms.DataGridViewTextBoxColumn referencesActionsSuggestionColumn;
+        private System.Windows.Forms.DataGridViewTextBoxColumn referencesActionsAcceptColumn;
+        private System.Windows.Forms.DataGridViewButtonColumn referencesActionsIgnoreColumn;
+        private System.Windows.Forms.DataGridViewTextBoxColumn referencesListViewReferenceColumn;
+        private System.Windows.Forms.DataGridViewTextBoxColumn referencesListViewCountColumn;
     }
 }
