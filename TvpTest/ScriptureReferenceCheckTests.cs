@@ -172,17 +172,17 @@ namespace TvpTest
             // Describes location and nature of the text being checked
             // Note: "PartContext" tells the check what it's looking at.
             var partData = VersePart.Create(1, 1, 1,
-                @"(\ior Genesis 1:1; 4:4 \ior*)", 1, 1,
+                @"(\ior GEN 1:1; 4:4 \ior*)", 1, 1,
                 PartContext.Outlines);
 
             // Executes the check
             _referenceCheck.CheckText(partData, resultList);
 
             // Assert
-            Assert.AreEqual(1, resultList.Count, @"Short name is used in reference.");
+            Assert.AreEqual(1, resultList.Count, @"Short name is expected in reference.");
             var errorType = (ScriptureReferenceErrorType)resultList[0].ResultTypeCode;
             Assert.AreEqual(ScriptureReferenceErrorType.IncorrectNameStyle, errorType, "Incorrect name style is used in reference.");
-            Assert.AreEqual(@"(\ior Genesis 1:1; 4:4 \ior*)", resultList[0].MatchText);
+            Assert.AreEqual(@"(\ior GEN 1:1; 4:4 \ior*)", resultList[0].MatchText);
         }
 
         /// <summary>
@@ -196,7 +196,7 @@ namespace TvpTest
             // Describes location and nature of the text being checked
             // Note: "PartContext" tells the check what it's looking at.
             var partData = VersePart.Create(1, 1, 1,
-                @"(\ior GEN 1:1; 4:3 \ior*)", 1, 1,
+                @"(\ior Genesis 1:1; 4:3 \ior*)", 1, 1,
                 PartContext.Outlines);
 
             // Executes the check
@@ -206,7 +206,7 @@ namespace TvpTest
             Assert.AreEqual(1, resultList.Count, @"Abbreviated name is used in reference.");
             var errorType = (ScriptureReferenceErrorType)resultList[0].ResultTypeCode;
             Assert.AreEqual(ScriptureReferenceErrorType.IncorrectNameStyle, errorType, "Incorrect name style is used in reference.");
-            Assert.AreEqual(@"(\ior GEN 1:1; 4:3 \ior*)", resultList[0].MatchText);
+            Assert.AreEqual(@"(\ior Genesis 1:1; 4:3 \ior*)", resultList[0].MatchText);
         }
 
         /// <summary>
@@ -417,17 +417,17 @@ namespace TvpTest
             // Describes location and nature of the text being checked
             // Note: "PartContext" tells the check what it's looking at.
             var partData = VersePart.Create(1, 1, 1,
-                @"\xt Genesis 1:7\xt*", 1, 1,
+                @"\xt GEN 1:7\xt*", 1, 1,
                 PartContext.Introductions);
 
             // Executes the check
             _referenceCheck.CheckText(partData, resultList);
 
             // Assert
-            Assert.AreEqual(1, resultList.Count, @"Long name is used in reference.");
+            Assert.AreEqual(1, resultList.Count, @"Long name is expected in reference.");
             var errorType = (ScriptureReferenceErrorType)resultList[0].ResultTypeCode;
             Assert.AreEqual(ScriptureReferenceErrorType.IncorrectNameStyle, errorType, "Reference is using an incorrect name style.");
-            Assert.AreEqual(@"\xt Genesis 1:7\xt*", resultList[0].MatchText);
+            Assert.AreEqual(@"\xt GEN 1:7\xt*", resultList[0].MatchText);
         }
 
         /// <summary>
@@ -441,17 +441,17 @@ namespace TvpTest
             // Describes location and nature of the text being checked
             // Note: "PartContext" tells the check what it's looking at.
             var partData = VersePart.Create(1, 1, 1,
-                @"\xt EXO 5:1\xt*", 1, 1,
+                @"\xt Exodus 5:1\xt*", 1, 1,
                 PartContext.Introductions);
 
             // Executes the check
             _referenceCheck.CheckText(partData, resultList);
 
             // Assert
-            Assert.AreEqual(1, resultList.Count, @"Abbreviated name is used in reference.");
+            Assert.AreEqual(1, resultList.Count, @"Abbreviated name is expected in reference.");
             var errorType = (ScriptureReferenceErrorType)resultList[0].ResultTypeCode;
             Assert.AreEqual(ScriptureReferenceErrorType.IncorrectNameStyle, errorType, "Reference is using an incorrect name style.");
-            Assert.AreEqual(@"\xt EXO 5:1\xt*", resultList[0].MatchText);
+            Assert.AreEqual(@"\xt Exodus 5:1\xt*", resultList[0].MatchText);
         }
 
         /// <summary>
@@ -662,17 +662,17 @@ namespace TvpTest
             // Describes location and nature of the text being checked
             // Note: "PartContext" tells the check what it's looking at.
             var partData = VersePart.Create(1, 1, 1,
-                @" \xt Leviticus 1:4 \xt*", 1, 1,
+                @" \xt LEV 1:4 \xt*", 1, 1,
                 PartContext.MainText);
 
             // Executes the check
             _referenceCheck.CheckText(partData, resultList);
 
             // Assert
-            Assert.AreEqual(1, resultList.Count, @"Long name is used in reference.");
+            Assert.AreEqual(1, resultList.Count, @"Long name is expected in reference.");
             var errorType = (ScriptureReferenceErrorType)resultList[0].ResultTypeCode;
             Assert.AreEqual(ScriptureReferenceErrorType.IncorrectNameStyle, errorType, "Reference is using an incorrect name style.");
-            Assert.AreEqual(@" \xt Leviticus 1:4 \xt*", resultList[0].MatchText);
+            Assert.AreEqual(@" \xt LEV 1:4 \xt*", resultList[0].MatchText);
         }
 
         /// <summary>
@@ -686,17 +686,17 @@ namespace TvpTest
             // Describes location and nature of the text being checked
             // Note: "PartContext" tells the check what it's looking at.
             var partData = VersePart.Create(1, 1, 1,
-                @"\xt LEV 2:4 \xt*", 1, 1,
+                @"\xt Leviticus 2:4 \xt*", 1, 1,
                 PartContext.MainText);
 
             // Executes the check
             _referenceCheck.CheckText(partData, resultList);
 
             // Assert
-            Assert.AreEqual(1, resultList.Count, @"Abbreviated name is used in reference.");
+            Assert.AreEqual(1, resultList.Count, @"Abbreviated name is expected in reference.");
             var errorType = (ScriptureReferenceErrorType)resultList[0].ResultTypeCode;
             Assert.AreEqual(ScriptureReferenceErrorType.IncorrectNameStyle, errorType, "Reference is using an incorrect name style.");
-            Assert.AreEqual(@"\xt LEV 2:4 \xt*", resultList[0].MatchText);
+            Assert.AreEqual(@"\xt Leviticus 2:4 \xt*", resultList[0].MatchText);
         }
 
         /// <summary>
@@ -906,17 +906,17 @@ namespace TvpTest
             // Describes location and nature of the text being checked
             // Note: "PartContext" tells the check what it's looking at.
             var partData = VersePart.Create(1, 1, 1,
-                @"\fp \+xt Numbers 5:1\+xt*", 1, 1,
+                @"\fp \+xt NUM 5:1\+xt*", 1, 1,
                 PartContext.NoteOrReference);
 
             // Executes the check
             _referenceCheck.CheckText(partData, resultList);
 
             // Assert
-            Assert.AreEqual(1, resultList.Count, @"Long name is used in reference.");
+            Assert.AreEqual(1, resultList.Count, @"Long name is expected in reference.");
             var errorType = (ScriptureReferenceErrorType)resultList[0].ResultTypeCode;
             Assert.AreEqual(ScriptureReferenceErrorType.IncorrectNameStyle, errorType, "The reference is using the wrong name style.");
-            Assert.AreEqual(@"\fp \+xt Numbers 5:1\+xt*", resultList[0].MatchText);
+            Assert.AreEqual(@"\fp \+xt NUM 5:1\+xt*", resultList[0].MatchText);
         }
 
         /// <summary>
@@ -930,17 +930,17 @@ namespace TvpTest
             // Describes location and nature of the text being checked
             // Note: "PartContext" tells the check what it's looking at.
             var partData = VersePart.Create(1, 1, 1,
-                @"\fp \+xt NUM 8:8\+xt*\f*", 1, 1,
+                @"\fp \+xt Numbers 8:8\+xt*\f*", 1, 1,
                 PartContext.NoteOrReference);
 
             // Executes the check
             _referenceCheck.CheckText(partData, resultList);
 
             // Assert
-            Assert.AreEqual(1, resultList.Count, @"Abbreviated name is used in reference.");
+            Assert.AreEqual(1, resultList.Count, @"Abbreviated name is expected in reference.");
             var errorType = (ScriptureReferenceErrorType)resultList[0].ResultTypeCode;
             Assert.AreEqual(ScriptureReferenceErrorType.IncorrectNameStyle, errorType, "The reference is using the wrong name style.");
-            Assert.AreEqual(@"\fp \+xt NUM 8:8\+xt*\f*", resultList[0].MatchText);
+            Assert.AreEqual(@"\fp \+xt Numbers 8:8\+xt*\f*", resultList[0].MatchText);
         }
 
         /// <summary>
