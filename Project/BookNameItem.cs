@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace TvpMain.Project
+﻿namespace TvpMain.Project
 {
     /// <summary>
     /// Model class for project-specific book names (abbreviation, short, and long).

@@ -1,26 +1,24 @@
-﻿using System;
+﻿using AddInSideViews;
+using CsvHelper;
+using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.ComponentModel;
+using System.Diagnostics;
+using System.Drawing;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Windows.Forms;
-using System.Windows.Threading;
-using AddInSideViews;
-using CsvHelper;
 using TvpMain.Check;
-using TvpMain.Text;
-using TvpMain.Result;
 using TvpMain.Filter;
 using TvpMain.Project;
 using TvpMain.Punctuation;
 using TvpMain.Reference;
+using TvpMain.Result;
+using TvpMain.Text;
 using TvpMain.Util;
 using static System.Environment;
-using System.Drawing;
-using System.Diagnostics;
 
 namespace TvpMain.Form
 {
@@ -196,18 +194,26 @@ namespace TvpMain.Form
         {
             try
             {
-                if (referencesCheckMenuItem.Checked)
-                {
-                    UpdateReferencesCheckUI();
-                }
-                else
-                {
-                    UpdateMainTable();
-                }
+                DoPrimaryUpdate();
             }
             catch (Exception ex)
             {
                 HostUtil.Instance.ReportError(ex);
+            }
+        }
+
+        /// <summary>
+        /// Update the references check UI if it's active instead of the default punctuation UI
+        /// </summary>
+        private void DoPrimaryUpdate()
+        {
+            if (referencesCheckMenuItem.Checked)
+            {
+                UpdateReferencesCheckUI();
+            }
+            else
+            {
+                UpdateMainTable();
             }
         }
 
@@ -218,14 +224,7 @@ namespace TvpMain.Form
         /// <param name="e">Event args (ignored).</param>
         private void OnSearchTextChanged(object sender, EventArgs e)
         {
-            if (referencesCheckMenuItem.Checked)
-            {
-                UpdateReferencesCheckUI();
-            }
-            else
-            {
-                UpdateMainTable();
-            }
+            DoPrimaryUpdate();
         }
 
         /// <summary>
@@ -437,15 +436,8 @@ namespace TvpMain.Form
                     {
                         _allResultItems = nextResults.ResultItems.ToImmutableList();
                     }
-                    // update the references check UI if it's active instead of the default punctuation UI
-                    if (referencesCheckMenuItem.Checked)
-                    {
-                        UpdateReferencesCheckUI();
-                    }
-                    else
-                    {
-                        UpdateMainTable();
-                    }
+
+                    DoPrimaryUpdate();
                 }
                 finally
                 {
@@ -474,7 +466,7 @@ namespace TvpMain.Form
             HostUtil.Instance.PutIgnoreList(_activeProjectName, ignoreList);
             _ignoreFilter.SetIgnoreList(ignoreList);
 
-            UpdateMainTable();
+            DoPrimaryUpdate();
         }
 
         /// <summary>
@@ -506,7 +498,7 @@ namespace TvpMain.Form
             wordListFiltersMenuItem.CheckState = wordListFiltersMenuItem.Checked
                 ? CheckState.Checked : CheckState.Unchecked;
 
-            UpdateMainTable();
+            DoPrimaryUpdate();
         }
 
         /// <summary>
@@ -520,7 +512,7 @@ namespace TvpMain.Form
             biblicaTermsFiltersMenuItem.CheckState = biblicaTermsFiltersMenuItem.Checked
                 ? CheckState.Checked : CheckState.Unchecked;
 
-            UpdateMainTable();
+            DoPrimaryUpdate();
         }
 
         /// <summary>
@@ -534,7 +526,7 @@ namespace TvpMain.Form
             ignoreListFiltersMenuItem.CheckState = ignoreListFiltersMenuItem.Checked
                 ? CheckState.Checked : CheckState.Unchecked;
 
-            UpdateMainTable();
+            DoPrimaryUpdate();
         }
 
         /// <summary>
@@ -763,7 +755,7 @@ namespace TvpMain.Form
             entireVerseFiltersMenuItem.CheckState = entireVerseFiltersMenuItem.Checked
                 ? CheckState.Checked : CheckState.Unchecked;
 
-            UpdateMainTable();
+            DoPrimaryUpdate();
         }
 
         /// <summary>
@@ -873,7 +865,7 @@ namespace TvpMain.Form
                 }
 
                 _ignoreFilter.SetIgnoreList(ignoreList);
-                UpdateMainTable();
+                DoPrimaryUpdate();
             }
             else
             {
@@ -908,7 +900,7 @@ namespace TvpMain.Form
                     : $"Removed {removedItems:N0} matching item from ignore list.");
 
                 _ignoreFilter.SetIgnoreList(oldIgnoreList);
-                UpdateMainTable();
+                DoPrimaryUpdate();
             }
             else
             {
@@ -921,7 +913,7 @@ namespace TvpMain.Form
         /// 
         /// By default, only enable for punctuation check and hide all the scripture reference check components.
         /// </summary>
-        private void MainForm_Load(object sender, EventArgs e)
+        private void OnMainFormLoad(object sender, EventArgs e)
         {
             // set up the tab control, make the header super small... so as not to be there
             tabControl.Multiline = true;
@@ -935,13 +927,13 @@ namespace TvpMain.Form
             referencesListView.RowHeadersVisible = false;
             referencesActionsGridView.RowHeadersVisible = false;
 
-            showScriptureReferencesCheckControls(false);
+            ShowScriptureReferencesCheckControls(false);
         }
 
         /// <summary>
         /// Switches b/t Scripture Reference check controls or punctuation controls
         /// </summary>
-        private void showScriptureReferencesCheckControls(Boolean show)
+        private void ShowScriptureReferencesCheckControls(bool show)
         {
             missingSentencePunctuationCheckMenuItem.Checked = !show;
             missingSentencePunctuationCheckMenuItem.CheckState = show ? CheckState.Unchecked : CheckState.Checked;
@@ -988,17 +980,17 @@ namespace TvpMain.Form
         /// <summary>
         /// Handles selection of controls based on menu selection
         /// </summary>
-        private void referencesToolStripMenuItem_Click(object sender, EventArgs e)
+        private void OnReferencesToolStripMenuItemClick(object sender, EventArgs e)
         {
-            showScriptureReferencesCheckControls(true);
+            ShowScriptureReferencesCheckControls(true);
         }
 
         /// <summary>
         /// Handles selection of controls based on menu selection
         /// </summary>
-        private void missingSentencePunctuationCheckMenuItem_Click(object sender, EventArgs e)
+        private void OnMissingSentencePunctuationCheckMenuItemClick(object sender, EventArgs e)
         {
-            showScriptureReferencesCheckControls(false);
+            ShowScriptureReferencesCheckControls(false);
         }
 
         /// <summary>
@@ -1051,7 +1043,7 @@ namespace TvpMain.Form
             referencesListView.Rows[0].Selected = true;
 
             // update the right portion of the UI, the text and list of exceptions
-            updateReferencesUIRight();
+            UpdateReferencesUIRight();
         }
 
         /// <summary>
@@ -1121,7 +1113,7 @@ namespace TvpMain.Form
                 var searchText = searchMenuTextBox.TextBox.Text.Trim();
                 if (searchText.Length > 0)
                 {
-                    // upcase chars in search text = 
+                    // upper-case chars in search text = 
                     // case-sensitive match, otherwise case-insensitive
                     if (searchText.Any(char.IsUpper))
                     {
@@ -1142,15 +1134,15 @@ namespace TvpMain.Form
         /// <summary>
         /// Update the exception list and text when the selection changes in the main verse list
         /// </summary>
-        private void referencesListView_SelectionChanged(object sender, EventArgs e)
+        private void OnReferencesListViewSelectionChanged(object sender, EventArgs e)
         {
-            updateReferencesUIRight();
+            UpdateReferencesUIRight();
         }
 
         /// <summary>
         /// Updates the verse level exception list and text, with highlighting
         /// </summary>
-        private void updateReferencesUIRight()
+        private void UpdateReferencesUIRight()
         {
             Debug.WriteLine("updateReferencesUIRight");
 
@@ -1168,19 +1160,19 @@ namespace TvpMain.Form
                 foreach (var resultItem in localList)
                 {
                     int rowNum = referencesActionsGridView.Rows.Add(
-                            $"{(ScriptureReferenceErrorType)resultItem.ResultTypeCode}", $"{resultItem.MatchText}", $"{resultItem.SuggestionText}", "Accept", resultItem.ResultState == ResultState.Ignored ? "Un-Ignore" : "Ignore"
+                            $"{(ScriptureReferenceErrorType)resultItem.ResultTypeCode}", "Accept", resultItem.ResultState == ResultState.Ignored ? "Un-Ignore" : "Ignore"
                         );
 
                     Debug.WriteLine("updateReferencesUIRight - Setting Tag resultItem for " + rowNum);
 
-                    // keep the result item with the row of excpetions for future reference
+                    // keep the result item with the row of exceptions for future reference
                     referencesActionsGridView.Rows[rowNum].Tag = resultItem;
                 }
 
                 referencesActionsGridView.Rows[0].Selected = true;
             }
 
-            highlightActiveResultItem();
+            UpdateExceptionDetailsAndHighlightForActiveResultItem();
         }
 
         /// <summary>
@@ -1188,16 +1180,16 @@ namespace TvpMain.Form
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void referencesActionsGridView_SelectionChanged(object sender, EventArgs e)
+        private void OnReferencesActionsGridViewSelectionChanged(object sender, EventArgs e)
         {
             // highlight the text based on new selection
-            highlightActiveResultItem();
+            UpdateExceptionDetailsAndHighlightForActiveResultItem();
         }
 
         /// <summary>
         /// Toggles the value of the Ignore/Un-Ignore button while saving the state of the result state flag on the associated result item
         /// </summary>
-        private void referencesActionsGridView_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        private void OnReferencesActionsGridViewCellContentClick(object sender, DataGridViewCellEventArgs e)
         {
             Debug.WriteLine("referencesActionsGridView_CellContentClick");
 
@@ -1222,44 +1214,55 @@ namespace TvpMain.Form
                     _projectManager.ResultManager.SetVerseResult(resultItem);
 
                     // update ui so that the change is reflected by re-running the filter
-                    UpdateReferencesCheckUI();
+                    DoPrimaryUpdate();
                 }
             }
 
-            highlightActiveResultItem();
+            UpdateExceptionDetailsAndHighlightForActiveResultItem();
         }
 
         /// <summary>
         /// Update highlighting on click
         /// </summary>
-        private void referencesActionsGridView_CellClick(object sender, DataGridViewCellEventArgs e)
+        private void OnReferencesActionsGridViewCellClick(object sender, DataGridViewCellEventArgs e)
         {
             Debug.WriteLine("referencesActionsGridView_CellClick");
 
-            highlightActiveResultItem();
-        }
-
-        private void referencesActionsGridView_KeyPress(object sender, KeyPressEventArgs e)
-        {
-            Debug.WriteLine("referencesActionsGridView_KeyPress");
-
-            highlightActiveResultItem();
-        }
-
-        private void referencesTextBox_TextChanged(object sender, EventArgs e)
-        {
-            Debug.WriteLine("referencesTextBox_TextChanged");
-
-            highlightActiveResultItem();
+            UpdateExceptionDetailsAndHighlightForActiveResultItem();
         }
 
         /// <summary>
-        /// Highlights the selected result item problem area in the text box
+        /// To capture arrow key navigation through list
         /// </summary>
-        public void highlightActiveResultItem()
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void OnReferencesActionsGridViewKeyPress(object sender, KeyPressEventArgs e)
+        {
+            Debug.WriteLine("referencesActionsGridView_KeyPress");
+
+            UpdateExceptionDetailsAndHighlightForActiveResultItem();
+        }
+
+        /// <summary>
+        /// To make sure highlighting occurs when the text changes
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void OnReferencesTextBoxTextChanged(object sender, EventArgs e)
+        {
+            Debug.WriteLine("referencesTextBox_TextChanged");
+
+            UpdateExceptionDetailsAndHighlightForActiveResultItem();
+        }
+
+        /// <summary>
+        /// Highlights the selected result item problem area in the text box.
+        /// Update the exception details group box.
+        /// </summary>
+        private void UpdateExceptionDetailsAndHighlightForActiveResultItem()
         {
             Debug.WriteLine("highlightActiveResultItem");
-
+            
             if (referencesActionsGridView.CurrentRow == null)
             {
                 Debug.WriteLine("highlightActiveResultItem - CurrentRow NULL");
@@ -1291,8 +1294,11 @@ namespace TvpMain.Form
 
                         Debug.WriteLine("highlightActiveResultItem - Selection Set: " + resultItem.MatchStart);
 
-                        referencesTextBox.Refresh();
+                        issueTextBox.Text = resultItem.MatchText;
+                        suggestedFixTextBox.Text = resultItem.SuggestionText;
+                        descriptionTextBox.Text = resultItem.ErrorText;
 
+                        referencesTextBox.Refresh();
                     }
                     else
                     {
@@ -1339,13 +1345,13 @@ namespace TvpMain.Form
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void hideLooseMatchesToolStripMenuItem_Click(object sender, EventArgs e)
+        private void OnHideLooseMatchesToolStripMenuItemClick(object sender, EventArgs e)
         {
             hideLooseMatchesToolStripMenuItem.Checked = !hideLooseMatchesToolStripMenuItem.Checked;
             hideLooseMatchesToolStripMenuItem.CheckState = hideLooseMatchesToolStripMenuItem.Checked
                 ? CheckState.Checked : CheckState.Unchecked;
 
-            UpdateReferencesCheckUI();
+            DoPrimaryUpdate();
         }
 
         /// <summary>
@@ -1353,13 +1359,13 @@ namespace TvpMain.Form
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void showIgnoredToolStripMenuItem_Click(object sender, EventArgs e)
+        private void OnShowIgnoredToolStripMenuItemClick(object sender, EventArgs e)
         {
             showIgnoredToolStripMenuItem.Checked = !showIgnoredToolStripMenuItem.Checked;
             showIgnoredToolStripMenuItem.CheckState = showIgnoredToolStripMenuItem.Checked
                 ? CheckState.Checked : CheckState.Unchecked;
 
-            UpdateReferencesCheckUI();
+            DoPrimaryUpdate();
         }
 
         /// <summary>
@@ -1367,13 +1373,13 @@ namespace TvpMain.Form
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void hideIncorrectNameStyleToolStripMenuItem_Click(object sender, EventArgs e)
+        private void OnHideIncorrectNameStyleToolStripMenuItemClick(object sender, EventArgs e)
         {
             hideIncorrectNameStyleToolStripMenuItem.Checked = !hideIncorrectNameStyleToolStripMenuItem.Checked;
             hideIncorrectNameStyleToolStripMenuItem.CheckState = hideIncorrectNameStyleToolStripMenuItem.Checked
                 ? CheckState.Checked : CheckState.Unchecked;
 
-            UpdateReferencesCheckUI();
+            DoPrimaryUpdate();
         }
 
         /// <summary>
@@ -1381,13 +1387,13 @@ namespace TvpMain.Form
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void hideTagShouldntExistToolStripMenuItem_Click(object sender, EventArgs e)
+        private void OnHideTagShouldntExistToolStripMenuItemClick(object sender, EventArgs e)
         {
             hideTagShouldntExistToolStripMenuItem.Checked = !hideTagShouldntExistToolStripMenuItem.Checked;
             hideTagShouldntExistToolStripMenuItem.CheckState = hideTagShouldntExistToolStripMenuItem.Checked
                 ? CheckState.Checked : CheckState.Unchecked;
 
-            UpdateReferencesCheckUI();
+            DoPrimaryUpdate();
         }
 
         /// <summary>
@@ -1395,13 +1401,13 @@ namespace TvpMain.Form
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void hideMissingTagToolStripMenuItem_Click(object sender, EventArgs e)
+        private void OnHideMissingTagToolStripMenuItemClick(object sender, EventArgs e)
         {
             hideMissingTagToolStripMenuItem.Checked = !hideMissingTagToolStripMenuItem.Checked;
             hideMissingTagToolStripMenuItem.CheckState = hideMissingTagToolStripMenuItem.Checked
                 ? CheckState.Checked : CheckState.Unchecked;
 
-            UpdateReferencesCheckUI();
+            DoPrimaryUpdate();
         }
 
         /// <summary>
@@ -1409,13 +1415,13 @@ namespace TvpMain.Form
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void hideIncorrectTagToolStripMenuItem_Click(object sender, EventArgs e)
+        private void OnHideIncorrectTagToolStripMenuItemClick(object sender, EventArgs e)
         {
             hideIncorrectTagToolStripMenuItem.Checked = !hideIncorrectTagToolStripMenuItem.Checked;
             hideIncorrectTagToolStripMenuItem.CheckState = hideIncorrectTagToolStripMenuItem.Checked
                 ? CheckState.Checked : CheckState.Unchecked;
 
-            UpdateReferencesCheckUI();
+            DoPrimaryUpdate();
         }
 
         /// <summary>
@@ -1423,13 +1429,13 @@ namespace TvpMain.Form
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void hideMalformedTagToolStripMenuItem_Click(object sender, EventArgs e)
+        private void OnHideMalformedTagToolStripMenuItemClick(object sender, EventArgs e)
         {
             hideMalformedTagToolStripMenuItem.Checked = !hideMalformedTagToolStripMenuItem.Checked;
             hideMalformedTagToolStripMenuItem.CheckState = hideMalformedTagToolStripMenuItem.Checked
                 ? CheckState.Checked : CheckState.Unchecked;
 
-            UpdateReferencesCheckUI();
+            DoPrimaryUpdate();
         }
 
         /// <summary>
@@ -1437,14 +1443,13 @@ namespace TvpMain.Form
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void hideBadReferencesToolStripMenuItem_Click(object sender, EventArgs e)
+        private void OnHideBadReferencesToolStripMenuItemClick(object sender, EventArgs e)
         {
             hideBadReferencesToolStripMenuItem.Checked = !hideBadReferencesToolStripMenuItem.Checked;
             hideBadReferencesToolStripMenuItem.CheckState = hideBadReferencesToolStripMenuItem.Checked
                 ? CheckState.Checked : CheckState.Unchecked;
 
-            UpdateReferencesCheckUI();
+            DoPrimaryUpdate();
         }
-
     }
 }

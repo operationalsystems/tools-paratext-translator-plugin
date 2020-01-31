@@ -83,36 +83,37 @@
             this.tabControl = new System.Windows.Forms.TabControl();
             this.punctuationTab = new System.Windows.Forms.TabPage();
             this.referencesTab = new System.Windows.Forms.TabPage();
-            this.referencesOuterSplitContainer = new System.Windows.Forms.SplitContainer();
-            this.referencesListView = new System.Windows.Forms.DataGridView();
             this.referencesInnerSplitContainer = new System.Windows.Forms.SplitContainer();
+            this.exceptionDetailsGB = new System.Windows.Forms.GroupBox();
+            this.descriptionTextBox = new System.Windows.Forms.TextBox();
+            this.label3 = new System.Windows.Forms.Label();
+            this.suggestedFixTextBox = new System.Windows.Forms.TextBox();
+            this.label2 = new System.Windows.Forms.Label();
+            this.issueTextBox = new System.Windows.Forms.TextBox();
+            this.label1 = new System.Windows.Forms.Label();
             this.referencesActionsGridView = new System.Windows.Forms.DataGridView();
-            this.referencesActionsExceptionColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.referencesActionsProblemColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.referencesActionsSuggestionColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.referencesActionsAcceptColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.referencesActionsIgnoreColumn = new System.Windows.Forms.DataGridViewButtonColumn();
             this.referencesTextBox = new System.Windows.Forms.RichTextBox();
-            this.bindingSource1 = new System.Windows.Forms.BindingSource(this.components);
-            this.resultWorker = new System.ComponentModel.BackgroundWorker();
+            this.referencesListView = new System.Windows.Forms.DataGridView();
             this.referencesListViewReferenceColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.referencesListViewCountColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.bindingSource1 = new System.Windows.Forms.BindingSource(this.components);
+            this.resultWorker = new System.ComponentModel.BackgroundWorker();
+            this.referencesActionsExceptionColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.referencesActionsAcceptColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.referencesActionsIgnoreColumn = new System.Windows.Forms.DataGridViewButtonColumn();
             ((System.ComponentModel.ISupportInitialize)(this.dgvCheckResults)).BeginInit();
             this.contextMenu.SuspendLayout();
             this.mainMenu.SuspendLayout();
             this.tabControl.SuspendLayout();
             this.punctuationTab.SuspendLayout();
             this.referencesTab.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.referencesOuterSplitContainer)).BeginInit();
-            this.referencesOuterSplitContainer.Panel1.SuspendLayout();
-            this.referencesOuterSplitContainer.Panel2.SuspendLayout();
-            this.referencesOuterSplitContainer.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.referencesListView)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.referencesInnerSplitContainer)).BeginInit();
             this.referencesInnerSplitContainer.Panel1.SuspendLayout();
             this.referencesInnerSplitContainer.Panel2.SuspendLayout();
             this.referencesInnerSplitContainer.SuspendLayout();
+            this.exceptionDetailsGB.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.referencesActionsGridView)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.referencesListView)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.bindingSource1)).BeginInit();
             this.SuspendLayout();
             // 
@@ -332,14 +333,14 @@
             this.missingSentencePunctuationCheckMenuItem.Name = "missingSentencePunctuationCheckMenuItem";
             this.missingSentencePunctuationCheckMenuItem.Size = new System.Drawing.Size(234, 22);
             this.missingSentencePunctuationCheckMenuItem.Text = "&Missing Sentence Punctuation";
-            this.missingSentencePunctuationCheckMenuItem.Click += new System.EventHandler(this.missingSentencePunctuationCheckMenuItem_Click);
+            this.missingSentencePunctuationCheckMenuItem.Click += new System.EventHandler(this.OnMissingSentencePunctuationCheckMenuItemClick);
             // 
             // referencesCheckMenuItem
             // 
             this.referencesCheckMenuItem.Name = "referencesCheckMenuItem";
             this.referencesCheckMenuItem.Size = new System.Drawing.Size(234, 22);
             this.referencesCheckMenuItem.Text = "Reference Checks";
-            this.referencesCheckMenuItem.Click += new System.EventHandler(this.referencesToolStripMenuItem_Click);
+            this.referencesCheckMenuItem.Click += new System.EventHandler(this.OnReferencesToolStripMenuItemClick);
             // 
             // toolsToolStripMenuItem
             // 
@@ -400,7 +401,7 @@
             this.showIgnoredToolStripMenuItem.Name = "showIgnoredToolStripMenuItem";
             this.showIgnoredToolStripMenuItem.Size = new System.Drawing.Size(212, 22);
             this.showIgnoredToolStripMenuItem.Text = "Show Ignored";
-            this.showIgnoredToolStripMenuItem.Click += new System.EventHandler(this.showIgnoredToolStripMenuItem_Click);
+            this.showIgnoredToolStripMenuItem.Click += new System.EventHandler(this.OnShowIgnoredToolStripMenuItemClick);
             // 
             // referencesMenuSeparator
             // 
@@ -412,49 +413,49 @@
             this.hideLooseMatchesToolStripMenuItem.Name = "hideLooseMatchesToolStripMenuItem";
             this.hideLooseMatchesToolStripMenuItem.Size = new System.Drawing.Size(212, 22);
             this.hideLooseMatchesToolStripMenuItem.Text = "Hide Loose Matches";
-            this.hideLooseMatchesToolStripMenuItem.Click += new System.EventHandler(this.hideLooseMatchesToolStripMenuItem_Click);
+            this.hideLooseMatchesToolStripMenuItem.Click += new System.EventHandler(this.OnHideLooseMatchesToolStripMenuItemClick);
             // 
             // hideIncorrectNameStyleToolStripMenuItem
             // 
             this.hideIncorrectNameStyleToolStripMenuItem.Name = "hideIncorrectNameStyleToolStripMenuItem";
             this.hideIncorrectNameStyleToolStripMenuItem.Size = new System.Drawing.Size(212, 22);
             this.hideIncorrectNameStyleToolStripMenuItem.Text = "Hide Incorrect Name Style";
-            this.hideIncorrectNameStyleToolStripMenuItem.Click += new System.EventHandler(this.hideIncorrectNameStyleToolStripMenuItem_Click);
+            this.hideIncorrectNameStyleToolStripMenuItem.Click += new System.EventHandler(this.OnHideIncorrectNameStyleToolStripMenuItemClick);
             // 
             // hideTagShouldntExistToolStripMenuItem
             // 
             this.hideTagShouldntExistToolStripMenuItem.Name = "hideTagShouldntExistToolStripMenuItem";
             this.hideTagShouldntExistToolStripMenuItem.Size = new System.Drawing.Size(212, 22);
             this.hideTagShouldntExistToolStripMenuItem.Text = "Hide Tag Shouldn\'t Exist";
-            this.hideTagShouldntExistToolStripMenuItem.Click += new System.EventHandler(this.hideTagShouldntExistToolStripMenuItem_Click);
+            this.hideTagShouldntExistToolStripMenuItem.Click += new System.EventHandler(this.OnHideTagShouldntExistToolStripMenuItemClick);
             // 
             // hideMissingTagToolStripMenuItem
             // 
             this.hideMissingTagToolStripMenuItem.Name = "hideMissingTagToolStripMenuItem";
             this.hideMissingTagToolStripMenuItem.Size = new System.Drawing.Size(212, 22);
             this.hideMissingTagToolStripMenuItem.Text = "Hide Missing Tag";
-            this.hideMissingTagToolStripMenuItem.Click += new System.EventHandler(this.hideMissingTagToolStripMenuItem_Click);
+            this.hideMissingTagToolStripMenuItem.Click += new System.EventHandler(this.OnHideMissingTagToolStripMenuItemClick);
             // 
             // hideIncorrectTagToolStripMenuItem
             // 
             this.hideIncorrectTagToolStripMenuItem.Name = "hideIncorrectTagToolStripMenuItem";
             this.hideIncorrectTagToolStripMenuItem.Size = new System.Drawing.Size(212, 22);
             this.hideIncorrectTagToolStripMenuItem.Text = "Hide Incorrect Tag";
-            this.hideIncorrectTagToolStripMenuItem.Click += new System.EventHandler(this.hideIncorrectTagToolStripMenuItem_Click);
+            this.hideIncorrectTagToolStripMenuItem.Click += new System.EventHandler(this.OnHideIncorrectTagToolStripMenuItemClick);
             // 
             // hideMalformedTagToolStripMenuItem
             // 
             this.hideMalformedTagToolStripMenuItem.Name = "hideMalformedTagToolStripMenuItem";
             this.hideMalformedTagToolStripMenuItem.Size = new System.Drawing.Size(212, 22);
             this.hideMalformedTagToolStripMenuItem.Text = "Hide Malformed Tag";
-            this.hideMalformedTagToolStripMenuItem.Click += new System.EventHandler(this.hideMalformedTagToolStripMenuItem_Click);
+            this.hideMalformedTagToolStripMenuItem.Click += new System.EventHandler(this.OnHideMalformedTagToolStripMenuItemClick);
             // 
             // hideBadReferencesToolStripMenuItem
             // 
             this.hideBadReferencesToolStripMenuItem.Name = "hideBadReferencesToolStripMenuItem";
             this.hideBadReferencesToolStripMenuItem.Size = new System.Drawing.Size(212, 22);
             this.hideBadReferencesToolStripMenuItem.Text = "Hide Bad References";
-            this.hideBadReferencesToolStripMenuItem.Click += new System.EventHandler(this.hideBadReferencesToolStripMenuItem_Click);
+            this.hideBadReferencesToolStripMenuItem.Click += new System.EventHandler(this.OnHideBadReferencesToolStripMenuItemClick);
             // 
             // viewMenu
             // 
@@ -576,7 +577,8 @@
             // 
             // referencesTab
             // 
-            this.referencesTab.Controls.Add(this.referencesOuterSplitContainer);
+            this.referencesTab.Controls.Add(this.referencesInnerSplitContainer);
+            this.referencesTab.Controls.Add(this.referencesListView);
             this.referencesTab.Location = new System.Drawing.Point(4, 22);
             this.referencesTab.Name = "referencesTab";
             this.referencesTab.Padding = new System.Windows.Forms.Padding(3);
@@ -585,67 +587,100 @@
             this.referencesTab.Text = "References";
             this.referencesTab.UseVisualStyleBackColor = true;
             // 
-            // referencesOuterSplitContainer
-            // 
-            this.referencesOuterSplitContainer.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.referencesOuterSplitContainer.Location = new System.Drawing.Point(0, 0);
-            this.referencesOuterSplitContainer.Name = "referencesOuterSplitContainer";
-            // 
-            // referencesOuterSplitContainer.Panel1
-            // 
-            this.referencesOuterSplitContainer.Panel1.Controls.Add(this.referencesListView);
-            // 
-            // referencesOuterSplitContainer.Panel2
-            // 
-            this.referencesOuterSplitContainer.Panel2.Controls.Add(this.referencesInnerSplitContainer);
-            this.referencesOuterSplitContainer.Size = new System.Drawing.Size(1200, 647);
-            this.referencesOuterSplitContainer.SplitterDistance = 165;
-            this.referencesOuterSplitContainer.TabIndex = 4;
-            // 
-            // referencesListView
-            // 
-            this.referencesListView.AllowUserToAddRows = false;
-            this.referencesListView.AllowUserToDeleteRows = false;
-            this.referencesListView.AllowUserToResizeRows = false;
-            this.referencesListView.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.referencesListView.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
-            this.referencesListView.AutoSizeRowsMode = System.Windows.Forms.DataGridViewAutoSizeRowsMode.DisplayedCells;
-            this.referencesListView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.referencesListView.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
-            this.referencesListViewReferenceColumn,
-            this.referencesListViewCountColumn});
-            this.referencesListView.Location = new System.Drawing.Point(0, 0);
-            this.referencesListView.MultiSelect = false;
-            this.referencesListView.Name = "referencesListView";
-            this.referencesListView.ReadOnly = true;
-            this.referencesListView.RowHeadersVisible = false;
-            this.referencesListView.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.referencesListView.Size = new System.Drawing.Size(163, 647);
-            this.referencesListView.TabIndex = 0;
-            this.referencesListView.SelectionChanged += new System.EventHandler(this.referencesListView_SelectionChanged);
-            // 
             // referencesInnerSplitContainer
             // 
             this.referencesInnerSplitContainer.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.referencesInnerSplitContainer.Location = new System.Drawing.Point(0, 0);
+            this.referencesInnerSplitContainer.Location = new System.Drawing.Point(203, 0);
             this.referencesInnerSplitContainer.Name = "referencesInnerSplitContainer";
             // 
             // referencesInnerSplitContainer.Panel1
             // 
+            this.referencesInnerSplitContainer.Panel1.Controls.Add(this.exceptionDetailsGB);
             this.referencesInnerSplitContainer.Panel1.Controls.Add(this.referencesActionsGridView);
             // 
             // referencesInnerSplitContainer.Panel2
             // 
             this.referencesInnerSplitContainer.Panel2.Controls.Add(this.referencesTextBox);
-            this.referencesInnerSplitContainer.Size = new System.Drawing.Size(1032, 647);
-            this.referencesInnerSplitContainer.SplitterDistance = 420;
+            this.referencesInnerSplitContainer.Size = new System.Drawing.Size(991, 647);
+            this.referencesInnerSplitContainer.SplitterDistance = 284;
             this.referencesInnerSplitContainer.TabIndex = 0;
+            // 
+            // exceptionDetailsGB
+            // 
+            this.exceptionDetailsGB.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.exceptionDetailsGB.Controls.Add(this.descriptionTextBox);
+            this.exceptionDetailsGB.Controls.Add(this.label3);
+            this.exceptionDetailsGB.Controls.Add(this.suggestedFixTextBox);
+            this.exceptionDetailsGB.Controls.Add(this.label2);
+            this.exceptionDetailsGB.Controls.Add(this.issueTextBox);
+            this.exceptionDetailsGB.Controls.Add(this.label1);
+            this.exceptionDetailsGB.Location = new System.Drawing.Point(3, 488);
+            this.exceptionDetailsGB.Name = "exceptionDetailsGB";
+            this.exceptionDetailsGB.Size = new System.Drawing.Size(278, 153);
+            this.exceptionDetailsGB.TabIndex = 0;
+            this.exceptionDetailsGB.TabStop = false;
+            this.exceptionDetailsGB.Text = "Exception Details";
+            // 
+            // descriptionTextBox
+            // 
+            this.descriptionTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.descriptionTextBox.Location = new System.Drawing.Point(89, 71);
+            this.descriptionTextBox.Multiline = true;
+            this.descriptionTextBox.Name = "descriptionTextBox";
+            this.descriptionTextBox.ReadOnly = true;
+            this.descriptionTextBox.Size = new System.Drawing.Size(183, 76);
+            this.descriptionTextBox.TabIndex = 5;
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(6, 74);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(63, 13);
+            this.label3.TabIndex = 4;
+            this.label3.Text = "Descritpion:";
+            // 
+            // suggestedFixTextBox
+            // 
+            this.suggestedFixTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.suggestedFixTextBox.Location = new System.Drawing.Point(89, 45);
+            this.suggestedFixTextBox.Name = "suggestedFixTextBox";
+            this.suggestedFixTextBox.ReadOnly = true;
+            this.suggestedFixTextBox.Size = new System.Drawing.Size(183, 20);
+            this.suggestedFixTextBox.TabIndex = 3;
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(6, 48);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(77, 13);
+            this.label2.TabIndex = 2;
+            this.label2.Text = "Suggested Fix:";
+            // 
+            // issueTextBox
+            // 
+            this.issueTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.issueTextBox.Location = new System.Drawing.Point(89, 19);
+            this.issueTextBox.Name = "issueTextBox";
+            this.issueTextBox.ReadOnly = true;
+            this.issueTextBox.Size = new System.Drawing.Size(183, 20);
+            this.issueTextBox.TabIndex = 1;
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(6, 22);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(35, 13);
+            this.label1.TabIndex = 0;
+            this.label1.Text = "Issue:";
             // 
             // referencesActionsGridView
             // 
@@ -660,8 +695,6 @@
             this.referencesActionsGridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.referencesActionsGridView.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.referencesActionsExceptionColumn,
-            this.referencesActionsProblemColumn,
-            this.referencesActionsSuggestionColumn,
             this.referencesActionsAcceptColumn,
             this.referencesActionsIgnoreColumn});
             this.referencesActionsGridView.Location = new System.Drawing.Point(3, 0);
@@ -670,32 +703,71 @@
             this.referencesActionsGridView.ReadOnly = true;
             this.referencesActionsGridView.RowHeadersVisible = false;
             this.referencesActionsGridView.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.referencesActionsGridView.Size = new System.Drawing.Size(414, 647);
+            this.referencesActionsGridView.Size = new System.Drawing.Size(278, 482);
             this.referencesActionsGridView.TabIndex = 0;
-            this.referencesActionsGridView.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.referencesActionsGridView_CellClick);
-            this.referencesActionsGridView.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.referencesActionsGridView_CellContentClick);
-            this.referencesActionsGridView.SelectionChanged += new System.EventHandler(this.referencesActionsGridView_SelectionChanged);
-            this.referencesActionsGridView.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.referencesActionsGridView_KeyPress);
+            this.referencesActionsGridView.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.OnReferencesActionsGridViewCellClick);
+            this.referencesActionsGridView.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.OnReferencesActionsGridViewCellContentClick);
+            this.referencesActionsGridView.SelectionChanged += new System.EventHandler(this.OnReferencesActionsGridViewSelectionChanged);
+            this.referencesActionsGridView.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.OnReferencesActionsGridViewKeyPress);
+            // 
+            // referencesTextBox
+            // 
+            this.referencesTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.referencesTextBox.BackColor = System.Drawing.Color.White;
+            this.referencesTextBox.Cursor = System.Windows.Forms.Cursors.Default;
+            this.referencesTextBox.Location = new System.Drawing.Point(3, 0);
+            this.referencesTextBox.Name = "referencesTextBox";
+            this.referencesTextBox.ReadOnly = true;
+            this.referencesTextBox.Size = new System.Drawing.Size(700, 647);
+            this.referencesTextBox.TabIndex = 3;
+            this.referencesTextBox.Text = "";
+            this.referencesTextBox.TextChanged += new System.EventHandler(this.OnReferencesTextBoxTextChanged);
+            // 
+            // referencesListView
+            // 
+            this.referencesListView.AllowUserToAddRows = false;
+            this.referencesListView.AllowUserToDeleteRows = false;
+            this.referencesListView.AllowUserToResizeRows = false;
+            this.referencesListView.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left)));
+            this.referencesListView.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
+            this.referencesListView.AutoSizeRowsMode = System.Windows.Forms.DataGridViewAutoSizeRowsMode.DisplayedCells;
+            this.referencesListView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.referencesListView.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.referencesListViewReferenceColumn,
+            this.referencesListViewCountColumn});
+            this.referencesListView.Location = new System.Drawing.Point(-4, 0);
+            this.referencesListView.MultiSelect = false;
+            this.referencesListView.Name = "referencesListView";
+            this.referencesListView.ReadOnly = true;
+            this.referencesListView.RowHeadersVisible = false;
+            this.referencesListView.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
+            this.referencesListView.Size = new System.Drawing.Size(204, 647);
+            this.referencesListView.TabIndex = 0;
+            this.referencesListView.SelectionChanged += new System.EventHandler(this.OnReferencesListViewSelectionChanged);
+            // 
+            // referencesListViewReferenceColumn
+            // 
+            this.referencesListViewReferenceColumn.HeaderText = "Reference";
+            this.referencesListViewReferenceColumn.Name = "referencesListViewReferenceColumn";
+            this.referencesListViewReferenceColumn.ReadOnly = true;
+            // 
+            // referencesListViewCountColumn
+            // 
+            this.referencesListViewCountColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
+            this.referencesListViewCountColumn.FillWeight = 50F;
+            this.referencesListViewCountColumn.HeaderText = "# Exceptions";
+            this.referencesListViewCountColumn.Name = "referencesListViewCountColumn";
+            this.referencesListViewCountColumn.ReadOnly = true;
+            this.referencesListViewCountColumn.Width = 94;
             // 
             // referencesActionsExceptionColumn
             // 
-            this.referencesActionsExceptionColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
             this.referencesActionsExceptionColumn.HeaderText = "Exception";
             this.referencesActionsExceptionColumn.Name = "referencesActionsExceptionColumn";
             this.referencesActionsExceptionColumn.ReadOnly = true;
-            this.referencesActionsExceptionColumn.Width = 79;
-            // 
-            // referencesActionsProblemColumn
-            // 
-            this.referencesActionsProblemColumn.HeaderText = "Issue";
-            this.referencesActionsProblemColumn.Name = "referencesActionsProblemColumn";
-            this.referencesActionsProblemColumn.ReadOnly = true;
-            // 
-            // referencesActionsSuggestionColumn
-            // 
-            this.referencesActionsSuggestionColumn.HeaderText = "Suggested Fix";
-            this.referencesActionsSuggestionColumn.Name = "referencesActionsSuggestionColumn";
-            this.referencesActionsSuggestionColumn.ReadOnly = true;
             // 
             // referencesActionsAcceptColumn
             // 
@@ -720,36 +792,6 @@
             this.referencesActionsIgnoreColumn.ToolTipText = "Ignore this exception in the future.";
             this.referencesActionsIgnoreColumn.Width = 50;
             // 
-            // referencesTextBox
-            // 
-            this.referencesTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.referencesTextBox.BackColor = System.Drawing.Color.White;
-            this.referencesTextBox.Cursor = System.Windows.Forms.Cursors.Default;
-            this.referencesTextBox.Location = new System.Drawing.Point(3, 0);
-            this.referencesTextBox.Name = "referencesTextBox";
-            this.referencesTextBox.ReadOnly = true;
-            this.referencesTextBox.Size = new System.Drawing.Size(605, 647);
-            this.referencesTextBox.TabIndex = 3;
-            this.referencesTextBox.Text = "";
-            this.referencesTextBox.TextChanged += new System.EventHandler(this.referencesTextBox_TextChanged);
-            // 
-            // referencesListViewReferenceColumn
-            // 
-            this.referencesListViewReferenceColumn.HeaderText = "Reference";
-            this.referencesListViewReferenceColumn.Name = "referencesListViewReferenceColumn";
-            this.referencesListViewReferenceColumn.ReadOnly = true;
-            // 
-            // referencesListViewCountColumn
-            // 
-            this.referencesListViewCountColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
-            this.referencesListViewCountColumn.FillWeight = 50F;
-            this.referencesListViewCountColumn.HeaderText = "# Exceptions";
-            this.referencesListViewCountColumn.Name = "referencesListViewCountColumn";
-            this.referencesListViewCountColumn.ReadOnly = true;
-            this.referencesListViewCountColumn.Width = 94;
-            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -773,7 +815,7 @@
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Translation Validations...";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.FormTest_FormClosing);
-            this.Load += new System.EventHandler(this.MainForm_Load);
+            this.Load += new System.EventHandler(this.OnMainFormLoad);
             ((System.ComponentModel.ISupportInitialize)(this.dgvCheckResults)).EndInit();
             this.contextMenu.ResumeLayout(false);
             this.mainMenu.ResumeLayout(false);
@@ -781,16 +823,14 @@
             this.tabControl.ResumeLayout(false);
             this.punctuationTab.ResumeLayout(false);
             this.referencesTab.ResumeLayout(false);
-            this.referencesOuterSplitContainer.Panel1.ResumeLayout(false);
-            this.referencesOuterSplitContainer.Panel2.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.referencesOuterSplitContainer)).EndInit();
-            this.referencesOuterSplitContainer.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.referencesListView)).EndInit();
             this.referencesInnerSplitContainer.Panel1.ResumeLayout(false);
             this.referencesInnerSplitContainer.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.referencesInnerSplitContainer)).EndInit();
             this.referencesInnerSplitContainer.ResumeLayout(false);
+            this.exceptionDetailsGB.ResumeLayout(false);
+            this.exceptionDetailsGB.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.referencesActionsGridView)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.referencesListView)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.bindingSource1)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -842,11 +882,6 @@
         private System.Windows.Forms.TabPage punctuationTab;
         private System.Windows.Forms.TabPage referencesTab;
         private System.Windows.Forms.ToolStripMenuItem referencesCheckMenuItem;
-        private System.Windows.Forms.RichTextBox referencesTextBox;
-        private System.Windows.Forms.SplitContainer referencesOuterSplitContainer;
-        private System.Windows.Forms.SplitContainer referencesInnerSplitContainer;
-        private System.Windows.Forms.DataGridView referencesActionsGridView;
-        private System.Windows.Forms.DataGridView referencesListView;
         private System.Windows.Forms.ToolStripMenuItem showIgnoredToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator referencesMenuSeparator;
         private System.Windows.Forms.ToolStripMenuItem hideLooseMatchesToolStripMenuItem;
@@ -858,12 +893,21 @@
         private System.Windows.Forms.ToolStripMenuItem hideIncorrectTagToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem hideMalformedTagToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem hideBadReferencesToolStripMenuItem;
-        private System.Windows.Forms.DataGridViewTextBoxColumn referencesActionsExceptionColumn;
-        private System.Windows.Forms.DataGridViewTextBoxColumn referencesActionsProblemColumn;
-        private System.Windows.Forms.DataGridViewTextBoxColumn referencesActionsSuggestionColumn;
-        private System.Windows.Forms.DataGridViewTextBoxColumn referencesActionsAcceptColumn;
-        private System.Windows.Forms.DataGridViewButtonColumn referencesActionsIgnoreColumn;
+        private System.Windows.Forms.SplitContainer referencesInnerSplitContainer;
+        private System.Windows.Forms.DataGridView referencesActionsGridView;
+        private System.Windows.Forms.RichTextBox referencesTextBox;
+        private System.Windows.Forms.DataGridView referencesListView;
         private System.Windows.Forms.DataGridViewTextBoxColumn referencesListViewReferenceColumn;
         private System.Windows.Forms.DataGridViewTextBoxColumn referencesListViewCountColumn;
+        private System.Windows.Forms.GroupBox exceptionDetailsGB;
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.TextBox suggestedFixTextBox;
+        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.TextBox issueTextBox;
+        private System.Windows.Forms.TextBox descriptionTextBox;
+        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.DataGridViewTextBoxColumn referencesActionsExceptionColumn;
+        private System.Windows.Forms.DataGridViewTextBoxColumn referencesActionsAcceptColumn;
+        private System.Windows.Forms.DataGridViewButtonColumn referencesActionsIgnoreColumn;
     }
 }

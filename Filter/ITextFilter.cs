@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using TvpMain.Result;
-
-namespace TvpMain.Filter
+﻿namespace TvpMain.Filter
 {
     /// <summary>
     /// General-purpose text filter interface created for ignore list and biblical term filters.

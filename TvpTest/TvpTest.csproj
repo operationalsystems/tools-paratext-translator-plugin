@@ -98,12 +98,11 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\tools-paratext-translator-plugin\TvpMain.csproj">
+    <ProjectReference Include="..\TvpMain.csproj">
       <Project>{c803fd57-f7f1-4924-904a-6a242730b898}</Project>
       <Name>TvpMain</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
   <ItemGroup>
     <Content Include="Resources\formatter-results-1.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

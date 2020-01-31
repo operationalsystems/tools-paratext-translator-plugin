@@ -19,7 +19,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>C:\Program Files %28x86%29\Paratext 8\plugins\TranslationValidationPlugin\</OutputPath>
+    <OutputPath>D:\Program Files %28x86%29\Paratext 8\plugins\TranslationValidationPlugin\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -64,7 +64,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="AddInViews">
-      <HintPath>C:\Program Files (x86)\Paratext 8\Pipeline\AddInViews\AddInViews.dll</HintPath>
+      <HintPath>D:\Program Files (x86)\Paratext 8\Pipeline\AddInViews\AddInViews.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="CsvHelper, Version=13.0.0.0, Culture=neutral, PublicKeyToken=8c4959082be5c823, processorArchitecture=MSIL">
@@ -127,7 +127,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Check\CheckArea.cs" />
-    <Compile Include="Form\DataGridViewRichTextBoxColumn.cs" />
     <Compile Include="Form\RichTextBoxPrinter.cs" />
     <Compile Include="Project\BookNameItem.cs" />
     <Compile Include="Project\FileManager.cs" />

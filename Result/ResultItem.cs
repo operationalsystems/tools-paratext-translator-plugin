@@ -1,12 +1,7 @@
-﻿using CsvHelper.Configuration.Attributes;
+﻿using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Windows.Forms;
-using Newtonsoft.Json;
 using TvpMain.Check;
 using TvpMain.Text;
-using TvpMain.Util;
 
 namespace TvpMain.Result
 {

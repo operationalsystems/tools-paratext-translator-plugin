@@ -1,9 +1,6 @@
-﻿using AddInSideViews;
-using System;
-using System.Collections.Concurrent;
+﻿using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Text;
-using TvpMain.Result;
 
 namespace TvpMain.Result
 {

@@ -3,7 +3,6 @@ using System.Text;
 using System.Windows.Forms;
 using TvpMain.Check;
 using TvpMain.Text;
-using TvpMain.Util;
 
 /*
  * Form to provide progress of Translation Validation Checks.

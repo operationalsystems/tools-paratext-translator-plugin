@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using CsvHelper.Configuration.Attributes;
+﻿using CsvHelper.Configuration.Attributes;
 using Newtonsoft.Json;
-using TvpMain.Text;
-using TvpMain.Util;
+using System;
 
 namespace TvpMain.Text
 {

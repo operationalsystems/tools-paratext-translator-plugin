@@ -1,18 +1,13 @@
-﻿using System;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Moq;
+using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Threading;
-using AddInSideViews;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Moq;
 using TvpMain.Check;
-using TvpMain.Project;
 using TvpMain.Punctuation;
 using TvpMain.Text;
-using TvpMain.Result;
-using TvpMain.Util;
 
 namespace TvpTest
 {

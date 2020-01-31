@@ -1,18 +1,12 @@
-﻿using System;
+﻿using Pidgin;
+using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.Dynamic;
-using System.Globalization;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
-using Pidgin;
-using Pidgin.Expression;
 using TvpMain.Project;
 using TvpMain.Text;
 using TvpMain.Util;
-using static Pidgin.Parser;
-using static Pidgin.Parser<char>;
 
 namespace TvpMain.Reference
 {

@@ -1,12 +1,10 @@
-﻿using System;
+﻿using AddInSideViews;
+using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using System.Xml;
-using AddInSideViews;
 using TvpMain.Result;
 using TvpMain.Text;
 using TvpMain.Util;

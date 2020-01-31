@@ -1,9 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using AddInSideViews;
+﻿using AddInSideViews;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using TvpMain.Result;
+using System;
+using System.Collections.Generic;
 using TvpMain.Filter;
+using TvpMain.Result;
 
 namespace TvpTest
 {

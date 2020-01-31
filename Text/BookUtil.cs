@@ -1,15 +1,10 @@
-﻿using System;
+﻿using CsvHelper;
+using CsvHelper.Configuration;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Globalization;
 using System.IO;
-using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Text.RegularExpressions;
-using CsvHelper;
-using CsvHelper.Configuration;
-using TvpMain.Result;
 using TvpMain.Util;
 
 namespace TvpMain.Text

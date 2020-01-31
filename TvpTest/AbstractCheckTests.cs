@@ -1,14 +1,10 @@
-﻿using System;
+﻿using AddInSideViews;
+using Moq;
+using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using AddInSideViews;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Moq;
 using TvpMain.Project;
 using TvpMain.Text;
 
