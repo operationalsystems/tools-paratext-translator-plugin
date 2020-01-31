@@ -106,7 +106,7 @@ namespace TvpMain.Text
         /// <returns></returns>
         public static Regex CreateNoteOrReferenceRegex(string tagName)
         {
-            return new Regex($@"\\{tagName}\s+[\S]\s+(?:(?:(?!\\{tagName}\*).)*|\s*)(?:\\{tagName}\*)?",
+            return new Regex($@"\\{tagName}\s+[\S]\s+(?:(?:(?!\\{tagName}[\*\s]).)*|\s*)(?:\\{tagName}\*)?",
                 RegexOptions.Singleline | RegexOptions.Compiled);
         }
 
@@ -131,7 +131,7 @@ namespace TvpMain.Text
         /// <returns>Compiled, single-line regex.</returns>
         public static Regex CreatePairedTagRegex(string tagName)
         {
-            return new Regex($@"\\{tagName}(?:(?:(?!\\{tagName}\*).)*|\s*)(?:\\{tagName}\*)?",
+            return new Regex($@"\\{tagName}(?:(?:(?!\\{tagName}[\*\s]).)*|\s*)(?:\\{tagName}\*)?",
                 RegexOptions.Singleline | RegexOptions.Compiled);
         }
 
