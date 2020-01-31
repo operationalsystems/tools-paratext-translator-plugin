@@ -39,6 +39,15 @@ namespace TvpMain.Reference
 
         public LocalReferenceMode ReferenceMode { get; }
 
+
+        /// <summary>
+        /// Basic ctor.
+        /// </summary>
+        /// <param name="parserType">Parser type, to aid with debugging (e.g., project, normalized).</param>
+        /// <param name="referenceMode">Local reference mode, to aid with debugging (e.g., book-first, verse-first).</param>
+        /// <param name="openingTag">Opening tag, if present (optional, may be null).</param>
+        /// <param name="scriptureReference">Scripture reference object (required).</param>
+        /// <param name="closingTag">Closing tag, if present (optional, may be null).</param>
         public ScriptureReferenceWrapper(
             ParserType parserType,
             LocalReferenceMode referenceMode,
@@ -56,42 +65,6 @@ namespace TvpMain.Reference
         public long Score => (OpeningTag == null ? 0L : 1000L)
                           + (ScriptureReference.Score * 10L)
                           + (ClosingTag == null ? 0L : 1000L);
-
-        protected bool Equals(ScriptureReferenceWrapper other)
-        {
-            return OpeningTag == other.OpeningTag && Equals(ScriptureReference, other.ScriptureReference) && ClosingTag == other.ClosingTag;
-        }
-
-        /// <inheritdoc />
-        public override bool Equals(object obj)
-        {
-            if (ReferenceEquals(null, obj)) return false;
-            if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != this.GetType()) return false;
-            return Equals((ScriptureReferenceWrapper)obj);
-        }
-
-        /// <inheritdoc />
-        public override int GetHashCode()
-        {
-            unchecked
-            {
-                var hashCode = (OpeningTag != null ? OpeningTag.GetHashCode() : 0);
-                hashCode = (hashCode * 397) ^ (ScriptureReference != null ? ScriptureReference.GetHashCode() : 0);
-                hashCode = (hashCode * 397) ^ (ClosingTag != null ? ClosingTag.GetHashCode() : 0);
-                return hashCode;
-            }
-        }
-
-        public static bool operator ==(ScriptureReferenceWrapper left, ScriptureReferenceWrapper right)
-        {
-            return Equals(left, right);
-        }
-
-        public static bool operator !=(ScriptureReferenceWrapper left, ScriptureReferenceWrapper right)
-        {
-            return !Equals(left, right);
-        }
 
         /// <inheritdoc />
         public override string ToString()
@@ -125,6 +98,10 @@ namespace TvpMain.Reference
     {
         public IList<BookVerseReference> BookReferences { get; }
 
+        /// <summary>
+        /// Basic ctor.
+        /// </summary>
+        /// <param name="bookReferences">Constituent book references (required).</param>
         public ScriptureReference(IList<BookVerseReference> bookReferences)
         {
             BookReferences = bookReferences ?? throw new ArgumentNullException(nameof(bookReferences)); ;
@@ -139,34 +116,6 @@ namespace TvpMain.Reference
         public override string ToString()
         {
             return JsonConvert.SerializeObject(this);
-        }
-
-        protected bool Equals(ScriptureReference other)
-        {
-            return BookReferences.Equals(other.BookReferences);
-        }
-
-        public override bool Equals(object obj)
-        {
-            if (ReferenceEquals(null, obj)) return false;
-            if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != this.GetType()) return false;
-            return Equals((ScriptureReference)obj);
-        }
-
-        public override int GetHashCode()
-        {
-            return BookReferences.GetHashCode();
-        }
-
-        public static bool operator ==(ScriptureReference left, ScriptureReference right)
-        {
-            return Equals(left, right);
-        }
-
-        public static bool operator !=(ScriptureReference left, ScriptureReference right)
-        {
-            return !Equals(left, right);
         }
     }
 
@@ -187,6 +136,11 @@ namespace TvpMain.Reference
 
         public bool IsKnownBook => NameItem != null;
 
+        /// <summary>
+        /// Basic ctor.
+        /// </summary>
+        /// <param name="nameText">Name text, if found (optional, may be null).</param>
+        /// <param name="nameItem">Project-specific name item, if found (optional, may be null).</param>
         public BookReferenceName(string nameText, BookNameItem nameItem)
         {
             NameText = nameText;
@@ -201,37 +155,6 @@ namespace TvpMain.Reference
         public override string ToString()
         {
             return JsonConvert.SerializeObject(this);
-        }
-
-        protected bool Equals(BookReferenceName other)
-        {
-            return NameText == other.NameText && Equals(NameItem, other.NameItem);
-        }
-
-        public override bool Equals(object obj)
-        {
-            if (ReferenceEquals(null, obj)) return false;
-            if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != this.GetType()) return false;
-            return Equals((BookReferenceName)obj);
-        }
-
-        public override int GetHashCode()
-        {
-            unchecked
-            {
-                return ((NameText != null ? NameText.GetHashCode() : 0) * 397) ^ (NameItem != null ? NameItem.GetHashCode() : 0);
-            }
-        }
-
-        public static bool operator ==(BookReferenceName left, BookReferenceName right)
-        {
-            return Equals(left, right);
-        }
-
-        public static bool operator !=(BookReferenceName left, BookReferenceName right)
-        {
-            return !Equals(left, right);
         }
     }
 
@@ -251,6 +174,11 @@ namespace TvpMain.Reference
 
         public IList<ChapterRange> ChapterRanges { get; }
 
+        /// <summary>
+        /// Basic ctor.
+        /// </summary>
+        /// <param name="bookReferenceName">Book name element, if found (optional, may be null; null = local-only reference).</param>
+        /// <param name="chapterRanges">Chapter ranges (required).</param>
         public BookVerseReference(BookReferenceName bookReferenceName, IList<ChapterRange> chapterRanges)
         {
             BookReferenceName = bookReferenceName;
@@ -261,42 +189,9 @@ namespace TvpMain.Reference
         {
             get
             {
-                return (BookReferenceName == null ? 0L : BookReferenceName.Score * 10L)
+                return (BookReferenceName?.Score * 10L ?? 0L)
                         + (ChapterRanges.Sum(value => value.Score) * 10L);
             }
-        }
-
-        protected bool Equals(BookVerseReference other)
-        {
-            return Equals(BookReferenceName, other.BookReferenceName) && Equals(ChapterRanges, other.ChapterRanges);
-        }
-
-        /// <inheritdoc />
-        public override bool Equals(object obj)
-        {
-            if (ReferenceEquals(null, obj)) return false;
-            if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != this.GetType()) return false;
-            return Equals((BookVerseReference)obj);
-        }
-
-        /// <inheritdoc />
-        public override int GetHashCode()
-        {
-            unchecked
-            {
-                return ((BookReferenceName != null ? BookReferenceName.GetHashCode() : 0) * 397) ^ (ChapterRanges != null ? ChapterRanges.GetHashCode() : 0);
-            }
-        }
-
-        public static bool operator ==(BookVerseReference left, BookVerseReference right)
-        {
-            return Equals(left, right);
-        }
-
-        public static bool operator !=(BookVerseReference left, BookVerseReference right)
-        {
-            return !Equals(left, right);
         }
 
         /// <inheritdoc />
@@ -347,19 +242,31 @@ namespace TvpMain.Reference
 
         public bool IsToVerseRanges => ToVerseRanges != null;
 
+        /// <summary>
+        /// Basic ctor for singleton range (i.e., a single chapter).
+        /// </summary>
+        /// <param name="chapter">Chapter number (1-based).</param>
+        /// <param name="verseRanges">Verse ranges, if found (optional, may be null).</param>
         public ChapterRange(int chapter, IList<VerseRange> verseRanges) :
             this(chapter, verseRanges, -1, null)
         { }
 
+        /// <summary>
+        /// Basic ctor for paired range (i.e., from-to).
+        /// </summary>
+        /// <param name="fromChapter">From chapter number (1-based).</param>
+        /// <param name="fromVerseRanges">From verse ranges, if found (optional, may be null).</param>
+        /// <param name="toChapter">To chapter number (1-based).</param>
+        /// <param name="toVerseRanges">To verse ranges, if found (optional, may be null).</param>
         public ChapterRange(
             int fromChapter, IList<VerseRange> fromVerseRanges,
-            int chapter, IList<VerseRange> verseRanges)
+            int toChapter, IList<VerseRange> toVerseRanges)
         {
             FromChapter = fromChapter;
             FromVerseRanges = fromVerseRanges;
 
-            ToChapter = chapter;
-            ToVerseRanges = verseRanges;
+            ToChapter = toChapter;
+            ToVerseRanges = toVerseRanges;
 
             if (!IsFromChapter && !IsToChapter
                 && !IsFromVerseRanges && !IsToVerseRanges)
@@ -377,43 +284,6 @@ namespace TvpMain.Reference
                        + (IsToChapter ? 10L : 0L)
                        + (ToVerseRanges?.Sum(value => value.Score) * 10L ?? 0L);
             }
-        }
-
-        protected bool Equals(ChapterRange other)
-        {
-            return FromChapter == other.FromChapter && Equals(FromVerseRanges, other.FromVerseRanges) && ToChapter == other.ToChapter && Equals(ToVerseRanges, other.ToVerseRanges);
-        }
-
-        /// <inheritdoc />
-        public override bool Equals(object obj)
-        {
-            if (ReferenceEquals(null, obj)) return false;
-            if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != this.GetType()) return false;
-            return Equals((ChapterRange)obj);
-        }
-
-        /// <inheritdoc />
-        public override int GetHashCode()
-        {
-            unchecked
-            {
-                var hashCode = FromChapter;
-                hashCode = (hashCode * 397) ^ (FromVerseRanges != null ? FromVerseRanges.GetHashCode() : 0);
-                hashCode = (hashCode * 397) ^ ToChapter;
-                hashCode = (hashCode * 397) ^ (ToVerseRanges != null ? ToVerseRanges.GetHashCode() : 0);
-                return hashCode;
-            }
-        }
-
-        public static bool operator ==(ChapterRange left, ChapterRange right)
-        {
-            return Equals(left, right);
-        }
-
-        public static bool operator !=(ChapterRange left, ChapterRange right)
-        {
-            return !Equals(left, right);
         }
 
         /// <inheritdoc />
@@ -454,9 +324,18 @@ namespace TvpMain.Reference
 
         public bool IsToVerse => ToVerse >= 0;
 
+        /// <summary>
+        /// Basic ctor for singleton range (i.e., one verse).
+        /// </summary>
+        /// <param name="verse">Verse number (0-based).</param>
         public VerseRange(int verse)
             : this(verse, -1) { }
 
+        /// <summary>
+        /// Basic ctor for paired verses (i.e., from-to).
+        /// </summary>
+        /// <param name="fromVerse">From verse number (0-based).</param>
+        /// <param name="toVerse">To verse number (0-based).</param>
         public VerseRange(int fromVerse, int toVerse)
         {
             FromVerse = fromVerse;
@@ -470,38 +349,6 @@ namespace TvpMain.Reference
         }
 
         public long Score => IsSingleton ? 1L : 2L;
-
-        protected bool Equals(VerseRange other)
-        {
-            return FromVerse == other.FromVerse
-                   && ToVerse == other.ToVerse;
-        }
-
-        public override bool Equals(object obj)
-        {
-            if (ReferenceEquals(null, obj)) return false;
-            if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != this.GetType()) return false;
-            return Equals((VerseRange)obj);
-        }
-
-        public override int GetHashCode()
-        {
-            unchecked
-            {
-                return (FromVerse * 397) ^ ToVerse;
-            }
-        }
-
-        public static bool operator ==(VerseRange left, VerseRange right)
-        {
-            return Equals(left, right);
-        }
-
-        public static bool operator !=(VerseRange left, VerseRange right)
-        {
-            return !Equals(left, right);
-        }
 
         /// <inheritdoc />
         public override string ToString()

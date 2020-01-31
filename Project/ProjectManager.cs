@@ -14,7 +14,7 @@ namespace TvpMain.Project
     /// <summary>
     /// Provides important project setting and metadata access.
     /// </summary>
-    public class ProjectManager
+    public class ProjectManager : IDisposable
     {
         /// <summary>
         /// Regex for splitting separator settings.
@@ -463,6 +463,12 @@ namespace TvpMain.Project
         {
             return (bookNum >= 1 && bookNum <= PresentBookFlags.Count)
                    && PresentBookFlags[bookNum - 1];
+        }
+
+        /// <inheritdoc />
+        public virtual void Dispose()
+        {
+            ResultManager?.Dispose();
         }
     }
 

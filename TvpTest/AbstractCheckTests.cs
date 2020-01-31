@@ -7,6 +7,7 @@ using System.IO;
 using System.Linq;
 using TvpMain.Project;
 using TvpMain.Text;
+using TvpMain.Util;
 
 namespace TvpTest
 {
@@ -186,6 +187,13 @@ namespace TvpTest
                 .Returns<string, string>((projectName, settingsKey) => TARGET_NAME_TYPE_SETTING);
             MockHost.Setup(hostItem => hostItem.GetProjectSetting(TEST_PROJECT_NAME, "BookSourceForMarkerR"))
                 .Returns<string, string>((projectName, settingsKey) => PASSAGE_NAME_TYPE_SETTING);
+            MockHost.Setup(hostItem => hostItem.GetPlugInData(It.IsAny<IParatextAddIn>(), TEST_PROJECT_NAME, It.IsAny<string>()))
+                .Returns<IParatextAddIn, string, string>((addIn, projectName, dataId) => null);
+            MockHost.Setup(hostItem => hostItem.PutPlugInData(It.IsAny<IParatextAddIn>(), TEST_PROJECT_NAME, It.IsAny<string>(), It.IsAny<string>()))
+                .Returns<IParatextAddIn, string, string, string>((addIn, projectName, dataId, dataText) => true);
+
+            // host util setup
+            HostUtil.Instance.Host = MockHost.Object;
 
             // project manager setup
             _testBookNamesByNum = BookUtil.BookIdList

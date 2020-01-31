@@ -253,7 +253,7 @@ namespace TvpMain.Result
                     _bookNumsToSave.Add(bookNum);
                 }
 
-                CancelSaveBooks();
+                CancelSaveBooks(true);
                 var currToken = _saveTokenSource.Token;
 
                 // call does _not_ block
@@ -341,7 +341,7 @@ namespace TvpMain.Result
                     _bookNumsToLoad.Add(bookNum);
                 }
 
-                CancelLoadBooks();
+                CancelLoadBooks(true);
                 var currToken = _loadTokenSource.Token;
 
                 // call does _not_ block
@@ -407,7 +407,8 @@ namespace TvpMain.Result
         /// Cancel any pending book save,
         /// recycling cancellation token.
         /// </summary>
-        private void CancelSaveBooks()
+        /// <param name="isCreateNewToken">True to create a new cancellation token afterwards, false otherwise.</param>
+        private void CancelSaveBooks(bool isCreateNewToken)
         {
             lock (_resultLock)
             {
@@ -422,7 +423,9 @@ namespace TvpMain.Result
                         _saveTokenSource.Dispose();
                     }
                 }
-                _saveTokenSource = new CancellationTokenSource();
+                _saveTokenSource = isCreateNewToken
+                    ? new CancellationTokenSource()
+                    : null;
             }
         }
 
@@ -430,7 +433,8 @@ namespace TvpMain.Result
         /// Cancel any pending book load,
         /// recycling cancellation token.
         /// </summary>
-        private void CancelLoadBooks()
+        /// <param name="isCreateNewToken">True to create a new cancellation token afterwards, false otherwise.</param>
+        private void CancelLoadBooks(bool isCreateNewToken)
         {
             lock (_resultLock)
             {
@@ -445,7 +449,9 @@ namespace TvpMain.Result
                         _loadTokenSource.Dispose();
                     }
                 }
-                _loadTokenSource = new CancellationTokenSource();
+                _loadTokenSource = isCreateNewToken
+                    ? new CancellationTokenSource()
+                    : null;
             }
         }
 
@@ -454,8 +460,8 @@ namespace TvpMain.Result
         {
             lock (_resultLock)
             {
-                CancelSaveBooks();
-                CancelLoadBooks();
+                CancelSaveBooks(false);
+                CancelLoadBooks(false);
             }
         }
     }

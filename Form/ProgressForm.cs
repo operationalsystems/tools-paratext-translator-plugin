@@ -30,11 +30,18 @@ namespace TvpMain.Form
         public event EventHandler Cancelled;
 
         /// <summary>
+        /// Lock for progress state.
+        /// </summary>
+        private readonly object _progressLock;
+
+        /// <summary>
         /// Basic ctor.
         /// </summary>
         public ProgressForm()
         {
             InitializeComponent();
+
+            _progressLock = new object();
             ResetForm();
         }
 
@@ -44,7 +51,7 @@ namespace TvpMain.Form
         /// <param name="updatedArgs"></param>
         public void OnCheckUpdated(CheckUpdatedArgs updatedArgs)
         {
-            lock (this)
+            lock (_progressLock)
             {
                 _lastUpdate = updatedArgs;
             }
@@ -106,7 +113,7 @@ namespace TvpMain.Form
             lblElapsedTime.Text = GetElapsedTime(DateTime.Now.Subtract(_startTime));
             CheckUpdatedArgs currUpdate;
 
-            lock (this)
+            lock (_progressLock)
             {
                 currUpdate = _lastUpdate;
             }

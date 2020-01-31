@@ -2,7 +2,9 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Drawing.Design;
 using System.Linq;
+using System.Runtime.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -20,7 +22,7 @@ namespace TvpMain.Check
     /// CPU and I/O intensive, so for best results we want (n) checks performed on each
     /// verse, vs each check extracting all verses (n) times. 
     /// </summary>
-    public class TextCheckRunner
+    public class TextCheckRunner : IDisposable
     {
         /// <summary>
         /// Lock for publishing check progress.
@@ -40,7 +42,7 @@ namespace TvpMain.Check
         /// <summary>
         /// Cancellation token source.
         /// </summary>
-        private CancellationTokenSource _tokenSource;
+        private CancellationTokenSource _runTokenSource;
 
         /// <summary>
         /// Project settings manager.
@@ -139,7 +141,7 @@ namespace TvpMain.Check
         /// </summary>
         public void CancelChecks()
         {
-            _tokenSource?.Cancel();
+            _runTokenSource?.Cancel();
         }
 
         private void OnCheckUpdated(int updateBookNum)
@@ -181,8 +183,8 @@ namespace TvpMain.Check
             var versificationName = _host.GetProjectVersificationName(_activeProjectName);
 
             // set up semaphore and cancellation token to control execution and termination
-            _runSemaphore = new SemaphoreSlim(MainConsts.MAX_CHECK_THREADS);
-            _tokenSource = new CancellationTokenSource();
+            RecycleRunSemaphore(true);
+            RecycleRunTokenSource(true);
 
             // get user's location in Paratext
             BookUtil.RefToBcv(_host.GetCurrentRef(versificationName),
@@ -208,7 +210,7 @@ namespace TvpMain.Check
                 {
                     try
                     {
-                        Task.WaitAll(taskList.ToArray(), _tokenSource.Token);
+                        Task.WaitAll(taskList.ToArray(), _runTokenSource.Token);
                     }
                     catch (OperationCanceledException)
                     {
@@ -236,7 +238,7 @@ namespace TvpMain.Check
             }
 
             // populate output
-            if (_tokenSource.IsCancellationRequested)
+            if (_runTokenSource.IsCancellationRequested)
             {
                 outputResults = null;
                 return false;
@@ -246,6 +248,31 @@ namespace TvpMain.Check
                 outputResults = _runResults;
                 return true;
             }
+        }
+
+        /// <summary>
+        /// Recycle (dispose and optionally re-create) run semaphore.
+        /// </summary>
+        /// <param name="isCreateNew">True to create a new one, false to only dispose any existing one.</param>
+        private void RecycleRunSemaphore(bool isCreateNew)
+        {
+            _runSemaphore?.Dispose();
+            _runSemaphore = isCreateNew
+                ? new SemaphoreSlim(MainConsts.MAX_CHECK_THREADS)
+                : null;
+        }
+
+
+        /// <summary>
+        /// Recycle (dispose and optionally re-create) run cancellation token.
+        /// </summary>
+        /// <param name="isCreateNew">True to create a new one, false to only dispose any existing one.</param>
+        private void RecycleRunTokenSource(bool isCreateNew)
+        {
+            _runTokenSource?.Dispose();
+            _runTokenSource = isCreateNew
+                ? new CancellationTokenSource()
+                : null;
         }
 
         /// <summary>
@@ -293,7 +320,7 @@ namespace TvpMain.Check
                         chapterNum++)
                     {
                         currChapterNum = chapterNum;
-                        if (_tokenSource.IsCancellationRequested)
+                        if (_runTokenSource.IsCancellationRequested)
                         {
                             return;
                         }
@@ -305,7 +332,7 @@ namespace TvpMain.Check
                             verseNum++)
                         {
                             currVerseNum = verseNum;
-                            if (_tokenSource.IsCancellationRequested)
+                            if (_runTokenSource.IsCancellationRequested)
                             {
                                 return;
                             }
@@ -394,12 +421,19 @@ namespace TvpMain.Check
                 }
             });
         }
+
+        /// <inheritdoc />
+        public virtual void Dispose()
+        {
+            RecycleRunSemaphore(false);
+            RecycleRunTokenSource(false);
+        }
     }
 
     /// <summary>
     /// Basic exception for text check errors.
     /// </summary>
-    public class TextCheckException : ApplicationException
+    public class TextCheckException : ApplicationException, ISerializable
     {
         /// <summary>
         /// Basic ctor.
