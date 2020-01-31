@@ -1061,12 +1061,12 @@ namespace TvpMain.Form
                 }
 
                 // filter out incorrect tag
-                if (hideMalformedTagToolStripMenuItem.Checked)
+                if (hideIncorrectTagToolStripMenuItem.Checked)
                 {
-                    _filteredResultItems = _filteredResultItems.Where(resultItem => resultItem.ResultTypeCode != (int)ScriptureReferenceErrorType.MalformedTag).ToList();
+                    _filteredResultItems = _filteredResultItems.Where(resultItem => resultItem.ResultTypeCode != (int)ScriptureReferenceErrorType.IncorrectTag).ToList();
                 }
 
-                // filter out incorrect tag
+                // filter out malformed tag
                 if (hideMalformedTagToolStripMenuItem.Checked)
                 {
                     _filteredResultItems = _filteredResultItems.Where(resultItem => resultItem.ResultTypeCode != (int)ScriptureReferenceErrorType.MalformedTag).ToList();
