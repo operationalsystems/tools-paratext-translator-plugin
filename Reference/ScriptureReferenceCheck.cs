@@ -285,13 +285,12 @@ namespace TvpMain.Reference
                 return false;
             }
 
-            var nameLabel = TextUtil.SingularOrPlural(unknownBooks, "name", "names");
+            var nameLabel = unknownBooks.SingularOrPlural("name", "names");
             outputResults.Add(new ResultItem(inputPart,
                 $"Invalid book {nameLabel} at position {matchStart}: {unknownBooks}.",
                 matchText, matchStart,
                 null, CheckType.ScriptureReference,
                 (int)ScriptureReferenceErrorType.BadReference));
-
             return true;
         }
 
@@ -372,17 +371,18 @@ namespace TvpMain.Reference
 
             // check for punctuation miss by looking for
             // normalized, tag-less versions in match
-            if (allNormalized3.Contains(matchNormalized3))
+            if (!allNormalized3.Contains(matchNormalized3))
             {
-                outputResults.Add(new ResultItem(inputPart,
+                return false;
+            }
+
+            outputResults.Add(new ResultItem(inputPart,
                 $"Non-standard reference punctuation at position {matchStart}.",
                 matchText, matchStart,
                 standardText, CheckType.ScriptureReference,
                 (int)ScriptureReferenceErrorType.LooseFormatting));
-                return true;
-            }
+            return true;
 
-            return false;
         }
 
         /// <summary>
@@ -418,10 +418,9 @@ namespace TvpMain.Reference
                 return false;
             }
 
-            var tagList = TextUtil.NiceListOf(
-                badTags.Select(tagItem => string.Concat(@"\", tagItem)),
-                ",", "and");
-            var tagLabel = TextUtil.SingularOrPlural(badTags, "tag", "tags");
+            var tagList = badTags.Select(tagItem => string.Concat(@"\", tagItem))
+                .NiceListOf(",", "and");
+            var tagLabel = badTags.SingularOrPlural("tag", "tags");
             outputResults.Add(new ResultItem(inputPart,
                 $@"Incorrect use of {tagList} {tagLabel} in {contextTitle} text at position {matchStart}.",
                 matchText, matchStart,
@@ -466,10 +465,9 @@ namespace TvpMain.Reference
                 }
                 else // otherwise, we have a problem
                 {
-                    var tagList = TextUtil.NiceListOf(
-                        contextTags.Select(tagItem => string.Concat(@"\", tagItem)),
-                        ",", "or");
-                    var tagLabel = TextUtil.SingularOrPlural(contextTags, "tag", "tags");
+                    var tagList = contextTags.Select(tagItem => string.Concat(@"\", tagItem))
+                        .NiceListOf(",", "or");
+                    var tagLabel = contextTags.SingularOrPlural("tag", "tags");
                     outputResults.Add(new ResultItem(inputPart,
                         $@"Missing paired {tagList} {tagLabel} in {contextTitle} text at position {matchStart}.",
                         matchText, matchStart,
@@ -482,10 +480,9 @@ namespace TvpMain.Reference
             var startAndEndTag = FindStartAndEndTags(workText, contextTags);
             if (!Equals(startOrEndTag, startAndEndTag))
             {
-                var tagList = TextUtil.NiceListOf(
-                    contextTags.Select(tagItem => string.Concat(@"\", tagItem)),
-                    ",", "or");
-                var tagLabel = TextUtil.SingularOrPlural(contextTags, "tag", "tags");
+                var tagList = contextTags.Select(tagItem => string.Concat(@"\", tagItem))
+                    .NiceListOf(",", "or");
+                var tagLabel = contextTags.SingularOrPlural("tag", "tags");
                 outputResults.Add(new ResultItem(inputPart,
                     $@"Malformed \{startOrEndTag} tag in {contextTitle} text at position {matchStart} (expecting paired {tagList} {tagLabel}).",
                     matchText, matchStart,

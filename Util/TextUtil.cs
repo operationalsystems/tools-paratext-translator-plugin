@@ -85,12 +85,12 @@ namespace TvpMain.Util
         /// Return singular or plural text, depending on count of items in enumerable.
         /// </summary>
         /// <typeparam name="T">Input type (provided).</typeparam>
-        /// <param name="inputItems">Input items (required).</param>
+        /// <param name="inputItems">Input items (provided).</param>
         /// <param name="singularText">Singular text (required).</param>
         /// <param name="pluralText">Plural text (required).</param>
         /// <returns></returns>
         public static string SingularOrPlural<T>(
-            IEnumerable<T> inputItems,
+            this IEnumerable<T> inputItems,
             string singularText,
             string pluralText) =>
             inputItems.ToImmutableList().Count == 1
@@ -101,12 +101,12 @@ namespace TvpMain.Util
         /// Provide a "nice" delimited list, with an interior and final delimiter.
         /// </summary>
         /// <typeparam name="T">Input type (provided).</typeparam>
-        /// <param name="inputItems">Input items (required).</param>
+        /// <param name="inputItems">Input items (provided).</param>
         /// <param name="interiorDelimiter">Interior delimiter, without integral spacing (e.g., ",").</param>
         /// <param name="finalDelimiter">Final delimiter, without integral spacing (e.g., "or").</param>
         /// <returns>Delimited list text.</returns>
         public static string NiceListOf<T>(
-            IEnumerable<T> inputItems,
+            this IEnumerable<T> inputItems,
             string interiorDelimiter,
             string finalDelimiter)
         {
