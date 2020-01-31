@@ -186,6 +186,8 @@ namespace TvpMain.Project
             ReadSeparators();
             ReadBookNames();
             CreateRegexes();
+
+            ResultManager.ScheduleLoadBooks(PresentBookNums);
         }
 
         /// <summary>

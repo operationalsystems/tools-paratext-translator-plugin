@@ -92,5 +92,10 @@ namespace TvpMain.Util
         /// Number of seconds to wait after changes to save result items.
         /// </summary>
         public const int RESULT_ITEM_SAVE_DELAY_IN_SEC = 5;
+
+        /// <summary>
+        /// Number of seconds to wait before loading result items.
+        /// </summary>
+        public const int RESULT_ITEM_LOAD_DELAY_IN_SEC = 5;
     }
 }
