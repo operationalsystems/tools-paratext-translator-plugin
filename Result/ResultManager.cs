@@ -452,8 +452,11 @@ namespace TvpMain.Result
         /// <inheritdoc />
         public void Dispose()
         {
-            CancelSaveBooks();
-            CancelLoadBooks();
+            lock (_resultLock)
+            {
+                CancelSaveBooks();
+                CancelLoadBooks();
+            }
         }
     }
 }
