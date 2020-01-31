@@ -350,7 +350,7 @@ namespace TvpMain.Reference
                         formatItem.RemoveWhitespace().ToLower())
                     .ToImmutableHashSet();
 
-            // check for whitespace and case miss by looking for
+            // check for name style and case miss by looking for
             // normalized, tag-less versions in match
             if (allNormalized2.Contains(matchNormalized2))
             {
