@@ -27,6 +27,8 @@ namespace TvpMain.Form
     /// </summary>
     public partial class MainForm : System.Windows.Forms.Form
     {
+        private const int IGNORE_BUTTON_COLUMN = 2;
+
         /// <summary>
         /// Paratext host interface.
         /// </summary>
@@ -1040,7 +1042,10 @@ namespace TvpMain.Form
             }
 
             // select the top of the list
-            referencesListView.Rows[0].Selected = true;
+            if (referencesListView.Rows.Count > 0)
+            {
+                referencesListView.Rows[0].Selected = true;
+            }
 
             // update the right portion of the UI, the text and list of exceptions
             UpdateReferencesUIRight();
@@ -1146,30 +1151,37 @@ namespace TvpMain.Form
         {
             Debug.WriteLine("updateReferencesUIRight");
 
-            VerseLocation verseLocation = (VerseLocation)referencesListView.CurrentRow.Cells[0].Tag;
-
-            if (verseLocation != null)
+            if (referencesListView.CurrentRow != null)
             {
-                referencesTextBox.Text = _filteredReferencesResultMap[verseLocation][0].VersePart.ParatextVerse.VerseText;
-                Debug.WriteLine("updateReferencesUIRight - Text Set");
 
-                referencesActionsGridView.Rows.Clear();
+                VerseLocation verseLocation = (VerseLocation)referencesListView.CurrentRow.Cells[0].Tag;
 
-                var localList = _filteredReferencesResultMap[verseLocation];
-
-                foreach (var resultItem in localList)
+                if (verseLocation != null)
                 {
-                    int rowNum = referencesActionsGridView.Rows.Add(
-                            $"{(ScriptureReferenceErrorType)resultItem.ResultTypeCode}", "Accept", resultItem.ResultState == ResultState.Ignored ? "Un-Ignore" : "Ignore"
-                        );
+                    referencesTextBox.Text = _filteredReferencesResultMap[verseLocation][0].VersePart.ParatextVerse.VerseText;
+                    Debug.WriteLine("updateReferencesUIRight - Text Set");
 
-                    Debug.WriteLine("updateReferencesUIRight - Setting Tag resultItem for " + rowNum);
+                    referencesActionsGridView.Rows.Clear();
 
-                    // keep the result item with the row of exceptions for future reference
-                    referencesActionsGridView.Rows[rowNum].Tag = resultItem;
+                    var localList = _filteredReferencesResultMap[verseLocation];
+
+                    foreach (var resultItem in localList)
+                    {
+                        int rowNum = referencesActionsGridView.Rows.Add(
+                                $"{(ScriptureReferenceErrorType)resultItem.ResultTypeCode}", "Accept", resultItem.ResultState == ResultState.Ignored ? "Un-Ignore" : "Ignore"
+                            );
+
+                        Debug.WriteLine("updateReferencesUIRight - Setting Tag resultItem for " + rowNum);
+
+                        // keep the result item with the row of exceptions for future reference
+                        referencesActionsGridView.Rows[rowNum].Tag = resultItem;
+                    }
+
+                    if (referencesActionsGridView.Rows.Count > 0)
+                    {
+                        referencesActionsGridView.Rows[0].Selected = true;
+                    }
                 }
-
-                referencesActionsGridView.Rows[0].Selected = true;
             }
 
             UpdateExceptionDetailsAndHighlightForActiveResultItem();
@@ -1193,7 +1205,7 @@ namespace TvpMain.Form
         {
             Debug.WriteLine("referencesActionsGridView_CellContentClick");
 
-            if (e.ColumnIndex == 4)
+            if (e.ColumnIndex == IGNORE_BUTTON_COLUMN)
             {
                 ResultItem resultItem = (ResultItem)referencesActionsGridView.Rows[e.RowIndex].Tag;
 
@@ -1203,12 +1215,12 @@ namespace TvpMain.Form
                     if (resultItem.ResultState == ResultState.Ignored)
                     {
                         resultItem.ResultState = ResultState.Found;
-                        referencesActionsGridView.Rows[e.RowIndex].Cells[4].Value = "Ignore";
+                        referencesActionsGridView.Rows[e.RowIndex].Cells[IGNORE_BUTTON_COLUMN].Value = "Ignore";
                     }
                     else
                     {
                         resultItem.ResultState = ResultState.Ignored;
-                        referencesActionsGridView.Rows[e.RowIndex].Cells[4].Value = "Un-Ignore";
+                        referencesActionsGridView.Rows[e.RowIndex].Cells[IGNORE_BUTTON_COLUMN].Value = "Un-Ignore";
                     }
 
                     _projectManager.ResultManager.SetVerseResult(resultItem);
@@ -1271,7 +1283,10 @@ namespace TvpMain.Form
                 {
                     Debug.WriteLine("highlightActiveResultItem - Setting Selection");
 
-                    referencesActionsGridView.Rows[0].Selected = true;
+                    if (referencesActionsGridView.Rows.Count > 0)
+                    {
+                        referencesActionsGridView.Rows[0].Selected = true;
+                    }
                 }
             }
             else
@@ -1304,14 +1319,20 @@ namespace TvpMain.Form
                     {
                         Debug.WriteLine("highlightActiveResultItem - result item NULL - Setting Selection");
 
-                        referencesActionsGridView.Rows[0].Selected = true;
+                        if (referencesActionsGridView.Rows.Count > 0)
+                        {
+                            referencesActionsGridView.Rows[0].Selected = true;
+                        }
                     }
                 }
                 else
                 {
                     Debug.WriteLine("highlightActiveResultItem - CurrentRow.Tag NULL");
 
-                    referencesActionsGridView.Rows[0].Selected = true;
+                    if (referencesActionsGridView.Rows.Count > 0)
+                    {
+                        referencesActionsGridView.Rows[0].Selected = true;
+                    }
                 }
             }
         }
