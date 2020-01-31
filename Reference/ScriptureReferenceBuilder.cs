@@ -116,12 +116,12 @@ namespace TvpMain.Reference
                         ParserType.Standard,
                         ProjectManager,
                         new ScriptureReferenceSeparators(
-                            MainConsts.DEFAULT_REFERENCE_BOOK_SEQUENCE_SEPARATOR.ToSingletonList(),
-                            MainConsts.DEFAULT_REFERENCE_CHAPTER_SEQUENCE_SEPARATOR.ToSingletonList(),
-                            MainConsts.DEFAULT_REFERENCE_BOOK_OR_CHAPTER_RANGE_SEPARATOR.ToSingletonList(),
-                            MainConsts.DEFAULT_REFERENCE_CHAPTER_AND_VERSE_SEPARATOR.ToSingletonList(),
-                            MainConsts.DEFAULT_REFERENCE_VERSE_SEQUENCE_SEPARATOR.ToSingletonList(),
-                            MainConsts.DEFAULT_REFERENCE_VERSE_RANGE_SEPARATOR.ToSingletonList(),
+                            MainConsts.DEFAULT_REFERENCE_BOOK_SEQUENCE_SEPARATOR.ToSingletonEnumerable(),
+                            MainConsts.DEFAULT_REFERENCE_CHAPTER_SEQUENCE_SEPARATOR.ToSingletonEnumerable(),
+                            MainConsts.DEFAULT_REFERENCE_BOOK_OR_CHAPTER_RANGE_SEPARATOR.ToSingletonEnumerable(),
+                            MainConsts.DEFAULT_REFERENCE_CHAPTER_AND_VERSE_SEPARATOR.ToSingletonEnumerable(),
+                            MainConsts.DEFAULT_REFERENCE_VERSE_SEQUENCE_SEPARATOR.ToSingletonEnumerable(),
+                            MainConsts.DEFAULT_REFERENCE_VERSE_RANGE_SEPARATOR.ToSingletonEnumerable(),
                             false),
                         referenceMode)
                 }.ToImmutableList();
@@ -238,13 +238,27 @@ namespace TvpMain.Reference
         }
 
         /// <summary>
-        /// Format standard reference text, based on text context.
+        /// Format standard reference text including any tags, based on text context.
         /// </summary>
         /// <param name="inputContext">Input context (required).</param>
         /// <param name="inputWrapper">Input scripture wrapper (required).</param>
         /// <returns>Formatted reference text.</returns>
         public string FormatStandardReference(PartContext inputContext,
             ScriptureReferenceWrapper inputWrapper)
+        {
+            return FormatStandardReference(inputContext, inputWrapper, false);
+        }
+
+        /// <summary>
+        /// Format standard reference text, based on text context.
+        /// </summary>
+        /// <param name="inputContext">Input context (required).</param>
+        /// <param name="inputWrapper">Input scripture wrapper (required).</param>
+        /// <param name="isSuppressTags">True to suppress tags and only include reference content.</param>
+        /// <returns>Formatted reference text.</returns>
+        public string FormatStandardReference(PartContext inputContext,
+            ScriptureReferenceWrapper inputWrapper,
+            bool isSuppressTags)
         {
             var resultBuilder = new StringBuilder();
             var openingTag = inputWrapper.OpeningTag;
@@ -264,7 +278,8 @@ namespace TvpMain.Reference
             }
 
             // prepend tag, if present
-            if (!string.IsNullOrWhiteSpace(openingTag))
+            if (!isSuppressTags
+                && !string.IsNullOrWhiteSpace(openingTag))
             {
                 resultBuilder.AppendWithSpace($@"\{openingTag}");
             }
@@ -302,7 +317,8 @@ namespace TvpMain.Reference
                 }
             }
 
-            if (!string.IsNullOrWhiteSpace(closingTag))
+            if (!isSuppressTags
+                && !string.IsNullOrWhiteSpace(closingTag))
             {
                 resultBuilder.Append($@"\{closingTag}");
             }

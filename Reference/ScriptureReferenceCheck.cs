@@ -35,6 +35,103 @@ namespace TvpMain.Reference
             }.ToImmutableDictionary();
 
         /// <summary>
+        /// Tags exclusive to specific context content.
+        /// </summary>
+        private static readonly IDictionary<PartContext, ISet<string>> ContextContentTags
+            = new Dictionary<PartContext, ISet<string>>()
+            {
+                {
+                    PartContext.Introductions,
+                    new HashSet<string>()
+                    {
+                        "xt"
+                    }.ToImmutableHashSet()
+                },
+                {
+                    PartContext.Outlines,
+                    new HashSet<string>()
+                    {
+                        "ior"
+                    }.ToImmutableHashSet()
+                },
+                {
+                    PartContext.MainText,
+                    new HashSet<string>()
+                    {
+                        "xt"
+                    }.ToImmutableHashSet()
+                },
+                {
+                    PartContext.NoteOrReference,
+                    new HashSet<string>()
+                    {
+                        "fr", "ft", "xt", "+xt"
+                    }.ToImmutableHashSet()
+                }
+            }.ToImmutableDictionary();
+
+        /// <summary>
+        /// All distinct tags exclusive to any context content.
+        /// </summary>
+        private static readonly ISet<string> AllContextContentTags =
+            ContextContentTags.Values.SelectMany(listItem => listItem)
+                .ToImmutableHashSet();
+
+        /// <summary>
+        /// Paired tags exclusive to specific contexts.
+        /// </summary>
+        private static readonly IDictionary<PartContext, ISet<string>> ContextPairedTags
+            = new Dictionary<PartContext, ISet<string>>()
+            {
+                {
+                    PartContext.Introductions,
+                    new HashSet<string>()
+                    {
+                        "xt"
+                    }
+                    .ToImmutableHashSet()
+                },
+                {
+                    PartContext.Outlines,
+                    new HashSet<string>()
+                    {
+                        "ior"
+                    }.ToImmutableHashSet()
+                },
+                {
+                    PartContext.MainText,
+                    new HashSet<string>()
+                    {
+                        "xt"
+                    }
+                    .ToImmutableHashSet()
+                },
+                {
+                    PartContext.NoteOrReference,
+                    new HashSet<string>()
+                    {
+                        "xt", "+xt"
+                    }.ToImmutableHashSet()
+                }
+            }.ToImmutableDictionary();
+
+        /// <summary>
+        /// All distinct tags paired tags paired in any contexts.
+        /// </summary>
+        private static readonly ISet<string> AllContextPairedTags =
+            ContextPairedTags.Values.SelectMany(listItem => listItem)
+                .ToImmutableHashSet();
+
+        /// <summary>
+        /// Contexts to ignore missing paired tags.
+        /// </summary>
+        private static readonly ISet<PartContext> IgnoreMissingPairedTagsContexts =
+            new HashSet<PartContext>()
+            {
+                PartContext.Introductions
+            }.ToImmutableHashSet();
+
+        /// <summary>
         /// Provides project setting & metadata access.
         /// </summary>
         private readonly ProjectManager _projectManager;
@@ -101,9 +198,9 @@ namespace TvpMain.Reference
 
             // check we can parse (loose match)
             if (_referenceBuilder.TryParseScriptureReference(
-                matchText, out var foundWrapper))
+                matchText.TrimWhitespaceAndParenthesis(), out var foundWrapper))
             {
-                result = CheckFoundReference(
+                result = CheckReference(
                     inputPart, matchText,
                     matchStart, foundWrapper,
                     outputResults);
@@ -124,90 +221,384 @@ namespace TvpMain.Reference
         /// Check a parsed reference for correctness.
         /// </summary>
         /// <param name="inputPart">Input verse part (required).</param>
-        /// <param name="inputText">Input text (required).</param>
-        /// <param name="inputStart">Input text position, from verse start (0-based).</param>
-        /// <param name="inputReference">Input scripture reference (required).</param>
+        /// <param name="matchText">Input text (required).</param>
+        /// <param name="matchStart">Input text position, from verse start (0-based).</param>
+        /// <param name="parsedReference">Input scripture reference (required).</param>
         /// <param name="outputResults">Output result destination (required).</param>
         /// <returns>True if results added, false otherwise.</returns>
-        private bool CheckFoundReference(
+        private bool CheckReference(
             VersePart inputPart,
-            string inputText,
-            int inputStart,
-            ScriptureReferenceWrapper inputReference,
+            string matchText,
+            int matchStart,
+            ScriptureReferenceWrapper parsedReference,
+            ICollection<ResultItem> outputResults)
+        {
+            var result = CheckForBadReference(
+                inputPart, matchText,
+                matchStart, parsedReference,
+                outputResults);
+
+            result = CheckReferenceFormat(
+                         inputPart, matchText,
+                         matchStart, parsedReference,
+                         outputResults) || result;
+
+            result = CheckForIncorrectTag(
+                         inputPart, matchText,
+                         matchStart, parsedReference,
+                         outputResults) || result;
+
+            result = CheckForMalformedOrMissingTag(
+                         inputPart, matchText,
+                         matchStart, parsedReference,
+                         outputResults) || result;
+
+            return result;
+        }
+
+        /// <summary>
+        /// Check for unknown book names (e.g., mis-spelling).
+        /// </summary>
+        /// <param name="inputPart">Input verse part (required).</param>
+        /// <param name="matchText">Input text (required).</param>
+        /// <param name="matchStart">Input text position, from verse start (0-based).</param>
+        /// <param name="parsedReference">Input scripture reference (required).</param>
+        /// <param name="outputResults">Output result destination (required).</param>
+        /// <returns>True if results added, false otherwise.</returns>
+        private bool CheckForBadReference(
+            VersePart inputPart,
+            string matchText,
+            int matchStart,
+            ScriptureReferenceWrapper parsedReference,
             ICollection<ResultItem> outputResults)
         {
             // check for unknown books
-            var result = false;
             var unknownBooks = string.Join(", ",
-                inputReference.ScriptureReference.BookReferences
+                parsedReference.ScriptureReference.BookReferences
                     .Where(referenceItem => !referenceItem.IsLocalReference)
                     .Select(referenceItem => referenceItem.BookReferenceName)
                     .Where(rangeItem => !rangeItem.IsKnownBook)
                     .Select(rangeItem => rangeItem.NameText));
-            if (!string.IsNullOrWhiteSpace(unknownBooks))
+
+            if (string.IsNullOrWhiteSpace(unknownBooks))
             {
-                result = true;
-                outputResults.Add(new ResultItem(inputPart,
-                    $"Invalid book name(s) at position {inputStart}: {unknownBooks}.",
-                    inputText, inputStart,
-                    null, CheckType.ScriptureReference,
-                    (int)ScriptureReferenceErrorType.BadReference));
+                return false;
             }
 
+            var nameLabel = TextUtil.SingularOrPlural(unknownBooks, "name", "names");
+            outputResults.Add(new ResultItem(inputPart,
+                $"Invalid book {nameLabel} at position {matchStart}: {unknownBooks}.",
+                matchText, matchStart,
+                null, CheckType.ScriptureReference,
+                (int)ScriptureReferenceErrorType.BadReference));
+
+            return true;
+        }
+
+        /// <summary>
+        /// Check for incorrect spacing or book naming (e.g., abbreviation vs short).
+        /// </summary>
+        /// <param name="inputPart">Input verse part (required).</param>
+        /// <param name="matchText">Input text (required).</param>
+        /// <param name="matchStart">Input text position, from verse start (0-based).</param>
+        /// <param name="parsedReference">Input scripture reference (required).</param>
+        /// <param name="outputResults">Output result destination (required).</param>
+        /// <returns>True if results added, false otherwise.</returns>
+        private bool CheckReferenceFormat(
+            VersePart inputPart,
+            string matchText,
+            int matchStart,
+            ScriptureReferenceWrapper parsedReference,
+            ICollection<ResultItem> outputResults)
+        {
             // check format (tight match)
-            var standardFormat = _referenceBuilder.FormatStandardReference(
+            var standardText = _referenceBuilder.FormatStandardReference(
                 inputPart.PartLocation.PartContext,
-                inputReference);
+                parsedReference);
 
             // Same as standard = done
-            if (!inputText.Equals(standardFormat))
+            if (matchText.Equals(standardText))
             {
-                // check whether only difference is spacing
-                string messageText = null;
-                var typeCode = 0;
-
-                // check for spacing-only miss
-                if (inputText.EqualsIgnoringWhitespace(standardFormat))
-                {
-                    messageText = $"Non-standard reference spacing at position {inputStart}.";
-                    typeCode = (int)ScriptureReferenceErrorType.LooseFormatting;
-                }
-                else
-                {
-                    // check other possible styles for this reference
-                    var otherFormats =
-                        AllContexts.Where(contextItem =>
-                            contextItem != inputPart.PartLocation.PartContext)
-                        .Select(contextItem =>
-                            _referenceBuilder.FormatStandardReference(
-                                contextItem,
-                                inputReference))
-                        .Select(formatItem =>
-                            formatItem.RemoveWhitespace())
-                        .ToImmutableHashSet();
-
-                    // check with whitespace removed, as wrong name type
-                    // is more important than a whitespace miss
-                    var contextTitle = ContextTitles[inputPart.PartLocation.PartContext];
-                    if (otherFormats.Contains(inputText.RemoveWhitespace()))
-                    {
-                        messageText = $"Non-standard book name style for {contextTitle} text at position {inputStart}.";
-                        typeCode = (int)ScriptureReferenceErrorType.IncorrectNameStyle;
-                    }
-                    else
-                    {
-                        messageText = $"Non-standard reference content for {contextTitle} text at position {inputStart}.";
-                        typeCode = (int)ScriptureReferenceErrorType.BadReference;
-                    }
-                }
-
-                result = true;
-                outputResults.Add(new ResultItem(inputPart, messageText,
-                    inputText, inputStart,
-                    standardFormat, CheckType.ScriptureReference,
-                    typeCode));
+                return false;
             }
-            return result;
+
+            // prep for rest of checks
+            var matchNormalized1 = matchText.RemoveWhitespace();
+            var standardNormalized1 = standardText.RemoveWhitespace();
+
+            // check whether only difference is spacing
+            if (matchNormalized1.Equals(standardNormalized1))
+            {
+                outputResults.Add(new ResultItem(inputPart,
+                    $"Non-standard reference spacing at position {matchStart}.",
+                    matchText, matchStart,
+                    standardText, CheckType.ScriptureReference,
+                    (int)ScriptureReferenceErrorType.LooseFormatting));
+                return true;
+            }
+
+            // prep for rest of checks
+            var matchNormalized2 = matchNormalized1.ToLower();
+
+            // create all possible styles for this reference
+            var allNormalized2 =
+                AllContexts.Select(contextItem =>
+                        _referenceBuilder.FormatStandardReference(
+                            contextItem,
+                            parsedReference))
+                    .Select(formatItem =>
+                        formatItem.RemoveWhitespace().ToLower())
+                    .ToImmutableHashSet();
+
+            // check for whitespace and case miss by looking for
+            // normalized, tag-less versions in match
+            if (allNormalized2.Contains(matchNormalized2))
+            {
+                var contextTitle = ContextTitles[inputPart.PartLocation.PartContext];
+                outputResults.Add(new ResultItem(inputPart,
+                    $"Non-standard book name style or casing for {contextTitle} text at position {matchStart}.",
+                    matchText, matchStart,
+                    standardText, CheckType.ScriptureReference,
+                    (int)ScriptureReferenceErrorType.IncorrectNameStyle));
+                return true;
+            }
+
+            // create all possible styles without punctuation or whitespace
+            var matchNormalized3 = matchNormalized2.RemovePunctuation();
+            var allNormalized3 =
+                allNormalized2.Select(formatItem =>
+                        formatItem.RemovePunctuation())
+                    .ToImmutableHashSet();
+
+            // check for punctuation miss by looking for
+            // normalized, tag-less versions in match
+            if (allNormalized3.Contains(matchNormalized3))
+            {
+                outputResults.Add(new ResultItem(inputPart,
+                $"Non-standard reference punctuation at position {matchStart}.",
+                matchText, matchStart,
+                standardText, CheckType.ScriptureReference,
+                (int)ScriptureReferenceErrorType.LooseFormatting));
+                return true;
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Check for incorrect tag naming (e.g., \fr outside of a footnote area).
+        /// </summary>
+        /// <param name="inputPart">Input verse part (required).</param>
+        /// <param name="matchText">Input text (required).</param>
+        /// <param name="matchStart">Input text position, from verse start (0-based).</param>
+        /// <param name="parsedReference">Input scripture reference (required).</param>
+        /// <param name="outputResults">Output result destination (required).</param>
+        /// <returns>True if results added, false otherwise.</returns>
+        private bool CheckForIncorrectTag(
+            VersePart inputPart,
+            string matchText,
+            int matchStart,
+            ScriptureReferenceWrapper parsedReference,
+            ICollection<ResultItem> outputResults)
+        {
+            var contextTitle = ContextTitles[inputPart.PartLocation.PartContext];
+            var badTags = FindContentTags(
+                    inputPart.PartText, AllContextContentTags)
+                .ToHashSet();
+            if (badTags.Count < 1)
+            {
+                return false;
+            }
+
+            var goodTags = ContextContentTags[inputPart.PartLocation.PartContext];
+            badTags.RemoveWhere(
+                tagName => goodTags.Contains(tagName));
+            if (badTags.Count < 1)
+            {
+                return false;
+            }
+
+            var tagList = TextUtil.NiceListOf(
+                badTags.Select(tagItem => string.Concat(@"\", tagItem)),
+                ",", "and");
+            var tagLabel = TextUtil.SingularOrPlural(badTags, "tag", "tags");
+            outputResults.Add(new ResultItem(inputPart,
+                $@"Incorrect use of {tagList} {tagLabel} in {contextTitle} text at position {matchStart}.",
+                matchText, matchStart,
+                null, CheckType.ScriptureReference,
+                (int)ScriptureReferenceErrorType.IncorrectTag));
+
+            return true;
+        }
+
+        /// <summary>
+        /// Check for malformed tag (e.g., \fp only at the beginning).
+        /// </summary>
+        /// <param name="inputPart">Input verse part (required).</param>
+        /// <param name="matchText">Input text (required).</param>
+        /// <param name="matchStart">Input text position, from verse start (0-based).</param>
+        /// <param name="parsedReference">Input scripture reference (required).</param>
+        /// <param name="outputResults">Output result destination (required).</param>
+        /// <returns>True if results added, false otherwise.</returns>
+        private bool CheckForMalformedOrMissingTag(
+            VersePart inputPart,
+            string matchText,
+            int matchStart,
+            ScriptureReferenceWrapper parsedReference,
+            ICollection<ResultItem> outputResults)
+        {
+            var contextTitle = ContextTitles[inputPart.PartLocation.PartContext];
+            var workText = inputPart.PartText.TrimWhitespaceAndParenthesis();
+
+            var contextTags = ContextPairedTags[inputPart.PartLocation.PartContext];
+            if (contextTags.Count < 1)
+            {
+                return false;
+            }
+
+            var startOrEndTag = FindStartOrEndTags(workText, contextTags);
+            if (startOrEndTag == null)
+            {
+                // ignore missing (but not malformed) tags in specific contexts
+                if (IgnoreMissingPairedTagsContexts.Contains(inputPart.PartLocation.PartContext))
+                {
+                    return false;
+                }
+                else // otherwise, we have a problem
+                {
+                    var tagList = TextUtil.NiceListOf(
+                        contextTags.Select(tagItem => string.Concat(@"\", tagItem)),
+                        ",", "or");
+                    var tagLabel = TextUtil.SingularOrPlural(contextTags, "tag", "tags");
+                    outputResults.Add(new ResultItem(inputPart,
+                        $@"Missing paired {tagList} {tagLabel} in {contextTitle} text at position {matchStart}.",
+                        matchText, matchStart,
+                        null, CheckType.ScriptureReference,
+                        (int)ScriptureReferenceErrorType.MissingTag));
+                    return true;
+                }
+            }
+
+            var startAndEndTag = FindStartAndEndTags(workText, contextTags);
+            if (!Equals(startOrEndTag, startAndEndTag))
+            {
+                var tagList = TextUtil.NiceListOf(
+                    contextTags.Select(tagItem => string.Concat(@"\", tagItem)),
+                    ",", "or");
+                var tagLabel = TextUtil.SingularOrPlural(contextTags, "tag", "tags");
+                outputResults.Add(new ResultItem(inputPart,
+                    $@"Malformed \{startOrEndTag} tag in {contextTitle} text at position {matchStart} (expecting paired {tagList} {tagLabel}).",
+                    matchText, matchStart,
+                    null, CheckType.ScriptureReference,
+                    (int)ScriptureReferenceErrorType.MalformedTag));
+                return true;
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// Checks whether supplied text contains any of the supplied tags.
+        /// </summary>
+        /// <param name="inputText">Input text (required).</param>
+        /// <param name="tagNames">Tag names to search for, without leading backslashes or trailing stars (required).</param>
+        /// <returns>True if input starts or ends with any of the tags.</returns>
+        private static IList<string> FindContentTags(string inputText, IEnumerable<string> tagNames)
+        {
+            return tagNames.Where(tagName =>
+                inputText.IndexOf($@"\{tagName}", StringComparison.InvariantCultureIgnoreCase) >= 0
+                || inputText.IndexOf($@"\{tagName}*", StringComparison.InvariantCultureIgnoreCase) >= 0)
+                .ToImmutableList();
+        }
+
+        /// <summary>
+        /// Finds the first of the supplied tags that begins _and_ ends the input text.
+        /// </summary>
+        /// <param name="inputText">Input text (required).</param>
+        /// <param name="tagNames">Tag names to search for, without leading backslashes or trailing stars (required).</param>
+        /// <returns>True if input starts or ends with any of the tags.</returns>
+        private static string FindStartAndEndTags(string inputText, IEnumerable<string> tagNames)
+        {
+            var bestPosition = -1;
+            string bestTag = null;
+
+            foreach (var tagName in tagNames)
+            {
+                var foundStart = inputText.IndexOf($@"\{tagName}", StringComparison.InvariantCultureIgnoreCase);
+                var foundEnd = inputText.IndexOf($@"\{tagName}*", StringComparison.InvariantCultureIgnoreCase);
+
+                if (foundStart >= 0 && foundEnd >= 0 &&
+                    foundStart < foundEnd)
+                {
+                    var foundPosition = Math.Min(foundStart, foundEnd);
+                    if (bestPosition == -1
+                        || bestPosition < foundPosition)
+                    {
+                        bestPosition = foundPosition;
+                        bestTag = tagName;
+                    }
+                }
+            }
+
+            return bestTag;
+        }
+
+        /// <summary>
+        /// Finds the first of the supplied tags that begins _or_ ends the input text.
+        /// </summary>
+        /// <param name="inputText">Input text (required).</param>
+        /// <param name="tagNames">Tag names to search for, without leading backslashes or trailing stars (required).</param>
+        /// <returns>True if input starts or ends with any of the tags.</returns>
+        private static string FindStartOrEndTags(string inputText, IEnumerable<string> tagNames)
+        {
+            var bestPosition = -1;
+            string bestTag = null;
+
+            foreach (var tagName in tagNames)
+            {
+                var foundStart = inputText.IndexOf($@"\{tagName}", StringComparison.InvariantCultureIgnoreCase);
+                var foundEnd = inputText.IndexOf($@"\{tagName}*", StringComparison.InvariantCultureIgnoreCase);
+
+                var foundPosition = foundStart;
+                if (foundStart < 0 && foundEnd >= 0)
+                {
+                    foundPosition = foundEnd;
+                }
+                else if (foundEnd < 0 && foundStart >= 0)
+                {
+                    foundPosition = foundStart;
+                }
+                else if (foundStart >= 0 && foundEnd >= 0
+                         && foundStart < foundEnd)
+                {
+                    foundPosition = foundStart;
+                }
+
+                if (foundPosition >= 0
+                    && (bestPosition < 0 || bestPosition < foundPosition))
+                {
+                    bestPosition = foundPosition;
+                    bestTag = tagName;
+                }
+            }
+
+            return bestTag;
+        }
+
+        /// <summary>
+        /// Finds the first of the supplied tags that begins _and_ ends the input text.
+        /// </summary>
+        /// <param name="inputText">Input text (required).</param>
+        /// <param name="tagNames">Tag names to search for, without leading backslashes or trailing stars (required).</param>
+        /// <returns>True if input starts or ends with any of the tags.</returns>
+        private static string StartsAndEndsWithTags(string inputText, IEnumerable<string> tagNames)
+        {
+            return tagNames
+                .FirstOrDefault(tagName =>
+                    inputText.StartsWith($@"\{tagName}",
+                        StringComparison.InvariantCultureIgnoreCase)
+                    && inputText.EndsWith($@"\{tagName}*",
+                        StringComparison.InvariantCultureIgnoreCase));
         }
     }
 }
