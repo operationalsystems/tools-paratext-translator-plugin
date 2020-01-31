@@ -155,34 +155,9 @@ namespace TvpMain.Form
             UpdateCheckArea();
             UpdateCheckContexts();
 
-            // Background worker to reload previous results at startup
-            resultWorker.DoWork += OnResultWorkerDoWork;
-            resultWorker.RunWorkerCompleted += OnResultWorkerCompleted;
-            resultWorker.RunWorkerAsync();
-
             // Background worker to build the biblical term list filter at startup
             termWorker.DoWork += OnTermWorkerDoWork;
             termWorker.RunWorkerAsync();
-        }
-
-        /// <summary>
-        /// Loads existing result items on startup.
-        /// </summary>
-        /// <param name="sender">Event sender (ignored).</param>
-        /// <param name="e">Event args (ignored).</param>
-        private void OnResultWorkerDoWork(object sender, DoWorkEventArgs e)
-        {
-            try
-            {
-                _projectManager.ResultManager
-                    .LoadBooks(_projectManager.PresentBookNums);
-                _allResultItems = _projectManager.ResultManager
-                    .GetAllVerseResults(null, null);
-            }
-            catch (Exception ex)
-            {
-                HostUtil.Instance.ReportError(ex);
-            }
         }
 
         /// <summary>
@@ -1262,7 +1237,7 @@ namespace TvpMain.Form
         private void UpdateExceptionDetailsAndHighlightForActiveResultItem()
         {
             Debug.WriteLine("highlightActiveResultItem");
-            
+
             if (referencesActionsGridView.CurrentRow == null)
             {
                 Debug.WriteLine("highlightActiveResultItem - CurrentRow NULL");

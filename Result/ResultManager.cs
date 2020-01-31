@@ -33,19 +33,29 @@ namespace TvpMain.Result
         private readonly object _resultLock;
 
         /// <summary>
+        /// Book numbers to load at next opportunity.
+        /// </summary>
+        private readonly ISet<int> _bookNumsToLoad;
+
+        /// <summary>
+        /// Current cancellation token for scheduled load operation (may be null).
+        /// </summary>
+        private CancellationTokenSource _loadTokenSource;
+
+        /// <summary>
         /// Book numbers to save at next opportunity.
         /// </summary>
         private readonly ISet<int> _bookNumsToSave;
 
         /// <summary>
+        /// Current cancellation token for scheduled save operation (may be null).
+        /// </summary>
+        private CancellationTokenSource _saveTokenSource;
+
+        /// <summary>
         /// Dictionary of result items, indexed by verse location.
         /// </summary>
         private readonly IDictionary<VerseLocation, IList<ResultItem>> _resultItems;
-
-        /// <summary>
-        /// Current cancellation token for scheduled save operation (may be null).
-        /// </summary>
-        private CancellationTokenSource _currTokenSource;
 
         /// <summary>
         /// Basic ctor.
@@ -59,6 +69,8 @@ namespace TvpMain.Result
                            ?? throw new ArgumentNullException(nameof(projectName));
 
             _bookNumsToSave = new HashSet<int>();
+            _bookNumsToLoad = new HashSet<int>();
+
             _resultItems = new SortedDictionary<VerseLocation, IList<ResultItem>>();
             _resultLock = new object();
         }
@@ -126,7 +138,8 @@ namespace TvpMain.Result
                     _resultItems[inputLocation] = toSet;
                     outputItems = toSet.ToImmutableList();
 
-                    ScheduleSaveBooks(inputLocation.BookNum);
+                    ScheduleSaveBooks(inputLocation.BookNum
+                        .ToSingletonEnumerable());
                 }
                 else // empty input = remove any existing items for verse
                 {
@@ -135,7 +148,8 @@ namespace TvpMain.Result
 
                     if (result)
                     {
-                        ScheduleSaveBooks(inputLocation.BookNum);
+                        ScheduleSaveBooks(inputLocation.BookNum
+                            .ToSingletonEnumerable());
                     }
                 }
             }
@@ -167,7 +181,8 @@ namespace TvpMain.Result
                     toSet.Add(inputItem);
                 }
                 _resultItems[inputItem.VerseLocation] = toSet;
-                ScheduleSaveBooks(inputItem.VerseLocation.BookNum);
+                ScheduleSaveBooks(inputItem.VerseLocation.BookNum
+                    .ToSingletonEnumerable());
             }
             return result;
         }
@@ -225,17 +240,21 @@ namespace TvpMain.Result
         }
 
         /// <summary>
-        /// Schedules a given book number for persistence in the near future.
+        /// Schedules given book numbers for persistence in the near future,
+        /// cancelling any previously-pending save.
         /// </summary>
-        /// <param name="bookNum">Book number (1-based).</param>
-        private void ScheduleSaveBooks(int bookNum)
+        /// <param name="bookNums">Book numbers to save (1-based).</param>
+        public void ScheduleSaveBooks(IEnumerable<int> bookNums)
         {
             lock (_resultLock)
             {
-                _bookNumsToSave.Add(bookNum);
+                foreach (var bookNum in bookNums)
+                {
+                    _bookNumsToSave.Add(bookNum);
+                }
 
                 CancelSaveBooks();
-                var currToken = _currTokenSource.Token;
+                var currToken = _saveTokenSource.Token;
 
                 // call does _not_ block
                 Task.Delay(TimeSpan.FromSeconds(MainConsts.RESULT_ITEM_SAVE_DELAY_IN_SEC), currToken)
@@ -304,6 +323,61 @@ namespace TvpMain.Result
         }
 
         /// <summary>
+        /// Schedules given book numbers for loading in the near future,
+        /// cancelling any previously-pending load.
+        ///
+        /// Note: There is no versioning in this persistence scheme, so while loading
+        /// will reconcile with any result items already in memory, newly-loaded items
+        /// will be treated as updates. Therefore, loading should be done only at startup
+        /// or when coherency with persisted items may be otherwise guaranteed.
+        /// </summary>
+        /// <param name="bookNums">Book numbers to load (1-based).</param>
+        public void ScheduleLoadBooks(IEnumerable<int> bookNums)
+        {
+            lock (_resultLock)
+            {
+                foreach (var bookNum in bookNums)
+                {
+                    _bookNumsToLoad.Add(bookNum);
+                }
+
+                CancelLoadBooks();
+                var currToken = _loadTokenSource.Token;
+
+                // call does _not_ block
+                Task.Delay(TimeSpan.FromSeconds(MainConsts.RESULT_ITEM_LOAD_DELAY_IN_SEC), currToken)
+                    .ContinueWith(taskItem =>
+                    {
+                        try
+                        {
+                            if (currToken.IsCancellationRequested)
+                            {
+                                return;
+                            }
+                            lock (_resultLock)
+                            {
+                                if (_bookNumsToLoad.Count <= 0)
+                                {
+                                    return;
+                                }
+                                LoadBooks(_bookNumsToLoad);
+                                _bookNumsToLoad.Clear();
+                            }
+                        }
+                        catch (OperationCanceledException)
+                        {
+                            // Ignore (can occur w/cancel).
+                        }
+                        catch (Exception ex)
+                        {
+                            HostUtil.Instance.ReportError(
+                                "Can't load result items", true, ex);
+                        }
+                    }, currToken);
+            }
+        }
+
+        /// <summary>
         /// Load books from a provided set of book numbers.
         /// </summary>
         /// <param name="inputBooks">Book numbers (1-based).</param>
@@ -329,22 +403,49 @@ namespace TvpMain.Result
             }
         }
 
+        /// <summary>
+        /// Cancel any pending book save,
+        /// recycling cancellation token.
+        /// </summary>
         private void CancelSaveBooks()
         {
             lock (_resultLock)
             {
-                if (_currTokenSource != null)
+                if (_saveTokenSource != null)
                 {
                     try
                     {
-                        _currTokenSource.Cancel();
+                        _saveTokenSource.Cancel();
                     }
                     finally
                     {
-                        _currTokenSource.Dispose();
+                        _saveTokenSource.Dispose();
                     }
                 }
-                _currTokenSource = new CancellationTokenSource();
+                _saveTokenSource = new CancellationTokenSource();
+            }
+        }
+
+        /// <summary>
+        /// Cancel any pending book load,
+        /// recycling cancellation token.
+        /// </summary>
+        private void CancelLoadBooks()
+        {
+            lock (_resultLock)
+            {
+                if (_loadTokenSource != null)
+                {
+                    try
+                    {
+                        _loadTokenSource.Cancel();
+                    }
+                    finally
+                    {
+                        _loadTokenSource.Dispose();
+                    }
+                }
+                _loadTokenSource = new CancellationTokenSource();
             }
         }
 
@@ -352,6 +453,7 @@ namespace TvpMain.Result
         public void Dispose()
         {
             CancelSaveBooks();
+            CancelLoadBooks();
         }
     }
 }

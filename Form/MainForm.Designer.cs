@@ -92,15 +92,14 @@
             this.issueTextBox = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
             this.referencesActionsGridView = new System.Windows.Forms.DataGridView();
+            this.referencesActionsExceptionColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.referencesActionsAcceptColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.referencesActionsIgnoreColumn = new System.Windows.Forms.DataGridViewButtonColumn();
             this.referencesTextBox = new System.Windows.Forms.RichTextBox();
             this.referencesListView = new System.Windows.Forms.DataGridView();
             this.referencesListViewReferenceColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.referencesListViewCountColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.bindingSource1 = new System.Windows.Forms.BindingSource(this.components);
-            this.resultWorker = new System.ComponentModel.BackgroundWorker();
-            this.referencesActionsExceptionColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.referencesActionsAcceptColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.referencesActionsIgnoreColumn = new System.Windows.Forms.DataGridViewButtonColumn();
             ((System.ComponentModel.ISupportInitialize)(this.dgvCheckResults)).BeginInit();
             this.contextMenu.SuspendLayout();
             this.mainMenu.SuspendLayout();
@@ -710,6 +709,35 @@
             this.referencesActionsGridView.SelectionChanged += new System.EventHandler(this.OnReferencesActionsGridViewSelectionChanged);
             this.referencesActionsGridView.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.OnReferencesActionsGridViewKeyPress);
             // 
+            // referencesActionsExceptionColumn
+            // 
+            this.referencesActionsExceptionColumn.HeaderText = "Exception";
+            this.referencesActionsExceptionColumn.Name = "referencesActionsExceptionColumn";
+            this.referencesActionsExceptionColumn.ReadOnly = true;
+            // 
+            // referencesActionsAcceptColumn
+            // 
+            this.referencesActionsAcceptColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
+            this.referencesActionsAcceptColumn.HeaderText = "Actions";
+            this.referencesActionsAcceptColumn.MinimumWidth = 50;
+            this.referencesActionsAcceptColumn.Name = "referencesActionsAcceptColumn";
+            this.referencesActionsAcceptColumn.ReadOnly = true;
+            this.referencesActionsAcceptColumn.Resizable = System.Windows.Forms.DataGridViewTriState.True;
+            this.referencesActionsAcceptColumn.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            this.referencesActionsAcceptColumn.ToolTipText = "Future capability";
+            this.referencesActionsAcceptColumn.Width = 50;
+            // 
+            // referencesActionsIgnoreColumn
+            // 
+            this.referencesActionsIgnoreColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
+            this.referencesActionsIgnoreColumn.HeaderText = "";
+            this.referencesActionsIgnoreColumn.MinimumWidth = 50;
+            this.referencesActionsIgnoreColumn.Name = "referencesActionsIgnoreColumn";
+            this.referencesActionsIgnoreColumn.ReadOnly = true;
+            this.referencesActionsIgnoreColumn.Text = "Ignore";
+            this.referencesActionsIgnoreColumn.ToolTipText = "Ignore this exception in the future.";
+            this.referencesActionsIgnoreColumn.Width = 50;
+            // 
             // referencesTextBox
             // 
             this.referencesTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
@@ -762,35 +790,6 @@
             this.referencesListViewCountColumn.Name = "referencesListViewCountColumn";
             this.referencesListViewCountColumn.ReadOnly = true;
             this.referencesListViewCountColumn.Width = 94;
-            // 
-            // referencesActionsExceptionColumn
-            // 
-            this.referencesActionsExceptionColumn.HeaderText = "Exception";
-            this.referencesActionsExceptionColumn.Name = "referencesActionsExceptionColumn";
-            this.referencesActionsExceptionColumn.ReadOnly = true;
-            // 
-            // referencesActionsAcceptColumn
-            // 
-            this.referencesActionsAcceptColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
-            this.referencesActionsAcceptColumn.HeaderText = "Actions";
-            this.referencesActionsAcceptColumn.MinimumWidth = 50;
-            this.referencesActionsAcceptColumn.Name = "referencesActionsAcceptColumn";
-            this.referencesActionsAcceptColumn.ReadOnly = true;
-            this.referencesActionsAcceptColumn.Resizable = System.Windows.Forms.DataGridViewTriState.True;
-            this.referencesActionsAcceptColumn.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
-            this.referencesActionsAcceptColumn.ToolTipText = "Future capability";
-            this.referencesActionsAcceptColumn.Width = 50;
-            // 
-            // referencesActionsIgnoreColumn
-            // 
-            this.referencesActionsIgnoreColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
-            this.referencesActionsIgnoreColumn.HeaderText = "";
-            this.referencesActionsIgnoreColumn.MinimumWidth = 50;
-            this.referencesActionsIgnoreColumn.Name = "referencesActionsIgnoreColumn";
-            this.referencesActionsIgnoreColumn.ReadOnly = true;
-            this.referencesActionsIgnoreColumn.Text = "Ignore";
-            this.referencesActionsIgnoreColumn.ToolTipText = "Ignore this exception in the future.";
-            this.referencesActionsIgnoreColumn.Width = 50;
             // 
             // MainForm
             // 
@@ -886,7 +885,6 @@
         private System.Windows.Forms.ToolStripSeparator referencesMenuSeparator;
         private System.Windows.Forms.ToolStripMenuItem hideLooseMatchesToolStripMenuItem;
         private System.Windows.Forms.BindingSource bindingSource1;
-        private System.ComponentModel.BackgroundWorker resultWorker;
         private System.Windows.Forms.ToolStripMenuItem hideIncorrectNameStyleToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem hideTagShouldntExistToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem hideMissingTagToolStripMenuItem;
