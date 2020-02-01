@@ -9,9 +9,54 @@ namespace TvpMain.Util
     public class MainConsts
     {
         /// <summary>
+        /// Default separator for a sequence of book names.
+        /// </summary>
+        public const string DEFAULT_REFERENCE_BOOK_SEQUENCE_SEPARATOR = ";";
+
+        /// <summary>
+        /// Default separator for a sequence of chapter numbers.
+        /// </summary>
+        public const string DEFAULT_REFERENCE_CHAPTER_SEQUENCE_SEPARATOR = ";";
+
+        /// <summary>
+        /// Default separator for a range of chapter numbers.
+        /// </summary>
+        public const string DEFAULT_REFERENCE_BOOK_OR_CHAPTER_RANGE_SEPARATOR = "–";
+
+        /// <summary>
+        /// Default separator for chapters and verses.
+        /// </summary>
+        public const string DEFAULT_REFERENCE_CHAPTER_AND_VERSE_SEPARATOR = ":";
+
+        /// <summary>
+        /// Default separator for verse sequences.
+        /// </summary>
+        public const string DEFAULT_REFERENCE_VERSE_SEQUENCE_SEPARATOR = ",";
+
+        /// <summary>
+        /// Default separator for verse ranges.
+        /// </summary>
+        public const string DEFAULT_REFERENCE_VERSE_RANGE_SEPARATOR = "-";
+
+        /// <summary>
+        /// Default prefix or suffix for references.
+        /// </summary>
+        public const string DEFAULT_REFERENCE_PREFIX_OR_SUFFIX = "";
+
+        /// <summary>
+        /// Default final punctuation for references.
+        /// </summary>
+        public const string DEFAULT_REFERENCE_FINAL_PUNCTUATION = "";
+
+        /// <summary>
         /// Plugin data identifier for ignore list items.
         /// </summary>
-        public const string IGNORE_LIST_ITEMS_ID = "IgnoreListItems";
+        public const string IGNORE_LIST_ITEMS_DATA_ID = "IgnoreListItems.json";
+
+        /// <summary>
+        /// Plugin data identifier format for result items.
+        /// </summary>
+        public const string RESULT_ITEMS_DATA_ID_FORMAT = "ResultItems-{0}.json";
 
         /// <summary>
         /// Update rate for progress form and similar loops.
@@ -24,38 +69,33 @@ namespace TvpMain.Util
         public const int MAX_CHECK_THREADS = 4;
 
         /// <summary>
-        /// Max number of books in standard versification (1 d= Gensis, 66 = Revelations).
+        /// Max consecutive empty verses before chapter is considered empty.
         /// </summary>
-        public const int MAX_BOOK_NUM = 66; // 66 = all books
-
-        /// <summary>
-        /// Abbreviations for bible book names.
-        /// </summary>
-        public static readonly string[] SHORT_BOOK_NAMES = {
-            "GEN","EXO","LEV","NUM","DEU","JOS","JDG","RUT",
-            "1SA","2SA","1KI","2KI","1CH","2CH","EZR","NEH",
-            "EST","JOB","PSA","PRO","ECC","SNG","ISA","JER",
-            "LAM","EZE","DAN","HOS","JOL","AMO","OBA","JON",
-            "MIC","NAM","HAB","ZEP","HAG","ZEC","MAL","MAT",
-            "MRK","LUK","JHN","ACT","ROM","1CO","2CO","GAL",
-            "EPH","PHP","COL","1TH","2TH","1TI","2TI","TIT",
-            "PHM","HEB","JAS","1PE","2PE","1JN","2JN","3JN",
-            "JUD","REV"
-        };
+        public const int MAX_CONSECUTIVE_EMPTY_VERSES = 10;
 
         /// <summary>
         /// Multiplier for book numbers in BCV-style references.
         /// </summary>
-        public static readonly int BOOK_REF_MULTIPLIER = 1000000;
+        public static readonly int BookRefMultiplier = 1000000;
 
         /// <summary>
         /// Multiplier for chapter numbers in BCV-style references.
         /// </summary>
-        public static readonly int CHAP_REF_MULTIPLIER = 1000;
+        public static readonly int ChapRefMultiplier = 1000;
 
         /// <summary>
         /// Range ref parts (i.e., chapters, verses).
         /// </summary>
-        public static readonly int REF_PART_RANGE = 1000;
+        public static readonly int RefPartRange = 1000;
+
+        /// <summary>
+        /// Number of seconds to wait after changes to save result items.
+        /// </summary>
+        public const int RESULT_ITEM_SAVE_DELAY_IN_SEC = 5;
+
+        /// <summary>
+        /// Number of seconds to wait before loading result items.
+        /// </summary>
+        public const int RESULT_ITEM_LOAD_DELAY_IN_SEC = 5;
     }
 }

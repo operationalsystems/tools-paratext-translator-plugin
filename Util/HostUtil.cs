@@ -4,11 +4,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Forms;
-using TvpMain.Data;
+using TvpMain.Result;
 
-/// <summary>
-/// Global error-handling and other maintenance capabilities.
-/// </summary>
 namespace TvpMain.Util
 {
     /// <summary>
@@ -24,10 +21,7 @@ namespace TvpMain.Util
         /// <summary>
         /// Thread-safe singleton accessor.
         /// </summary>
-        public static HostUtil Instance
-        {
-            get => _instance;
-        }
+        public static HostUtil Instance => _instance;
 
         /// <summary>
         /// Global reference to plugin, to route logging.
@@ -97,74 +91,66 @@ namespace TvpMain.Util
         /// </summary>
         /// <param name="inputText">Input text (required).</param>
         /// <param name="isError">Error flag.</param>
-        public void LogLine(String inputText, bool isError)
+        public void LogLine(string inputText, bool isError)
         {
             (isError ? Console.Error : Console.Out).WriteLine(inputText);
-            if (_host != null)
-            {
-                _host.WriteLineToLog(_translationValidationPlugin, inputText);
-            }
+            _host?.WriteLineToLog(_translationValidationPlugin, inputText);
         }
 
         /// <summary>
         /// Retrieve the ignore list from the host's plugin data storage.
         /// </summary>
-        /// <param name="activeProjectName">Active project name (required).</param>
+        /// <param name="projectName">Active project name (required).</param>
         /// <returns>Ignore list.</returns>
-        public IList<IgnoreListItem> GetIgnoreList(string activeProjectName)
+        public IList<IgnoreListItem> GetIgnoreList(string projectName)
         {
-            string inputData =
-                    _host.GetPlugInData(_translationValidationPlugin,
-                activeProjectName, MainConsts.IGNORE_LIST_ITEMS_ID);
-            if (inputData == null)
-            {
-                return Enumerable.Empty<IgnoreListItem>().ToList();
-            }
-            else
-            {
-                return JsonConvert.DeserializeObject<List<IgnoreListItem>>(inputData);
-            }
+            var inputData =
+                _host.GetPlugInData(_translationValidationPlugin,
+                    projectName, MainConsts.IGNORE_LIST_ITEMS_DATA_ID);
+            return inputData == null
+                ? Enumerable.Empty<IgnoreListItem>().ToList()
+                : JsonConvert.DeserializeObject<List<IgnoreListItem>>(inputData);
         }
 
         /// <summary>
         /// Stores the ignore list to the host's plugin data storage.
         /// </summary>
-        /// <param name="activeProjectName">Active project name (required).</param>
+        /// <param name="projectName">Active project name (required).</param>
         /// <param name="outputItems">Ignore list.</param>
-        public void PutIgnoreList(string activeProjectName, IList<IgnoreListItem> outputItems)
+        public void PutIgnoreList(string projectName, IEnumerable<IgnoreListItem> outputItems)
         {
             _host.PutPlugInData(_translationValidationPlugin,
-                activeProjectName, MainConsts.IGNORE_LIST_ITEMS_ID,
+                projectName, MainConsts.IGNORE_LIST_ITEMS_DATA_ID,
                 JsonConvert.SerializeObject(outputItems));
         }
 
         /// <summary>
-        /// Converts a Paratext coordinate reference to specific book, chapter, and verse.
+        /// Retrieve the ignore list from the host's plugin data storage.
         /// </summary>
-        /// <param name="inputRef">Input coordinate reference (BBBCCCVVV).</param>
-        /// <param name="outputBook">Output book number (1-66).</param>
-        /// <param name="outputChapter">Output chapter number (1-1000; Max varies by book & versification).</param>
-        /// <param name="outputVerse">Output verse number (1-1000; Max varies by chapter & versification).</param>
-        static public void RefToBCV(int inputRef, out int outputBook, out int outputChapter, out int outputVerse)
+        /// <param name="projectName">Active project name (required).</param>
+        /// <param name="bookId"></param>
+        /// <returns>Ignore list.</returns>
+        public IList<ResultItem> GetResultItems(string projectName, string bookId)
         {
-            outputBook = (inputRef / MainConsts.BOOK_REF_MULTIPLIER);
-            outputChapter = (inputRef / MainConsts.CHAP_REF_MULTIPLIER) % MainConsts.REF_PART_RANGE;
-            outputVerse = inputRef % MainConsts.REF_PART_RANGE;
+            var inputData =
+                _host.GetPlugInData(_translationValidationPlugin, projectName,
+                    string.Format(MainConsts.RESULT_ITEMS_DATA_ID_FORMAT, bookId));
+            return inputData == null
+                ? Enumerable.Empty<ResultItem>().ToList()
+                : JsonConvert.DeserializeObject<List<ResultItem>>(inputData);
         }
 
-
         /// <summary>
-        /// Converts specific book, chapter, and verse to a Paratext coordinate reference.
+        /// Stores the ignore list to the host's plugin data storage.
         /// </summary>
-        /// <param name="inputBook">Input book number (1-66).</param>
-        /// <param name="inputChapter">Input chapter number (1-1000; Max varies by book & versification).</param>
-        /// <param name="inputVerse">Input verse number (1-1000; Max varies by chapter & versification).</param>
-        /// <returns>Output coordinate reference (BBBCCCVVV).</returns>
-        static public int BcvToRef(int inputBook, int inputChapter, int inputVerse)
+        /// <param name="projectName">Active project name (required).</param>
+        /// <param name="bookId"></param>
+        /// <param name="outputItems">Ignore list.</param>
+        public void PutResultItems(string projectName, string bookId, IEnumerable<ResultItem> outputItems)
         {
-            return (inputBook * MainConsts.BOOK_REF_MULTIPLIER)
-                + (inputChapter * MainConsts.CHAP_REF_MULTIPLIER)
-                + inputVerse;
+            _host.PutPlugInData(_translationValidationPlugin, projectName,
+                string.Format(MainConsts.RESULT_ITEMS_DATA_ID_FORMAT, bookId),
+                JsonConvert.SerializeObject(outputItems));
         }
     }
 }

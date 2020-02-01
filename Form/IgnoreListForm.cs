@@ -2,10 +2,10 @@
 using CsvHelper.Configuration;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
-using System.Linq;
 using System.Windows.Forms;
-using TvpMain.Data;
+using TvpMain.Result;
 using TvpMain.Util;
 using static System.Environment;
 
@@ -68,7 +68,7 @@ namespace TvpMain.Form
         /// <param name="e">Event args (ignored).</param>
         private void OnClickImport(object sender, EventArgs e)
         {
-            using OpenFileDialog openFile = new OpenFileDialog();
+            using var openFile = new OpenFileDialog();
 
             openFile.Title = "Open CSV file...";
             openFile.InitialDirectory = Environment.GetFolderPath(SpecialFolder.MyDocuments);
@@ -78,9 +78,9 @@ namespace TvpMain.Form
             {
                 try
                 {
-                    using Stream inputStream = openFile.OpenFile();
-                    using StreamReader streamReader = new StreamReader(inputStream);
-                    using CsvReader csvReader = new CsvReader(streamReader);
+                    using var inputStream = openFile.OpenFile();
+                    using var streamReader = new StreamReader(inputStream);
+                    using var csvReader = new CsvReader(streamReader, CultureInfo.CurrentCulture);
 
                     csvReader.Configuration.HasHeaderRecord = false;
                     csvReader.Configuration.IgnoreBlankLines = true;
@@ -90,7 +90,7 @@ namespace TvpMain.Form
                     dgvIgnoreList.AllowUserToAddRows = false;
                     try
                     {
-                        foreach (IgnoreListItem listItem in csvReader.GetRecords<IgnoreListItem>())
+                        foreach (var listItem in csvReader.GetRecords<IgnoreListItem>())
                         {
                             IgnoreList.Add(listItem);
                         }
@@ -131,7 +131,7 @@ namespace TvpMain.Form
             try
             {
                 dgvIgnoreList.Rows.Clear();
-                foreach (IgnoreListItem listItem in IgnoreList)
+                foreach (var listItem in IgnoreList)
                 {
                     dgvIgnoreList.Rows.Add(new object[] { listItem.CaseSensitiveText, listItem.IsIgnoreCase });
                     dgvIgnoreList.Rows[(dgvIgnoreList.Rows.Count - 1)].HeaderCell.Value =
@@ -156,7 +156,7 @@ namespace TvpMain.Form
                 foreach (DataGridViewRow rowItem in dgvIgnoreList.Rows)
                 {
                     IgnoreList.Add(new IgnoreListItem(rowItem.Cells[0].Value.ToString(),
-                                                  rowItem.Cells[1].Value == null ? false : (bool)rowItem.Cells[1].Value));
+                                                  (bool?)rowItem.Cells[1].Value ?? false));
                 }
             }
             finally

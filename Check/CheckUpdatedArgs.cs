@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace TvpMain.Check
+﻿namespace TvpMain.Check
 {
     /// <summary>
     /// Args for check update events.
@@ -12,34 +6,30 @@ namespace TvpMain.Check
     public class CheckUpdatedArgs
     {
         /// <summary>
-        /// Current book count in check.
-        /// </summary>
-        private int _currBookNum;
-
-        /// <summary>
         /// Max book position in check (1 for single-book check, 66 for all books, etc.).
         /// </summary>
-        private int _maxBookNum;
+        public int TotalBooks { get; }
 
         /// <summary>
         /// Current book count in check.
         /// </summary>
-        public int CurrBookNum { get => _currBookNum; }
+        public int BookCtr { get; }
 
         /// <summary>
-        /// Max book position in check (1 for single-book check, 66 for all books, etc.).
+        /// Current book number in update (1-based).
         /// </summary>
-        public int MaxBookNum { get => _maxBookNum; }
+        public int BookNum { get; }
 
         /// <summary>
         /// Basic ctor;
         /// </summary>
-        /// <param name="currBookNum">Current book count in check.</param>
-        /// <param name="maxBookNum">Max book position in check.</param>
-        public CheckUpdatedArgs(int currBookNum, int maxBookNum)
+        /// <param name="bookCtr">Current book count in check.</param>
+        /// <param name="totalBooks">Max book position in check.</param>
+        public CheckUpdatedArgs(int totalBooks, int bookCtr, int bookNum)
         {
-            this._currBookNum = currBookNum;
-            this._maxBookNum = maxBookNum;
+            this.TotalBooks = totalBooks;
+            this.BookCtr = bookCtr;
+            this.BookNum = bookNum;
         }
     }
 }

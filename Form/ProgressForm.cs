@@ -2,7 +2,7 @@
 using System.Text;
 using System.Windows.Forms;
 using TvpMain.Check;
-using TvpMain.Util;
+using TvpMain.Text;
 
 /*
  * Form to provide progress of Translation Validation Checks.
@@ -20,14 +20,9 @@ namespace TvpMain.Form
         private DateTime _startTime;
 
         /// <summary>
-        /// Last book number processed in current run.
+        /// Last check update.
         /// </summary>
-        private int _lastBookNum;
-
-        /// <summary>
-        /// Max book number in current run.
-        /// </summary>
-        private int _maxBookNum;
+        private CheckUpdatedArgs _lastUpdate;
 
         /// <summary>
         /// Cancel event handler, for use by workflow.
@@ -35,11 +30,18 @@ namespace TvpMain.Form
         public event EventHandler Cancelled;
 
         /// <summary>
+        /// Lock for progress state.
+        /// </summary>
+        private readonly object _progressLock;
+
+        /// <summary>
         /// Basic ctor.
         /// </summary>
         public ProgressForm()
         {
             InitializeComponent();
+
+            _progressLock = new object();
             ResetForm();
         }
 
@@ -49,10 +51,9 @@ namespace TvpMain.Form
         /// <param name="updatedArgs"></param>
         public void OnCheckUpdated(CheckUpdatedArgs updatedArgs)
         {
-            lock (this)
+            lock (_progressLock)
             {
-                _lastBookNum = updatedArgs.CurrBookNum;
-                _maxBookNum = updatedArgs.MaxBookNum;
+                _lastUpdate = updatedArgs;
             }
         }
 
@@ -66,13 +67,15 @@ namespace TvpMain.Form
             pbrStatus.Value = pbrStatus.Minimum;
             pbrStatus.Style = ProgressBarStyle.Marquee;
 
-            lblTitle.Text = $"Cancelling Validation...";
+            lblTitle.Text = "Cancelling Validation...";
             Cancelled?.Invoke(sender, e);
         }
 
         public void ResetForm()
         {
             _startTime = DateTime.Now;
+            _lastUpdate = null;
+
             ResetFormContents();
         }
 
@@ -81,7 +84,7 @@ namespace TvpMain.Form
             pbrStatus.Value = pbrStatus.Minimum;
             pbrStatus.Style = ProgressBarStyle.Marquee;
 
-            lblTitle.Text = $"Running Validation...";
+            lblTitle.Text = "Running Validation...";
         }
 
         /// <summary>
@@ -91,23 +94,13 @@ namespace TvpMain.Form
         /// <returns>Reported time text.</returns>
         private string GetElapsedTime(TimeSpan timeSpan)
         {
-            StringBuilder stringBuilder = new StringBuilder();
+            var stringBuilder = new StringBuilder();
 
-            stringBuilder.Append(string.Format("{0:D2}", (int)timeSpan.TotalMinutes));
+            stringBuilder.Append($"{(int)timeSpan.TotalMinutes:D2}");
             stringBuilder.Append(((timeSpan.Seconds % 2) == 0) ? " " : ":");
-            stringBuilder.Append(string.Format("{0:D2}", timeSpan.Seconds));
+            stringBuilder.Append($"{timeSpan.Seconds:D2}");
 
             return stringBuilder.ToString();
-        }
-
-        /// <summary>
-        /// Cancel event forwarder.
-        /// </summary>
-        /// <param name="sender">Event source (button).</param>
-        /// <param name="e">Event args (ignored).</param>
-        private void btnCancel_Click(object sender, EventArgs e)
-        {
-            Cancelled?.Invoke(sender, e);
         }
 
         /// <summary>
@@ -118,28 +111,38 @@ namespace TvpMain.Form
         private void OnTimerUpdate(object sender, EventArgs e)
         {
             lblElapsedTime.Text = GetElapsedTime(DateTime.Now.Subtract(_startTime));
-            lock (this)
+            CheckUpdatedArgs currUpdate;
+
+            lock (_progressLock)
             {
-                if (_lastBookNum != pbrStatus.Value
-                    || _maxBookNum != pbrStatus.Maximum)
+                currUpdate = _lastUpdate;
+            }
+            if (currUpdate == null)
+            {
+                return;
+            }
+
+            if (currUpdate.BookCtr != pbrStatus.Value
+                || currUpdate.TotalBooks != pbrStatus.Maximum)
+            {
+                pbrStatus.Maximum = currUpdate.TotalBooks;
+
+                if (currUpdate.BookCtr > pbrStatus.Maximum
+                    || currUpdate.BookCtr <= pbrStatus.Minimum)
                 {
-                    pbrStatus.Maximum = _maxBookNum;
-
-                    if (_lastBookNum > pbrStatus.Maximum
-                        || _lastBookNum <= pbrStatus.Minimum)
-                    {
-                        ResetFormContents();
-                    }
-                    else
-                    {
-                        pbrStatus.Value = _lastBookNum;
-                        pbrStatus.Style = ProgressBarStyle.Continuous;
-
-                        lblTitle.Text = $"Checked book #{_lastBookNum} of {_maxBookNum}...";
-                    }
-
-                    Activate();
+                    ResetFormContents();
                 }
+                else
+                {
+                    pbrStatus.Value = currUpdate.BookCtr;
+                    pbrStatus.Style = ProgressBarStyle.Continuous;
+
+                    lblTitle.Text = BookUtil.BookIdsByNum.TryGetValue(currUpdate.BookNum, out var bookId)
+                            ? $"Checked {bookId.BookTitle} (#{currUpdate.BookCtr} of {currUpdate.TotalBooks})..."
+                            : $"Checked #{currUpdate.BookNum} (#{currUpdate.BookCtr} of {currUpdate.TotalBooks})...";
+                }
+
+                Activate();
             }
         }
     }

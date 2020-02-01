@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using TvpMain.Data;
 
 namespace TvpMain.Filter
 {
@@ -36,23 +32,29 @@ namespace TvpMain.Filter
         public abstract IList<string> CaseInsensitivePhrases { get; }
 
         /// <summary>
-        /// Main filter implementtation.
+        /// Main filter implementation.
         /// </summary>
         /// <param name="inputText">Text to be checked for filtering (required).</param>
         /// <returns>True if filter matches, false otherwise.</returns>
-        public bool FilterText(String inputText)
+        public bool FilterText(string inputText)
         {
+            // empty filter = ignore
+            if (IsEmpty)
+            {
+                return false;
+            }
+
             inputText = inputText.Trim();
 
-            ISet<string> caseSensitiveWords = CaseSensitiveWords;
-            ISet<string> caseInsensitiveWords = CaseInsensitiveWords;
+            var caseSensitiveWords = CaseSensitiveWords;
+            var caseInsensitiveWords = CaseInsensitiveWords;
 
             // for words checks: break input text into words, check each word against 
             // case sensitive/insenstive sets.
             if (caseSensitiveWords.Count > 0
                 || caseInsensitiveWords.Count > 0)
             {
-                IEnumerable<string> textParts = inputText.Split(null)
+                var textParts = inputText.Split(null)
                     .Select(partItem => partItem.Trim())
                     .Where(partItem => !partItem.StartsWith("\\"));
 
@@ -72,10 +74,10 @@ namespace TvpMain.Filter
             // for phrases: iterate case sensitive/insenstive phrases and check if
             // within (entire) input text. Input text obviously isn't a phrase if 
             // it doesn't contain whitespace.
-            if (inputText.Any(Char.IsWhiteSpace))
+            if (inputText.Any(char.IsWhiteSpace))
             {
-                IList<string> caseSensitivePhrases = CaseSensitivePhrases;
-                IList<string> caseInsensitivePhrases = CaseInsensitivePhrases;
+                var caseSensitivePhrases = CaseSensitivePhrases;
+                var caseInsensitivePhrases = CaseInsensitivePhrases;
 
                 if (caseSensitivePhrases.Count > 0
                     || caseInsensitivePhrases.Count > 0)
@@ -88,7 +90,7 @@ namespace TvpMain.Filter
 
                     if (caseInsensitivePhrases.Count > 0)
                     {
-                        string lowerVerseText = inputText.ToLower();
+                        var lowerVerseText = inputText.ToLower();
                         if (caseInsensitivePhrases.Any(phraseItem => lowerVerseText.Contains(phraseItem)))
                         {
                             return true;
@@ -101,17 +103,12 @@ namespace TvpMain.Filter
         }
 
         /// <summary>
-        /// True if no constiuent sets/lists have contents, false otherwise.
+        /// True if no constituent sets/lists have contents, false otherwise.
         /// </summary>
-        public bool IsEmpty
-        {
-            get
-            {
-                return (CaseSensitiveWords.Count < 1
-                        && CaseInsensitiveWords.Count < 1
-                        && CaseSensitivePhrases.Count < 1
-                        && CaseInsensitivePhrases.Count < 1);
-            }
-        }
+        public bool IsEmpty =>
+            (CaseSensitiveWords.Count < 1
+             && CaseInsensitiveWords.Count < 1
+             && CaseSensitivePhrases.Count < 1
+             && CaseInsensitivePhrases.Count < 1);
     }
 }

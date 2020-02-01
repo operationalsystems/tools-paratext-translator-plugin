@@ -45,7 +45,7 @@ namespace TvpMain
 
                 try
                 {
-                    Thread uiThread = new Thread(() =>
+                    var uiThread = new Thread(() =>
                     {
                         try
                         {
@@ -95,9 +95,6 @@ namespace TvpMain
         /// <summary>
         /// Data file key spec accessor (no-op, not used by this plugin).
         /// </summary>
-        public Dictionary<string, IPluginDataFileMergeInfo> DataFileKeySpecifications
-        {
-            get { return null; }
-        }
+        public Dictionary<string, IPluginDataFileMergeInfo> DataFileKeySpecifications => null;
     }
 }
