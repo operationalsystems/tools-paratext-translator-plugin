@@ -95,13 +95,6 @@ namespace TvpMain.Reference
             }.ToImmutableDictionary();
 
         /// <summary>
-        /// All distinct tags paired tags paired in any contexts.
-        /// </summary>
-        private static readonly ISet<string> AllContextPairedTags =
-            ContextPairedTags.Values.SelectMany(listItem => listItem)
-                .ToImmutableHashSet();
-
-        /// <summary>
         /// Contexts to ignore missing paired tags.
         /// </summary>
         private static readonly ISet<PartContext> IgnoreMissingPairedTagsContexts =
@@ -561,96 +554,6 @@ namespace TvpMain.Reference
                 inputText.IndexOf($@"\{tagName}", StringComparison.InvariantCultureIgnoreCase) >= 0
                 || inputText.IndexOf($@"\{tagName}*", StringComparison.InvariantCultureIgnoreCase) >= 0)
                 .ToImmutableList();
-        }
-
-        /// <summary>
-        /// Finds the first of the supplied tags that begins _and_ ends the input text.
-        /// </summary>
-        /// <param name="inputText">Input text (required).</param>
-        /// <param name="tagNames">Tag names to search for, without leading backslashes or trailing stars (required).</param>
-        /// <returns>True if input starts or ends with any of the tags.</returns>
-        private static string FindStartAndEndTags(string inputText, IEnumerable<string> tagNames)
-        {
-            var bestPosition = -1;
-            string bestTag = null;
-
-            foreach (var tagName in tagNames)
-            {
-                var foundStart = inputText.IndexOf($@"\{tagName}", StringComparison.InvariantCultureIgnoreCase);
-                var foundEnd = inputText.IndexOf($@"\{tagName}*", StringComparison.InvariantCultureIgnoreCase);
-
-                if (foundStart >= 0 && foundEnd >= 0 &&
-                    foundStart < foundEnd)
-                {
-                    var foundPosition = Math.Min(foundStart, foundEnd);
-                    if (bestPosition == -1
-                        || bestPosition < foundPosition)
-                    {
-                        bestPosition = foundPosition;
-                        bestTag = tagName;
-                    }
-                }
-            }
-
-            return bestTag;
-        }
-
-        /// <summary>
-        /// Finds the first of the supplied tags that begins _or_ ends the input text.
-        /// </summary>
-        /// <param name="inputText">Input text (required).</param>
-        /// <param name="tagNames">Tag names to search for, without leading backslashes or trailing stars (required).</param>
-        /// <returns>True if input starts or ends with any of the tags.</returns>
-        private static string FindStartOrEndTags(string inputText, IEnumerable<string> tagNames)
-        {
-            var bestPosition = -1;
-            string bestTag = null;
-
-            foreach (var tagName in tagNames)
-            {
-                var foundStart = inputText.IndexOf($@"\{tagName}", StringComparison.InvariantCultureIgnoreCase);
-                var foundEnd = inputText.IndexOf($@"\{tagName}*", StringComparison.InvariantCultureIgnoreCase);
-
-                var foundPosition = foundStart;
-                if (foundStart < 0 && foundEnd >= 0)
-                {
-                    foundPosition = foundEnd;
-                }
-                else if (foundEnd < 0 && foundStart >= 0)
-                {
-                    foundPosition = foundStart;
-                }
-                else if (foundStart >= 0 && foundEnd >= 0
-                         && foundStart < foundEnd)
-                {
-                    foundPosition = foundStart;
-                }
-
-                if (foundPosition >= 0
-                    && (bestPosition < 0 || bestPosition < foundPosition))
-                {
-                    bestPosition = foundPosition;
-                    bestTag = tagName;
-                }
-            }
-
-            return bestTag;
-        }
-
-        /// <summary>
-        /// Finds the first of the supplied tags that begins _and_ ends the input text.
-        /// </summary>
-        /// <param name="inputText">Input text (required).</param>
-        /// <param name="tagNames">Tag names to search for, without leading backslashes or trailing stars (required).</param>
-        /// <returns>True if input starts or ends with any of the tags.</returns>
-        private static string StartsAndEndsWithTags(string inputText, IEnumerable<string> tagNames)
-        {
-            return tagNames
-                .FirstOrDefault(tagName =>
-                    inputText.StartsWith($@"\{tagName}",
-                        StringComparison.InvariantCultureIgnoreCase)
-                    && inputText.EndsWith($@"\{tagName}*",
-                        StringComparison.InvariantCultureIgnoreCase));
         }
     }
 }
