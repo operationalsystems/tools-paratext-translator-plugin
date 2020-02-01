@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using TvpMain.Project;
+using TvpMain.Text;
 
 namespace TvpMain.Reference
 {
@@ -57,9 +58,15 @@ namespace TvpMain.Reference
         {
             ParserType = parserType;
             ReferenceMode = referenceMode;
-            OpeningTag = openingTag;
+            OpeningTag = openingTag != null
+                         && VerseRegexUtil.TargetReferencePairedTags.Contains(openingTag.ToLower())
+                ? openingTag
+                : null;
             ScriptureReference = scriptureReference ?? throw new ArgumentNullException(nameof(scriptureReference));
-            ClosingTag = closingTag;
+            ClosingTag = closingTag != null
+                         && VerseRegexUtil.TargetReferencePairedTags.Contains(closingTag.ToLower())
+                ? closingTag
+                : null;
         }
 
         public long Score => (OpeningTag == null ? 0L : 1000L)

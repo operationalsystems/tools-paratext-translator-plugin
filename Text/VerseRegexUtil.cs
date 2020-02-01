@@ -4,6 +4,7 @@ using System.Collections.Immutable;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using TvpMain.Util;
 
 namespace TvpMain.Text
 {
@@ -13,13 +14,35 @@ namespace TvpMain.Text
     public class VerseRegexUtil
     {
         /// <summary>
+        /// Standard book name regex text (i.e., at least one letter surrounded by letters or digits).
+        /// </summary>
+        public const string STANDARD_BOOK_NAME_REGEX_TEXT = @"\w*\p{L}\w*";
+
+        /// <summary>
+        /// Standard punctuation regex text.
+        /// </summary>
+        public const string STANDARD_PUNCTUATION_NAME_REGEX_TEXT = @"[ \t\p{P}]";
+
+        /// <summary>
+        /// Possible reference-wrapping tags, anywhere in the text.
+        /// </summary>
+        public static readonly ISet<string> TargetReferencePairedTags =
+            new HashSet<string>()
+            {
+                "xt", "+xt", "ior"
+            }.ToImmutableHashSet();
+
+        /// <summary>
         /// Regexes to catch _possible_ target references in arbitrary text
         /// with typical English punctuation for error checking.
         /// </summary>
         public static readonly IList<Regex> StandardTargetReferenceRegexes =
             new List<Regex>()
             {
-                CreateTargetReferenceRegex(@"xt", @"\w*\p{L}\w*",@"[ \t\p{P}]")
+                CreateTargetReferenceGroupRegex(
+                    TargetReferencePairedTags.Select(Regex.Escape),
+                    STANDARD_BOOK_NAME_REGEX_TEXT.ToSingletonEnumerable(),
+                    STANDARD_PUNCTUATION_NAME_REGEX_TEXT.ToSingletonEnumerable())
             }.ToImmutableList();
 
         /// <summary>

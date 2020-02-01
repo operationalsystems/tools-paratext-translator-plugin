@@ -390,8 +390,8 @@ namespace TvpMain.Project
             TargetReferenceRegexes = new List<Regex>()
                 {
                     VerseRegexUtil.CreateTargetReferenceGroupRegex(
-                        new string[] { @"xt" },
-                        new string[] { @"\w*\p{L}\w*" },
+                        VerseRegexUtil.TargetReferencePairedTags.Select(Regex.Escape),
+                        VerseRegexUtil.STANDARD_BOOK_NAME_REGEX_TEXT.ToSingletonEnumerable(),
                         punctuationParts),
                 }.Concat(VerseRegexUtil.StandardTargetReferenceRegexes)
                 .ToImmutableList();

@@ -35,37 +35,16 @@ namespace TvpMain.Reference
             }.ToImmutableDictionary();
 
         /// <summary>
-        /// Tags exclusive to specific context content.
+        /// Content tags (i.e., in the entire part) that we should ensure aren't in the wrong context.
         /// </summary>
         private static readonly IDictionary<PartContext, ISet<string>> ContextContentTags
             = new Dictionary<PartContext, ISet<string>>()
             {
                 {
-                    PartContext.Introductions,
-                    new HashSet<string>()
-                    {
-                        "xt"
-                    }.ToImmutableHashSet()
-                },
-                {
-                    PartContext.Outlines,
-                    new HashSet<string>()
-                    {
-                        "ior"
-                    }.ToImmutableHashSet()
-                },
-                {
-                    PartContext.MainText,
-                    new HashSet<string>()
-                    {
-                        "xt"
-                    }.ToImmutableHashSet()
-                },
-                {
                     PartContext.NoteOrReference,
                     new HashSet<string>()
                     {
-                        "fr", "ft", "xt", "+xt"
+                        "fr", "ft"
                     }.ToImmutableHashSet()
                 }
             }.ToImmutableDictionary();
@@ -243,12 +222,17 @@ namespace TvpMain.Reference
                          matchStart, parsedReference,
                          outputResults) || result;
 
-            result = CheckForIncorrectTag(
+            result = CheckForIncorrectContentTags(
                          inputPart, matchText,
                          matchStart, parsedReference,
                          outputResults) || result;
 
-            result = CheckForMalformedOrMissingTag(
+            result = CheckForIncorrectReferenceTags(
+                         inputPart, matchText,
+                         matchStart, parsedReference,
+                         outputResults) || result;
+
+            result = CheckForMissingOrMalformedTag(
                          inputPart, matchText,
                          matchStart, parsedReference,
                          outputResults) || result;
@@ -386,7 +370,7 @@ namespace TvpMain.Reference
         }
 
         /// <summary>
-        /// Check for incorrect tag naming (e.g., \fr outside of a footnote area).
+        /// Check for incorrect content tags (e.g., \fr outside of a footnote area).
         /// </summary>
         /// <param name="inputPart">Input verse part (required).</param>
         /// <param name="matchText">Input text (required).</param>
@@ -394,14 +378,13 @@ namespace TvpMain.Reference
         /// <param name="parsedReference">Input scripture reference (required).</param>
         /// <param name="outputResults">Output result destination (required).</param>
         /// <returns>True if results added, false otherwise.</returns>
-        private bool CheckForIncorrectTag(
+        private bool CheckForIncorrectContentTags(
             VersePart inputPart,
             string matchText,
             int matchStart,
             ScriptureReferenceWrapper parsedReference,
             ICollection<ResultItem> outputResults)
         {
-            var contextTitle = ContextTitles[inputPart.PartLocation.PartContext];
             var badTags = FindContentTags(
                     inputPart.PartText, AllContextContentTags)
                 .ToHashSet();
@@ -409,15 +392,17 @@ namespace TvpMain.Reference
             {
                 return false;
             }
-
-            var goodTags = ContextContentTags[inputPart.PartLocation.PartContext];
-            badTags.RemoveWhere(
-                tagName => goodTags.Contains(tagName));
-            if (badTags.Count < 1)
+            if (ContextContentTags.TryGetValue(inputPart.PartLocation.PartContext, out var goodTags))
             {
-                return false;
+                badTags.RemoveWhere(tagName =>
+                    goodTags.Contains(tagName));
+                if (badTags.Count < 1)
+                {
+                    return false;
+                }
             }
 
+            var contextTitle = ContextTitles[inputPart.PartLocation.PartContext];
             var tagList = badTags.Select(tagItem => string.Concat(@"\", tagItem))
                 .NiceListOf(",", "and");
             var tagLabel = badTags.SingularOrPlural("tag", "tags");
@@ -431,7 +416,7 @@ namespace TvpMain.Reference
         }
 
         /// <summary>
-        /// Check for malformed tag (e.g., \fp only at the beginning).
+        /// Check for incorrect paired tags (e.g., \ior outside of an outline area).
         /// </summary>
         /// <param name="inputPart">Input verse part (required).</param>
         /// <param name="matchText">Input text (required).</param>
@@ -439,55 +424,125 @@ namespace TvpMain.Reference
         /// <param name="parsedReference">Input scripture reference (required).</param>
         /// <param name="outputResults">Output result destination (required).</param>
         /// <returns>True if results added, false otherwise.</returns>
-        private bool CheckForMalformedOrMissingTag(
+        private bool CheckForIncorrectReferenceTags(
             VersePart inputPart,
             string matchText,
             int matchStart,
             ScriptureReferenceWrapper parsedReference,
             ICollection<ResultItem> outputResults)
         {
-            var contextTitle = ContextTitles[inputPart.PartLocation.PartContext];
-            var workText = inputPart.PartText.TrimWhitespaceAndParenthesis();
-
-            var contextTags = ContextPairedTags[inputPart.PartLocation.PartContext];
-            if (contextTags.Count < 1)
+            // deal with missing or malformed tags elsewhere
+            if (!parsedReference.IsOpeningTag
+                && !parsedReference.IsClosingTag)
             {
                 return false;
             }
-
-            var startOrEndTag = FindStartOrEndTags(workText, contextTags);
-            if (startOrEndTag == null)
+            // get good tags for this context
+            if (!ContextPairedTags.TryGetValue(inputPart.PartLocation.PartContext, out var goodTags)
+                || goodTags.Count < 1)
             {
-                // ignore missing (but not malformed) tags in specific contexts
+                return false;
+            }
+            // missing tags or matches = no error
+            if ((!parsedReference.IsOpeningTag || goodTags.Contains(parsedReference.OpeningTag))
+                && (!parsedReference.IsClosingTag || goodTags.Contains(parsedReference.ClosingTag)))
+            {
+                return false;
+            }
+            // otherwise, build message
+            var badTags = new HashSet<string>();
+            if (parsedReference.IsOpeningTag)
+            {
+                badTags.Add(parsedReference.OpeningTag);
+            }
+            if (parsedReference.IsClosingTag)
+            {
+                badTags.Add(parsedReference.ClosingTag);
+            }
+
+            var contextTitle = ContextTitles[inputPart.PartLocation.PartContext];
+            var tagList1 = badTags.Select(tagItem => string.Concat(@"\", tagItem))
+                .NiceListOf(",", "and");
+            var tagLabel1 = badTags.SingularOrPlural("tag", "tags");
+            var tagList2 = goodTags.Select(tagItem => string.Concat(@"\", tagItem))
+                .NiceListOf(",", "or");
+            outputResults.Add(new ResultItem(inputPart,
+                $@"Incorrect use of {tagList1} {tagLabel1} in {contextTitle} text at position {matchStart} (expecting paired {tagList2} tags).",
+                matchText, matchStart,
+                null, CheckType.ScriptureReference,
+                (int)ScriptureReferenceErrorType.IncorrectTag));
+
+            return true;
+        }
+
+        /// <summary>
+        /// Check for missing or malformed tags (e.g., \fp only at the beginning).
+        /// </summary>
+        /// <param name="inputPart">Input verse part (required).</param>
+        /// <param name="matchText">Input text (required).</param>
+        /// <param name="matchStart">Input text position, from verse start (0-based).</param>
+        /// <param name="parsedReference">Input scripture reference (required).</param>
+        /// <param name="outputResults">Output result destination (required).</param>
+        /// <returns>True if results added, false otherwise.</returns>
+        private bool CheckForMissingOrMalformedTag(
+            VersePart inputPart,
+            string matchText,
+            int matchStart,
+            ScriptureReferenceWrapper parsedReference,
+            ICollection<ResultItem> outputResults)
+        {
+            // get good tags for this context
+            if (!ContextPairedTags.TryGetValue(inputPart.PartLocation.PartContext, out var goodTags)
+                || goodTags.Count < 1)
+            {
+                return false;
+            }
+            // mismatched (malformed)
+            if (!Equals(parsedReference.OpeningTag,
+                parsedReference.ClosingTag))
+            {
+                var badTags = new HashSet<string>();
+                if (parsedReference.IsOpeningTag)
+                {
+                    badTags.Add(parsedReference.OpeningTag);
+                }
+                if (parsedReference.IsClosingTag)
+                {
+                    badTags.Add(parsedReference.ClosingTag);
+                }
+
+                var contextTitle = ContextTitles[inputPart.PartLocation.PartContext];
+                var tagList1 = badTags.Select(tagItem => string.Concat(@"\", tagItem))
+                    .NiceListOf(",", "and");
+                var tagLabel1 = badTags.SingularOrPlural("tag", "tags");
+                var tagList2 = goodTags.Select(tagItem => string.Concat(@"\", tagItem))
+                    .NiceListOf(",", "or");
+                outputResults.Add(new ResultItem(inputPart,
+                    $@"Malformed {tagList1} {tagLabel1} in {contextTitle} text at position {matchStart} (expecting paired {tagList2} tags).",
+                    matchText, matchStart,
+                    null, CheckType.ScriptureReference,
+                    (int)ScriptureReferenceErrorType.MalformedTag));
+            }
+
+            // we have missing (or) wrong but equal tags
+            if ((!parsedReference.IsOpeningTag || !goodTags.Contains(parsedReference.OpeningTag))
+                && (!parsedReference.IsClosingTag || !goodTags.Contains(parsedReference.ClosingTag)))
+            {
+                // missing tags
                 if (IgnoreMissingPairedTagsContexts.Contains(inputPart.PartLocation.PartContext))
                 {
                     return false;
                 }
-                else // otherwise, we have a problem
-                {
-                    var tagList = contextTags.Select(tagItem => string.Concat(@"\", tagItem))
-                        .NiceListOf(",", "or");
-                    var tagLabel = contextTags.SingularOrPlural("tag", "tags");
-                    outputResults.Add(new ResultItem(inputPart,
-                        $@"Missing paired {tagList} {tagLabel} in {contextTitle} text at position {matchStart}.",
-                        matchText, matchStart,
-                        null, CheckType.ScriptureReference,
-                        (int)ScriptureReferenceErrorType.MissingTag));
-                    return true;
-                }
-            }
 
-            var startAndEndTag = FindStartAndEndTags(workText, contextTags);
-            if (!Equals(startOrEndTag, startAndEndTag))
-            {
-                var tagList = contextTags.Select(tagItem => string.Concat(@"\", tagItem))
+                var contextTitle = ContextTitles[inputPart.PartLocation.PartContext];
+                var tagList = goodTags.Select(tagItem => string.Concat(@"\", tagItem))
                     .NiceListOf(",", "or");
-                var tagLabel = contextTags.SingularOrPlural("tag", "tags");
+                var tagLabel = goodTags.SingularOrPlural("tag", "tags");
                 outputResults.Add(new ResultItem(inputPart,
-                    $@"Malformed \{startOrEndTag} tag in {contextTitle} text at position {matchStart} (expecting paired {tagList} {tagLabel}).",
+                    $@"Missing {tagList} {tagLabel} in {contextTitle} text at position {matchStart}.",
                     matchText, matchStart,
                     null, CheckType.ScriptureReference,
-                    (int)ScriptureReferenceErrorType.MalformedTag));
+                    (int)ScriptureReferenceErrorType.MissingTag));
                 return true;
             }
 

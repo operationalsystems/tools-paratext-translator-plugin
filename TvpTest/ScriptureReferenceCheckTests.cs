@@ -77,7 +77,7 @@ namespace TvpTest
             Assert.AreEqual(1, resultList.Count, "The reference has an error in spacing or punctuation.");
             Assert.AreEqual(1, CountErrors(resultList, ScriptureReferenceErrorType.LooseFormatting),
                 "The reference has an error in spacing or punctuation.");
-            Assert.AreEqual(@"Genesis 1;3", resultList[0].MatchText);
+            Assert.AreEqual(@"\ior Genesis 1;3 \ior*", resultList[0].MatchText);
 
         }
 
@@ -102,7 +102,7 @@ namespace TvpTest
             Assert.AreEqual(1, resultList.Count, @"Missing opening \ior tag in reference.");
             Assert.AreEqual(1, CountErrors(resultList, ScriptureReferenceErrorType.MalformedTag),
                 @"Reference is missing opening, closing tags or a \.");
-            Assert.AreEqual(@"Genesis 1:1-4", resultList[0].MatchText);
+            Assert.AreEqual(@"Genesis 1:1-4 \ior*", resultList[0].MatchText);
         }
 
         /// <summary>
@@ -126,7 +126,7 @@ namespace TvpTest
             Assert.AreEqual(1, resultList.Count, @"Missing closing \ior* tag in reference.");
             Assert.AreEqual(1, CountErrors(resultList, ScriptureReferenceErrorType.MalformedTag),
                 @"Reference is missing opening, closing tags or a \.");
-            Assert.AreEqual(@"Genesis 1:1; 4:4", resultList[0].MatchText);
+            Assert.AreEqual(@"\ior Genesis 1:1; 4:4", resultList[0].MatchText);
         }
 
         /// <summary>
@@ -174,7 +174,7 @@ namespace TvpTest
             Assert.AreEqual(1, resultList.Count, @"Incorrect name style is used in reference.");
             Assert.AreEqual(1, CountErrors(resultList, ScriptureReferenceErrorType.IncorrectNameStyle),
                 "Incorrect name style is used in reference.");
-            Assert.AreEqual(@"GEN 1:1; 4:4", resultList[0].MatchText);
+            Assert.AreEqual(@"\ior GEN 1:1; 4:4 \ior*", resultList[0].MatchText);
         }
 
         /// <summary>
@@ -198,7 +198,7 @@ namespace TvpTest
             Assert.AreEqual(1, resultList.Count, @"Incorrect name style is used in reference.");
             Assert.AreEqual(1, CountErrors(resultList, ScriptureReferenceErrorType.IncorrectNameStyle),
                 "Incorrect name style is used in reference.");
-            Assert.AreEqual(@"GEN 1:1; 4:3", resultList[0].MatchText);
+            Assert.AreEqual(@"\ior GEN 1:1; 4:3 \ior*", resultList[0].MatchText);
         }
 
         /// <summary>
@@ -219,9 +219,9 @@ namespace TvpTest
             _referenceCheck.CheckText(partData, resultList);
 
             // Assert
-            Assert.AreEqual(2, resultList.Count, @"An \fr tag surrounding a reference outside of footnotes area.");
-            Assert.AreEqual(1, CountErrors(resultList, ScriptureReferenceErrorType.IncorrectTag),
-            "The wrong tag is used for the context.");
+            Assert.AreEqual(3, resultList.Count, @"An \fr tag surrounding a reference outside of footnotes area.");
+            Assert.AreEqual(2, CountErrors(resultList, ScriptureReferenceErrorType.IncorrectTag),
+                "The wrong tag is used for the context.");
             Assert.AreEqual(1, CountErrors(resultList, ScriptureReferenceErrorType.MissingTag),
                 "The wrong tag is used for the context.");
             Assert.AreEqual(@"\+xt Genesis 1:1\+xt*", resultList[0].MatchText);
@@ -271,9 +271,9 @@ namespace TvpTest
             _referenceCheck.CheckText(partData, resultList);
 
             // Assert
-            Assert.AreEqual(2, resultList.Count, @"A \ft tag surrounding a reference outside of footnotes area.");
+            Assert.AreEqual(3, resultList.Count, @"A \ft tag surrounding a reference outside of footnotes area.");
             var errorType = (ScriptureReferenceErrorType)resultList[0].ResultTypeCode;
-            Assert.AreEqual(1, CountErrors(resultList, ScriptureReferenceErrorType.IncorrectTag),
+            Assert.AreEqual(2, CountErrors(resultList, ScriptureReferenceErrorType.IncorrectTag),
                 "The wrong tag is used for the context.");
             Assert.AreEqual(1, CountErrors(resultList, ScriptureReferenceErrorType.MissingTag),
                 "The wrong tag is used for the context.");
@@ -474,7 +474,7 @@ namespace TvpTest
             var errorType = (ScriptureReferenceErrorType)resultList[0].ResultTypeCode;
             Assert.AreEqual(1, CountErrors(resultList, ScriptureReferenceErrorType.IncorrectTag),
                 "The wrong tag is used for the context.");
-            Assert.AreEqual(@"Exodus 3:1-4", resultList[0].MatchText);
+            Assert.AreEqual(@"\ior Exodus 3:1-4\ior*", resultList[0].MatchText);
         }
 
         /// <summary>
@@ -574,7 +574,7 @@ namespace TvpTest
             Assert.AreEqual(1, resultList.Count, "Reference is malformed.");
             Assert.AreEqual(1, CountErrors(resultList, ScriptureReferenceErrorType.LooseFormatting),
                 "The reference has an error in spacing or punctuation.");
-            Assert.AreEqual(@"Genesis 1;3", resultList[0].MatchText);
+            Assert.AreEqual(@"\ior Genesis 1;3 \ior*", resultList[0].MatchText);
 
         }
 
@@ -721,7 +721,7 @@ namespace TvpTest
                 "The wrong tag is used for the context.");
             Assert.AreEqual(1, CountErrors(resultList, ScriptureReferenceErrorType.MissingTag),
                 "The wrong tag is used for the context.");
-            Assert.AreEqual(@"GEN 5:1", resultList[0].MatchText);
+            Assert.AreEqual(@"\ior GEN 5:1\ior*", resultList[0].MatchText);
         }
 
         /// <summary>
@@ -768,8 +768,8 @@ namespace TvpTest
             _referenceCheck.CheckText(partData, resultList);
 
             // Assert
-            Assert.AreEqual(2, resultList.Count, @"A \ft tag surrounding a reference outside of footnotes area.");
-            Assert.AreEqual(1, CountErrors(resultList, ScriptureReferenceErrorType.IncorrectTag),
+            Assert.AreEqual(3, resultList.Count, @"A \ft tag surrounding a reference outside of footnotes area.");
+            Assert.AreEqual(2, CountErrors(resultList, ScriptureReferenceErrorType.IncorrectTag),
                 "The wrong tag is used for the context.");
             Assert.AreEqual(1, CountErrors(resultList, ScriptureReferenceErrorType.MissingTag),
                 "The wrong tag is used for the context.");
