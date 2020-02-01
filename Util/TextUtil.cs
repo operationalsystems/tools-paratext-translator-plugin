@@ -103,7 +103,7 @@ namespace TvpMain.Util
         /// <param name="interiorDelimiter">Interior delimiter, without integral spacing (e.g., ",").</param>
         /// <param name="finalDelimiter">Final delimiter, without integral spacing (e.g., "or").</param>
         /// <returns>Delimited list text.</returns>
-        public static string NiceListOf<T>(
+        public static string ToNiceList<T>(
             this IEnumerable<T> inputItems,
             string interiorDelimiter,
             string finalDelimiter)
@@ -114,7 +114,7 @@ namespace TvpMain.Util
             return inputList.Count switch
             {
                 0 => string.Empty,
-                1 => inputList[0].ToString(),
+                1 => inputList[0],
                 2 => string.Concat(inputList[0], " ",
                     finalDelimiter, " ",
                     inputList[1]),

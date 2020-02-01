@@ -31,15 +31,6 @@ namespace TvpMain.Reference
         private IDictionary<LocalReferenceMode, IList<Parser<char, ScriptureReferenceWrapper>>> StandardParsers { get; }
 
         /// <summary>
-        /// Tag names that must be paired.
-        /// </summary>
-        private static readonly ISet<string> PairedTagNames =
-            new HashSet<string>()
-            {
-                "xt", "ior"
-            }.ToImmutableHashSet();
-
-        /// <summary>
         /// Part contexts that require target-specific book name formats.
         /// </summary>
         private static readonly ISet<PartContext> TargetNameContexts =
@@ -263,8 +254,7 @@ namespace TvpMain.Reference
                 || !string.IsNullOrWhiteSpace(closingTag))
             {
                 var firstTag = (openingTag ?? closingTag).Trim().ToLower();
-                if (PairedTagNames.Any(tagName =>
-                    firstTag.Contains(tagName)))
+                if (VerseRegexUtil.TargetReferencePairedTags.Contains(firstTag))
                 {
                     openingTag = firstTag;
                     closingTag = string.Concat(firstTag, "*");

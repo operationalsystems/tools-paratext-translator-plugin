@@ -21,7 +21,7 @@ namespace TvpMain.Text
         /// <summary>
         /// Standard punctuation regex text.
         /// </summary>
-        public const string STANDARD_PUNCTUATION_NAME_REGEX_TEXT = @"[ \t\p{P}]";
+        public const string STANDARD_PUNCTUATION_REGEX_TEXT = @"[ \t\p{P}]";
 
         /// <summary>
         /// Possible reference-wrapping tags, anywhere in the text.
@@ -42,7 +42,7 @@ namespace TvpMain.Text
                 CreateTargetReferenceGroupRegex(
                     TargetReferencePairedTags.Select(Regex.Escape),
                     STANDARD_BOOK_NAME_REGEX_TEXT.ToSingletonEnumerable(),
-                    STANDARD_PUNCTUATION_NAME_REGEX_TEXT.ToSingletonEnumerable())
+                    STANDARD_PUNCTUATION_REGEX_TEXT.ToSingletonEnumerable())
             }.ToImmutableList();
 
         /// <summary>

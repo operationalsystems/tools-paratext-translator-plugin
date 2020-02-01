@@ -397,7 +397,7 @@ namespace TvpMain.Reference
 
             var contextTitle = ContextTitles[inputPart.PartLocation.PartContext];
             var tagList = badTags.Select(tagItem => string.Concat(@"\", tagItem))
-                .NiceListOf(",", "and");
+                .ToNiceList(",", "and");
             var tagLabel = badTags.SingularOrPlural("tag", "tags");
             outputResults.Add(new ResultItem(inputPart,
                 $@"Incorrect use of {tagList} {tagLabel} in {contextTitle} text at position {matchStart}.",
@@ -455,10 +455,10 @@ namespace TvpMain.Reference
 
             var contextTitle = ContextTitles[inputPart.PartLocation.PartContext];
             var tagList1 = badTags.Select(tagItem => string.Concat(@"\", tagItem))
-                .NiceListOf(",", "and");
+                .ToNiceList(",", "and");
             var tagLabel1 = badTags.SingularOrPlural("tag", "tags");
             var tagList2 = goodTags.Select(tagItem => string.Concat(@"\", tagItem))
-                .NiceListOf(",", "or");
+                .ToNiceList(",", "or");
             outputResults.Add(new ResultItem(inputPart,
                 $@"Incorrect use of {tagList1} {tagLabel1} in {contextTitle} text at position {matchStart} (expecting paired {tagList2} tags).",
                 matchText, matchStart,
@@ -506,10 +506,10 @@ namespace TvpMain.Reference
 
                 var contextTitle = ContextTitles[inputPart.PartLocation.PartContext];
                 var tagList1 = badTags.Select(tagItem => string.Concat(@"\", tagItem))
-                    .NiceListOf(",", "and");
+                    .ToNiceList(",", "and");
                 var tagLabel1 = badTags.SingularOrPlural("tag", "tags");
                 var tagList2 = goodTags.Select(tagItem => string.Concat(@"\", tagItem))
-                    .NiceListOf(",", "or");
+                    .ToNiceList(",", "or");
                 outputResults.Add(new ResultItem(inputPart,
                     $@"Malformed {tagList1} {tagLabel1} in {contextTitle} text at position {matchStart} (expecting paired {tagList2} tags).",
                     matchText, matchStart,
@@ -529,7 +529,7 @@ namespace TvpMain.Reference
 
                 var contextTitle = ContextTitles[inputPart.PartLocation.PartContext];
                 var tagList = goodTags.Select(tagItem => string.Concat(@"\", tagItem))
-                    .NiceListOf(",", "or");
+                    .ToNiceList(",", "or");
                 var tagLabel = goodTags.SingularOrPlural("tag", "tags");
                 outputResults.Add(new ResultItem(inputPart,
                     $@"Missing {tagList} {tagLabel} in {contextTitle} text at position {matchStart}.",
