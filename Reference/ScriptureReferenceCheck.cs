@@ -225,7 +225,7 @@ namespace TvpMain.Reference
                          matchStart, parsedReference,
                          outputResults) || result;
 
-            result = CheckForMissingOrMalformedTag(
+            result = CheckForMissingOrMalformedTags(
                          inputPart, matchText,
                          matchStart, parsedReference,
                          outputResults) || result;
@@ -242,7 +242,7 @@ namespace TvpMain.Reference
         /// <param name="parsedReference">Input scripture reference (required).</param>
         /// <param name="outputResults">Output result destination (required).</param>
         /// <returns>True if results added, false otherwise.</returns>
-        private bool CheckForBadReference(
+        private static bool CheckForBadReference(
             VersePart inputPart,
             string matchText,
             int matchStart,
@@ -371,7 +371,7 @@ namespace TvpMain.Reference
         /// <param name="parsedReference">Input scripture reference (required).</param>
         /// <param name="outputResults">Output result destination (required).</param>
         /// <returns>True if results added, false otherwise.</returns>
-        private bool CheckForIncorrectContentTags(
+        private static bool CheckForIncorrectContentTags(
             VersePart inputPart,
             string matchText,
             int matchStart,
@@ -417,7 +417,7 @@ namespace TvpMain.Reference
         /// <param name="parsedReference">Input scripture reference (required).</param>
         /// <param name="outputResults">Output result destination (required).</param>
         /// <returns>True if results added, false otherwise.</returns>
-        private bool CheckForIncorrectReferenceTags(
+        private static bool CheckForIncorrectReferenceTags(
             VersePart inputPart,
             string matchText,
             int matchStart,
@@ -477,7 +477,7 @@ namespace TvpMain.Reference
         /// <param name="parsedReference">Input scripture reference (required).</param>
         /// <param name="outputResults">Output result destination (required).</param>
         /// <returns>True if results added, false otherwise.</returns>
-        private bool CheckForMissingOrMalformedTag(
+        private static bool CheckForMissingOrMalformedTags(
             VersePart inputPart,
             string matchText,
             int matchStart,
