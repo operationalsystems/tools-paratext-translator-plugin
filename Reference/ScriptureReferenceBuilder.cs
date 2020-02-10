@@ -228,10 +228,47 @@ namespace TvpMain.Reference
         /// <param name="inputContext">Input context (required).</param>
         /// <param name="inputWrapper">Input scripture wrapper (required).</param>
         /// <returns>Formatted reference text.</returns>
-        public string FormatStandardReference(PartContext inputContext,
+        public string FormatStandardReference(
+            PartContext inputContext,
             ScriptureReferenceWrapper inputWrapper)
         {
-            return FormatStandardReference(inputContext, inputWrapper, false);
+            return FormatStandardReference(
+                inputContext, inputWrapper,
+                false, null);
+        }
+
+        /// <summary>
+        /// Format standard reference text including any tags, based on text context.
+        /// </summary>
+        /// <param name="inputContext">Input context (required).</param>
+        /// <param name="inputWrapper">Input scripture wrapper (required).</param>
+        /// <param name="isSuppressTags">True to suppress tags and only include reference content.</param>
+        /// <returns>Formatted reference text.</returns>
+        public string FormatStandardReference(
+            PartContext inputContext,
+            ScriptureReferenceWrapper inputWrapper,
+            bool isSuppressTags)
+        {
+            return FormatStandardReference(
+                inputContext, inputWrapper,
+                isSuppressTags, null);
+        }
+
+        /// <summary>
+        /// Format standard reference text including any tags, based on text context.
+        /// </summary>
+        /// <param name="inputContext">Input context (required).</param>
+        /// <param name="inputWrapper">Input scripture wrapper (required).</param>
+        /// <param name="overrideTag">Tag overriding tags present on scripture wrapper (optional; may be null).</param>
+        /// <returns>Formatted reference text.</returns>
+        public string FormatStandardReference(
+            PartContext inputContext,
+            ScriptureReferenceWrapper inputWrapper,
+            string overrideTag)
+        {
+            return FormatStandardReference(
+                inputContext, inputWrapper,
+                false, overrideTag);
         }
 
         /// <summary>
@@ -240,10 +277,13 @@ namespace TvpMain.Reference
         /// <param name="inputContext">Input context (required).</param>
         /// <param name="inputWrapper">Input scripture wrapper (required).</param>
         /// <param name="isSuppressTags">True to suppress tags and only include reference content.</param>
+        /// <param name="overrideTag">Tag overriding tags present on scripture wrapper (optional; may be null).</param>
         /// <returns>Formatted reference text.</returns>
-        public string FormatStandardReference(PartContext inputContext,
+        public string FormatStandardReference(
+            PartContext inputContext,
             ScriptureReferenceWrapper inputWrapper,
-            bool isSuppressTags)
+            bool isSuppressTags,
+            string overrideTag)
         {
             var resultBuilder = new StringBuilder();
             var openingTag = inputWrapper.OpeningTag;
@@ -263,9 +303,10 @@ namespace TvpMain.Reference
 
             // prepend tag, if present
             if (!isSuppressTags
-                && !string.IsNullOrWhiteSpace(openingTag))
+                && (!string.IsNullOrWhiteSpace(overrideTag)
+                || !string.IsNullOrWhiteSpace(openingTag)))
             {
-                resultBuilder.AppendWithSpace($@"\{openingTag}");
+                resultBuilder.AppendWithSpace($@"\{overrideTag ?? openingTag}");
             }
 
             // iterate book references, each including chapter and verse references
@@ -302,9 +343,10 @@ namespace TvpMain.Reference
             }
 
             if (!isSuppressTags
-                && !string.IsNullOrWhiteSpace(closingTag))
+                && (!string.IsNullOrWhiteSpace(overrideTag)
+                || !string.IsNullOrWhiteSpace(closingTag)))
             {
-                resultBuilder.Append($@"\{closingTag}");
+                resultBuilder.Append($@"\{overrideTag ?? closingTag}");
             }
 
             return resultBuilder.ToString();
@@ -324,26 +366,19 @@ namespace TvpMain.Reference
                 var nameType = TargetNameContexts.Contains(inputContext)
                     ? ProjectManager.TargetNameType
                     : ProjectManager.PassageNameType;
-                switch (nameType)
+                return nameType switch
                 {
-                    case BookNameType.Abbreviation:
-                        return inputName.NameItem.GetAvailableName(
-                            BookNameType.Abbreviation,
-                            BookNameType.ShortName,
-                            BookNameType.LongName);
-                    case BookNameType.ShortName:
-                        return inputName.NameItem.GetAvailableName(
-                            BookNameType.ShortName,
-                            BookNameType.Abbreviation,
-                            BookNameType.LongName);
-                    case BookNameType.LongName:
-                        return inputName.NameItem.GetAvailableName(
-                            BookNameType.LongName,
-                            BookNameType.Abbreviation,
-                            BookNameType.ShortName);
-                    default:
-                        return inputName.NameItem.BookCode;
-                }
+                    BookNameType.Abbreviation =>
+                    inputName.NameItem.GetAvailableName(BookNameType.Abbreviation,
+                        BookNameType.ShortName, BookNameType.LongName),
+                    BookNameType.ShortName =>
+                    inputName.NameItem.GetAvailableName(BookNameType.ShortName,
+                        BookNameType.Abbreviation, BookNameType.LongName),
+                    BookNameType.LongName =>
+                    inputName.NameItem.GetAvailableName(BookNameType.LongName,
+                        BookNameType.Abbreviation, BookNameType.ShortName),
+                    _ => inputName.NameItem.BookCode
+                };
             }
             else
             {

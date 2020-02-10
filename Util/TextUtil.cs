@@ -26,15 +26,15 @@ namespace TvpMain.Util
         public static void AppendWithSpace<T>(this StringBuilder thisBuilder, T inputData)
         {
             var inputText = inputData?.ToString();
-            if (!string.IsNullOrWhiteSpace(inputText))
+            if (string.IsNullOrWhiteSpace(inputText))
             {
-                if (thisBuilder.Length > 0)
-                {
-                    thisBuilder.Append(" ");
-                }
-
-                thisBuilder.Append(inputData);
+                return;
             }
+            if (thisBuilder.Length > 0)
+            {
+                thisBuilder.Append(" ");
+            }
+            thisBuilder.Append(inputData);
         }
 
         /// <summary>

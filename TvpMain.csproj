@@ -64,7 +64,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="AddInViews">
-      <HintPath>C:\Program Files (x86)\Paratext 8\Pipeline\AddInViews\AddInViews.dll</HintPath>
+      <HintPath>C:\Program Files (x86)\Paratext 9\Pipeline\AddInViews\AddInViews.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="CsvHelper, Version=13.0.0.0, Culture=neutral, PublicKeyToken=8c4959082be5c823, processorArchitecture=MSIL">
@@ -206,6 +206,8 @@
     <Content Include="Resources\biblica-32x32.ico" />
     <Content Include="Resources\biblica-96x96.ico" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Serialization\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
