@@ -13,6 +13,11 @@ namespace TvpTest
     public class ScriptureReferenceParserTests : AbstractCheckTests
     {
         /// <summary>
+        /// Per-test context, provided by MsTest framework.
+        /// </summary>
+        public TestContext TestContext { get; set; }
+
+        /// <summary>
         /// Test parser output lines
         /// </summary>
         protected string[] ParserLines;
@@ -25,9 +30,9 @@ namespace TvpTest
         [TestInitialize]
         [DeploymentItem(@"Resources\parser-results-1.txt", "Resources")]
         [DeploymentItem(@"Resources\formatter-results-1.txt", "Resources")]
-        public override void TestSetup()
+        public void TestSetup()
         {
-            base.TestSetup();
+            base.AbstractTestSetup(TestContext);
 
             ParserLines = File.ReadAllLines(@"Resources\parser-results-1.txt");
             FormatterLines = File.ReadAllLines(@"Resources\formatter-results-1.txt");

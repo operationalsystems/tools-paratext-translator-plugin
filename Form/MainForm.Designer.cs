@@ -13,8 +13,9 @@
         /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
         protected override void Dispose(bool disposing)
         {
-            _projectManager.Dispose();
+            _resultManager.Dispose();
             _textCheckRunner.Dispose();
+            _exportManager.Dispose();
 
             if (disposing && (components != null))
             {

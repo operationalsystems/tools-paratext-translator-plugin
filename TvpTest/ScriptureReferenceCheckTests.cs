@@ -14,6 +14,11 @@ namespace TvpTest
     public class ScriptureReferenceCheckTests : AbstractCheckTests
     {
         /// <summary>
+        /// Per-test context, provided by MsTest framework.
+        /// </summary>
+        public TestContext TestContext { get; set; }
+
+        /// <summary>
         /// Reference checker under test.
         /// </summary>
         private ScriptureReferenceCheck _referenceCheck;
@@ -22,9 +27,9 @@ namespace TvpTest
         /// Test setup for verse lines and main mocks.
         /// </summary>
         [TestInitialize]
-        public override void TestSetup()
+        public void TestSetup()
         {
-            base.TestSetup();
+            base.AbstractTestSetup(TestContext);
 
             _referenceCheck = new ScriptureReferenceCheck(MockProjectManager.Object);
         }

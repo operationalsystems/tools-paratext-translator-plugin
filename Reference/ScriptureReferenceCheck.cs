@@ -250,21 +250,22 @@ namespace TvpMain.Reference
             ICollection<ResultItem> outputResults)
         {
             // check for unknown books
-            var unknownBooks = string.Join(", ",
-                parsedReference.ScriptureReference.BookReferences
+            var unknownBooks = parsedReference.ScriptureReference.BookReferences
                     .Where(referenceItem => !referenceItem.IsLocalReference)
                     .Select(referenceItem => referenceItem.BookReferenceName)
                     .Where(rangeItem => !rangeItem.IsKnownBook)
-                    .Select(rangeItem => rangeItem.NameText));
-
-            if (string.IsNullOrWhiteSpace(unknownBooks))
+                    .Select(rangeItem => rangeItem.NameText)
+                    .Distinct()
+                    .ToImmutableList();
+            if (!unknownBooks.Any())
             {
                 return false;
             }
 
+            var unknownBooksText = string.Join(", ", unknownBooks);
             var nameLabel = unknownBooks.SingularOrPlural("name", "names");
             outputResults.Add(new ResultItem(inputPart,
-                $"Invalid book {nameLabel} at position {matchStart}: {unknownBooks}.",
+                $"Invalid book {nameLabel} at position {matchStart}: {unknownBooksText}.",
                 matchText, matchStart,
                 null, CheckType.ScriptureReference,
                 (int)ScriptureReferenceErrorType.BadReference));

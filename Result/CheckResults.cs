@@ -49,7 +49,7 @@ namespace TvpMain.Result
                 ISet<string> matchSet = new HashSet<string>();
                 foreach (var resultItem in resultItems)
                 {
-                    bookSet.Add(resultItem.VersePart.ParatextVerse.VerseLocation.BookNum);
+                    bookSet.Add(resultItem.VersePart.ProjectVerse.VerseLocation.BookNum);
                     matchSet.Add(resultItem.MatchText);
                 }
 

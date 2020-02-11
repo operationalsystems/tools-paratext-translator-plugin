@@ -7,7 +7,7 @@ namespace TvpMain.Text
     /// <summary>
     /// Specific verse location.
     ///
-    /// Note "private set" fields support JSON serialization
+    /// Note "private set" fields enable JSON serialization
     /// while maintaining runtime immutability.
     /// </summary>
     [JsonObject(MemberSerialization.OptIn)]

@@ -17,6 +17,11 @@ namespace TvpTest
     public class CheckRunnerTests : AbstractCheckTests
     {
         /// <summary>
+        /// Per-test context, provided by MsTest framework.
+        /// </summary>
+        public TestContext TestContext { get; set; }
+
+        /// <summary>
         /// Max book number.
         /// </summary>
         protected const int TEST_MAX_BOOK_NUM = 66;
@@ -59,9 +64,9 @@ namespace TvpTest
         /// </summary>
         [TestInitialize]
         [DeploymentItem(@"Resources\test-verses-1.txt", "Resources")]
-        public override void TestSetup()
+        public void TestSetup()
         {
-            base.TestSetup();
+            base.AbstractTestSetup(TestContext);
 
             VerseLines = File.ReadAllLines(@"Resources\test-verses-1.txt");
             ExpectedRefs = new HashSet<int>();
@@ -121,7 +126,8 @@ namespace TvpTest
             var checkRunner = new TextCheckRunner(
                 MockHost.Object,
                 TEST_PROJECT_NAME,
-                MockProjectManager.Object);
+                MockProjectManager.Object,
+                MockResultManager.Object);
             checkRunner.RunChecks(
                CheckArea.CurrentProject,
                new List<ITextCheck>()
@@ -154,7 +160,8 @@ namespace TvpTest
             var checkRunner = new TextCheckRunner(
                 MockHost.Object,
                 TEST_PROJECT_NAME,
-                MockProjectManager.Object);
+                MockProjectManager.Object,
+                MockResultManager.Object);
             checkRunner.RunChecks(
                 CheckArea.CurrentBook,
                 new List<ITextCheck>()
@@ -184,7 +191,8 @@ namespace TvpTest
             var checkRunner = new TextCheckRunner(
                 MockHost.Object,
                 TEST_PROJECT_NAME,
-                MockProjectManager.Object);
+                MockProjectManager.Object,
+                MockResultManager.Object);
             checkRunner.RunChecks(
                 CheckArea.CurrentChapter,
                 new List<ITextCheck>()
@@ -221,7 +229,8 @@ namespace TvpTest
             var checkRunner = new TextCheckRunner(
                 MockHost.Object,
                 TEST_PROJECT_NAME,
-                MockProjectManager.Object);
+                MockProjectManager.Object,
+                MockResultManager.Object);
 
             // start check in background thread, then cancel from test thread.
             var workThread = new Thread(() =>

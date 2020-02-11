@@ -137,6 +137,7 @@
     <Compile Include="Reference\ScriptureReference.cs" />
     <Compile Include="Reference\ScriptureReferenceParser.cs" />
     <Compile Include="Result\ResultManager.cs" />
+    <Compile Include="Export\ExportManager.cs" />
     <Compile Include="Text\BookIdItem.cs" />
     <Compile Include="Text\PartLocation.cs" />
     <Compile Include="Text\ProjectVerse.cs" />
@@ -206,8 +207,6 @@
     <Content Include="Resources\biblica-32x32.ico" />
     <Content Include="Resources\biblica-96x96.ico" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Serialization\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

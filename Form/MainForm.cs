@@ -16,6 +16,7 @@ using TvpMain.Project;
 using TvpMain.Punctuation;
 using TvpMain.Reference;
 using TvpMain.Result;
+using TvpMain.Export;
 using TvpMain.Text;
 using TvpMain.Util;
 using static System.Environment;
@@ -108,6 +109,16 @@ namespace TvpMain.Form
         private readonly ProjectManager _projectManager;
 
         /// <summary>
+        /// Provides access to results.
+        /// </summary>
+        private readonly ResultManager _resultManager;
+
+        /// <summary>
+        /// Project serialization support.
+        /// </summary>
+        private readonly ExportManager _exportManager;
+
+        /// <summary>
         /// Current check area.
         /// </summary>
         private CheckArea _checkArea;
@@ -129,7 +140,13 @@ namespace TvpMain.Form
             _progressForm.Cancelled += OnProgressFormCancelled;
 
             _projectManager = new ProjectManager(host, activeProjectName);
-            _textCheckRunner = new TextCheckRunner(_host, _activeProjectName, _projectManager);
+            _resultManager = new ResultManager(host, activeProjectName);
+            _resultManager.ScheduleLoadBooks(_projectManager.PresentBookNums);
+
+            _textCheckRunner = new TextCheckRunner(_host, _activeProjectName,
+                _projectManager, _resultManager);
+            _exportManager = new ExportManager(_host, _activeProjectName,
+                _projectManager, _resultManager);
 
             _allChecks = new List<ITextCheck>()
             {
@@ -1133,7 +1150,7 @@ namespace TvpMain.Form
 
                 if (verseLocation != null)
                 {
-                    referencesTextBox.Text = _filteredReferencesResultMap[verseLocation][0].VersePart.ParatextVerse.VerseText;
+                    referencesTextBox.Text = _filteredReferencesResultMap[verseLocation][0].VersePart.ProjectVerse.VerseText;
                     Debug.WriteLine("updateReferencesUIRight - Text Set");
 
                     referencesActionsGridView.Rows.Clear();
@@ -1198,7 +1215,7 @@ namespace TvpMain.Form
                         referencesActionsGridView.Rows[e.RowIndex].Cells[IGNORE_BUTTON_COLUMN].Value = "Un-Ignore";
                     }
 
-                    _projectManager.ResultManager.SetVerseResult(resultItem);
+                    _resultManager.SetVerseResult(resultItem);
 
                     // update ui so that the change is reflected by re-running the filter
                     DoPrimaryUpdate();
@@ -1276,7 +1293,7 @@ namespace TvpMain.Form
                         referencesTextBox.SelectionBackColor = Color.White;
 
                         referencesTextBox.SelectionStart = MinusPrecedingChars(
-                            resultItem.VersePart.ParatextVerse.VerseText,
+                            resultItem.VersePart.ProjectVerse.VerseText,
                             resultItem.MatchStart,
                             '\r');
                         referencesTextBox.SelectionLength = resultItem.MatchLength;

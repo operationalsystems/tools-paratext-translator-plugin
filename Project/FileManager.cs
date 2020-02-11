@@ -1,6 +1,6 @@
-﻿using AddInSideViews;
-using System;
+﻿using System;
 using System.IO;
+using AddInSideViews;
 
 namespace TvpMain.Project
 {
@@ -41,14 +41,76 @@ namespace TvpMain.Project
         /// <summary>
         /// Gets book names file, if present.
         /// </summary>
-        /// <param name="outputStream">Read-only file stream if file found, null otherwise.</param>
+        /// <param name="readOnlyStream">Read-only file stream if file found, null otherwise.</param>
         /// <returns>True if file found, false otherwise.</returns>
-        public bool TryGetBookNamesFile(out FileStream outputStream)
+        public bool TryGetBookNamesFile(out FileStream readOnlyStream)
         {
             var fileInfo = new FileInfo(Path.Combine(_projectDir.FullName, "BookNames.xml"));
-            outputStream = fileInfo.Exists ? fileInfo.OpenRead() : null;
+            readOnlyStream = fileInfo.Exists ? fileInfo.OpenRead() : null;
 
-            return outputStream != null;
+            return readOnlyStream != null;
+        }
+
+        /// <summary>
+        /// Opens a file within the project directory for writing.
+        /// </summary>
+        /// <param name="outputName">Destination file name element (required).</param>
+        /// <param name="isMakeDirs">True to make missing directories, false to throw an exception.</param>
+        /// <param name="isOverwrite">True to overwrite existing files, false to throw an exception.</param>
+        /// <param name="writableStream">Writable file stream if created, null otherwise.</param>
+        /// <returns>True if stream created, false otherwise.</returns>
+        public bool TryGetOutputFile(
+            string outputName,
+            bool isMakeDirs, bool isOverwrite,
+            out FileStream writableStream)
+        {
+            return TryGetOutputFile(
+                _projectDir, outputName,
+                isMakeDirs, isOverwrite,
+                out writableStream);
+        }
+
+        /// <summary>
+        /// Opens a file within a target directory for writing.
+        /// </summary>
+        /// <param name="outputDir">Destination directory (required).</param>
+        /// <param name="outputName">Destination file name element (required).</param>
+        /// <param name="isMakeDirs">True to make missing directories, false to throw an exception.</param>
+        /// <param name="isOverwrite">True to overwrite existing files, false to throw an exception.</param>
+        /// <param name="writableStream">Writable file stream if created, null otherwise.</param>
+        /// <returns>True if stream created, false otherwise.</returns>
+        public bool TryGetOutputFile(
+            DirectoryInfo outputDir, string outputName,
+            bool isMakeDirs, bool isOverwrite,
+            out FileStream writableStream)
+        {
+            var fileInfo = new FileInfo(Path.Combine(outputDir.FullName, outputName));
+
+            // delete existing file, as needed
+            if (fileInfo.Exists)
+            {
+                if (!isOverwrite)
+                {
+                    throw new ArgumentException($"file exists: {fileInfo.FullName} (isOverwrite=false)");
+                }
+                fileInfo.Delete();
+                fileInfo.Refresh();
+            }
+
+            // make output directory, as needed
+            if (fileInfo.Directory != null
+                && !fileInfo.Directory.Exists)
+            {
+                if (!isMakeDirs)
+                {
+                    throw new ArgumentException($"missing directory: {fileInfo.Directory.FullName} (isMakeDirs=false)");
+                }
+                Directory.CreateDirectory(fileInfo.Directory.FullName);
+                fileInfo.Refresh();
+            }
+
+            writableStream = fileInfo.OpenWrite();
+            return writableStream != null;
         }
     }
 }

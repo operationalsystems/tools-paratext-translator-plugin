@@ -7,7 +7,7 @@ namespace TvpMain.Text
     /// <summary>
     /// A specific part of a verse.
     ///
-    /// Note "private set" fields support JSON serialization
+    /// Note "private set" fields enable JSON serialization
     /// while maintaining runtime immutability.
     /// </summary>
     [JsonObject(MemberSerialization.OptIn)]
@@ -17,7 +17,7 @@ namespace TvpMain.Text
         /// Source verse text.
         /// </summary>
         [JsonProperty]
-        public ProjectVerse ParatextVerse { get; private set; }
+        public ProjectVerse ProjectVerse { get; private set; }
 
         /// <summary>
         /// Part location.
@@ -36,7 +36,7 @@ namespace TvpMain.Text
         /// </summary>
         [Ignore]
         public string PartCoordinateText =>
-            $"{ParatextVerse.VerseLocation.VerseCoordinateText + "." + PartLocation.PartRangeText}";
+            $"{ProjectVerse.VerseLocation.VerseCoordinateText + "." + PartLocation.PartRangeText}";
 
         /// <summary>
         /// Basic ctor.
@@ -46,7 +46,7 @@ namespace TvpMain.Text
         /// <param name="partLocation"></param>
         public VersePart(ProjectVerse verseData, PartLocation partLocation, string partText)
         {
-            ParatextVerse = verseData ?? throw new ArgumentNullException(nameof(verseData));
+            ProjectVerse = verseData ?? throw new ArgumentNullException(nameof(verseData));
             PartLocation = partLocation ?? throw new ArgumentNullException(nameof(partLocation));
             PartText = partText ?? throw new ArgumentNullException(nameof(partText));
         }
@@ -106,7 +106,7 @@ namespace TvpMain.Text
         /// <returns>True if equal, false otherwise</returns>
         protected bool Equals(VersePart other)
         {
-            return Equals(ParatextVerse, other.ParatextVerse)
+            return Equals(ProjectVerse, other.ProjectVerse)
                    && Equals(PartLocation, other.PartLocation)
                    && PartText == other.PartText;
         }
@@ -132,7 +132,7 @@ namespace TvpMain.Text
         {
             unchecked
             {
-                var hashCode = (ParatextVerse != null ? ParatextVerse.GetHashCode() : 0);
+                var hashCode = (ProjectVerse != null ? ProjectVerse.GetHashCode() : 0);
                 hashCode = (hashCode * 397) ^ (PartLocation != null ? PartLocation.GetHashCode() : 0);
                 hashCode = (hashCode * 397) ^ (PartText != null ? PartText.GetHashCode() : 0);
                 return hashCode;

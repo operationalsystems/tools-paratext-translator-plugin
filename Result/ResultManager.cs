@@ -14,6 +14,8 @@ namespace TvpMain.Result
     /// <summary>
     /// Manages access to results for a given project,
     /// including saving and loading to the project file area.
+    ///
+    /// Disposable to ensure task shutdown.
     /// </summary>
     public class ResultManager : IDisposable
     {
@@ -99,7 +101,7 @@ namespace TvpMain.Result
         /// <param name="inputLocation">Verse location to replace results for (required).</param>
         /// <param name="inputItems">New result items to set (merge; required).</param>
         /// <param name="outputItems">Merged list of items for this verse (provided).</param>
-        /// <returns>True if input items are the first items for the verse (if non-empty) or has removed a verse (if empty), false otherwise.</returns>
+        /// <returns>True if there have been any changes or a verse removed (if empty), false otherwise.</returns>
         public bool SetVerseResults(
             IEnumerable<CheckType> inputTypes,
             IEnumerable<PartContext> inputContexts,
@@ -108,49 +110,72 @@ namespace TvpMain.Result
             out IList<ResultItem> outputItems)
         {
             var result = false;
+            var inputList = inputItems.ToImmutableList();
+
             lock (_resultLock)
             {
-                if (inputItems.Any())
+                if (inputList.Any())
                 {
-                    var toSet = new List<ResultItem>();
                     if (_resultItems.TryGetValue(inputLocation,
                         out var foundItems))
                     {
+                        var toSet = new List<ResultItem>();
+
                         // Add new items that don't match existing ones
                         // (and) keep existing ones that match new ones
                         // (e.g., previous results that have been ignored).
-                        toSet.AddRange(inputItems.Select(inputItem =>
+                        toSet.AddRange(inputList.Select(inputItem =>
                             foundItems.FirstOrDefault(foundItem =>
                                 Equals(inputItem, foundItem)) ?? inputItem));
 
                         // Also keep existing results that don't match
                         // supplied check types and contexts
                         toSet.AddRange(foundItems.Where(foundItem =>
-                            !inputTypes.Contains(foundItem.CheckType)
-                            || !inputContexts.Contains(foundItem.PartLocation.PartContext)));
+                            !(inputTypes.Contains(foundItem.CheckType)
+                             && inputContexts.Contains(foundItem.PartLocation.PartContext))));
+
+                        outputItems = toSet.ToImmutableList();
                     }
                     else
                     {
-                        result = true;
-                        toSet.AddRange(inputItems);
+                        outputItems = inputList;
                     }
-
-                    _resultItems[inputLocation] = toSet;
-                    outputItems = toSet.ToImmutableList();
-
-                    ScheduleSaveBooks(inputLocation.BookNum
-                        .ToSingletonEnumerable());
                 }
                 else // empty input = remove any existing items for verse
                 {
-                    result = _resultItems.Remove(inputLocation);
-                    outputItems = Enumerable.Empty<ResultItem>().ToImmutableList();
-
-                    if (result)
+                    if (_resultItems.TryGetValue(inputLocation,
+                        out var foundItems))
                     {
-                        ScheduleSaveBooks(inputLocation.BookNum
-                            .ToSingletonEnumerable());
+                        // Keep existing results that don't match
+                        // supplied check types and contexts
+                        outputItems = foundItems.Where(foundItem =>
+                                !(inputTypes.Contains(foundItem.CheckType)
+                                  && inputContexts.Contains(foundItem.PartLocation.PartContext)))
+                            .ToImmutableList();
                     }
+                    else
+                    {
+                        outputItems = Enumerable.Empty<ResultItem>()
+                            .ToImmutableList();
+                    }
+                }
+
+                // any results? add or update verse in map
+                if (outputItems.Any())
+                {
+                    _resultItems[inputLocation] = outputItems;
+                    result = true;
+                }
+                else // no results? remove verse from map
+                {
+                    result = _resultItems.Remove(inputLocation);
+                }
+
+                // save if there have been notable changes
+                if (result)
+                {
+                    ScheduleSaveBooks(inputLocation.BookNum
+                        .ToSingletonEnumerable());
                 }
             }
             return result;
@@ -192,12 +217,14 @@ namespace TvpMain.Result
         /// </summary>
         /// <param name="inputTypes">Check types to include (optional, may be null; null = all).</param>
         /// <param name="inputContexts">Part contexts to include  (optional, may be null; null = all).</param>
+        /// <param name="isChangesOnly">True to only include result items (a) not ignored and (b) including suggested changes.</param>
         /// <param name="inputLocation">Verse to retrieve for (required).</param>
         /// <param name="outputItems">Output items to populate (provided).</param>
         /// <returns>True if any items found, false otherwise.</returns>
         public bool TryGetVerseResults(
             IEnumerable<CheckType> inputTypes,
             IEnumerable<PartContext> inputContexts,
+            bool isChangesOnly,
             VerseLocation inputLocation, out IList<ResultItem> outputItems)
         {
             outputItems = null;
@@ -205,11 +232,7 @@ namespace TvpMain.Result
             {
                 if (_resultItems.TryGetValue(inputLocation, out var foundItems))
                 {
-                    outputItems = foundItems
-                        .Where(foundItem => inputTypes == null
-                            || inputTypes.Contains(foundItem.CheckType))
-                        .Where(foundItem => inputContexts == null
-                            || inputContexts.Contains(foundItem.PartLocation.PartContext))
+                    outputItems = FilterResultItems(inputTypes, inputContexts, isChangesOnly, foundItems)
                         .ToImmutableList();
                 }
             }
@@ -221,20 +244,19 @@ namespace TvpMain.Result
         /// </summary>
         /// <param name="inputTypes">Check types to include (optional, may be null; null = all).</param>
         /// <param name="inputContexts">Part contexts to include  (optional, may be null; null = all).</param>
+        /// <param name="isChangesOnly">True to only include result items (a) not ignored and (b) including suggested changes.</param>
         /// <returns>Found verse results, if any.</returns>
         public IList<ResultItem> GetAllVerseResults(
             IEnumerable<CheckType> inputTypes,
-            IEnumerable<PartContext> inputContexts)
+            IEnumerable<PartContext> inputContexts,
+            bool isChangesOnly)
         {
             lock (_resultLock)
             {
                 return _resultItems
                     .Values
-                    .SelectMany(listItem => listItem)
-                    .Where(foundItem => inputTypes == null
-                        || inputTypes.Contains(foundItem.CheckType))
-                    .Where(foundItem => inputContexts == null
-                        || inputContexts.Contains(foundItem.PartLocation.PartContext))
+                    .SelectMany(listItem =>
+                        FilterResultItems(inputTypes, inputContexts, isChangesOnly, listItem))
                     .ToImmutableList();
             }
         }
@@ -290,34 +312,92 @@ namespace TvpMain.Result
         }
 
         /// <summary>
+        /// Try to retrieve in-memory results organized by book number.
+        /// </summary>
+        /// <param name="inputTypes">Check types to include (optional, may be null; null = all).</param>
+        /// <param name="inputContexts">Part contexts to include  (optional, may be null; null = all).</param>
+        /// <param name="isChangesOnly">True to only include result items (a) not ignored and (b) including suggested changes.</param>
+        /// <param name="inputBooks">Input book numbers (required).</param>
+        /// <param name="outputResults">Output result dictionary (required).</param>
+        /// <returns>True if any results retrieved, false otherwise.</returns>
+        public bool TryGetBookResults(
+            IEnumerable<CheckType> inputTypes,
+            IEnumerable<PartContext> inputContexts,
+            bool isChangesOnly,
+            IEnumerable<int> inputBooks,
+            out IDictionary<int, IEnumerable<ResultItem>> outputResults)
+        {
+            var inputBooksSet = inputBooks.ToImmutableHashSet();
+            if (inputBooksSet.Count < 1)
+            {
+                outputResults = ImmutableDictionary.Create<int, IEnumerable<ResultItem>>();
+                return false;
+            }
+
+            lock (_resultLock)
+            {
+                outputResults = _resultItems
+                    .Where(pairItem =>
+                        inputBooksSet.Contains(pairItem.Key.BookNum))
+                    .GroupBy(pairItem => pairItem.Key.BookNum)
+                    .ToImmutableDictionary(groupItem =>
+                        groupItem.Key, groupItem =>
+                        groupItem.SelectMany(pairItem =>
+                            FilterResultItems(inputTypes, inputContexts, isChangesOnly, pairItem.Value)));
+            }
+
+            return outputResults.Count > 0;
+        }
+
+        /// <summary>
+        /// Filters a result items using typical criteria.
+        /// </summary>
+        /// <param name="inputTypes">Check types to include (optional, may be null; null = all).</param>
+        /// <param name="inputContexts">Part contexts to include  (optional, may be null; null = all).</param>
+        /// <param name="isChangesOnly">True to only include result items (a) not ignored and (b) including suggested changes.</param>
+        /// <param name="inputItems">Input items to filter (required).</param>
+        /// <returns>Input items if no meaningful criteria, filtered items otherwise.</returns>
+        private static IEnumerable<ResultItem> FilterResultItems(
+            IEnumerable<CheckType> inputTypes,
+            IEnumerable<PartContext> inputContexts,
+            bool isChangesOnly,
+            IEnumerable<ResultItem> inputItems)
+        {
+            var isAnyCriteria = inputTypes != null
+                                || inputContexts != null
+                                || isChangesOnly;
+            return isAnyCriteria
+                ? inputItems
+                    .Where(foundItem => inputTypes == null
+                            || inputTypes.Contains(foundItem.CheckType))
+                    .Where(foundItem => inputContexts == null
+                            || inputContexts.Contains(foundItem.PartLocation.PartContext))
+                    .Where(foundItem =>
+                        foundItem.ResultState != ResultState.Ignored
+                        && foundItem.SuggestionText != null)
+                : inputItems;
+        }
+
+        /// <summary>
         /// Save books for a provided set of book numbers.
         /// </summary>
         /// <param name="inputBooks">Book numbers (1-based).</param>
-        public void SaveBooks(ISet<int> inputBooks)
+        public void SaveBooks(IEnumerable<int> inputBooks)
         {
-            if (inputBooks.Count < 1)
-            {
-                return;
-            }
-            IDictionary<int, IEnumerable<ResultItem>> booksToSave = null;
             lock (_resultLock)
             {
-                booksToSave = _resultItems
-                    .Where(pairItem =>
-                        inputBooks.Contains(pairItem.Key.BookNum))
-                    .GroupBy(pairItem => pairItem.Key.BookNum)
-                    .ToImmutableDictionary(groupItem =>
-                        groupItem.Key,
-                groupItem =>
-                                groupItem.SelectMany(pairItem =>
-                                    pairItem.Value));
-            }
-
-            foreach (var pairItem in booksToSave)
-            {
-                if (BookUtil.BookIdsByNum.TryGetValue(pairItem.Key, out var bookId))
+                if (!TryGetBookResults(null, null, false,
+                    inputBooks, out var booksToSave))
                 {
-                    HostUtil.Instance.PutResultItems(_projectName, bookId.BookCode, pairItem.Value);
+                    return;
+                }
+
+                foreach (var pairItem in booksToSave)
+                {
+                    if (BookUtil.BookIdsByNum.TryGetValue(pairItem.Key, out var bookId))
+                    {
+                        HostUtil.Instance.PutResultItems(_projectName, bookId.BookCode, pairItem.Value);
+                    }
                 }
             }
         }
@@ -381,23 +461,26 @@ namespace TvpMain.Result
         /// Load books from a provided set of book numbers.
         /// </summary>
         /// <param name="inputBooks">Book numbers (1-based).</param>
-        public void LoadBooks(ISet<int> inputBooks)
+        public void LoadBooks(IEnumerable<int> inputBooks)
         {
-            if (inputBooks.Count < 1)
+            ISet<int> inputBooksSet = inputBooks.ToImmutableHashSet();
+            if (inputBooksSet.Count < 1)
             {
                 return;
             }
             lock (_resultLock)
             {
-                foreach (var bookNum in inputBooks)
+                foreach (var bookNum in inputBooksSet)
                 {
-                    if (BookUtil.BookIdsByNum.TryGetValue(bookNum, out var bookId))
+                    if (!BookUtil.BookIdsByNum.TryGetValue(bookNum, out var bookId))
                     {
-                        foreach (var foundItem in
-                            HostUtil.Instance.GetResultItems(_projectName, bookId.BookCode))
-                        {
-                            SetVerseResult(foundItem);
-                        }
+                        continue;
+                    }
+
+                    foreach (var foundItem in
+                        HostUtil.Instance.GetResultItems(_projectName, bookId.BookCode))
+                    {
+                        SetVerseResult(foundItem);
                     }
                 }
             }

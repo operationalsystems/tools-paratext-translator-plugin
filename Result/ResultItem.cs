@@ -12,7 +12,7 @@ namespace TvpMain.Result
     /// user-editable. Accordingly, all fields are incorporated
     /// into equality checks _except_ for ResultState.
     ///
-    /// Note "private set" fields support JSON serialization
+    /// Note "private set" fields enable JSON serialization
     /// while maintaining runtime immutability.
     /// </summary>
     [JsonObject(MemberSerialization.OptIn)]
@@ -28,7 +28,7 @@ namespace TvpMain.Result
         /// Gets the verse location (book, chapter, verse).
         /// </summary>
         public VerseLocation VerseLocation =>
-            VersePart.ParatextVerse.VerseLocation;
+            VersePart.ProjectVerse.VerseLocation;
 
         /// <summary>
         /// Gets the Part location (start, length w/in verse).

@@ -91,7 +91,7 @@ namespace TvpMain.Util
             this IEnumerable<T> inputItems,
             string singularText,
             string pluralText) =>
-            inputItems.ToImmutableList().Count == 1
+            inputItems.Count() == 1
                 ? singularText
                 : pluralText;
 

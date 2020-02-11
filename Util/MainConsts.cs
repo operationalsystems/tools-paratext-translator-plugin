@@ -69,6 +69,11 @@ namespace TvpMain.Util
         public const int MAX_CHECK_THREADS = 4;
 
         /// <summary>
+        /// Max threads to use for exporting files.
+        /// </summary>
+        public const int MAX_EXPORT_THREADS = 4;
+
+        /// <summary>
         /// Max consecutive empty verses before chapter is considered empty.
         /// </summary>
         public const int MAX_CONSECUTIVE_EMPTY_VERSES = 10;

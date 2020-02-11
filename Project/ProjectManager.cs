@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Xml;
 using TvpMain.Result;
+using TvpMain.Export;
 using TvpMain.Text;
 using TvpMain.Util;
 
@@ -14,7 +15,7 @@ namespace TvpMain.Project
     /// <summary>
     /// Provides important project setting and metadata access.
     /// </summary>
-    public class ProjectManager : IDisposable
+    public class ProjectManager
     {
         /// <summary>
         /// Regex for splitting separator settings.
@@ -36,11 +37,6 @@ namespace TvpMain.Project
         /// Project file manager.
         /// </summary>
         public FileManager FileManager { get; }
-
-        /// <summary>
-        /// Provides access to results.
-        /// </summary>
-        public ResultManager ResultManager { get; }
 
         /// <summary>
         /// Readable chapter and verse separators.
@@ -169,25 +165,39 @@ namespace TvpMain.Project
         public IList<Regex> TargetReferenceRegexes { get; private set; }
 
         /// <summary>
-        /// Basic ctor.
+        /// Basic ctor, taking minimum args and creating major support objects
+        /// (e.g., FileManager).
         /// </summary>
         /// <param name="host">Paratext host interface (required).</param>
         /// <param name="activeProjectName">Active project name (required).</param>
-        public ProjectManager(IHost host, string activeProjectName)
+        public ProjectManager(
+            IHost host, string activeProjectName)
+        : this(host, activeProjectName,
+            new FileManager(host, activeProjectName))
+        { }
+
+        /// <summary>
+        /// Secondary ctor, taking all args including support objects.
+        ///
+        /// Note: Expected to be used for testing.
+        /// </summary>
+        /// <param name="host">Paratext host interface (required).</param>
+        /// <param name="activeProjectName">Active project name (required).</param>
+        /// <param name="fileManager">File manager (required).</param>
+        public ProjectManager(
+            IHost host, string activeProjectName,
+            FileManager fileManager)
         {
             Host = host ?? throw new ArgumentNullException(nameof(host));
             ProjectName = activeProjectName
-                                 ?? throw new ArgumentNullException(nameof(activeProjectName));
-
-            FileManager = new FileManager(Host, ProjectName);
-            ResultManager = new ResultManager(Host, ProjectName);
+                          ?? throw new ArgumentNullException(nameof(activeProjectName));
+            FileManager = fileManager
+                          ?? throw new ArgumentNullException(nameof(fileManager));
 
             ReadBooksPresent();
             ReadSeparators();
             ReadBookNames();
             CreateRegexes();
-
-            ResultManager.ScheduleLoadBooks(PresentBookNums);
         }
 
         /// <summary>
@@ -463,12 +473,6 @@ namespace TvpMain.Project
         {
             return (bookNum >= 1 && bookNum <= PresentBookFlags.Count)
                    && PresentBookFlags[bookNum - 1];
-        }
-
-        /// <inheritdoc />
-        public virtual void Dispose()
-        {
-            ResultManager?.Dispose();
         }
     }
 

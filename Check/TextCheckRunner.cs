@@ -50,6 +50,11 @@ namespace TvpMain.Check
         private readonly ProjectManager _projectManager;
 
         /// <summary>
+        /// Check result manager.
+        /// </summary>
+        private readonly ResultManager _resultManager;
+
+        /// <summary>
         /// Current book number at run start (1-based).
         /// </summary>
         private int _runBookNum;
@@ -126,14 +131,19 @@ namespace TvpMain.Check
         /// <param name="host">Paratext host interface (required).</param>
         /// <param name="activeProjectName">Active project name (required).</param>
         /// <param name="projectManager">Settings manager (required).</param>
-        public TextCheckRunner(IHost host, string activeProjectName, ProjectManager projectManager)
+        /// <param name="resultManager">Check result manager (required).</param>
+        public TextCheckRunner(IHost host, string activeProjectName,
+            ProjectManager projectManager,
+            ResultManager resultManager)
         {
             this._host = host
                          ?? throw new ArgumentNullException(nameof(host));
             this._activeProjectName = activeProjectName
                                       ?? throw new ArgumentNullException(nameof(activeProjectName));
             this._projectManager = projectManager
-                                    ?? throw new ArgumentNullException(nameof(projectManager));
+                                   ?? throw new ArgumentNullException(nameof(projectManager));
+            this._resultManager = resultManager
+                                  ?? throw new ArgumentNullException(nameof(resultManager));
         }
 
         /// <summary>
@@ -381,7 +391,7 @@ namespace TvpMain.Check
                                     IList<ResultItem> outputItems = resultItems;
                                     if (_runSaveResults)
                                     {
-                                        _projectManager.ResultManager.SetVerseResults(
+                                        _resultManager.SetVerseResults(
                                             _runCheckTypes, _runContexts,
                                             verseData.VerseLocation, resultItems,
                                             out outputItems);
