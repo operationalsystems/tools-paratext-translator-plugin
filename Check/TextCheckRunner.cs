@@ -240,11 +240,10 @@ namespace TvpMain.Check
 
             // busy-wait until helper thread is done,
             // keeping the UI responsive w/DoEvents()
-            const int threadSleepInMs = (int)(1000f / (float)MainConsts.CHECK_EVENTS_UPDATE_RATE_IN_FPS);
             while (workThread.IsAlive)
             {
                 Application.DoEvents();
-                Thread.Sleep(threadSleepInMs);
+                Thread.Sleep(MainConsts.CHECK_EVENTS_DELAY_IN_MSEC);
             }
 
             // populate output

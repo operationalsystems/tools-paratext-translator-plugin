@@ -16,7 +16,7 @@ namespace TvpMain.Text
         /// <summary>
         /// Source verse text.
         /// </summary>
-        [JsonProperty]
+        [JsonProperty(propertyName: "ParatextVerse")]
         public ProjectVerse ProjectVerse { get; private set; }
 
         /// <summary>
@@ -41,12 +41,12 @@ namespace TvpMain.Text
         /// <summary>
         /// Basic ctor.
         /// </summary>
-        /// <param name="verseData">Source verse data (required).</param>
+        /// <param name="projectVerse">Source verse data (required).</param>
         /// <param name="partText">Part text within verse.</param>
         /// <param name="partLocation"></param>
-        public VersePart(ProjectVerse verseData, PartLocation partLocation, string partText)
+        public VersePart(ProjectVerse projectVerse, PartLocation partLocation, string partText)
         {
-            ProjectVerse = verseData ?? throw new ArgumentNullException(nameof(verseData));
+            ProjectVerse = projectVerse ?? throw new ArgumentNullException(nameof(projectVerse));
             PartLocation = partLocation ?? throw new ArgumentNullException(nameof(partLocation));
             PartText = partText ?? throw new ArgumentNullException(nameof(partText));
         }

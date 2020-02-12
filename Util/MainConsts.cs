@@ -1,6 +1,9 @@
 ﻿/*
  * A Class to handle the Global Constants.
  */
+
+using System.Windows.Forms;
+
 namespace TvpMain.Util
 {
     /// <summary>
@@ -62,6 +65,12 @@ namespace TvpMain.Util
         /// Update rate for progress form and similar loops.
         /// </summary>
         public const int CHECK_EVENTS_UPDATE_RATE_IN_FPS = 10;
+
+        /// <summary>
+        /// Update delay for progress form and similar loops, based on FPS.
+        /// </summary>
+        public const int CHECK_EVENTS_DELAY_IN_MSEC =
+            (int)(1000f / (float)CHECK_EVENTS_UPDATE_RATE_IN_FPS);
 
         /// <summary>
         /// Max threads to use for validation checks.

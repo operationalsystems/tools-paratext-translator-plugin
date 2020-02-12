@@ -127,6 +127,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Check\CheckArea.cs" />
+    <Compile Include="Export\ExportUpdatedArgs.cs" />
     <Compile Include="Form\RichTextBoxPrinter.cs" />
     <Compile Include="Project\BookNameItem.cs" />
     <Compile Include="Project\FileManager.cs" />
