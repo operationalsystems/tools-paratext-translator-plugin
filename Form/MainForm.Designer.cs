@@ -45,7 +45,7 @@
             this.removeFromIgnoreList = new System.Windows.Forms.ToolStripMenuItem();
             this.mainMenu = new System.Windows.Forms.MenuStrip();
             this.fileMenu = new System.Windows.Forms.ToolStripMenuItem();
-            this.saveMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.saveResultsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.areaMenu = new System.Windows.Forms.ToolStripMenuItem();
             this.currentProjectAreaMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.currentBookAreaMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -104,6 +104,9 @@
             this.referencesListViewReferenceColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.referencesListViewCountColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.bindingSource1 = new System.Windows.Forms.BindingSource(this.components);
+            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+            this.exportProjectMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.directoryEntry1 = new System.DirectoryServices.DirectoryEntry();
             ((System.ComponentModel.ISupportInitialize)(this.dgvCheckResults)).BeginInit();
             this.contextMenu.SuspendLayout();
             this.mainMenu.SuspendLayout();
@@ -135,8 +138,8 @@
             // 
             this.dgvCheckResults.AllowUserToAddRows = false;
             this.dgvCheckResults.AllowUserToDeleteRows = false;
-            this.dgvCheckResults.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-            | System.Windows.Forms.AnchorStyles.Left)
+            this.dgvCheckResults.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.dgvCheckResults.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
             this.dgvCheckResults.AutoSizeRowsMode = System.Windows.Forms.DataGridViewAutoSizeRowsMode.DisplayedCells;
@@ -226,20 +229,22 @@
             // fileMenu
             // 
             this.fileMenu.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.saveMenuItem});
+            this.saveResultsMenuItem,
+            this.toolStripSeparator1,
+            this.exportProjectMenuItem});
             this.fileMenu.Name = "fileMenu";
             this.fileMenu.Size = new System.Drawing.Size(37, 23);
             this.fileMenu.Text = "&File";
             // 
-            // saveMenuItem
+            // saveResultsMenuItem
             // 
-            this.saveMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("saveMenuItem.Image")));
-            this.saveMenuItem.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.saveMenuItem.Name = "saveMenuItem";
-            this.saveMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
-            this.saveMenuItem.Size = new System.Drawing.Size(147, 22);
-            this.saveMenuItem.Text = "&Save...";
-            this.saveMenuItem.Click += new System.EventHandler(this.OnFileSaveMenuClick);
+            this.saveResultsMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("saveResultsMenuItem.Image")));
+            this.saveResultsMenuItem.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.saveResultsMenuItem.Name = "saveResultsMenuItem";
+            this.saveResultsMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
+            this.saveResultsMenuItem.Size = new System.Drawing.Size(187, 22);
+            this.saveResultsMenuItem.Text = "&Save Results...";
+            this.saveResultsMenuItem.Click += new System.EventHandler(this.OnFileSaveResultsMenuClick);
             // 
             // areaMenu
             // 
@@ -557,8 +562,8 @@
             // 
             // tabControl
             // 
-            this.tabControl.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-            | System.Windows.Forms.AnchorStyles.Left)
+            this.tabControl.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.tabControl.Controls.Add(this.punctuationTab);
             this.tabControl.Controls.Add(this.referencesTab);
@@ -593,8 +598,8 @@
             // 
             // referencesInnerSplitContainer
             // 
-            this.referencesInnerSplitContainer.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-            | System.Windows.Forms.AnchorStyles.Left)
+            this.referencesInnerSplitContainer.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.referencesInnerSplitContainer.Location = new System.Drawing.Point(203, 0);
             this.referencesInnerSplitContainer.Name = "referencesInnerSplitContainer";
@@ -613,7 +618,7 @@
             // 
             // exceptionDetailsGB
             // 
-            this.exceptionDetailsGB.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
+            this.exceptionDetailsGB.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.exceptionDetailsGB.Controls.Add(this.descriptionTextBox);
             this.exceptionDetailsGB.Controls.Add(this.label3);
@@ -630,7 +635,7 @@
             // 
             // descriptionTextBox
             // 
-            this.descriptionTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            this.descriptionTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.descriptionTextBox.Location = new System.Drawing.Point(89, 71);
             this.descriptionTextBox.Multiline = true;
@@ -650,7 +655,7 @@
             // 
             // suggestedFixTextBox
             // 
-            this.suggestedFixTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            this.suggestedFixTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.suggestedFixTextBox.Location = new System.Drawing.Point(89, 45);
             this.suggestedFixTextBox.Name = "suggestedFixTextBox";
@@ -669,7 +674,7 @@
             // 
             // issueTextBox
             // 
-            this.issueTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            this.issueTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.issueTextBox.Location = new System.Drawing.Point(89, 19);
             this.issueTextBox.Name = "issueTextBox";
@@ -691,8 +696,8 @@
             this.referencesActionsGridView.AllowUserToAddRows = false;
             this.referencesActionsGridView.AllowUserToDeleteRows = false;
             this.referencesActionsGridView.AllowUserToResizeRows = false;
-            this.referencesActionsGridView.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-            | System.Windows.Forms.AnchorStyles.Left)
+            this.referencesActionsGridView.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.referencesActionsGridView.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
             this.referencesActionsGridView.AutoSizeRowsMode = System.Windows.Forms.DataGridViewAutoSizeRowsMode.DisplayedCells;
@@ -745,8 +750,8 @@
             // 
             // referencesTextBox
             // 
-            this.referencesTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-            | System.Windows.Forms.AnchorStyles.Left)
+            this.referencesTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.referencesTextBox.BackColor = System.Drawing.Color.White;
             this.referencesTextBox.Cursor = System.Windows.Forms.Cursors.Default;
@@ -763,7 +768,7 @@
             this.referencesListView.AllowUserToAddRows = false;
             this.referencesListView.AllowUserToDeleteRows = false;
             this.referencesListView.AllowUserToResizeRows = false;
-            this.referencesListView.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+            this.referencesListView.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left)));
             this.referencesListView.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
             this.referencesListView.AutoSizeRowsMode = System.Windows.Forms.DataGridViewAutoSizeRowsMode.DisplayedCells;
@@ -795,6 +800,18 @@
             this.referencesListViewCountColumn.Name = "referencesListViewCountColumn";
             this.referencesListViewCountColumn.ReadOnly = true;
             this.referencesListViewCountColumn.Width = 94;
+            // 
+            // toolStripSeparator1
+            // 
+            this.toolStripSeparator1.Name = "toolStripSeparator1";
+            this.toolStripSeparator1.Size = new System.Drawing.Size(184, 6);
+            // 
+            // exportProjectMenuItem
+            // 
+            this.exportProjectMenuItem.Name = "exportProjectMenuItem";
+            this.exportProjectMenuItem.Size = new System.Drawing.Size(187, 22);
+            this.exportProjectMenuItem.Text = "&Export Project...";
+            this.exportProjectMenuItem.Click += new System.EventHandler(this.OnFileExportProjectMenuItemClick);
             // 
             // MainForm
             // 
@@ -846,7 +863,7 @@
         private System.Windows.Forms.DataGridView dgvCheckResults;
         private System.Windows.Forms.MenuStrip mainMenu;
         private System.Windows.Forms.ToolStripMenuItem fileMenu;
-        private System.Windows.Forms.ToolStripMenuItem saveMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem saveResultsMenuItem;
         private System.Windows.Forms.ToolStripMenuItem checkMenu;
         private System.Windows.Forms.ToolStripMenuItem missingSentencePunctuationCheckMenuItem;
         private System.Windows.Forms.ToolStripMenuItem toolsToolStripMenuItem;
@@ -912,5 +929,8 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn referencesActionsExceptionColumn;
         private System.Windows.Forms.DataGridViewTextBoxColumn referencesActionsAcceptColumn;
         private System.Windows.Forms.DataGridViewButtonColumn referencesActionsIgnoreColumn;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
+        private System.Windows.Forms.ToolStripMenuItem exportProjectMenuItem;
+        private System.DirectoryServices.DirectoryEntry directoryEntry1;
     }
 }

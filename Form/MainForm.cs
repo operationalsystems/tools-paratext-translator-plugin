@@ -759,7 +759,7 @@ namespace TvpMain.Form
         /// </summary>
         /// <param name="sender">Event sender (ignored).</param>
         /// <param name="e">Event args (ignored).</param>
-        private void OnFileSaveMenuClick(object sender, EventArgs e)
+        private void OnFileSaveResultsMenuClick(object sender, EventArgs e)
         {
             using var saveFile = new SaveFileDialog();
 
@@ -785,6 +785,34 @@ namespace TvpMain.Form
                 catch (Exception ex)
                 {
                     HostUtil.Instance.ReportError($"Can't write CSV file: {saveFile.FileName}", false, ex);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Project export menu item handler.
+        /// </summary>
+        /// <param name="sender">Event sender (ignored).</param>
+        /// <param name="e">Event args (ignored).</param>
+        private void OnFileExportProjectMenuItemClick(object sender, EventArgs e)
+        {
+            using var folderBrowser = new FolderBrowserDialog();
+
+            folderBrowser.Description = "Select destination folder...";
+            folderBrowser.SelectedPath = _projectManager.FileManager.ProjectDir.FullName;
+            folderBrowser.ShowNewFolderButton = true;
+
+            if (folderBrowser.ShowDialog() == DialogResult.OK)
+            {
+                try
+                {
+                    _exportManager.ExportProject(
+                        new DirectoryInfo(folderBrowser.SelectedPath),
+                        true);
+                }
+                catch (Exception ex)
+                {
+                    HostUtil.Instance.ReportError($"Can't write export project: {folderBrowser.SelectedPath}", false, ex);
                 }
             }
         }

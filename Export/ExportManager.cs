@@ -120,14 +120,27 @@ namespace TvpMain.Export
             var bookNums = _projectManager.PresentBookNums.ToList();
             _runTotalBooks = bookNums.Count;
 
-            _resultManager.TryGetBookResults(null, null, isChangesOnly,
+            _resultManager.TryGetBookResults(null, null, true,
                 bookNums, out var bookResults);
 
             bookNums.Sort(); // sort to visually run in ~expected order
-            var taskList = bookNums.Select(foundNum =>
-                bookResults.TryGetValue(foundNum, out var foundItems)
-                ? RunBookTask(foundNum, foundItems)
-                : RunBookTask(foundNum, Enumerable.Empty<ResultItem>()));
+            var taskList = bookNums
+                .Select(foundNum =>
+                {
+                    if (bookResults.TryGetValue(foundNum, out var foundItems)
+                        && foundItems.Any())
+                    {
+                        return RunBookTask(foundNum, foundItems);
+                    }
+                    else if (!isChangesOnly)
+                    {
+                        return RunBookTask(foundNum, Enumerable.Empty<ResultItem>());
+                    }
+
+                    return null;
+                })
+                .Where(foundTask =>
+                    foundTask != null);
 
             var workThread = new Thread(() =>
                 {
@@ -167,6 +180,7 @@ namespace TvpMain.Export
         /// Creates and runs an export task for a given book number.
         /// </summary>
         /// <param name="inputBookNum">Book number (1-based).</param>
+        /// <param name="inputItems">Input items to include in output files (required).</param>
         /// <returns></returns>
         private Task RunBookTask(
             int inputBookNum,
@@ -193,10 +207,10 @@ namespace TvpMain.Export
 
                     // get temp output file
                     var fileName = GetUsfmFileName(inputBookNum);
-                    _projectManager.FileManager.TryGetOutputFile(
-                        new DirectoryInfo(Path.GetTempPath()),
-                        fileName, true, true, out var tempStream);
-                    using (tempStream)
+                    var tempDir = new DirectoryInfo(Path.GetTempPath());
+
+                    using (var tempStream = _projectManager.FileManager.GetOutputFile(
+                            tempDir, fileName, true, true))
                     {
                         using var tempWriter = new StreamWriter(tempStream);
 
@@ -270,6 +284,14 @@ namespace TvpMain.Export
                         }
 
                         OnExportUpdated(inputBookNum);
+                    }
+
+                    using (var tempStream = _projectManager.FileManager.GetInputFile(tempDir, fileName))
+                    {
+                        using var outputStream = _projectManager.FileManager.GetOutputFile(
+                            _runTargetDir, fileName, true, true);
+                        tempStream.CopyTo(outputStream);
+                        outputStream.Flush();
                     }
                 }
                 catch (OperationCanceledException)

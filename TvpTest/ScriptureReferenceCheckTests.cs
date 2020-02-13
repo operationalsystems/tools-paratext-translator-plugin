@@ -21,7 +21,7 @@ namespace TvpTest
         /// <summary>
         /// Reference checker under test.
         /// </summary>
-        private ScriptureReferenceCheck _referenceCheck;
+        protected ScriptureReferenceCheck ReferenceCheck;
 
         /// <summary>
         /// Test setup for verse lines and main mocks.
@@ -31,7 +31,7 @@ namespace TvpTest
         {
             base.AbstractTestSetup(TestContext);
 
-            _referenceCheck = new ScriptureReferenceCheck(MockProjectManager.Object);
+            ReferenceCheck = new ScriptureReferenceCheck(MockProjectManager.Object);
         }
 
         /// <summary>
@@ -50,7 +50,7 @@ namespace TvpTest
                 PartContext.MainText);
 
             // Executes the check
-            _referenceCheck.CheckText(partData, resultList);
+            ReferenceCheck.CheckText(partData, resultList);
 
             // Empty results list = no exceptions
             Assert.IsTrue(resultList.Count == 0);
@@ -75,7 +75,7 @@ namespace TvpTest
                 PartContext.Outlines);
 
             // Executes the check
-            _referenceCheck.CheckText(partData, resultList);
+            ReferenceCheck.CheckText(partData, resultList);
 
 
             // Assert
@@ -104,7 +104,7 @@ namespace TvpTest
                 PartContext.Outlines);
 
             // Executes the check
-            _referenceCheck.CheckText(partData, resultList);
+            ReferenceCheck.CheckText(partData, resultList);
 
             // Assert
             Assert.AreEqual(1, resultList.Count,
@@ -131,7 +131,7 @@ namespace TvpTest
                 PartContext.Outlines);
 
             // Executes the check
-            _referenceCheck.CheckText(partData, resultList);
+            ReferenceCheck.CheckText(partData, resultList);
 
             // Assert
             Assert.AreEqual(1, resultList.Count,
@@ -158,7 +158,7 @@ namespace TvpTest
                 PartContext.Outlines);
 
             // Executes the check
-            _referenceCheck.CheckText(partData, resultList);
+            ReferenceCheck.CheckText(partData, resultList);
 
             // Assert
             Assert.AreEqual(1, resultList.Count,
@@ -185,7 +185,7 @@ namespace TvpTest
                 PartContext.Outlines);
 
             // Executes the check
-            _referenceCheck.CheckText(partData, resultList);
+            ReferenceCheck.CheckText(partData, resultList);
 
             // Assert
             Assert.AreEqual(1, resultList.Count,
@@ -212,7 +212,7 @@ namespace TvpTest
                 PartContext.Outlines);
 
             // Executes the check
-            _referenceCheck.CheckText(partData, resultList);
+            ReferenceCheck.CheckText(partData, resultList);
 
             // Assert
             Assert.AreEqual(1, resultList.Count,
@@ -239,7 +239,7 @@ namespace TvpTest
                 PartContext.Outlines);
 
             // Executes the check
-            _referenceCheck.CheckText(partData, resultList);
+            ReferenceCheck.CheckText(partData, resultList);
 
             // Assert
             Assert.AreEqual(3, resultList.Count,
@@ -269,7 +269,7 @@ namespace TvpTest
                 PartContext.Outlines);
 
             // Executes the check
-            _referenceCheck.CheckText(partData, resultList);
+            ReferenceCheck.CheckText(partData, resultList);
 
             // Assert
             Assert.AreEqual(2, resultList.Count,
@@ -299,7 +299,7 @@ namespace TvpTest
                 PartContext.Outlines);
 
             // Executes the check
-            _referenceCheck.CheckText(partData, resultList);
+            ReferenceCheck.CheckText(partData, resultList);
 
             // Assert
             Assert.AreEqual(3, resultList.Count,
@@ -330,7 +330,7 @@ namespace TvpTest
                 PartContext.Outlines);
 
             // Executes the check
-            _referenceCheck.CheckText(partData, resultList);
+            ReferenceCheck.CheckText(partData, resultList);
 
             // Assert
             Assert.AreEqual(2, resultList.Count,
@@ -363,7 +363,7 @@ namespace TvpTest
                 PartContext.Introductions);
 
             // Executes the check
-            _referenceCheck.CheckText(partData, resultList);
+            ReferenceCheck.CheckText(partData, resultList);
 
 
             // Assert
@@ -392,7 +392,7 @@ namespace TvpTest
                 PartContext.Introductions);
 
             // Executes the check
-            _referenceCheck.CheckText(partData, resultList);
+            ReferenceCheck.CheckText(partData, resultList);
 
             // Assert
             Assert.AreEqual(1, resultList.Count,
@@ -419,7 +419,7 @@ namespace TvpTest
                 PartContext.Introductions);
 
             // Executes the check
-            _referenceCheck.CheckText(partData, resultList);
+            ReferenceCheck.CheckText(partData, resultList);
 
             // Assert
             Assert.AreEqual(1, resultList.Count,
@@ -446,7 +446,7 @@ namespace TvpTest
                 PartContext.Introductions);
 
             // Executes the check
-            _referenceCheck.CheckText(partData, resultList);
+            ReferenceCheck.CheckText(partData, resultList);
 
             // Assert
             Assert.AreEqual(0, resultList.Count,
@@ -468,7 +468,7 @@ namespace TvpTest
                 PartContext.Introductions);
 
             // Executes the check
-            _referenceCheck.CheckText(partData, resultList);
+            ReferenceCheck.CheckText(partData, resultList);
 
             // Assert
             Assert.AreEqual(1, resultList.Count,
@@ -495,7 +495,7 @@ namespace TvpTest
                 PartContext.Introductions);
 
             // Executes the check
-            _referenceCheck.CheckText(partData, resultList);
+            ReferenceCheck.CheckText(partData, resultList);
 
             // Assert
             Assert.AreEqual(1, resultList.Count,
@@ -522,7 +522,7 @@ namespace TvpTest
                 PartContext.Introductions);
 
             // Executes the check
-            _referenceCheck.CheckText(partData, resultList);
+            ReferenceCheck.CheckText(partData, resultList);
 
             // Assert
             Assert.AreEqual(1, resultList.Count,
@@ -550,7 +550,7 @@ namespace TvpTest
                 PartContext.Introductions);
 
             // Executes the check
-            _referenceCheck.CheckText(partData, resultList);
+            ReferenceCheck.CheckText(partData, resultList);
 
             // Assert
             Assert.AreEqual(1, resultList.Count,
@@ -577,7 +577,7 @@ namespace TvpTest
                 PartContext.Introductions);
 
             // Executes the check
-            _referenceCheck.CheckText(partData, resultList);
+            ReferenceCheck.CheckText(partData, resultList);
 
             // Assert
             Assert.AreEqual(1, resultList.Count,
@@ -604,7 +604,7 @@ namespace TvpTest
                 PartContext.Introductions);
 
             // Executes the check
-            _referenceCheck.CheckText(partData, resultList);
+            ReferenceCheck.CheckText(partData, resultList);
 
             // Assert
             Assert.AreEqual(1, resultList.Count,
@@ -634,7 +634,7 @@ namespace TvpTest
                 PartContext.Outlines);
 
             // Executes the check
-            _referenceCheck.CheckText(partData, resultList);
+            ReferenceCheck.CheckText(partData, resultList);
 
 
             // Assert
@@ -663,7 +663,7 @@ namespace TvpTest
                 PartContext.MainText);
 
             // Executes the check
-            _referenceCheck.CheckText(partData, resultList);
+            ReferenceCheck.CheckText(partData, resultList);
 
             // Assert
             Assert.AreEqual(1, resultList.Count,
@@ -690,7 +690,7 @@ namespace TvpTest
                 PartContext.MainText);
 
             // Executes the check
-            _referenceCheck.CheckText(partData, resultList);
+            ReferenceCheck.CheckText(partData, resultList);
 
             // Assert
             Assert.AreEqual(1, resultList.Count,
@@ -717,7 +717,7 @@ namespace TvpTest
                 PartContext.MainText);
 
             // Executes the check
-            _referenceCheck.CheckText(partData, resultList);
+            ReferenceCheck.CheckText(partData, resultList);
 
             // Assert
             Assert.AreEqual(1, resultList.Count,
@@ -744,7 +744,7 @@ namespace TvpTest
                 PartContext.MainText);
 
             // Executes the check
-            _referenceCheck.CheckText(partData, resultList);
+            ReferenceCheck.CheckText(partData, resultList);
 
             // Assert
             Assert.AreEqual(1, resultList.Count,
@@ -771,7 +771,7 @@ namespace TvpTest
                 PartContext.MainText);
 
             // Executes the check
-            _referenceCheck.CheckText(partData, resultList);
+            ReferenceCheck.CheckText(partData, resultList);
 
             // Assert
             Assert.AreEqual(1, resultList.Count,
@@ -798,7 +798,7 @@ namespace TvpTest
                 PartContext.MainText);
 
             // Executes the check
-            _referenceCheck.CheckText(partData, resultList);
+            ReferenceCheck.CheckText(partData, resultList);
 
             // Assert
             Assert.AreEqual(2, resultList.Count,
@@ -828,7 +828,7 @@ namespace TvpTest
                 PartContext.MainText);
 
             // Executes the check
-            _referenceCheck.CheckText(partData, resultList);
+            ReferenceCheck.CheckText(partData, resultList);
 
             // Assert
             Assert.AreEqual(2, resultList.Count,
@@ -858,7 +858,7 @@ namespace TvpTest
                 PartContext.MainText);
 
             // Executes the check
-            _referenceCheck.CheckText(partData, resultList);
+            ReferenceCheck.CheckText(partData, resultList);
 
             // Assert
             Assert.AreEqual(3, resultList.Count,
@@ -888,7 +888,7 @@ namespace TvpTest
                 PartContext.MainText);
 
             // Executes the check
-            _referenceCheck.CheckText(partData, resultList);
+            ReferenceCheck.CheckText(partData, resultList);
 
             // Assert
             Assert.AreEqual(1, resultList.Count,
@@ -917,7 +917,7 @@ namespace TvpTest
                 PartContext.NoteOrReference);
 
             // Executes the check
-            _referenceCheck.CheckText(partData, resultList);
+            ReferenceCheck.CheckText(partData, resultList);
 
 
             // Assert
@@ -945,7 +945,7 @@ namespace TvpTest
                 PartContext.NoteOrReference);
 
             // Executes the check
-            _referenceCheck.CheckText(partData, resultList);
+            ReferenceCheck.CheckText(partData, resultList);
 
             // Assert
             Assert.AreEqual(1, resultList.Count,
@@ -972,7 +972,7 @@ namespace TvpTest
                 PartContext.NoteOrReference);
 
             // Executes the check
-            _referenceCheck.CheckText(partData, resultList);
+            ReferenceCheck.CheckText(partData, resultList);
 
             // Assert
             Assert.AreEqual(1, resultList.Count,
@@ -999,7 +999,7 @@ namespace TvpTest
                 PartContext.NoteOrReference);
 
             // Executes the check
-            _referenceCheck.CheckText(partData, resultList);
+            ReferenceCheck.CheckText(partData, resultList);
 
             // Assert
             Assert.AreEqual(1, resultList.Count,
@@ -1026,7 +1026,7 @@ namespace TvpTest
                 PartContext.NoteOrReference);
 
             // Executes the check
-            _referenceCheck.CheckText(partData, resultList);
+            ReferenceCheck.CheckText(partData, resultList);
 
             // Assert
             Assert.AreEqual(1, resultList.Count,
@@ -1053,7 +1053,7 @@ namespace TvpTest
                 PartContext.NoteOrReference);
 
             // Executes the check
-            _referenceCheck.CheckText(partData, resultList);
+            ReferenceCheck.CheckText(partData, resultList);
 
             // Assert
             Assert.AreEqual(1, resultList.Count,
@@ -1080,7 +1080,7 @@ namespace TvpTest
                 PartContext.NoteOrReference);
 
             // Executes the check
-            _referenceCheck.CheckText(partData, resultList);
+            ReferenceCheck.CheckText(partData, resultList);
 
             // Assert
             Assert.AreEqual(0, resultList.Count,
