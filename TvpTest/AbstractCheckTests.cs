@@ -9,6 +9,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using TvpMain.Project;
 using TvpMain.Result;
 using TvpMain.Export;
+using TvpMain.Import;
 using TvpMain.Text;
 using TvpMain.Util;
 
@@ -154,7 +155,12 @@ namespace TvpTest
         protected Mock<ResultManager> MockResultManager { get; private set; }
 
         /// <summary>
-        /// Mock serialization manager.
+        /// Mock content import manager.
+        /// </summary>
+        protected Mock<ImportManager> MockImportManager { get; private set; }
+
+        /// <summary>
+        /// Mock content export manager.
         /// </summary>
         protected Mock<ExportManager> MockExportManager { get; private set; }
 
@@ -226,6 +232,10 @@ namespace TvpTest
             MockResultManager = new Mock<ResultManager>(
                 MockHost.Object,
                 TEST_PROJECT_NAME)
+            { CallBase = true };
+            MockImportManager = new Mock<ImportManager>(
+                    MockHost.Object,
+                    TEST_PROJECT_NAME)
             { CallBase = true };
             MockExportManager = new Mock<ExportManager>(
                 MockHost.Object,

@@ -49,7 +49,7 @@ namespace TvpTest
         /// <summary>
         /// True to delay verse extraction, false otherwise (for cancellation tests).
         /// </summary>
-        protected bool IsVersesDelayed;
+        protected bool AreVersesDelayed;
 
         /// <summary>
         /// Test contexts.
@@ -70,13 +70,13 @@ namespace TvpTest
 
             VerseLines = File.ReadAllLines(@"Resources\test-verses-1.txt");
             ExpectedRefs = new HashSet<int>();
-            IsVersesDelayed = false;
+            AreVersesDelayed = false;
 
             // extractor setup
             MockExtractor.Setup(extractorItem => extractorItem.Extract(It.IsAny<int>(), It.IsAny<int>()))
                 .Callback(() =>
                 {
-                    if (IsVersesDelayed)
+                    if (AreVersesDelayed)
                     {
                         Thread.Sleep(TEST_DELAY_IN_MS);
                     }
@@ -127,6 +127,7 @@ namespace TvpTest
                 MockHost.Object,
                 TEST_PROJECT_NAME,
                 MockProjectManager.Object,
+                MockImportManager.Object,
                 MockResultManager.Object);
             checkRunner.RunChecks(
                CheckArea.CurrentProject,
@@ -161,6 +162,7 @@ namespace TvpTest
                 MockHost.Object,
                 TEST_PROJECT_NAME,
                 MockProjectManager.Object,
+                MockImportManager.Object,
                 MockResultManager.Object);
             checkRunner.RunChecks(
                 CheckArea.CurrentBook,
@@ -192,6 +194,7 @@ namespace TvpTest
                 MockHost.Object,
                 TEST_PROJECT_NAME,
                 MockProjectManager.Object,
+                MockImportManager.Object,
                 MockResultManager.Object);
             checkRunner.RunChecks(
                 CheckArea.CurrentChapter,
@@ -223,13 +226,14 @@ namespace TvpTest
                     }
                 }
             }
-            IsVersesDelayed = true;
+            AreVersesDelayed = true;
 
             // setup
             var checkRunner = new TextCheckRunner(
                 MockHost.Object,
                 TEST_PROJECT_NAME,
                 MockProjectManager.Object,
+                MockImportManager.Object,
                 MockResultManager.Object);
 
             // start check in background thread, then cancel from test thread.

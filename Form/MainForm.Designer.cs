@@ -46,6 +46,8 @@
             this.mainMenu = new System.Windows.Forms.MenuStrip();
             this.fileMenu = new System.Windows.Forms.ToolStripMenuItem();
             this.saveResultsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+            this.exportProjectMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.areaMenu = new System.Windows.Forms.ToolStripMenuItem();
             this.currentProjectAreaMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.currentBookAreaMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -82,7 +84,7 @@
             this.searchLabelMenu = new System.Windows.Forms.ToolStripMenuItem();
             this.btnShowIgnoreList = new System.Windows.Forms.Button();
             this.btnClose = new System.Windows.Forms.Button();
-            this.termWorker = new System.ComponentModel.BackgroundWorker();
+            this.filterSetupWorker = new System.ComponentModel.BackgroundWorker();
             this.statusLabel = new System.Windows.Forms.Label();
             this.tabControl = new System.Windows.Forms.TabControl();
             this.punctuationTab = new System.Windows.Forms.TabPage();
@@ -104,9 +106,8 @@
             this.referencesListViewReferenceColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.referencesListViewCountColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.bindingSource1 = new System.Windows.Forms.BindingSource(this.components);
-            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
-            this.exportProjectMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.directoryEntry1 = new System.DirectoryServices.DirectoryEntry();
+            this.runnerSetupWorker = new System.ComponentModel.BackgroundWorker();
             ((System.ComponentModel.ISupportInitialize)(this.dgvCheckResults)).BeginInit();
             this.contextMenu.SuspendLayout();
             this.mainMenu.SuspendLayout();
@@ -245,6 +246,18 @@
             this.saveResultsMenuItem.Size = new System.Drawing.Size(187, 22);
             this.saveResultsMenuItem.Text = "&Save Results...";
             this.saveResultsMenuItem.Click += new System.EventHandler(this.OnFileSaveResultsMenuClick);
+            // 
+            // toolStripSeparator1
+            // 
+            this.toolStripSeparator1.Name = "toolStripSeparator1";
+            this.toolStripSeparator1.Size = new System.Drawing.Size(184, 6);
+            // 
+            // exportProjectMenuItem
+            // 
+            this.exportProjectMenuItem.Name = "exportProjectMenuItem";
+            this.exportProjectMenuItem.Size = new System.Drawing.Size(187, 22);
+            this.exportProjectMenuItem.Text = "&Export Project...";
+            this.exportProjectMenuItem.Click += new System.EventHandler(this.OnFileExportProjectMenuItemClick);
             // 
             // areaMenu
             // 
@@ -515,7 +528,6 @@
             // searchMenuTextBox
             // 
             this.searchMenuTextBox.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
-            this.searchMenuTextBox.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.searchMenuTextBox.Name = "searchMenuTextBox";
             this.searchMenuTextBox.Size = new System.Drawing.Size(200, 23);
             // 
@@ -801,18 +813,6 @@
             this.referencesListViewCountColumn.ReadOnly = true;
             this.referencesListViewCountColumn.Width = 94;
             // 
-            // toolStripSeparator1
-            // 
-            this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(184, 6);
-            // 
-            // exportProjectMenuItem
-            // 
-            this.exportProjectMenuItem.Name = "exportProjectMenuItem";
-            this.exportProjectMenuItem.Size = new System.Drawing.Size(187, 22);
-            this.exportProjectMenuItem.Text = "&Export Project...";
-            this.exportProjectMenuItem.Click += new System.EventHandler(this.OnFileExportProjectMenuItemClick);
-            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -875,7 +875,7 @@
         private System.Windows.Forms.ToolStripMenuItem ignoreListFiltersMenuItem;
         private System.Windows.Forms.ToolStripMenuItem verseViewMenuItem;
         private System.Windows.Forms.Button btnClose;
-        private System.ComponentModel.BackgroundWorker termWorker;
+        private System.ComponentModel.BackgroundWorker filterSetupWorker;
         private System.Windows.Forms.ToolStripMenuItem matchViewMenuItem;
         private System.Windows.Forms.ToolStripMenuItem searchLabelMenu;
         private System.Windows.Forms.ToolStripTextBox searchMenuTextBox;
@@ -932,5 +932,6 @@
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
         private System.Windows.Forms.ToolStripMenuItem exportProjectMenuItem;
         private System.DirectoryServices.DirectoryEntry directoryEntry1;
+        private System.ComponentModel.BackgroundWorker runnerSetupWorker;
     }
 }

@@ -9,7 +9,10 @@ using System.Drawing;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Reflection;
+using System.Threading;
 using System.Windows.Forms;
+using Paratext.Data;
 using TvpMain.Check;
 using TvpMain.Filter;
 using TvpMain.Project;
@@ -17,6 +20,7 @@ using TvpMain.Punctuation;
 using TvpMain.Reference;
 using TvpMain.Result;
 using TvpMain.Export;
+using TvpMain.Import;
 using TvpMain.Text;
 using TvpMain.Util;
 using static System.Environment;
@@ -28,7 +32,20 @@ namespace TvpMain.Form
     /// </summary>
     public partial class MainForm : System.Windows.Forms.Form
     {
+        /// <summary>
+        /// Column index for ignore button.
+        /// </summary>
         private const int IGNORE_BUTTON_COLUMN = 2;
+
+        /// <summary>
+        /// Semaphore for filter objects, created and managed in the background.
+        /// </summary>
+        private readonly CountdownEvent _filterSetupEvent = new CountdownEvent(1);
+
+        /// <summary>
+        /// Semaphore for check runner-related objects, created and managed in the background.
+        /// </summary>
+        private readonly CountdownEvent _runnerSetupEvent = new CountdownEvent(1);
 
         /// <summary>
         /// Paratext host interface.
@@ -46,7 +63,7 @@ namespace TvpMain.Form
         /// Only check currently implemented. This will grow to an aggregate model of some kind
         /// (maybe even just a list of checks, run in series or parallel). 
         /// </summary>
-        private readonly TextCheckRunner _textCheckRunner;
+        private TextCheckRunner _textCheckRunner;
 
         /// <summary>
         /// List of all checks to be performed.
@@ -114,9 +131,14 @@ namespace TvpMain.Form
         private readonly ResultManager _resultManager;
 
         /// <summary>
-        /// Project serialization support.
+        /// Project import manager.
         /// </summary>
-        private readonly ExportManager _exportManager;
+        private ImportManager _importManager;
+
+        /// <summary>
+        /// Project export manager.
+        /// </summary>
+        private ExportManager _exportManager;
 
         /// <summary>
         /// Current check area.
@@ -143,11 +165,6 @@ namespace TvpMain.Form
             _resultManager = new ResultManager(host, activeProjectName);
             _resultManager.ScheduleLoadBooks(_projectManager.PresentBookNums);
 
-            _textCheckRunner = new TextCheckRunner(_host, _activeProjectName,
-                _projectManager, _resultManager);
-            _exportManager = new ExportManager(_host, _activeProjectName,
-                _projectManager, _resultManager);
-
             _allChecks = new List<ITextCheck>()
             {
                 new MissingSentencePunctuationCheck(_projectManager),
@@ -164,8 +181,6 @@ namespace TvpMain.Form
                 new MissingSentencePunctuationCheck(_projectManager)
             };
 
-            _textCheckRunner.CheckUpdated += OnCheckUpdated;
-
             searchMenuTextBox.TextChanged += OnSearchTextChanged;
             contextMenu.Opening += OnContextMenuOpening;
 
@@ -175,25 +190,12 @@ namespace TvpMain.Form
             UpdateCheckContexts();
 
             // Background worker to build the biblical term list filter at startup
-            termWorker.DoWork += OnTermWorkerDoWork;
-            termWorker.RunWorkerAsync();
-        }
+            filterSetupWorker.DoWork += OnFilterSetupWorkerDoWork;
+            filterSetupWorker.RunWorkerAsync();
 
-        /// <summary>
-        /// Displays existing result items on startup.
-        /// </summary>
-        /// <param name="sender">Event sender (ignored).</param>
-        /// <param name="e">Event args (ignored).</param>
-        private void OnResultWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
-        {
-            try
-            {
-                DoPrimaryUpdate();
-            }
-            catch (Exception ex)
-            {
-                HostUtil.Instance.ReportError(ex);
-            }
+            // Background worker to fire up ParatextData
+            runnerSetupWorker.DoWork += OnRunnerSetupWorkerDoWork;
+            runnerSetupWorker.RunWorkerAsync();
         }
 
         /// <summary>
@@ -226,33 +228,56 @@ namespace TvpMain.Form
         /// </summary>
         /// <param name="sender">Event sender (ignored).</param>
         /// <param name="e">Event args (ignored).</param>
-        private void OnTermWorkerDoWork(object sender, DoWorkEventArgs e)
+        private void OnFilterSetupWorkerDoWork(object sender, DoWorkEventArgs e)
         {
             try
             {
-                lock (_wordListFilter)
+                var projectTerms = _host.GetProjectKeyTerms(
+                    _activeProjectName,
+                    _host.GetProjectLanguageId(_activeProjectName, "translation validation"));
+                if (projectTerms != null
+                    && projectTerms.Count > 0)
                 {
-                    var projectTerms = _host.GetProjectKeyTerms(
-                        _activeProjectName,
-                        _host.GetProjectLanguageId(_activeProjectName, "translation validation"));
-                    if (projectTerms != null
-                        && projectTerms.Count > 0)
-                    {
-                        _wordListFilter.SetKeyTerms(projectTerms);
-                    }
+                    _wordListFilter.SetKeyTerms(projectTerms);
                 }
 
-                lock (_biblicalTermFilter)
+                var factoryTerms = _host.GetFactoryKeyTerms(
+                    _host.GetProjectKeyTermListType(_activeProjectName),
+                    _host.GetProjectLanguageId(_activeProjectName, "translation validation"));
+                if (factoryTerms != null
+                    && factoryTerms.Count > 0)
                 {
-                    var factoryTerms = _host.GetFactoryKeyTerms(
-                        _host.GetProjectKeyTermListType(_activeProjectName),
-                        _host.GetProjectLanguageId(_activeProjectName, "translation validation"));
-                    if (factoryTerms != null
-                        && factoryTerms.Count > 0)
-                    {
-                        _biblicalTermFilter.SetKeyTerms(factoryTerms);
-                    }
+                    _biblicalTermFilter.SetKeyTerms(factoryTerms);
                 }
+
+                _filterSetupEvent.Signal();
+            }
+            catch (Exception ex)
+            {
+                HostUtil.Instance.ReportError(ex);
+            }
+        }
+
+        /// <summary>
+        /// Initializes ParatextData libraries.
+        /// </summary>
+        /// <param name="sender">Event sender (ignored).</param>
+        /// <param name="e">Event args (ignored).</param>
+        private void OnRunnerSetupWorkerDoWork(object sender, DoWorkEventArgs e)
+        {
+            try
+            {
+                HostUtil.Instance.InitParatextData();
+
+                _importManager = new ImportManager(_host, _activeProjectName);
+                _exportManager = new ExportManager(_host, _activeProjectName,
+                    _projectManager, _resultManager);
+
+                _textCheckRunner = new TextCheckRunner(_host, _activeProjectName,
+                    _projectManager, _importManager, _resultManager);
+                _textCheckRunner.CheckUpdated += OnCheckUpdated;
+
+                _runnerSetupEvent.Signal();
             }
             catch (Exception ex)
             {
@@ -330,23 +355,22 @@ namespace TvpMain.Form
                         ? resultItem.VersePart.PartText : resultItem.MatchText)).ToList();
                 }
 
-                // lock in case the background worker hasn't finished yet
-                lock (_wordListFilter)
+                // block in case the background worker hasn't finished yet
+                _filterSetupEvent.Wait();
+
+                if (wordListFiltersMenuItem.Checked
+                && !_wordListFilter.IsEmpty)
                 {
-                    if (wordListFiltersMenuItem.Checked
-                    && !_wordListFilter.IsEmpty)
-                    {
-                        _filteredResultItems = _filteredResultItems.Where(
-                            resultItem => !_wordListFilter.FilterText(isEntireVerse
-                        ? resultItem.VersePart.PartText : resultItem.MatchText)).ToList();
-                    }
-                    if (biblicaTermsFiltersMenuItem.Checked
-                        && !_biblicalTermFilter.IsEmpty)
-                    {
-                        _filteredResultItems = _filteredResultItems.Where(
-                            resultItem => !_biblicalTermFilter.FilterText(isEntireVerse
-                                ? resultItem.VersePart.PartText : resultItem.MatchText)).ToList();
-                    }
+                    _filteredResultItems = _filteredResultItems.Where(
+                        resultItem => !_wordListFilter.FilterText(isEntireVerse
+                    ? resultItem.VersePart.PartText : resultItem.MatchText)).ToList();
+                }
+                if (biblicaTermsFiltersMenuItem.Checked
+                    && !_biblicalTermFilter.IsEmpty)
+                {
+                    _filteredResultItems = _filteredResultItems.Where(
+                        resultItem => !_biblicalTermFilter.FilterText(isEntireVerse
+                            ? resultItem.VersePart.PartText : resultItem.MatchText)).ToList();
                 }
 
                 var searchText = searchMenuTextBox.TextBox.Text.Trim();
@@ -413,7 +437,7 @@ namespace TvpMain.Form
                 ShowProgress();
 
                 // by default only run the punctuation check
-                IEnumerable<ITextCheck> checksToRun = _punctuationCheck;
+                var checksToRun = _punctuationCheck;
 
                 // only run the references check if that's the mode
                 if (referencesCheckMenuItem.Checked)
@@ -423,6 +447,9 @@ namespace TvpMain.Form
 
                 try
                 {
+                    // block in case the background worker hasn't finished yet
+                    _runnerSetupEvent.Wait();
+
                     if (_textCheckRunner.RunChecks(
                         _checkArea, checksToRun,
                         _checkContexts, true,
@@ -1030,7 +1057,7 @@ namespace TvpMain.Form
             _filteredReferencesResultMap = new Dictionary<VerseLocation, IList<ResultItem>>();
 
             // for each result, place into the dictionary at the same verse location
-            foreach (ResultItem resultItem in _filteredResultItems)
+            foreach (var resultItem in _filteredResultItems)
             {
                 var verseLocation = resultItem.VerseLocation;
                 IList<ResultItem> localList;
@@ -1052,7 +1079,7 @@ namespace TvpMain.Form
             {
                 var rowIndex = referencesListView.Rows.Add();
 
-                IList<ResultItem> localList = _filteredReferencesResultMap[verseLocation];
+                var localList = _filteredReferencesResultMap[verseLocation];
                 // keep the list of exceptions with the row for use in the right-hand UI
                 referencesListView.Rows[rowIndex].Tag = localList;
                 referencesListView.Rows[rowIndex].Cells[0].Value = $"{verseLocation.VerseCoordinateText}";
@@ -1174,7 +1201,7 @@ namespace TvpMain.Form
             if (referencesListView.CurrentRow != null)
             {
 
-                VerseLocation verseLocation = (VerseLocation)referencesListView.CurrentRow.Cells[0].Tag;
+                var verseLocation = (VerseLocation)referencesListView.CurrentRow.Cells[0].Tag;
 
                 if (verseLocation != null)
                 {
@@ -1187,7 +1214,7 @@ namespace TvpMain.Form
 
                     foreach (var resultItem in localList)
                     {
-                        int rowNum = referencesActionsGridView.Rows.Add(
+                        var rowNum = referencesActionsGridView.Rows.Add(
                                 $"{(ScriptureReferenceErrorType)resultItem.ResultTypeCode}", "Accept", resultItem.ResultState == ResultState.Ignored ? "Un-Ignore" : "Ignore"
                             );
 
@@ -1227,7 +1254,7 @@ namespace TvpMain.Form
 
             if (e.ColumnIndex == IGNORE_BUTTON_COLUMN)
             {
-                ResultItem resultItem = (ResultItem)referencesActionsGridView.Rows[e.RowIndex].Tag;
+                var resultItem = (ResultItem)referencesActionsGridView.Rows[e.RowIndex].Tag;
 
                 if (resultItem != null)
                 {
@@ -1313,7 +1340,7 @@ namespace TvpMain.Form
             {
                 if (referencesActionsGridView.CurrentRow.Tag != null)
                 {
-                    ResultItem resultItem = (ResultItem)referencesActionsGridView.CurrentRow.Tag;
+                    var resultItem = (ResultItem)referencesActionsGridView.CurrentRow.Tag;
 
                     if (resultItem != null)
                     {

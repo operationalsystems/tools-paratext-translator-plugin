@@ -8,6 +8,7 @@ using System.Runtime.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using TvpMain.Import;
 using TvpMain.Project;
 using TvpMain.Result;
 using TvpMain.Text;
@@ -48,6 +49,11 @@ namespace TvpMain.Check
         /// Project settings manager.
         /// </summary>
         private readonly ProjectManager _projectManager;
+
+        /// <summary>
+        /// Project content import manager.
+        /// </summary>
+        private readonly ImportManager _importManager;
 
         /// <summary>
         /// Check result manager.
@@ -131,9 +137,11 @@ namespace TvpMain.Check
         /// <param name="host">Paratext host interface (required).</param>
         /// <param name="activeProjectName">Active project name (required).</param>
         /// <param name="projectManager">Settings manager (required).</param>
+        /// <param name="importManager">Project content import manager (required).</param>
         /// <param name="resultManager">Check result manager (required).</param>
         public TextCheckRunner(IHost host, string activeProjectName,
             ProjectManager projectManager,
+            ImportManager importManager,
             ResultManager resultManager)
         {
             this._host = host
@@ -142,6 +150,8 @@ namespace TvpMain.Check
                                       ?? throw new ArgumentNullException(nameof(activeProjectName));
             this._projectManager = projectManager
                                    ?? throw new ArgumentNullException(nameof(projectManager));
+            this._importManager = importManager
+                                   ?? throw new ArgumentNullException(nameof(importManager));
             this._resultManager = resultManager
                                   ?? throw new ArgumentNullException(nameof(resultManager));
         }
