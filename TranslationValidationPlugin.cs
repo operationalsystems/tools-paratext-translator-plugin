@@ -55,7 +55,8 @@ namespace TvpMain
                         }
                         catch (Exception ex)
                         {
-                            HostUtil.Instance.ReportError($"Can't perform translation validation for project \"{activeProjectName}\".", ex);
+                            // Do not report this as it's already been reported elsewhere.
+                            // HostUtil.Instance.ReportError($"Can't perform translation validation for project \"{activeProjectName}\".", ex);
                         }
                         finally
                         {

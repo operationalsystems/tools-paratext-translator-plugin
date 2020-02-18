@@ -128,7 +128,13 @@ namespace TvpMain.Form
             _progressForm = new ProgressForm();
             _progressForm.Cancelled += OnProgressFormCancelled;
 
-            _projectManager = new ProjectManager(host, activeProjectName);
+            try
+            {
+                _projectManager = new ProjectManager(host, activeProjectName);
+            } catch( Exception ex)
+            {
+                this.Close();
+            }
             _textCheckRunner = new TextCheckRunner(_host, _activeProjectName, _projectManager);
 
             _allChecks = new List<ITextCheck>()
