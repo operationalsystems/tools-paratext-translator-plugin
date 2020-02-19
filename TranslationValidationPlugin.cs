@@ -53,7 +53,7 @@ namespace TvpMain
                             Application.EnableVisualStyles();
                             Application.Run(new MainForm(host, activeProjectName));
                         }
-                        catch (Exception ex)
+                        catch (Exception)
                         {
                             // Do not report this as it's already been reported elsewhere.
                             // HostUtil.Instance.ReportError($"Can't perform translation validation for project \"{activeProjectName}\".", ex);

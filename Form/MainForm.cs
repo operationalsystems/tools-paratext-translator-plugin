@@ -131,7 +131,7 @@ namespace TvpMain.Form
             try
             {
                 _projectManager = new ProjectManager(host, activeProjectName);
-            } catch( Exception ex)
+            } catch( Exception)
             {
                 this.Close();
             }
