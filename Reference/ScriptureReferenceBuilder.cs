@@ -186,21 +186,17 @@ namespace TvpMain.Reference
                 _verseReferenceModeSeparators);
 
             // select whether to emphasize chapter or verse parsing
-            // in local references
+            // in local references (i.e., without book names)
             var referenceMode = LocalReferenceMode.ChapterRangeSequence;
-            if (minChapterSeparator < 0 && minVerseSeparator >= 0)
-            {
-                referenceMode = LocalReferenceMode.VerseRangeSequence;
-            }
-            else if (minVerseSeparator < 0 && minChapterSeparator > 0)
-            {
-                referenceMode = LocalReferenceMode.ChapterRangeSequence;
-            }
-            else if (minChapterSeparator >= 0 && minVerseSeparator >= 0)
+            if (minChapterSeparator >= 0 && minVerseSeparator >= 0)
             {
                 referenceMode = (minVerseSeparator < minChapterSeparator)
                     ? LocalReferenceMode.VerseRangeSequence
                     : LocalReferenceMode.ChapterRangeSequence;
+            }
+            else if (minVerseSeparator >= 0)
+            {
+                referenceMode = LocalReferenceMode.VerseRangeSequence;
             }
 
             // iterate parsers and retain the highest-value result

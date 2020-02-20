@@ -352,3 +352,6 @@ MigrationBackup/
 # Ionide (cross platform F# VS Code tools) working folder
 .ionide/
 
+# Test support assemblies
+TvpTest/icu32/
+TvpTest/icu64/

@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading;
+using Paratext.Data.Terms;
 using TvpMain.Check;
 using TvpMain.Punctuation;
 using TvpMain.Text;
@@ -73,7 +74,8 @@ namespace TvpTest
             AreVersesDelayed = false;
 
             // extractor setup
-            MockExtractor.Setup(extractorItem => extractorItem.Extract(It.IsAny<int>(), It.IsAny<int>()))
+            MockImportManager.Setup(extractorItem =>
+                    extractorItem.Extract(It.IsAny<VerseLocation>()))
                 .Callback(() =>
                 {
                     if (AreVersesDelayed)
@@ -81,12 +83,8 @@ namespace TvpTest
                         Thread.Sleep(TEST_DELAY_IN_MS);
                     }
                 })
-                .Returns<int, int>((fromRef, toRef) =>
-                {
-                    Assert.AreEqual(fromRef, toRef, ">1 verse requested."); // always request one verse at a time
-                    return GetVerseText(fromRef);
-                });
-            MockExtractor.SetupAllProperties();
+                .Returns<VerseLocation>((verseLocation) =>
+                    GetVerseText(verseLocation.VerseCoordinate));
         }
 
         /// <summary>

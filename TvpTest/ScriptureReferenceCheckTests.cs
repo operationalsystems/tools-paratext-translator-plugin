@@ -250,7 +250,7 @@ namespace TvpTest
             Assert.AreEqual(1, CountErrors(resultList,
                     ScriptureReferenceErrorType.MissingTag),
                 "The wrong tag is used for the context.");
-            Assert.AreEqual(@"\+xt Genesis 1:1\+xt*",
+            Assert.AreEqual(@"\fr",
                 resultList[0].MatchText);
         }
 
@@ -311,7 +311,7 @@ namespace TvpTest
             Assert.AreEqual(1, CountErrors(resultList,
                     ScriptureReferenceErrorType.MissingTag),
                 "The wrong tag is used for the context.");
-            Assert.AreEqual(@"\+xt Genesis 1:1\+xt*",
+            Assert.AreEqual(@"\ft",
                 resultList[0].MatchText);
         }
 
@@ -585,7 +585,7 @@ namespace TvpTest
             Assert.AreEqual(1, CountErrors(resultList,
                     ScriptureReferenceErrorType.IncorrectTag),
                 "The wrong tag is used for the context.");
-            Assert.AreEqual(@"\xt Numbers 3:5\xt*",
+            Assert.AreEqual(@"\fr",
                 resultList[0].MatchText);
         }
 
@@ -612,7 +612,7 @@ namespace TvpTest
             Assert.AreEqual(1, CountErrors(resultList,
                     ScriptureReferenceErrorType.IncorrectTag),
                 "The wrong tag is used for the context.");
-            Assert.AreEqual(@"\xt Deuteronomy 3:2\xt*",
+            Assert.AreEqual(@"\ft",
                 resultList[0].MatchText);
         }
 
@@ -869,7 +869,7 @@ namespace TvpTest
             Assert.AreEqual(1, CountErrors(resultList,
                     ScriptureReferenceErrorType.MissingTag),
                 "The wrong tag is used for the context.");
-            Assert.AreEqual(@"\+xt GEN 1:1\+xt*",
+            Assert.AreEqual(@"\ft",
                 resultList[0].MatchText);
         }
 
@@ -896,7 +896,7 @@ namespace TvpTest
             Assert.AreEqual(1, CountErrors(resultList,
                     ScriptureReferenceErrorType.IncorrectTag),
                 "The wrong tag is used for the context.");
-            Assert.AreEqual(@"\xt NUM 3:5\xt*",
+            Assert.AreEqual(@"\fr",
                 resultList[0].MatchText);
         }
 

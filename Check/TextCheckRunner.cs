@@ -316,8 +316,6 @@ namespace TvpMain.Check
                 {
                     // get utility items
                     var versificationName = _host.GetProjectVersificationName(_activeProjectName);
-                    var scriptureExtractor = _host.GetScriptureExtractor(_activeProjectName, ExtractorType.USFM);
-                    scriptureExtractor.IncludeNotes = true;
 
                     var checkList = _runChecks.ToList();
                     var emptyVerseCtr = 0;
@@ -356,12 +354,12 @@ namespace TvpMain.Check
                                 return;
                             }
 
-                            var checkRef = BookUtil.BcvToRef(inputBookNum, chapterNum, verseNum);
                             resultItems.Clear();
 
                             try
                             {
-                                var verseText = scriptureExtractor.Extract(checkRef, checkRef);
+                                var verseLocation = new VerseLocation(inputBookNum, chapterNum, verseNum);
+                                var verseText = _importManager.Extract(verseLocation);
 
                                 // empty text = consecutive check, in case we're looking at an empty chapter
                                 if (string.IsNullOrWhiteSpace(verseText))
@@ -378,9 +376,7 @@ namespace TvpMain.Check
 
                                     // clear out part lists & get ready to create new ones
                                     foundParts.Clear();
-                                    var verseData = ProjectVerse.Create(
-                                        inputBookNum, chapterNum, verseNum,
-                                        verseText);
+                                    var verseData = new ProjectVerse(verseLocation, verseText);
 
                                     // find verse parts
                                     if (VerseRegexUtil.FindVerseParts(

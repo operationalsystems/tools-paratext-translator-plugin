@@ -393,15 +393,30 @@ namespace TvpMain.Project
                     .Concat(BookSequenceSeparators)
                     .Concat(ChapterSequenceSeparators)
                     .Select(punctuationItem => punctuationItem.Trim())
-                    .Select(Regex.Escape)
                     .Distinct()
-                    .ToList();
+                    .Select(Regex.Escape);
+
+            var abbrevBookNames = BookNamesByNum.Values
+                .Where(nameItem => nameItem.IsAbbreviation)
+                .Select(nameItem => nameItem.Abbreviation);
+            var shortBookNames = BookNamesByNum.Values
+                .Where(nameItem => nameItem.IsShortName)
+                .Select(nameItem => nameItem.ShortName);
+            var longBookNames = BookNamesByNum.Values
+                .Where(nameItem => nameItem.IsLongName)
+                .Select(nameItem => nameItem.LongName);
+            var allBookNames = abbrevBookNames
+                .Concat(shortBookNames)
+                .Concat(longBookNames)
+                .Distinct()
+                .Select(Regex.Escape);
 
             TargetReferenceRegexes = new List<Regex>()
                 {
                     VerseRegexUtil.CreateTargetReferenceGroupRegex(
                         VerseRegexUtil.TargetReferencePairedTags.Select(Regex.Escape),
-                        VerseRegexUtil.STANDARD_BOOK_NAME_REGEX_TEXT.ToSingletonEnumerable(),
+                        allBookNames
+                            .Concat(VerseRegexUtil.STANDARD_BOOK_NAME_REGEX_TEXT.ToSingletonEnumerable()),
                         punctuationParts),
                 }.Concat(VerseRegexUtil.StandardTargetReferenceRegexes)
                 .ToImmutableList();

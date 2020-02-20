@@ -6,6 +6,7 @@ using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Paratext.Data;
 using TvpMain.Project;
 using TvpMain.Result;
 using TvpMain.Export;
@@ -130,14 +131,14 @@ namespace TvpTest
         private IDictionary<string, BookNameItem> _testBookNamesByAllNames;
 
         /// <summary>
-        /// Mock Paratext scripture extractor.
-        /// </summary>
-        protected Mock<IScrExtractor> MockExtractor { get; private set; }
-
-        /// <summary>
         /// Mock Paratext scripture host.
         /// </summary>
         protected Mock<IHost> MockHost { get; private set; }
+
+        /// <summary>
+        /// Mock ParatextData project proxy.
+        /// </summary>
+        protected Mock<ScrText> MockScrText { get; private set; }
 
         /// <summary>
         /// Mock file manager.
@@ -171,11 +172,8 @@ namespace TvpTest
         public virtual void AbstractTestSetup(TestContext testContext)
         {
             MockHost = new Mock<IHost>(MockBehavior.Strict);
-            MockExtractor = new Mock<IScrExtractor>(MockBehavior.Strict);
 
             // host setup
-            MockHost.Setup(hostItem => hostItem.GetScriptureExtractor(TEST_PROJECT_NAME, ExtractorType.USFM))
-                .Returns(MockExtractor.Object);
             MockHost.Setup(hostItem => hostItem.GetProjectVersificationName(TEST_PROJECT_NAME))
                 .Returns(TEST_VERSIFICATION_NAME);
             MockHost.Setup(hostItem => hostItem.GetCurrentRef(TEST_VERSIFICATION_NAME))
@@ -219,6 +217,15 @@ namespace TvpTest
             // host util setup
             HostUtil.Instance.Host = MockHost.Object;
 
+            // create mock paratext project proxy & related
+            MockScrText = new Mock<ScrText>(MockBehavior.Strict);
+            MockScrText.Setup(textItem => textItem.RightToLeft)
+                .Returns(false);
+            MockScrText.Setup(textItem => textItem.Parser)
+                .Returns((ScrParser)null);
+            // Note: ScrParser _may not_ be mocked due to internal ctor w/out modifying ParatextData:
+            // https://github.com/Moq/moq4/wiki/Quickstart#advanced-features
+
             // create mock project managers & related
             MockFileManager = new Mock<FileManager>(
                     MockHost.Object,
@@ -235,7 +242,8 @@ namespace TvpTest
             { CallBase = true };
             MockImportManager = new Mock<ImportManager>(
                     MockHost.Object,
-                    TEST_PROJECT_NAME)
+                    TEST_PROJECT_NAME,
+                    MockScrText.Object)
             { CallBase = true };
             MockExportManager = new Mock<ExportManager>(
                 MockHost.Object,

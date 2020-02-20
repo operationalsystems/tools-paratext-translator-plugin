@@ -249,12 +249,14 @@ namespace TvpMain.Form
                 {
                     _biblicalTermFilter.SetKeyTerms(factoryTerms);
                 }
-
-                _filterSetupEvent.Signal();
             }
             catch (Exception ex)
             {
                 HostUtil.Instance.ReportError(ex);
+            }
+            finally
+            {
+                _filterSetupEvent.Signal();
             }
         }
 
@@ -267,8 +269,6 @@ namespace TvpMain.Form
         {
             try
             {
-                HostUtil.Instance.InitParatextData();
-
                 _importManager = new ImportManager(_host, _activeProjectName);
                 _exportManager = new ExportManager(_host, _activeProjectName,
                     _projectManager, _resultManager);
@@ -276,12 +276,14 @@ namespace TvpMain.Form
                 _textCheckRunner = new TextCheckRunner(_host, _activeProjectName,
                     _projectManager, _importManager, _resultManager);
                 _textCheckRunner.CheckUpdated += OnCheckUpdated;
-
-                _runnerSetupEvent.Signal();
             }
             catch (Exception ex)
             {
                 HostUtil.Instance.ReportError(ex);
+            }
+            finally
+            {
+                _runnerSetupEvent.Signal();
             }
         }
 

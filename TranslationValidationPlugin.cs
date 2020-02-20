@@ -35,6 +35,7 @@ namespace TvpMain
 
                 HostUtil.Instance.Host = host;
                 HostUtil.Instance.TranslationValidationPlugin = this;
+                HostUtil.Instance.InitParatextData(false);
 #if DEBUG
                 // Provided because plugins are separate processes that may only be attached to,
                 // once instantiated (can't run Paratext and automatically attach, as with shared libraries).

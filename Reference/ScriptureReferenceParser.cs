@@ -194,13 +194,15 @@ namespace TvpMain.Reference
             ProjectManager projectManager,
             ScriptureReferenceSeparators referenceSeparators)
             =>
-                OneToken(Parser.LetterOrDigit.AtLeastOnceString()
+                Parser.OneOf(Parser.Try(OneToken(Parser.LetterOrDigit.AtLeastOnceString()
+                    .Before(Parser.Char('.')))),
+                        Parser.Try(OneToken(Parser.LetterOrDigit.AtLeastOnceString())))
                     .Where(inputText => inputText.Any(char.IsLetter))
                     .Select(inputText =>
                         projectManager.BookNamesByAllNames.TryGetValue(inputText.Trim().ToLower(), out var nameItem)
                             ? new BookReferenceName(inputText, nameItem)
                             : new BookReferenceName(inputText, null))
-                    .Labelled("book reference name"));
+                    .Labelled("book reference name");
 
         private static Parser<char, ChapterRange> ChapterRange(
             ScriptureReferenceSeparators referenceSeparators)

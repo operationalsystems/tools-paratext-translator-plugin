@@ -5,35 +5,95 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using AddInSideViews;
-using JetBrains.Annotations;
 using Paratext.Data;
 using Paratext.Data.ProjectFileAccess;
 using Paratext.Data.ProjectSettingsAccess;
 using SIL.Scripture;
+using TvpMain.Text;
+using TvpMain.Util;
 
 namespace TvpMain.Import
 {
+    /// <summary>
+    /// Manages importing (reading) verse text from a project.
+    /// </summary>
     public class ImportManager
     {
         /// <summary>
         /// Paratext host interface.
         /// </summary>
-        [NotNull] private readonly IHost _host;
+        private readonly IHost _host;
 
         /// <summary>
         /// Active project name.
         /// </summary>
-        [NotNull] private readonly string _projectName;
+        private readonly string _projectName;
 
         /// <summary>
-        /// Basic ctor.
+        /// Scripture extractor for the project.
+        /// </summary>
+        private readonly ScrText _projectScrText;
+
+        /// <summary>
+        /// Scripture parser for the project.
+        /// </summary>
+        private readonly ScrParser _projectScrParser;
+
+        /// <summary>
+        /// Static initializer that ensures ParatextData is initialized.
+        /// </summary>
+        static ImportManager()
+        {
+            HostUtil.Instance.InitParatextData(true);
+        }
+
+        /// <summary>
+        /// Basic ctor, taking minimum args and creating major support objects.
+        /// 
+        /// Note: Will initialize ParatextData, which may block.
         /// </summary>
         /// <param name="host">Paratext host interface (required).</param>
         /// <param name="projectName">Active project name (required).</param>
-        public ImportManager([NotNull] IHost host, [NotNull] string projectName)
+        public ImportManager(IHost host, string projectName)
+        : this(host, projectName, ScrTextCollection.Get(projectName))
+        { }
+
+        /// <summary>
+        /// Basic ctor, taking all args including support objects.
+        ///
+        /// Notes:
+        /// - Expected to be used for testing.
+        /// - Will initialize ParatextData, which may block.
+        /// </summary>
+        /// <param name="host">Paratext host interface (required).</param>
+        /// <param name="projectName">Active project name (required).</param>
+        /// <param name="projectScrText">ParatextData project proxy (required).</param>
+        public ImportManager(IHost host, string projectName,
+            ScrText projectScrText)
         {
             _host = host ?? throw new ArgumentNullException(nameof(host));
             _projectName = projectName ?? throw new ArgumentNullException(nameof(projectName));
+            _projectScrText = projectScrText ?? throw new ArgumentNullException(nameof(projectScrText));
+
+            _projectScrParser = _projectScrText.Parser;
+        }
+
+
+        /// <summary>
+        /// Extract verse text.
+        /// </summary>
+        /// <param name="verseLocation">Verse location (required).</param>
+        /// <returns>Verse text if present at the location, empty string otherwise.</returns>
+        public virtual string Extract(VerseLocation verseLocation)
+        {
+            var verseTokens = _projectScrParser.GetVerseTokens(
+                new VerseRef(verseLocation.VerseCoordinate), true, true);
+            return verseTokens != null
+                   && verseTokens.Tokens.Any()
+                ? UsfmToken.NormalizeTokenUsfm(
+                    verseTokens.Tokens,
+                    _projectScrText.RightToLeft)
+                : string.Empty;
         }
     }
 }

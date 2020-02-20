@@ -56,7 +56,6 @@ namespace TvpMain.Text
                 CreateNoteOrReferenceRegex("ef"),
                 CreateNoteOrReferenceRegex("ex"),
                 CreateNoteOrReferenceRegex("fe"),
-                CreatePairedTagRegex("ior"),
                 CreatePairedTagRegex("rq")
             }.ToImmutableList();
 
@@ -66,7 +65,7 @@ namespace TvpMain.Text
         public static readonly IList<Regex> IntroductionRegexes
             = new List<Regex>()
             {
-                CreateLineTagGroupRegex(
+                CreateParagraphTagGroupRegex(
                     "usfm", "sts", "rem", "h", "toc[0-9]+",
                     "toca[0-9]+", "imt[0-9]+", "is[0-9]+", "ip", "ipi",
                     "im", "imi", "ipq", "imq", "ipr",
@@ -80,7 +79,7 @@ namespace TvpMain.Text
         public static readonly IList<Regex> OutlineRegexes
             = new List<Regex>()
             {
-                CreateLineTagGroupRegex(
+                CreateParagraphTagGroupRegex(
                     "iot", "io[0-9]+")
             }.ToImmutableList();
 
@@ -161,9 +160,9 @@ namespace TvpMain.Text
         /// </summary>
         /// <param name="tagNames">Tag names to match (required).</param>
         /// <returns>Compiled, multi-line regex.</returns>
-        public static Regex CreateLineTagGroupRegex(params string[] tagNames)
+        public static Regex CreateParagraphTagGroupRegex(params string[] tagNames)
         {
-            return CreateLineTagRegex($"(?:{string.Join("|", tagNames)})");
+            return CreateParagraphTagRegex($"(?:{string.Join("|", tagNames)})");
         }
 
         /// <summary>
@@ -172,7 +171,7 @@ namespace TvpMain.Text
         /// </summary>
         /// <param name="tagName">Enclosing tag (required).</param>
         /// <returns>Compiled, multi-line regex.</returns>
-        public static Regex CreateLineTagRegex(string tagName)
+        public static Regex CreateParagraphTagRegex(string tagName)
         {
             return new Regex($@"^\s*\\{tagName}(?:\s.*)?\r?$",
                 RegexOptions.Multiline | RegexOptions.Compiled);

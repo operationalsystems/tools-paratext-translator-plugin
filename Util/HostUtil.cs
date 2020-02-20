@@ -5,8 +5,11 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Threading;
 using System.Windows.Forms;
+using System.Threading.Tasks;
 using Paratext.Data;
+using Paratext.Data.ProjectProgress;
 using TvpMain.Result;
 
 namespace TvpMain.Util
@@ -17,14 +20,21 @@ namespace TvpMain.Util
     public class HostUtil
     {
         /// <summary>
-        /// Thread-safe singleton pattern.
-        /// </summary>
-        private static readonly HostUtil _instance = new HostUtil();
-
-        /// <summary>
         /// Thread-safe singleton accessor.
         /// </summary>
-        public static HostUtil Instance => _instance;
+        public static HostUtil Instance { get; } = new HostUtil();
+
+        /// <summary>
+        /// Indicates whether ParatextData has been initialized.
+        ///
+        /// Note: Uses int because Interlocked.CompareExchange doesn't work with bool.
+        /// </summary>
+        private int _isParatextDataInit = 0;
+
+        /// <summary>
+        /// Event used to track paratext data initialization complete.
+        /// </summary>
+        private readonly CountdownEvent _paratextDataSetupEvent = new CountdownEvent(1);
 
         /// <summary>
         /// Global reference to plugin, to route logging.
@@ -67,30 +77,58 @@ namespace TvpMain.Util
 
         /// <summary>
         /// Set up the ParatextData libraries for project input/output.
+        ///
+        /// Will block until initialization complete, which takes at least a few seconds
+        /// on typical systems and may scale per the number of projects.
+        /// 
+        /// Thread safe, may be called repeatedly
         /// </summary>
-        public void InitParatextData()
+        /// <param name="isToBlock">True to block until initialization complete, false otherwise.</param>
+        public void InitParatextData(bool isToBlock)
         {
-            var executingAssembly = Assembly.GetExecutingAssembly();
-            var assemblyPath = Path.GetDirectoryName(executingAssembly.Location);
-            if (assemblyPath == null)
+            if (Interlocked.CompareExchange(ref _isParatextDataInit, 1, 0) == 0)
             {
-                throw new InvalidOperationException(
-                    $"plugin assembly in unexpected location: {executingAssembly.Location}");
-            }
+                System.Threading.Tasks.Task.Run(() =>
+                {
+                    try
+                    {
+                        var executingAssembly = Assembly.GetExecutingAssembly();
+                        var assemblyPath = Path.GetDirectoryName(executingAssembly.Location);
+                        if (assemblyPath == null)
+                        {
+                            throw new InvalidOperationException(
+                                $"plugin assembly in unexpected location: {executingAssembly.Location}");
+                        }
 
-            var assemblyDir = new DirectoryInfo(assemblyPath);
-            if (assemblyDir.Parent?.Parent == null)
-            {
-                throw new InvalidOperationException(
-                    $"plugin directory in unexpected location: {assemblyDir.FullName}");
-            }
+                        var assemblyDir = new DirectoryInfo(assemblyPath);
+                        if (assemblyDir.Parent?.Parent == null)
+                        {
+                            throw new InvalidOperationException(
+                                $"plugin directory in unexpected location: {assemblyDir.FullName}");
+                        }
 
-            PtxUtils.Platform.BaseDirectory = assemblyDir.Parent.Parent.FullName;
-            ParatextData.Initialize();
+                        PtxUtils.Platform.BaseDirectory = assemblyDir.Parent.Parent.FullName;
+                        ParatextData.Initialize();
 
 #if DEBUG
-            ReportNonFatalParatextDataErrors();
+                        ReportNonFatalParatextDataErrors();
 #endif
+                    }
+                    catch (Exception ex)
+                    {
+                        ReportError("Can't initialize ParatextData", true, ex);
+                    }
+                    finally
+                    {
+                        _paratextDataSetupEvent.Signal();
+                    }
+                });
+            }
+
+            if (isToBlock)
+            {
+                _paratextDataSetupEvent.Wait();
+            }
         }
 
         /// <summary>

@@ -82,19 +82,19 @@ namespace TvpMain.Result
         /// and schedules the book-level results to be subsequently persisted.
         /// 
         /// This is designed to support capabilities generating result item
-        /// sets for entire verses, such as TextCheckRunner.
+        /// sets for _entire_ verses, such as TextCheckRunner.
         /// 
         /// Merge criteria:
         /// - New result items not matching an existing one will be added
         /// to the list for the verse
         /// - New result items matching an existing one except for result
-        /// state (e.g., ignored) will be dropped in favor of the existing one
+        /// state (e.g., "ignored") will be dropped in favor of the existing one
         /// - Existing result items matching the supplied check types and
-        /// contexts and not matching a new result item will be dropped
+        /// contexts but _not_ matching a new result item will be dropped
         /// 
         /// Note: inputTypes and inputContexts represent types and contexts
         /// to be replaced for the verse. If inputItems is empty, all existing
-        /// result items from these contexts will be replaced.
+        /// result items from these contexts will be removed.
         /// </summary>
         /// <param name="inputTypes">Check types to replace results for (required).</param>
         /// <param name="inputContexts">Part contexts to replace results for (required).</param>
