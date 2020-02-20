@@ -111,11 +111,6 @@ namespace TvpMain.Form
         private IList<ResultItem> _filteredResultItems;
 
         /// <summary>
-        /// An ordered dictionary of results for faster lookups. Sorted by BCV. Used for display of references checks results.
-        /// </summary>
-        private IDictionary<VerseLocation, IList<ResultItem>> _filteredReferencesResultMap;
-
-        /// <summary>
         /// Check contexts, per menu items.
         /// </summary>
         private readonly ISet<PartContext> _checkContexts = new HashSet<PartContext>();
@@ -205,7 +200,7 @@ namespace TvpMain.Form
         {
             if (referencesCheckMenuItem.Checked)
             {
-                UpdateReferencesCheckUI();
+                UpdateReferencesCheckUi();
             }
             else
             {
@@ -318,18 +313,26 @@ namespace TvpMain.Form
             FilterResults();
 
             dgvCheckResults.Rows.Clear();
-            statusLabel.Text = CheckResults.GetSummaryText(_filteredResultItems);
-
-            foreach (var resultItem in _filteredResultItems)
+            try
             {
-                dgvCheckResults.Rows.Add(
-                    $"{resultItem.VerseLocation.VerseCoordinateText}",
-                    $"{resultItem.MatchText}",
-                    $"{resultItem.VersePart.PartText}",
-                    $"{resultItem.ErrorText}");
-                dgvCheckResults.Rows[(dgvCheckResults.Rows.Count - 1)].HeaderCell.Value =
-                    $"{dgvCheckResults.Rows.Count:N0}";
-                dgvCheckResults.Rows[(dgvCheckResults.Rows.Count - 1)].Tag = resultItem;
+                dgvCheckResults.Enabled = false;
+                statusLabel.Text = CheckResults.GetSummaryText(_filteredResultItems);
+
+                foreach (var resultItem in _filteredResultItems)
+                {
+                    var rowIndex = dgvCheckResults.Rows.Add(
+                        $"{resultItem.VerseLocation.VerseCoordinateText}",
+                        $"{resultItem.MatchText}",
+                        $"{resultItem.VersePart.PartText}",
+                        $"{resultItem.ErrorText}");
+                    dgvCheckResults.Rows[rowIndex].HeaderCell.Value =
+                        $"{dgvCheckResults.Rows.Count:N0}";
+                    dgvCheckResults.Rows[rowIndex].Tag = resultItem;
+                }
+            }
+            finally
+            {
+                dgvCheckResults.Enabled = true;
             }
         }
 
@@ -978,6 +981,35 @@ namespace TvpMain.Form
             referencesListView.RowHeadersVisible = false;
             referencesActionsGridView.RowHeadersVisible = false;
 
+            dgvCheckResults.SortCompare += (o, args) =>
+            {
+                if (args.Column.Index != 0)
+                {
+                    return;
+                }
+
+                var firstResult = (dgvCheckResults.Rows[args.RowIndex1].Tag as ResultItem);
+                var secondResult = (dgvCheckResults.Rows[args.RowIndex2].Tag as ResultItem);
+                args.SortResult =
+                    firstResult.VerseLocation.VerseCoordinate.CompareTo(
+                        secondResult.VerseLocation.VerseCoordinate);
+                args.Handled = true;
+            };
+            referencesListView.SortCompare += (o, args) =>
+            {
+                if (args.Column.Index != 0)
+                {
+                    return;
+                }
+
+                var firstResults = (referencesListView.Rows[args.RowIndex1].Tag as IList<ResultItem>);
+                var secondResults = (referencesListView.Rows[args.RowIndex2].Tag as IList<ResultItem>);
+                args.SortResult =
+                    firstResults[0].VerseLocation.VerseCoordinate.CompareTo(
+                        secondResults[0].VerseLocation.VerseCoordinate);
+                args.Handled = true;
+            };
+
             ShowScriptureReferencesCheckControls(false);
         }
 
@@ -1047,57 +1079,44 @@ namespace TvpMain.Form
         /// <summary>
         /// Kicks off updating the scripture reference controls update with the latest results
         /// </summary>
-        private void UpdateReferencesCheckUI()
+        private void UpdateReferencesCheckUi()
         {
-            referencesListView.Rows.Clear();
-            referencesTextBox.Text = "";
-            referencesActionsGridView.Rows.Clear();
-
             FilterReferencesCheckResults();
 
-            // reset the result map
-            _filteredReferencesResultMap = new Dictionary<VerseLocation, IList<ResultItem>>();
+            referencesListView.Rows.Clear();
+            referencesTextBox.Text = "";
 
-            // for each result, place into the dictionary at the same verse location
-            foreach (var resultItem in _filteredResultItems)
+            referencesActionsGridView.Rows.Clear();
+            try
             {
-                var verseLocation = resultItem.VerseLocation;
-                IList<ResultItem> localList;
+                referencesListView.Enabled = false;
 
-                if (_filteredReferencesResultMap.ContainsKey(verseLocation))
+                // for each verse location in the map, update the left panel, the list of verses
+                foreach (var verseGroup in _filteredResultItems
+                    .GroupBy(resultItem => resultItem.VerseLocation))
                 {
-                    localList = _filteredReferencesResultMap[verseLocation];
+                    var localList = verseGroup.ToImmutableList();
+                    var rowIndex = referencesListView.Rows.Add(
+                        $"{verseGroup.Key.VerseCoordinateText}",
+                        $"{localList.Count}");
+
+                    // keep the list of exceptions with the row for use in the right-hand UI
+                    referencesListView.Rows[rowIndex].Tag = localList;
                 }
-                else
+
+                // select the top of the list
+                if (referencesListView.Rows.Count > 0)
                 {
-                    localList = Enumerable.Empty<ResultItem>().ToList();
-                    _filteredReferencesResultMap.Add(verseLocation, localList);
+                    referencesListView.Rows[0].Selected = true;
                 }
-                localList.Add(resultItem);
             }
-
-            // for each verse location in the map, update the left panel, the list of verses
-            foreach (var verseLocation in _filteredReferencesResultMap.Keys)
+            finally
             {
-                var rowIndex = referencesListView.Rows.Add();
-
-                var localList = _filteredReferencesResultMap[verseLocation];
-                // keep the list of exceptions with the row for use in the right-hand UI
-                referencesListView.Rows[rowIndex].Tag = localList;
-                referencesListView.Rows[rowIndex].Cells[0].Value = $"{verseLocation.VerseCoordinateText}";
-                // keep the verse location with the first cell so we can use later
-                referencesListView.Rows[rowIndex].Cells[0].Tag = verseLocation;
-                referencesListView.Rows[rowIndex].Cells[1].Value = $"{localList.Count}";
-            }
-
-            // select the top of the list
-            if (referencesListView.Rows.Count > 0)
-            {
-                referencesListView.Rows[0].Selected = true;
+                referencesListView.Enabled = true;
             }
 
             // update the right portion of the UI, the text and list of exceptions
-            UpdateReferencesUIRight();
+            UpdateReferencesUiRight();
         }
 
         /// <summary>
@@ -1190,45 +1209,51 @@ namespace TvpMain.Form
         /// </summary>
         private void OnReferencesListViewSelectionChanged(object sender, EventArgs e)
         {
-            UpdateReferencesUIRight();
+            UpdateReferencesUiRight();
         }
 
         /// <summary>
         /// Updates the verse level exception list and text, with highlighting
         /// </summary>
-        private void UpdateReferencesUIRight()
+        private void UpdateReferencesUiRight()
         {
             Debug.WriteLine("updateReferencesUIRight");
-
             if (referencesListView.CurrentRow != null)
             {
-
-                var verseLocation = (VerseLocation)referencesListView.CurrentRow.Cells[0].Tag;
-
-                if (verseLocation != null)
+                if (referencesListView.CurrentRow.Tag is IList<ResultItem> localList
+                    && localList.Any())
                 {
-                    referencesTextBox.Text = _filteredReferencesResultMap[verseLocation][0].VersePart.ProjectVerse.VerseText;
+                    referencesTextBox.Text = localList[0].VersePart.ProjectVerse.VerseText;
                     Debug.WriteLine("updateReferencesUIRight - Text Set");
 
                     referencesActionsGridView.Rows.Clear();
-
-                    var localList = _filteredReferencesResultMap[verseLocation];
-
-                    foreach (var resultItem in localList)
+                    try
                     {
-                        var rowNum = referencesActionsGridView.Rows.Add(
-                                $"{(ScriptureReferenceErrorType)resultItem.ResultTypeCode}", "Accept", resultItem.ResultState == ResultState.Ignored ? "Un-Ignore" : "Ignore"
+                        referencesActionsGridView.Enabled = false;
+                        foreach (var resultItem in localList)
+                        {
+                            var rowNum = referencesActionsGridView.Rows.Add(
+                                $"{(ScriptureReferenceErrorType)resultItem.ResultTypeCode}",
+                                "Accept",
+                                resultItem.ResultState == ResultState.Ignored
+                                    ? "Un-Ignore"
+                                    : "Ignore"
                             );
 
-                        Debug.WriteLine("updateReferencesUIRight - Setting Tag resultItem for " + rowNum);
+                            Debug.WriteLine("updateReferencesUIRight - Setting Tag resultItem for " + rowNum);
 
-                        // keep the result item with the row of exceptions for future reference
-                        referencesActionsGridView.Rows[rowNum].Tag = resultItem;
+                            // keep the result item with the row of exceptions for future reference
+                            referencesActionsGridView.Rows[rowNum].Tag = resultItem;
+                        }
+
+                        if (referencesActionsGridView.Rows.Count > 0)
+                        {
+                            referencesActionsGridView.Rows[0].Selected = true;
+                        }
                     }
-
-                    if (referencesActionsGridView.Rows.Count > 0)
+                    finally
                     {
-                        referencesActionsGridView.Rows[0].Selected = true;
+                        referencesActionsGridView.Enabled = true;
                     }
                 }
             }
