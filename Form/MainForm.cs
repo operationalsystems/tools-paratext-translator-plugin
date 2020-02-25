@@ -1141,9 +1141,8 @@ namespace TvpMain.Form
         }
 
         /// <summary>
-        /// Gets current reference list row, checking first the selected list
-        /// then the current row (latter may be _active_ but not _selected_
-        /// in data grids).
+        /// Gets current grid row, checking first the selected list then the current
+        /// row (rows may be _current_ but not _selected_ in data grids).
         /// </summary>
         /// <returns>Current reference list row if found, null otherwise.</returns>
         private DataGridViewRow GetSelectedGridRow(DataGridView gridView)
