@@ -312,11 +312,14 @@ namespace TvpMain.Form
         {
             FilterResults();
 
-            dgvCheckResults.Rows.Clear();
+            var selectedVerse = GetSelectedGridRow(dgvCheckResults)?.Cells[0].Value.ToString();
+            statusLabel.Text = CheckResults.GetSummaryText(_filteredResultItems);
+
+            dgvCheckResults.Enabled = false;
+
             try
             {
-                dgvCheckResults.Enabled = false;
-                statusLabel.Text = CheckResults.GetSummaryText(_filteredResultItems);
+                dgvCheckResults.Rows.Clear();
 
                 foreach (var resultItem in _filteredResultItems)
                 {
@@ -329,6 +332,9 @@ namespace TvpMain.Form
                         $"{dgvCheckResults.Rows.Count:N0}";
                     dgvCheckResults.Rows[rowIndex].Tag = resultItem;
                 }
+
+                // select previously-selected item (or) first
+                SortGridAndSetSelectedRow(dgvCheckResults, selectedVerse);
             }
             finally
             {
@@ -990,25 +996,41 @@ namespace TvpMain.Form
 
                 var firstResult = (dgvCheckResults.Rows[args.RowIndex1].Tag as ResultItem);
                 var secondResult = (dgvCheckResults.Rows[args.RowIndex2].Tag as ResultItem);
+
                 args.SortResult =
                     firstResult.VerseLocation.VerseCoordinate.CompareTo(
                         secondResult.VerseLocation.VerseCoordinate);
                 args.Handled = true;
             };
+            dgvCheckResults.Sort(
+                dgvCheckResults.Columns[0],
+                ListSortDirection.Ascending);
+
             referencesListView.SortCompare += (o, args) =>
             {
-                if (args.Column.Index != 0)
+                if (args.Column.Index < 0
+                    || args.Column.Index > 1)
                 {
                     return;
                 }
 
                 var firstResults = (referencesListView.Rows[args.RowIndex1].Tag as IList<ResultItem>);
                 var secondResults = (referencesListView.Rows[args.RowIndex2].Tag as IList<ResultItem>);
-                args.SortResult =
-                    firstResults[0].VerseLocation.VerseCoordinate.CompareTo(
-                        secondResults[0].VerseLocation.VerseCoordinate);
+
+                args.SortResult = args.Column.Index switch
+                {
+                    0 => firstResults[0]
+                        .VerseLocation.VerseCoordinate.CompareTo(
+                            secondResults[0].VerseLocation.VerseCoordinate),
+                    1 => firstResults.Count.CompareTo(
+                        secondResults.Count),
+                    _ => args.SortResult
+                };
                 args.Handled = true;
             };
+            referencesListView.Sort(
+                referencesListView.Columns[0],
+                ListSortDirection.Ascending);
 
             ShowScriptureReferencesCheckControls(false);
         }
@@ -1081,15 +1103,17 @@ namespace TvpMain.Form
         /// </summary>
         private void UpdateReferencesCheckUi()
         {
+            var selectedVerse = GetSelectedGridRow(referencesListView)?.Cells[0].Value.ToString();
             FilterReferencesCheckResults();
 
-            referencesListView.Rows.Clear();
             referencesTextBox.Text = "";
-
             referencesActionsGridView.Rows.Clear();
+
+            referencesListView.Enabled = false;
+
             try
             {
-                referencesListView.Enabled = false;
+                referencesListView.Rows.Clear();
 
                 // for each verse location in the map, update the left panel, the list of verses
                 foreach (var verseGroup in _filteredResultItems
@@ -1104,11 +1128,8 @@ namespace TvpMain.Form
                     referencesListView.Rows[rowIndex].Tag = localList;
                 }
 
-                // select the top of the list
-                if (referencesListView.Rows.Count > 0)
-                {
-                    referencesListView.Rows[0].Selected = true;
-                }
+                // select previously-selected item (or) first
+                SortGridAndSetSelectedRow(referencesListView, selectedVerse);
             }
             finally
             {
@@ -1117,6 +1138,85 @@ namespace TvpMain.Form
 
             // update the right portion of the UI, the text and list of exceptions
             UpdateReferencesUiRight();
+        }
+
+        /// <summary>
+        /// Gets current reference list row, checking first the selected list
+        /// then the current row (latter may be _active_ but not _selected_
+        /// in data grids).
+        /// </summary>
+        /// <returns>Current reference list row if found, null otherwise.</returns>
+        private DataGridViewRow GetSelectedGridRow(DataGridView gridView)
+        {
+            if (gridView.RowCount < 1)
+            {
+                return null;
+            }
+            else if (gridView.SelectedRows.Count > 0)
+            {
+                return gridView.SelectedRows[0]
+                       ?? gridView.CurrentRow;
+            }
+            return gridView.CurrentRow;
+        }
+
+        /// <summary>
+        /// Sorts a grid as needed, scrolls to a row in data grid with supplied BCV text
+        /// and selects it, as needed.
+        /// 
+        /// Used after repopulating the list, as (a) it will scroll randomly and (b) sorting
+        /// will not be automatic after programmatic changes to row collections.
+        ///
+        /// Assumes first column of data grid is BCV text.
+        /// </summary>
+        /// <param name="gridView">Data grid to work with (required).</param>
+        /// <param name="selectedVerse">Selected verse text (optional, may be null; null selects first row).</param>
+        private void SortGridAndSetSelectedRow(DataGridView gridView, string selectedVerse)
+        {
+            // check for nothing to do 
+            var maxRows = gridView.RowCount;
+            if (maxRows < 1)
+            {
+                return;
+            }
+
+            // sort first, as that changes row order
+            if (gridView.SortedColumn != null
+                && gridView.SortOrder != SortOrder.None)
+            {
+                gridView.Sort(
+                    gridView.SortedColumn,
+                    gridView.SortOrder == SortOrder.Ascending
+                        ? ListSortDirection.Ascending
+                        : ListSortDirection.Descending);
+            }
+
+            // default to first row, then find BCV
+            var selectedRow = gridView.Rows[0];
+            if (selectedVerse != null)
+            {
+                for (var rowCtr = 0;
+                    rowCtr < maxRows;
+                    rowCtr++)
+                {
+                    var rowItem = gridView.Rows[rowCtr];
+                    if (!rowItem.Cells[0].Value.ToString()
+                        .Equals(selectedVerse))
+                    {
+                        continue;
+                    }
+
+                    selectedRow = rowItem;
+                    break;
+                }
+            }
+
+            // scroll to found row, as needed and select
+            if (!selectedRow.Displayed)
+            {
+                gridView.FirstDisplayedScrollingRowIndex = selectedRow.Index;
+            }
+            selectedRow.Selected = true;
         }
 
         /// <summary>
@@ -1218,18 +1318,22 @@ namespace TvpMain.Form
         private void UpdateReferencesUiRight()
         {
             Debug.WriteLine("updateReferencesUIRight");
-            if (referencesListView.CurrentRow != null)
+            var selectedRow = GetSelectedGridRow(referencesListView);
+
+            if (selectedRow != null)
             {
-                if (referencesListView.CurrentRow.Tag is IList<ResultItem> localList
+                if (selectedRow.Tag is IList<ResultItem> localList
                     && localList.Any())
                 {
                     referencesTextBox.Text = localList[0].VersePart.ProjectVerse.VerseText;
                     Debug.WriteLine("updateReferencesUIRight - Text Set");
 
-                    referencesActionsGridView.Rows.Clear();
+                    referencesActionsGridView.Enabled = false;
+
                     try
                     {
-                        referencesActionsGridView.Enabled = false;
+                        referencesActionsGridView.Rows.Clear();
+
                         foreach (var resultItem in localList)
                         {
                             var rowNum = referencesActionsGridView.Rows.Add(
@@ -1368,7 +1472,6 @@ namespace TvpMain.Form
                 if (referencesActionsGridView.CurrentRow.Tag != null)
                 {
                     var resultItem = (ResultItem)referencesActionsGridView.CurrentRow.Tag;
-
                     if (resultItem != null)
                     {
                         referencesTextBox.SelectAll();

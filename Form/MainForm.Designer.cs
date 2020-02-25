@@ -142,8 +142,9 @@
             // 
             this.dgvCheckResults.AllowUserToAddRows = false;
             this.dgvCheckResults.AllowUserToDeleteRows = false;
-            this.dgvCheckResults.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-            | System.Windows.Forms.AnchorStyles.Left)
+            this.dgvCheckResults.AllowUserToResizeRows = false;
+            this.dgvCheckResults.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.dgvCheckResults.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
             this.dgvCheckResults.AutoSizeRowsMode = System.Windows.Forms.DataGridViewAutoSizeRowsMode.DisplayedCells;
@@ -154,7 +155,9 @@
             this.error});
             this.dgvCheckResults.ContextMenuStrip = this.contextMenu;
             this.dgvCheckResults.Location = new System.Drawing.Point(0, 0);
+            this.dgvCheckResults.MultiSelect = false;
             this.dgvCheckResults.Name = "dgvCheckResults";
+            this.dgvCheckResults.ReadOnly = true;
             this.dgvCheckResults.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.AutoSizeToDisplayedHeaders;
             this.dgvCheckResults.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.dgvCheckResults.Size = new System.Drawing.Size(1204, 647);
@@ -531,6 +534,7 @@
             // searchMenuTextBox
             // 
             this.searchMenuTextBox.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+            this.searchMenuTextBox.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.searchMenuTextBox.Name = "searchMenuTextBox";
             this.searchMenuTextBox.Size = new System.Drawing.Size(200, 23);
             // 
@@ -577,8 +581,8 @@
             // 
             // tabControl
             // 
-            this.tabControl.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-            | System.Windows.Forms.AnchorStyles.Left)
+            this.tabControl.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.tabControl.Controls.Add(this.punctuationTab);
             this.tabControl.Controls.Add(this.referencesTab);
@@ -613,8 +617,8 @@
             // 
             // referencesInnerSplitContainer
             // 
-            this.referencesInnerSplitContainer.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-            | System.Windows.Forms.AnchorStyles.Left)
+            this.referencesInnerSplitContainer.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.referencesInnerSplitContainer.Location = new System.Drawing.Point(203, 0);
             this.referencesInnerSplitContainer.Name = "referencesInnerSplitContainer";
@@ -633,7 +637,7 @@
             // 
             // exceptionDetailsGB
             // 
-            this.exceptionDetailsGB.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
+            this.exceptionDetailsGB.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.exceptionDetailsGB.Controls.Add(this.descriptionTextBox);
             this.exceptionDetailsGB.Controls.Add(this.label3);
@@ -650,7 +654,7 @@
             // 
             // descriptionTextBox
             // 
-            this.descriptionTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            this.descriptionTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.descriptionTextBox.Location = new System.Drawing.Point(89, 71);
             this.descriptionTextBox.Multiline = true;
@@ -670,7 +674,7 @@
             // 
             // suggestedFixTextBox
             // 
-            this.suggestedFixTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            this.suggestedFixTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.suggestedFixTextBox.Location = new System.Drawing.Point(89, 45);
             this.suggestedFixTextBox.Name = "suggestedFixTextBox";
@@ -689,7 +693,7 @@
             // 
             // issueTextBox
             // 
-            this.issueTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            this.issueTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.issueTextBox.Location = new System.Drawing.Point(89, 19);
             this.issueTextBox.Name = "issueTextBox";
@@ -711,8 +715,8 @@
             this.referencesActionsGridView.AllowUserToAddRows = false;
             this.referencesActionsGridView.AllowUserToDeleteRows = false;
             this.referencesActionsGridView.AllowUserToResizeRows = false;
-            this.referencesActionsGridView.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-            | System.Windows.Forms.AnchorStyles.Left)
+            this.referencesActionsGridView.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.referencesActionsGridView.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
             this.referencesActionsGridView.AutoSizeRowsMode = System.Windows.Forms.DataGridViewAutoSizeRowsMode.DisplayedCells;
@@ -765,8 +769,8 @@
             // 
             // referencesTextBox
             // 
-            this.referencesTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-            | System.Windows.Forms.AnchorStyles.Left)
+            this.referencesTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.referencesTextBox.BackColor = System.Drawing.Color.White;
             this.referencesTextBox.Cursor = System.Windows.Forms.Cursors.Default;
@@ -783,7 +787,7 @@
             this.referencesListView.AllowUserToAddRows = false;
             this.referencesListView.AllowUserToDeleteRows = false;
             this.referencesListView.AllowUserToResizeRows = false;
-            this.referencesListView.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+            this.referencesListView.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left)));
             this.referencesListView.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
             this.referencesListView.AutoSizeRowsMode = System.Windows.Forms.DataGridViewAutoSizeRowsMode.DisplayedCells;
