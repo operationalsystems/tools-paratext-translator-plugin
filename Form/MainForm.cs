@@ -1165,7 +1165,7 @@ namespace TvpMain.Form
         /// 
         /// Used after repopulating the list, as (a) this will cause grids to scroll randomly
         /// and (b) sorting will not be automatic after programmatic changes to row collections.
-        ///
+        /// 
         /// Assumes first column of data grid is BCV text.
         /// </summary>
         /// <param name="gridView">Data grid to work with (required).</param>
@@ -1190,8 +1190,17 @@ namespace TvpMain.Form
                         : ListSortDirection.Descending);
             }
 
+            // check to see if we need to do anything
+            var currSelectedRow = GetSelectedGridRow(gridView);
+            if (currSelectedRow != null
+                && currSelectedRow.Cells[0].Value.ToString()
+                    .Equals(selectedVerse))
+            {
+                return;
+            }
+
             // default to first row, then find BCV
-            var selectedRow = gridView.Rows[0];
+            var nextSelectedRow = gridView.Rows[0];
             if (selectedVerse != null)
             {
                 for (var rowCtr = 0;
@@ -1205,17 +1214,17 @@ namespace TvpMain.Form
                         continue;
                     }
 
-                    selectedRow = rowItem;
+                    nextSelectedRow = rowItem;
                     break;
                 }
             }
 
             // scroll to found row, as needed and select
-            if (!selectedRow.Displayed)
+            if (!nextSelectedRow.Displayed)
             {
-                gridView.FirstDisplayedScrollingRowIndex = selectedRow.Index;
+                gridView.FirstDisplayedScrollingRowIndex = nextSelectedRow.Index;
             }
-            selectedRow.Selected = true;
+            nextSelectedRow.Selected = true;
         }
 
         /// <summary>
