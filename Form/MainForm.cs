@@ -1163,8 +1163,8 @@ namespace TvpMain.Form
         /// Sorts a grid as needed, scrolls to a row in data grid with supplied BCV text
         /// and selects it, as needed.
         /// 
-        /// Used after repopulating the list, as (a) it will scroll randomly and (b) sorting
-        /// will not be automatic after programmatic changes to row collections.
+        /// Used after repopulating the list, as (a) this will cause grids to scroll randomly
+        /// and (b) sorting will not be automatic after programmatic changes to row collections.
         ///
         /// Assumes first column of data grid is BCV text.
         /// </summary>
