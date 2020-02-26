@@ -147,6 +147,10 @@ namespace TvpMain.Form
             _host = host ?? throw new ArgumentNullException(nameof(host));
             _activeProjectName = activeProjectName ?? throw new ArgumentNullException(nameof(activeProjectName));
 
+            _projectManager = new ProjectManager(_host, _activeProjectName);
+            _resultManager = new ResultManager(_host, _activeProjectName);
+            _resultManager.ScheduleLoadBooks(_projectManager.PresentBookNums);
+
             _progressForm = new ProgressForm();
             _progressForm.Cancelled += OnProgressFormCancelled;
 

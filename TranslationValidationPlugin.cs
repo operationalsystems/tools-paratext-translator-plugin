@@ -36,13 +36,13 @@ namespace TvpMain
 
                 HostUtil.Instance.Host = host;
                 HostUtil.Instance.TranslationValidationPlugin = this;
-                HostUtil.Instance.InitParatextData(false);
 #if DEBUG
                 // Provided because plugins are separate processes that may only be attached to,
                 // once instantiated (can't run Paratext and automatically attach, as with shared libraries).
                 MessageBox.Show($"Attach debugger now to PID {Process.GetCurrentProcess().Id}, if needed!",
                     "Notice...", MessageBoxButtons.OK, MessageBoxIcon.Information);
 #endif
+                HostUtil.Instance.InitParatextData(false);
 
                 try
                 {
@@ -56,15 +56,14 @@ namespace TvpMain
                         catch (Exception)
                         {
                             // Do not report this as it's already been reported elsewhere.
-                            // HostUtil.Instance.ReportError($"Can't perform translation validation for project \"{activeProjectName}\".", ex);
                         }
                         finally
                         {
                             Environment.Exit(0);
                         }
-                    });
+                    })
+                    { IsBackground = false };
 
-                    uiThread.IsBackground = false;
                     uiThread.SetApartmentState(ApartmentState.STA);
                     uiThread.Start();
                 }
