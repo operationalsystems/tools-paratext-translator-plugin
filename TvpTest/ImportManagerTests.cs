@@ -110,6 +110,7 @@ namespace TvpTest
             // all expected verses have been read
             Assert.AreEqual(434, VerseDictionary.Count,
                 "Unexpected verse count in test input.");
+
             // extractor setup
             MockImportManager.Setup(extractorItem =>
                     extractorItem.Extract(It.IsAny<VerseLocation>()))
