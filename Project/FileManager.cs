@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using AddInSideViews;
+using System.Windows.Forms;
 
 namespace TvpMain.Project
 {
@@ -35,7 +36,15 @@ namespace TvpMain.Project
             _projectName = projectName
                                  ?? throw new ArgumentNullException(nameof(projectName));
 
-            ProjectDir = Directory.GetParent(_host.GetFigurePath(_projectName, false));
+            var figurePath = _host.GetFigurePath(_projectName, false)
+                                    ?? _host.GetFigurePath(_projectName, true);
+            if (figurePath == null)
+            {
+                MessageBox.Show($"The plugin could not find the project path for this project. Please create the project path or try another project",
+                "Warning...", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                throw new Exception("Need to close plugin, project path not found.");
+            }
+            ProjectDir = Directory.GetParent(figurePath);
         }
 
         /// <summary>
@@ -45,6 +54,12 @@ namespace TvpMain.Project
         /// <returns>True if file found, false otherwise.</returns>
         public bool TryGetBookNamesFile(out FileStream readOnlyStream)
         {
+            if (ProjectDir == null)
+            {
+                readOnlyStream = null;
+                return false;
+            }
+
             var fileInfo = new FileInfo(Path.Combine(ProjectDir.FullName, "BookNames.xml"));
             readOnlyStream = fileInfo.Exists ? fileInfo.OpenRead() : null;
 

@@ -18,8 +18,9 @@ namespace TvpMain
     /// Translation validation plugin entry point.
     /// </summary>
     [AddIn("Translation Validation Plugin", Description = "Provides validation checks for translated text.", Version = "1.0", Publisher = "Biblica")]
-    [QualificationData(PluginMetaDataKeys.menuText, "Translation Validation")]
+    [QualificationData(PluginMetaDataKeys.menuText, "Translation-Validation")]
     [QualificationData(PluginMetaDataKeys.insertAfterMenuName, "Tools|")]
+    [QualificationData(PluginMetaDataKeys.enableWhen, WhenToEnable.anyProjectActive)]
     [QualificationData(PluginMetaDataKeys.multipleInstances, CreateInstanceRule.always)]
     public class TranslationValidationPlugin : IParatextAddIn2
     {
@@ -52,9 +53,10 @@ namespace TvpMain
                             Application.EnableVisualStyles();
                             Application.Run(new MainForm(host, activeProjectName));
                         }
-                        catch (Exception ex)
+                        catch (Exception)
                         {
-                            HostUtil.Instance.ReportError($"Can't perform translation validation for project \"{activeProjectName}\".", ex);
+                            // Do not report this as it's already been reported elsewhere.
+                            // HostUtil.Instance.ReportError($"Can't perform translation validation for project \"{activeProjectName}\".", ex);
                         }
                         finally
                         {

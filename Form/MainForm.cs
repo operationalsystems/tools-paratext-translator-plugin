@@ -150,10 +150,6 @@ namespace TvpMain.Form
             _progressForm = new ProgressForm();
             _progressForm.Cancelled += OnProgressFormCancelled;
 
-            _projectManager = new ProjectManager(host, activeProjectName);
-            _resultManager = new ResultManager(host, activeProjectName);
-            _resultManager.ScheduleLoadBooks(_projectManager.PresentBookNums);
-
             _allChecks = new List<ITextCheck>()
             {
                 new MissingSentencePunctuationCheck(_projectManager),

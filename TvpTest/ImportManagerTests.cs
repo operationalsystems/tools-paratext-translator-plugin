@@ -137,8 +137,8 @@ namespace TvpTest
         /// TexCheckRunnerTests checks other variations on with synthetic verse text.
         ///
         /// Note: ImportManager is a thin wrapper around ParatextData's GetVerseTokens() method and therefore
-        /// doesn't have functionality to mock, nor can ParatextData's methods be mocked because implementing
-        /// classes either don't have virtual methods (ScrText) or public constructors (ScrParser).
+        /// doesn't have functionality to test or mock, nor can ParatextData's methods be mocked because
+        /// implementing classes either don't have virtual methods (ScrText) or public constructors (ScrParser).
         /// </summary>
         [TestMethod]
         public void TestBookOnlyReferenceCheck()

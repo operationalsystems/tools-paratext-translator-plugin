@@ -21,7 +21,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>C:\Program Files %28x86%29\Paratext 8\plugins\TranslationValidationPlugin\</OutputPath>
+    <OutputPath>bin\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -66,8 +66,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="AddInViews">
-      <HintPath>C:\Program Files (x86)\Paratext 9\Pipeline\AddInViews\AddInViews.dll</HintPath>
-      <Private>False</Private>
+      <HintPath>AddInViews\AddInViews.dll</HintPath>
     </Reference>
     <Reference Include="CsvHelper, Version=15.0.0.0, Culture=neutral, PublicKeyToken=8c4959082be5c823, processorArchitecture=MSIL">
       <HintPath>packages\CsvHelper.15.0.0\lib\net47\CsvHelper.dll</HintPath>
