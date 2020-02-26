@@ -13,12 +13,8 @@
         /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
         protected override void Dispose(bool disposing)
         {
-            _filterSetupEvent.Wait();
-            _runnerSetupEvent.Wait();
-
-            _resultManager.Dispose();
-            _textCheckRunner.Dispose();
-            _exportManager.Dispose();
+            _resultManager?.Dispose();
+            _textCheckRunner?.Dispose();
 
             if (disposing && (components != null))
             {
@@ -49,8 +45,6 @@
             this.mainMenu = new System.Windows.Forms.MenuStrip();
             this.fileMenu = new System.Windows.Forms.ToolStripMenuItem();
             this.saveResultsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
-            this.exportProjectMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.areaMenu = new System.Windows.Forms.ToolStripMenuItem();
             this.currentProjectAreaMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.currentBookAreaMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -236,9 +230,7 @@
             // fileMenu
             // 
             this.fileMenu.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.saveResultsMenuItem,
-            this.toolStripSeparator1,
-            this.exportProjectMenuItem});
+            this.saveResultsMenuItem});
             this.fileMenu.Name = "fileMenu";
             this.fileMenu.Size = new System.Drawing.Size(37, 23);
             this.fileMenu.Text = "&File";
@@ -252,18 +244,6 @@
             this.saveResultsMenuItem.Size = new System.Drawing.Size(187, 22);
             this.saveResultsMenuItem.Text = "&Save Results...";
             this.saveResultsMenuItem.Click += new System.EventHandler(this.OnFileSaveResultsMenuClick);
-            // 
-            // toolStripSeparator1
-            // 
-            this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(184, 6);
-            // 
-            // exportProjectMenuItem
-            // 
-            this.exportProjectMenuItem.Name = "exportProjectMenuItem";
-            this.exportProjectMenuItem.Size = new System.Drawing.Size(187, 22);
-            this.exportProjectMenuItem.Text = "&Export Project...";
-            this.exportProjectMenuItem.Click += new System.EventHandler(this.OnFileExportProjectMenuItemClick);
             // 
             // areaMenu
             // 
@@ -936,8 +916,6 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn referencesActionsExceptionColumn;
         private System.Windows.Forms.DataGridViewTextBoxColumn referencesActionsAcceptColumn;
         private System.Windows.Forms.DataGridViewButtonColumn referencesActionsIgnoreColumn;
-        private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
-        private System.Windows.Forms.ToolStripMenuItem exportProjectMenuItem;
         private System.DirectoryServices.DirectoryEntry directoryEntry1;
         private System.ComponentModel.BackgroundWorker runnerSetupWorker;
     }

@@ -107,7 +107,11 @@ namespace TvpMain.Util
                                 $"plugin directory in unexpected location: {assemblyDir.FullName}");
                         }
 
-                        PtxUtils.Platform.BaseDirectory = assemblyDir.Parent.Parent.FullName;
+                        // fall back on plugin working dir, if paratext.exe not found
+                        var paratextDir = assemblyDir.Parent.Parent;
+                        PtxUtils.Platform.BaseDirectory =
+                            File.Exists(Path.Combine(paratextDir.FullName, "Paratext.exe"))
+                                ? paratextDir.FullName : assemblyPath;
                         ParatextData.Initialize();
 
 #if DEBUG

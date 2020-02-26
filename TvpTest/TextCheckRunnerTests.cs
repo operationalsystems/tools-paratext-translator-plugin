@@ -2,6 +2,7 @@
 using Moq;
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.IO;
 using System.Threading;
 using Paratext.Data.Terms;
@@ -15,7 +16,7 @@ namespace TvpTest
     /// Basic tests for project, book, and chapter-scope text checks.
     /// </summary>
     [TestClass]
-    public class CheckRunnerTests : AbstractCheckTests
+    public class TextCheckRunnerTests : AbstractCheckTests
     {
         /// <summary>
         /// Per-test context, provided by MsTest framework.
@@ -58,7 +59,7 @@ namespace TvpTest
         protected readonly ISet<PartContext> TestContexts = new HashSet<PartContext>()
         {
             PartContext.MainText
-        };
+        }.ToImmutableHashSet();
 
         /// <summary>
         /// Test setup for verse lines and main mocks.

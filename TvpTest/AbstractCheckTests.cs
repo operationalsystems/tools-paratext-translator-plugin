@@ -9,7 +9,6 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Paratext.Data;
 using TvpMain.Project;
 using TvpMain.Result;
-using TvpMain.Export;
 using TvpMain.Import;
 using TvpMain.Text;
 using TvpMain.Util;
@@ -161,11 +160,6 @@ namespace TvpTest
         protected Mock<ImportManager> MockImportManager { get; private set; }
 
         /// <summary>
-        /// Mock content export manager.
-        /// </summary>
-        protected Mock<ExportManager> MockExportManager { get; private set; }
-
-        /// <summary>
         /// Test setup for verse lines and main mocks.
         /// </summary>
         /// <param name="testContext">Per-test test context (required).</param>
@@ -219,8 +213,6 @@ namespace TvpTest
 
             // create mock paratext project proxy & related
             MockScrText = new Mock<ScrText>(MockBehavior.Strict);
-            MockScrText.Setup(textItem => textItem.RightToLeft)
-                .Returns(false);
             MockScrText.Setup(textItem => textItem.Parser)
                 .Returns((ScrParser)null);
             // Note: ScrParser _may not_ be mocked due to internal ctor w/out modifying ParatextData:
@@ -244,12 +236,6 @@ namespace TvpTest
                     MockHost.Object,
                     TEST_PROJECT_NAME,
                     MockScrText.Object)
-            { CallBase = true };
-            MockExportManager = new Mock<ExportManager>(
-                MockHost.Object,
-                TEST_PROJECT_NAME,
-                MockProjectManager.Object,
-                MockResultManager.Object)
             { CallBase = true };
 
             // project manager setup

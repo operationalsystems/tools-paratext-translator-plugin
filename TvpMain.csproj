@@ -72,8 +72,8 @@
     <Reference Include="CsvHelper, Version=15.0.0.0, Culture=neutral, PublicKeyToken=8c4959082be5c823, processorArchitecture=MSIL">
       <HintPath>packages\CsvHelper.15.0.0\lib\net47\CsvHelper.dll</HintPath>
     </Reference>
-    <Reference Include="DotNetZip, Version=1.13.5.0, Culture=neutral, PublicKeyToken=6583c7c814667745, processorArchitecture=MSIL">
-      <HintPath>packages\DotNetZip.1.13.5\lib\net40\DotNetZip.dll</HintPath>
+    <Reference Include="DotNetZip, Version=1.13.6.0, Culture=neutral, PublicKeyToken=6583c7c814667745, processorArchitecture=MSIL">
+      <HintPath>packages\DotNetZip.1.13.6\lib\net40\DotNetZip.dll</HintPath>
     </Reference>
     <Reference Include="icu.net, Version=2.6.0.0, Culture=neutral, PublicKeyToken=416fdd914afa6b66, processorArchitecture=MSIL">
       <HintPath>packages\icu.net.2.6.0\lib\net451\icu.net.dll</HintPath>
@@ -171,7 +171,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Check\CheckArea.cs" />
-    <Compile Include="Export\ExportUpdatedArgs.cs" />
     <Compile Include="Form\RichTextBoxPrinter.cs" />
     <Compile Include="Import\ImportManager.cs" />
     <Compile Include="Project\BookNameItem.cs" />
@@ -183,7 +182,6 @@
     <Compile Include="Reference\ScriptureReference.cs" />
     <Compile Include="Reference\ScriptureReferenceParser.cs" />
     <Compile Include="Result\ResultManager.cs" />
-    <Compile Include="Export\ExportManager.cs" />
     <Compile Include="Text\BookIdItem.cs" />
     <Compile Include="Text\PartLocation.cs" />
     <Compile Include="Text\ProjectVerse.cs" />

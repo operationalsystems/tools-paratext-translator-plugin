@@ -19,7 +19,6 @@ using TvpMain.Project;
 using TvpMain.Punctuation;
 using TvpMain.Reference;
 using TvpMain.Result;
-using TvpMain.Export;
 using TvpMain.Import;
 using TvpMain.Text;
 using TvpMain.Util;
@@ -129,11 +128,6 @@ namespace TvpMain.Form
         /// Project import manager.
         /// </summary>
         private ImportManager _importManager;
-
-        /// <summary>
-        /// Project export manager.
-        /// </summary>
-        private ExportManager _exportManager;
 
         /// <summary>
         /// Current check area.
@@ -265,8 +259,6 @@ namespace TvpMain.Form
             try
             {
                 _importManager = new ImportManager(_host, _activeProjectName);
-                _exportManager = new ExportManager(_host, _activeProjectName,
-                    _projectManager, _resultManager);
 
                 _textCheckRunner = new TextCheckRunner(_host, _activeProjectName,
                     _projectManager, _importManager, _resultManager);
@@ -823,34 +815,6 @@ namespace TvpMain.Form
                 catch (Exception ex)
                 {
                     HostUtil.Instance.ReportError($"Can't write CSV file: {saveFile.FileName}", false, ex);
-                }
-            }
-        }
-
-        /// <summary>
-        /// Project export menu item handler.
-        /// </summary>
-        /// <param name="sender">Event sender (ignored).</param>
-        /// <param name="e">Event args (ignored).</param>
-        private void OnFileExportProjectMenuItemClick(object sender, EventArgs e)
-        {
-            using var folderBrowser = new FolderBrowserDialog();
-
-            folderBrowser.Description = "Select destination folder...";
-            folderBrowser.SelectedPath = _projectManager.FileManager.ProjectDir.FullName;
-            folderBrowser.ShowNewFolderButton = true;
-
-            if (folderBrowser.ShowDialog() == DialogResult.OK)
-            {
-                try
-                {
-                    _exportManager.ExportProject(
-                        new DirectoryInfo(folderBrowser.SelectedPath),
-                        true);
-                }
-                catch (Exception ex)
-                {
-                    HostUtil.Instance.ReportError($"Can't write export project: {folderBrowser.SelectedPath}", false, ex);
                 }
             }
         }

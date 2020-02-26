@@ -31,6 +31,12 @@ namespace TvpMain.Result
             VersePart.ProjectVerse.VerseLocation;
 
         /// <summary>
+        /// Gets the verse text.
+        /// </summary>
+        public string VerseText =>
+            VersePart.ProjectVerse.VerseText;
+
+        /// <summary>
         /// Gets the Part location (start, length w/in verse).
         /// </summary>
         public PartLocation PartLocation =>
