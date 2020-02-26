@@ -95,7 +95,7 @@ namespace TvpTest
         /// test project (ETP) and (through test tooling, above) doesn't re-read them, leading to a specific mix
         /// of check violations.
         ///
-        /// TexCheckRunnerTests checks other variations on with synthetic verse text.
+        /// TexCheckRunnerTests checks other variations on this (e.g., chapters, projects) with synthetic verse text.
         ///
         /// Note: ImportManager is a thin wrapper around ParatextData's GetVerseTokens() method and therefore
         /// doesn't have functionality to test or mock, nor can ParatextData's methods be mocked because
