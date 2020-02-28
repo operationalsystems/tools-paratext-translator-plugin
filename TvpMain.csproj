@@ -64,6 +64,9 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
+  <PropertyGroup>
+    <RunPostBuildEvent>Always</RunPostBuildEvent>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="AddInViews">
       <HintPath>AddInViews\AddInViews.dll</HintPath>
@@ -71,6 +74,7 @@
     </Reference>
     <Reference Include="CsvHelper, Version=15.0.0.0, Culture=neutral, PublicKeyToken=8c4959082be5c823, processorArchitecture=MSIL">
       <HintPath>packages\CsvHelper.15.0.0\lib\net47\CsvHelper.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="DotNetZip, Version=1.13.6.0, Culture=neutral, PublicKeyToken=6583c7c814667745, processorArchitecture=MSIL">
       <HintPath>packages\DotNetZip.1.13.6\lib\net40\DotNetZip.dll</HintPath>
@@ -78,6 +82,7 @@
     </Reference>
     <Reference Include="icu.net, Version=2.6.0.0, Culture=neutral, PublicKeyToken=416fdd914afa6b66, processorArchitecture=MSIL">
       <HintPath>packages\icu.net.2.6.0\lib\net451\icu.net.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.Bcl.AsyncInterfaces, Version=1.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>packages\Microsoft.Bcl.AsyncInterfaces.1.1.0\lib\net461\Microsoft.Bcl.AsyncInterfaces.dll</HintPath>
@@ -90,13 +95,15 @@
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>packages\Newtonsoft.Json.12.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="Paratext.LexicalContracts, Version=1.0.0.0, Culture=neutral, PublicKeyToken=9a5af29a0e638a7b, processorArchitecture=MSIL">
       <HintPath>packages\ParatextData.9.0.3\lib\net461\Paratext.LexicalContracts.dll</HintPath>
-      <Private>False</Private>
+      <Private>True</Private>
     </Reference>
     <Reference Include="ParatextData, Version=9.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>packages\ParatextData.9.0.3\lib\net461\ParatextData.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="Pidgin, Version=2.3.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>packages\Pidgin.2.3.0\lib\net451\Pidgin.dll</HintPath>
@@ -123,6 +130,7 @@
     </Reference>
     <Reference Include="Spart, Version=1.0.0.0, Culture=neutral, PublicKeyToken=14d24e064e474331, processorArchitecture=MSIL">
       <HintPath>packages\SIL.Lib.6.0.11\lib\net46\Spart.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.AddIn" />
@@ -257,11 +265,6 @@
     <Content Include="Resources\biblica-16x16.ico" />
     <Content Include="Resources\biblica-32x32.ico" />
     <Content Include="Resources\biblica-96x96.ico" />
-    <Content Include="x86\CC32.dll" />
-    <Content Include="x86\libgcc_s_sjlj-1.dll" />
-    <Content Include="x86\libstdc++-6.dll" />
-    <Content Include="x86\TECkit_Compiler_x86.dll" />
-    <Content Include="x86\TECkit_x86.dll" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
@@ -274,4 +277,9 @@
     <Error Condition="!Exists('packages\SIL.Lib.6.0.11\build\SIL.Lib.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\SIL.Lib.6.0.11\build\SIL.Lib.targets'))" />
   </Target>
   <Import Project="packages\SIL.Lib.6.0.11\build\SIL.Lib.targets" Condition="Exists('packages\SIL.Lib.6.0.11\build\SIL.Lib.targets')" />
+  <PropertyGroup>
+    <PostBuildEvent>cd /d "$(TargetDir)"
+dir cc*.dll
+</PostBuildEvent>
+  </PropertyGroup>
 </Project>
