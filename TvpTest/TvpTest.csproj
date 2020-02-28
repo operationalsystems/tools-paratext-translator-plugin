@@ -157,12 +157,12 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Lib\icu32\icudt54.dll" />
-    <Content Include="Lib\icu32\icuin54.dll" />
-    <Content Include="Lib\icu32\icuuc54.dll" />
-    <Content Include="Lib\icu64\icudt54.dll" />
-    <Content Include="Lib\icu64\icuin54.dll" />
-    <Content Include="Lib\icu64\icuuc54.dll" />
+    <Content Include="icu32\icudt54.dll" />
+    <Content Include="icu32\icuin54.dll" />
+    <Content Include="icu32\icuuc54.dll" />
+    <Content Include="icu64\icudt54.dll" />
+    <Content Include="icu64\icuin54.dll" />
+    <Content Include="icu64\icuuc54.dll" />
     <Content Include="Resources\formatter-results-1.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
