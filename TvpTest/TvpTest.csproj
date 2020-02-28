@@ -40,8 +40,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="AddInViews">
-      <HintPath>C:\Program Files (x86)\Paratext 9\Pipeline\AddInViews\AddInViews.dll</HintPath>
+    <Reference Include="AddInViews, Version=1.0.0.0, Culture=neutral, processorArchitecture=x86">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\AddInViews\AddInViews.dll</HintPath>
     </Reference>
     <Reference Include="Castle.Core, Version=4.0.0.0, Culture=neutral, PublicKeyToken=407dd0808d44fbdc, processorArchitecture=MSIL">
       <HintPath>..\..\tools-paratext-translator-plugin\packages\Castle.Core.4.4.0\lib\net45\Castle.Core.dll</HintPath>
