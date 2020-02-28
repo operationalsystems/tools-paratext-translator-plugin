@@ -278,8 +278,7 @@
   </Target>
   <Import Project="packages\SIL.Lib.6.0.11\build\SIL.Lib.targets" Condition="Exists('packages\SIL.Lib.6.0.11\build\SIL.Lib.targets')" />
   <PropertyGroup>
-    <PostBuildEvent>cd /d "$(TargetDir)"
-dir cc*.dll
-</PostBuildEvent>
+    <PostBuildEvent>
+    </PostBuildEvent>
   </PropertyGroup>
 </Project>
