@@ -74,6 +74,7 @@
     </Reference>
     <Reference Include="DotNetZip, Version=1.13.6.0, Culture=neutral, PublicKeyToken=6583c7c814667745, processorArchitecture=MSIL">
       <HintPath>packages\DotNetZip.1.13.6\lib\net40\DotNetZip.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="icu.net, Version=2.6.0.0, Culture=neutral, PublicKeyToken=416fdd914afa6b66, processorArchitecture=MSIL">
       <HintPath>packages\icu.net.2.6.0\lib\net451\icu.net.dll</HintPath>
@@ -92,6 +93,7 @@
     </Reference>
     <Reference Include="Paratext.LexicalContracts, Version=1.0.0.0, Culture=neutral, PublicKeyToken=9a5af29a0e638a7b, processorArchitecture=MSIL">
       <HintPath>packages\ParatextData.9.0.3\lib\net461\Paratext.LexicalContracts.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="ParatextData, Version=9.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>packages\ParatextData.9.0.3\lib\net461\ParatextData.dll</HintPath>
@@ -101,18 +103,23 @@
     </Reference>
     <Reference Include="PtxUtils, Version=9.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>packages\ParatextData.9.0.3\lib\net461\PtxUtils.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="SIL.Core, Version=6.0.0.0, Culture=neutral, PublicKeyToken=cab3c8c5232dfcf2, processorArchitecture=MSIL">
       <HintPath>packages\SIL.Lib.6.0.11\lib\net46\SIL.Core.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="SIL.Core.Desktop, Version=6.0.0.0, Culture=neutral, PublicKeyToken=cab3c8c5232dfcf2, processorArchitecture=MSIL">
       <HintPath>packages\SIL.Lib.6.0.11\lib\net46\SIL.Core.Desktop.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="SIL.Scripture, Version=6.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>packages\SIL.Lib.6.0.11\lib\net46\SIL.Scripture.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="SIL.WritingSystems, Version=6.0.0.0, Culture=neutral, PublicKeyToken=cab3c8c5232dfcf2, processorArchitecture=MSIL">
       <HintPath>packages\SIL.Lib.6.0.11\lib\net46\SIL.WritingSystems.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="Spart, Version=1.0.0.0, Culture=neutral, PublicKeyToken=14d24e064e474331, processorArchitecture=MSIL">
       <HintPath>packages\SIL.Lib.6.0.11\lib\net46\Spart.dll</HintPath>
