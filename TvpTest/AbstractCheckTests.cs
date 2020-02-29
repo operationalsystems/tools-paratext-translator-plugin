@@ -1,10 +1,15 @@
-﻿using AddInSideViews;
+﻿using System;
+using AddInSideViews;
 using Moq;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Paratext.Data;
 using TvpMain.Project;
+using TvpMain.Result;
+using TvpMain.Import;
 using TvpMain.Text;
 using TvpMain.Util;
 
@@ -125,34 +130,44 @@ namespace TvpTest
         private IDictionary<string, BookNameItem> _testBookNamesByAllNames;
 
         /// <summary>
-        /// Mock Paratext scripture extractor.
-        /// </summary>
-        protected Mock<IScrExtractor> MockExtractor;
-
-        /// <summary>
         /// Mock Paratext scripture host.
         /// </summary>
-        protected Mock<IHost> MockHost;
+        protected Mock<IHost> MockHost { get; private set; }
 
         /// <summary>
-        /// Mock settings manager.
+        /// Mock ParatextData project proxy.
         /// </summary>
-        protected Mock<ProjectManager> MockProjectManager;
+        protected Mock<ScrText> MockScrText { get; private set; }
+
+        /// <summary>
+        /// Mock file manager.
+        /// </summary>
+        protected Mock<FileManager> MockFileManager { get; private set; }
+
+        /// <summary>
+        /// Mock project manager.
+        /// </summary>
+        protected Mock<ProjectManager> MockProjectManager { get; private set; }
+
+        /// <summary>
+        /// Mock result manager.
+        /// </summary>
+        protected Mock<ResultManager> MockResultManager { get; private set; }
+
+        /// <summary>
+        /// Mock content import manager.
+        /// </summary>
+        protected Mock<ImportManager> MockImportManager { get; private set; }
 
         /// <summary>
         /// Test setup for verse lines and main mocks.
         /// </summary>
-        public virtual void TestSetup()
+        /// <param name="testContext">Per-test test context (required).</param>
+        public virtual void AbstractTestSetup(TestContext testContext)
         {
             MockHost = new Mock<IHost>(MockBehavior.Strict);
-            MockExtractor = new Mock<IScrExtractor>(MockBehavior.Strict);
-            MockProjectManager = new Mock<ProjectManager>(MockBehavior.Strict,
-                MockHost.Object,
-                TEST_PROJECT_NAME);
 
             // host setup
-            MockHost.Setup(hostItem => hostItem.GetScriptureExtractor(TEST_PROJECT_NAME, ExtractorType.USFM))
-                .Returns(MockExtractor.Object);
             MockHost.Setup(hostItem => hostItem.GetProjectVersificationName(TEST_PROJECT_NAME))
                 .Returns(TEST_VERSIFICATION_NAME);
             MockHost.Setup(hostItem => hostItem.GetCurrentRef(TEST_VERSIFICATION_NAME))
@@ -190,9 +205,38 @@ namespace TvpTest
                 .Returns<IParatextAddIn, string, string>((addIn, projectName, dataId) => null);
             MockHost.Setup(hostItem => hostItem.PutPlugInData(It.IsAny<IParatextAddIn>(), TEST_PROJECT_NAME, It.IsAny<string>(), It.IsAny<string>()))
                 .Returns<IParatextAddIn, string, string, string>((addIn, projectName, dataId, dataText) => true);
+            MockHost.Setup(hostItem => hostItem.GetFigurePath(TEST_PROJECT_NAME, false))
+                .Returns<string, bool>((projectName, isLocal) => Path.Combine(testContext.DeploymentDirectory, "figure"));
 
             // host util setup
             HostUtil.Instance.Host = MockHost.Object;
+
+            // create mock paratext project proxy & related
+            MockScrText = new Mock<ScrText>(MockBehavior.Strict);
+            MockScrText.Setup(textItem => textItem.Parser)
+                .Returns((ScrParser)null);
+            // Note: ScrParser _may not_ be mocked due to internal ctor w/out modifying ParatextData:
+            // https://github.com/Moq/moq4/wiki/Quickstart#advanced-features
+
+            // create mock project managers & related
+            MockFileManager = new Mock<FileManager>(
+                    MockHost.Object,
+                    TEST_PROJECT_NAME)
+            { CallBase = true };
+            MockProjectManager = new Mock<ProjectManager>(
+                MockHost.Object,
+                TEST_PROJECT_NAME,
+                MockFileManager.Object)
+            { CallBase = true };
+            MockResultManager = new Mock<ResultManager>(
+                MockHost.Object,
+                TEST_PROJECT_NAME)
+            { CallBase = true };
+            MockImportManager = new Mock<ImportManager>(
+                    MockHost.Object,
+                    TEST_PROJECT_NAME,
+                    MockScrText.Object)
+            { CallBase = true };
 
             // project manager setup
             _testBookNamesByNum = BookUtil.BookIdList

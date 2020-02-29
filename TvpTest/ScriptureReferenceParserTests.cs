@@ -1,5 +1,6 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.IO;
 using TvpMain.Reference;
 using TvpMain.Text;
@@ -13,24 +14,26 @@ namespace TvpTest
     public class ScriptureReferenceParserTests : AbstractCheckTests
     {
         /// <summary>
+        /// Per-test context, provided by MsTest framework.
+        /// </summary>
+        public TestContext TestContext { get; set; }
+
+        /// <summary>
         /// Test parser output lines
         /// </summary>
-        protected string[] ParserLines;
+        protected IList<string> ParserResultLines;
 
         /// <summary>
         /// Test formatter output lines
         /// </summary>
-        protected string[] FormatterLines;
+        protected IList<string> FormatterResultLines;
 
         [TestInitialize]
         [DeploymentItem(@"Resources\parser-results-1.txt", "Resources")]
         [DeploymentItem(@"Resources\formatter-results-1.txt", "Resources")]
-        public override void TestSetup()
+        public void TestSetup()
         {
-            base.TestSetup();
-
-            ParserLines = File.ReadAllLines(@"Resources\parser-results-1.txt");
-            FormatterLines = File.ReadAllLines(@"Resources\formatter-results-1.txt");
+            base.AbstractTestSetup(TestContext);
         }
 
         /// <summary>
@@ -42,6 +45,11 @@ namespace TvpTest
         [TestMethod]
         public void PositiveParserTest()
         {
+            // setup: read expected results from resource
+            ParserResultLines = File.ReadAllLines(@"Resources\parser-results-1.txt").ToImmutableList();
+            Assert.AreEqual(31, ParserResultLines.Count,
+                "Unexpected parser result count in test input.");
+
             var builder = new ScriptureReferenceBuilder(MockProjectManager.Object);
             var ctr = 0;
 
@@ -49,7 +57,7 @@ namespace TvpTest
             {
                 Assert.IsTrue(builder.TryParseScriptureReference(testText, out var result),
                     $"Can't parse entry #{ctr + 1}, text: {testText}");
-                Assert.AreEqual(ParserLines[ctr].Trim(),
+                Assert.AreEqual(ParserResultLines[ctr].Trim(),
                     result.ToString().Trim(),
                     $"Can't verify entry #{ctr + 1}, text: {testText}");
 
@@ -70,6 +78,11 @@ namespace TvpTest
         [TestMethod]
         public void PositiveFormatterTest()
         {
+            // setup: read expected results from resource
+            FormatterResultLines = File.ReadAllLines(@"Resources\formatter-results-1.txt").ToImmutableList();
+            Assert.AreEqual(31, FormatterResultLines.Count,
+                "Unexpected formatter result count in test input.");
+
             var builder = new ScriptureReferenceBuilder(MockProjectManager.Object);
             var ctr = 0;
 
@@ -77,7 +90,7 @@ namespace TvpTest
             {
                 Assert.IsTrue(builder.TryParseScriptureReference(testText, out var result),
                     $"Can't parse entry #{ctr + 1}, text: {testText}");
-                Assert.AreEqual(FormatterLines[ctr].Trim(),
+                Assert.AreEqual(FormatterResultLines[ctr].Trim(),
                     builder.FormatStandardReference(PartContext.MainText, result).Trim(),
                     $"Can't verify entry #{ctr + 1}, text: {testText}");
 
@@ -128,7 +141,7 @@ namespace TvpTest
                 @"\xt foo 1:23,1-3,1,3 \xt*",
                 @"\xt foO 1:23,1-3,1,3",
                 @"Foo 1:23,1-3,1,3 \xt*"
-            };
+            }.ToImmutableList();
         }
     }
 }

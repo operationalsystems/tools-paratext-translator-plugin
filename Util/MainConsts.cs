@@ -1,6 +1,9 @@
 ﻿/*
  * A Class to handle the Global Constants.
  */
+
+using System.Windows.Forms;
+
 namespace TvpMain.Util
 {
     /// <summary>
@@ -64,9 +67,20 @@ namespace TvpMain.Util
         public const int CHECK_EVENTS_UPDATE_RATE_IN_FPS = 10;
 
         /// <summary>
+        /// Update delay for progress form and similar loops, based on FPS.
+        /// </summary>
+        public const int CHECK_EVENTS_DELAY_IN_MSEC =
+            (int)(1000f / (float)CHECK_EVENTS_UPDATE_RATE_IN_FPS);
+
+        /// <summary>
         /// Max threads to use for validation checks.
         /// </summary>
         public const int MAX_CHECK_THREADS = 4;
+
+        /// <summary>
+        /// Max threads to use for exporting files.
+        /// </summary>
+        public const int MAX_EXPORT_THREADS = 4;
 
         /// <summary>
         /// Max consecutive empty verses before chapter is considered empty.

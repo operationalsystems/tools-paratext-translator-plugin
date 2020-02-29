@@ -14,19 +14,24 @@ namespace TvpTest
     public class ScriptureReferenceCheckTests : AbstractCheckTests
     {
         /// <summary>
+        /// Per-test context, provided by MsTest framework.
+        /// </summary>
+        public TestContext TestContext { get; set; }
+
+        /// <summary>
         /// Reference checker under test.
         /// </summary>
-        private ScriptureReferenceCheck _referenceCheck;
+        protected ScriptureReferenceCheck ReferenceCheck;
 
         /// <summary>
         /// Test setup for verse lines and main mocks.
         /// </summary>
         [TestInitialize]
-        public override void TestSetup()
+        public void TestSetup()
         {
-            base.TestSetup();
+            base.AbstractTestSetup(TestContext);
 
-            _referenceCheck = new ScriptureReferenceCheck(MockProjectManager.Object);
+            ReferenceCheck = new ScriptureReferenceCheck(MockProjectManager.Object);
         }
 
         /// <summary>
@@ -45,7 +50,7 @@ namespace TvpTest
                 PartContext.MainText);
 
             // Executes the check
-            _referenceCheck.CheckText(partData, resultList);
+            ReferenceCheck.CheckText(partData, resultList);
 
             // Empty results list = no exceptions
             Assert.IsTrue(resultList.Count == 0);
@@ -70,7 +75,7 @@ namespace TvpTest
                 PartContext.Outlines);
 
             // Executes the check
-            _referenceCheck.CheckText(partData, resultList);
+            ReferenceCheck.CheckText(partData, resultList);
 
 
             // Assert
@@ -99,7 +104,7 @@ namespace TvpTest
                 PartContext.Outlines);
 
             // Executes the check
-            _referenceCheck.CheckText(partData, resultList);
+            ReferenceCheck.CheckText(partData, resultList);
 
             // Assert
             Assert.AreEqual(1, resultList.Count,
@@ -126,7 +131,7 @@ namespace TvpTest
                 PartContext.Outlines);
 
             // Executes the check
-            _referenceCheck.CheckText(partData, resultList);
+            ReferenceCheck.CheckText(partData, resultList);
 
             // Assert
             Assert.AreEqual(1, resultList.Count,
@@ -153,7 +158,7 @@ namespace TvpTest
                 PartContext.Outlines);
 
             // Executes the check
-            _referenceCheck.CheckText(partData, resultList);
+            ReferenceCheck.CheckText(partData, resultList);
 
             // Assert
             Assert.AreEqual(1, resultList.Count,
@@ -180,7 +185,7 @@ namespace TvpTest
                 PartContext.Outlines);
 
             // Executes the check
-            _referenceCheck.CheckText(partData, resultList);
+            ReferenceCheck.CheckText(partData, resultList);
 
             // Assert
             Assert.AreEqual(1, resultList.Count,
@@ -207,7 +212,7 @@ namespace TvpTest
                 PartContext.Outlines);
 
             // Executes the check
-            _referenceCheck.CheckText(partData, resultList);
+            ReferenceCheck.CheckText(partData, resultList);
 
             // Assert
             Assert.AreEqual(1, resultList.Count,
@@ -234,7 +239,7 @@ namespace TvpTest
                 PartContext.Outlines);
 
             // Executes the check
-            _referenceCheck.CheckText(partData, resultList);
+            ReferenceCheck.CheckText(partData, resultList);
 
             // Assert
             Assert.AreEqual(3, resultList.Count,
@@ -245,7 +250,7 @@ namespace TvpTest
             Assert.AreEqual(1, CountErrors(resultList,
                     ScriptureReferenceErrorType.MissingTag),
                 "The wrong tag is used for the context.");
-            Assert.AreEqual(@"\+xt Genesis 1:1\+xt*",
+            Assert.AreEqual(@"\fr",
                 resultList[0].MatchText);
         }
 
@@ -264,7 +269,7 @@ namespace TvpTest
                 PartContext.Outlines);
 
             // Executes the check
-            _referenceCheck.CheckText(partData, resultList);
+            ReferenceCheck.CheckText(partData, resultList);
 
             // Assert
             Assert.AreEqual(2, resultList.Count,
@@ -294,7 +299,7 @@ namespace TvpTest
                 PartContext.Outlines);
 
             // Executes the check
-            _referenceCheck.CheckText(partData, resultList);
+            ReferenceCheck.CheckText(partData, resultList);
 
             // Assert
             Assert.AreEqual(3, resultList.Count,
@@ -306,7 +311,7 @@ namespace TvpTest
             Assert.AreEqual(1, CountErrors(resultList,
                     ScriptureReferenceErrorType.MissingTag),
                 "The wrong tag is used for the context.");
-            Assert.AreEqual(@"\+xt Genesis 1:1\+xt*",
+            Assert.AreEqual(@"\ft",
                 resultList[0].MatchText);
         }
 
@@ -325,7 +330,7 @@ namespace TvpTest
                 PartContext.Outlines);
 
             // Executes the check
-            _referenceCheck.CheckText(partData, resultList);
+            ReferenceCheck.CheckText(partData, resultList);
 
             // Assert
             Assert.AreEqual(2, resultList.Count,
@@ -358,7 +363,7 @@ namespace TvpTest
                 PartContext.Introductions);
 
             // Executes the check
-            _referenceCheck.CheckText(partData, resultList);
+            ReferenceCheck.CheckText(partData, resultList);
 
 
             // Assert
@@ -387,7 +392,7 @@ namespace TvpTest
                 PartContext.Introductions);
 
             // Executes the check
-            _referenceCheck.CheckText(partData, resultList);
+            ReferenceCheck.CheckText(partData, resultList);
 
             // Assert
             Assert.AreEqual(1, resultList.Count,
@@ -414,7 +419,7 @@ namespace TvpTest
                 PartContext.Introductions);
 
             // Executes the check
-            _referenceCheck.CheckText(partData, resultList);
+            ReferenceCheck.CheckText(partData, resultList);
 
             // Assert
             Assert.AreEqual(1, resultList.Count,
@@ -441,7 +446,7 @@ namespace TvpTest
                 PartContext.Introductions);
 
             // Executes the check
-            _referenceCheck.CheckText(partData, resultList);
+            ReferenceCheck.CheckText(partData, resultList);
 
             // Assert
             Assert.AreEqual(0, resultList.Count,
@@ -463,7 +468,7 @@ namespace TvpTest
                 PartContext.Introductions);
 
             // Executes the check
-            _referenceCheck.CheckText(partData, resultList);
+            ReferenceCheck.CheckText(partData, resultList);
 
             // Assert
             Assert.AreEqual(1, resultList.Count,
@@ -490,7 +495,7 @@ namespace TvpTest
                 PartContext.Introductions);
 
             // Executes the check
-            _referenceCheck.CheckText(partData, resultList);
+            ReferenceCheck.CheckText(partData, resultList);
 
             // Assert
             Assert.AreEqual(1, resultList.Count,
@@ -517,7 +522,7 @@ namespace TvpTest
                 PartContext.Introductions);
 
             // Executes the check
-            _referenceCheck.CheckText(partData, resultList);
+            ReferenceCheck.CheckText(partData, resultList);
 
             // Assert
             Assert.AreEqual(1, resultList.Count,
@@ -545,7 +550,7 @@ namespace TvpTest
                 PartContext.Introductions);
 
             // Executes the check
-            _referenceCheck.CheckText(partData, resultList);
+            ReferenceCheck.CheckText(partData, resultList);
 
             // Assert
             Assert.AreEqual(1, resultList.Count,
@@ -572,7 +577,7 @@ namespace TvpTest
                 PartContext.Introductions);
 
             // Executes the check
-            _referenceCheck.CheckText(partData, resultList);
+            ReferenceCheck.CheckText(partData, resultList);
 
             // Assert
             Assert.AreEqual(1, resultList.Count,
@@ -580,7 +585,7 @@ namespace TvpTest
             Assert.AreEqual(1, CountErrors(resultList,
                     ScriptureReferenceErrorType.IncorrectTag),
                 "The wrong tag is used for the context.");
-            Assert.AreEqual(@"\xt Numbers 3:5\xt*",
+            Assert.AreEqual(@"\fr",
                 resultList[0].MatchText);
         }
 
@@ -599,7 +604,7 @@ namespace TvpTest
                 PartContext.Introductions);
 
             // Executes the check
-            _referenceCheck.CheckText(partData, resultList);
+            ReferenceCheck.CheckText(partData, resultList);
 
             // Assert
             Assert.AreEqual(1, resultList.Count,
@@ -607,7 +612,7 @@ namespace TvpTest
             Assert.AreEqual(1, CountErrors(resultList,
                     ScriptureReferenceErrorType.IncorrectTag),
                 "The wrong tag is used for the context.");
-            Assert.AreEqual(@"\xt Deuteronomy 3:2\xt*",
+            Assert.AreEqual(@"\ft",
                 resultList[0].MatchText);
         }
 
@@ -629,7 +634,7 @@ namespace TvpTest
                 PartContext.Outlines);
 
             // Executes the check
-            _referenceCheck.CheckText(partData, resultList);
+            ReferenceCheck.CheckText(partData, resultList);
 
 
             // Assert
@@ -658,7 +663,7 @@ namespace TvpTest
                 PartContext.MainText);
 
             // Executes the check
-            _referenceCheck.CheckText(partData, resultList);
+            ReferenceCheck.CheckText(partData, resultList);
 
             // Assert
             Assert.AreEqual(1, resultList.Count,
@@ -685,7 +690,7 @@ namespace TvpTest
                 PartContext.MainText);
 
             // Executes the check
-            _referenceCheck.CheckText(partData, resultList);
+            ReferenceCheck.CheckText(partData, resultList);
 
             // Assert
             Assert.AreEqual(1, resultList.Count,
@@ -712,7 +717,7 @@ namespace TvpTest
                 PartContext.MainText);
 
             // Executes the check
-            _referenceCheck.CheckText(partData, resultList);
+            ReferenceCheck.CheckText(partData, resultList);
 
             // Assert
             Assert.AreEqual(1, resultList.Count,
@@ -739,7 +744,7 @@ namespace TvpTest
                 PartContext.MainText);
 
             // Executes the check
-            _referenceCheck.CheckText(partData, resultList);
+            ReferenceCheck.CheckText(partData, resultList);
 
             // Assert
             Assert.AreEqual(1, resultList.Count,
@@ -766,7 +771,7 @@ namespace TvpTest
                 PartContext.MainText);
 
             // Executes the check
-            _referenceCheck.CheckText(partData, resultList);
+            ReferenceCheck.CheckText(partData, resultList);
 
             // Assert
             Assert.AreEqual(1, resultList.Count,
@@ -793,7 +798,7 @@ namespace TvpTest
                 PartContext.MainText);
 
             // Executes the check
-            _referenceCheck.CheckText(partData, resultList);
+            ReferenceCheck.CheckText(partData, resultList);
 
             // Assert
             Assert.AreEqual(2, resultList.Count,
@@ -823,7 +828,7 @@ namespace TvpTest
                 PartContext.MainText);
 
             // Executes the check
-            _referenceCheck.CheckText(partData, resultList);
+            ReferenceCheck.CheckText(partData, resultList);
 
             // Assert
             Assert.AreEqual(2, resultList.Count,
@@ -853,7 +858,7 @@ namespace TvpTest
                 PartContext.MainText);
 
             // Executes the check
-            _referenceCheck.CheckText(partData, resultList);
+            ReferenceCheck.CheckText(partData, resultList);
 
             // Assert
             Assert.AreEqual(3, resultList.Count,
@@ -864,7 +869,7 @@ namespace TvpTest
             Assert.AreEqual(1, CountErrors(resultList,
                     ScriptureReferenceErrorType.MissingTag),
                 "The wrong tag is used for the context.");
-            Assert.AreEqual(@"\+xt GEN 1:1\+xt*",
+            Assert.AreEqual(@"\ft",
                 resultList[0].MatchText);
         }
 
@@ -883,7 +888,7 @@ namespace TvpTest
                 PartContext.MainText);
 
             // Executes the check
-            _referenceCheck.CheckText(partData, resultList);
+            ReferenceCheck.CheckText(partData, resultList);
 
             // Assert
             Assert.AreEqual(1, resultList.Count,
@@ -891,7 +896,7 @@ namespace TvpTest
             Assert.AreEqual(1, CountErrors(resultList,
                     ScriptureReferenceErrorType.IncorrectTag),
                 "The wrong tag is used for the context.");
-            Assert.AreEqual(@"\xt NUM 3:5\xt*",
+            Assert.AreEqual(@"\fr",
                 resultList[0].MatchText);
         }
 
@@ -912,7 +917,7 @@ namespace TvpTest
                 PartContext.NoteOrReference);
 
             // Executes the check
-            _referenceCheck.CheckText(partData, resultList);
+            ReferenceCheck.CheckText(partData, resultList);
 
 
             // Assert
@@ -940,7 +945,7 @@ namespace TvpTest
                 PartContext.NoteOrReference);
 
             // Executes the check
-            _referenceCheck.CheckText(partData, resultList);
+            ReferenceCheck.CheckText(partData, resultList);
 
             // Assert
             Assert.AreEqual(1, resultList.Count,
@@ -967,7 +972,7 @@ namespace TvpTest
                 PartContext.NoteOrReference);
 
             // Executes the check
-            _referenceCheck.CheckText(partData, resultList);
+            ReferenceCheck.CheckText(partData, resultList);
 
             // Assert
             Assert.AreEqual(1, resultList.Count,
@@ -994,7 +999,7 @@ namespace TvpTest
                 PartContext.NoteOrReference);
 
             // Executes the check
-            _referenceCheck.CheckText(partData, resultList);
+            ReferenceCheck.CheckText(partData, resultList);
 
             // Assert
             Assert.AreEqual(1, resultList.Count,
@@ -1021,7 +1026,7 @@ namespace TvpTest
                 PartContext.NoteOrReference);
 
             // Executes the check
-            _referenceCheck.CheckText(partData, resultList);
+            ReferenceCheck.CheckText(partData, resultList);
 
             // Assert
             Assert.AreEqual(1, resultList.Count,
@@ -1048,7 +1053,7 @@ namespace TvpTest
                 PartContext.NoteOrReference);
 
             // Executes the check
-            _referenceCheck.CheckText(partData, resultList);
+            ReferenceCheck.CheckText(partData, resultList);
 
             // Assert
             Assert.AreEqual(1, resultList.Count,
@@ -1075,7 +1080,7 @@ namespace TvpTest
                 PartContext.NoteOrReference);
 
             // Executes the check
-            _referenceCheck.CheckText(partData, resultList);
+            ReferenceCheck.CheckText(partData, resultList);
 
             // Assert
             Assert.AreEqual(0, resultList.Count,

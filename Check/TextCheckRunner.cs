@@ -8,6 +8,7 @@ using System.Runtime.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using TvpMain.Import;
 using TvpMain.Project;
 using TvpMain.Result;
 using TvpMain.Text;
@@ -48,6 +49,16 @@ namespace TvpMain.Check
         /// Project settings manager.
         /// </summary>
         private readonly ProjectManager _projectManager;
+
+        /// <summary>
+        /// Project content import manager.
+        /// </summary>
+        private readonly ImportManager _importManager;
+
+        /// <summary>
+        /// Check result manager.
+        /// </summary>
+        private readonly ResultManager _resultManager;
 
         /// <summary>
         /// Current book number at run start (1-based).
@@ -126,14 +137,23 @@ namespace TvpMain.Check
         /// <param name="host">Paratext host interface (required).</param>
         /// <param name="activeProjectName">Active project name (required).</param>
         /// <param name="projectManager">Settings manager (required).</param>
-        public TextCheckRunner(IHost host, string activeProjectName, ProjectManager projectManager)
+        /// <param name="importManager">Project content import manager (required).</param>
+        /// <param name="resultManager">Check result manager (required).</param>
+        public TextCheckRunner(IHost host, string activeProjectName,
+            ProjectManager projectManager,
+            ImportManager importManager,
+            ResultManager resultManager)
         {
             this._host = host
                          ?? throw new ArgumentNullException(nameof(host));
             this._activeProjectName = activeProjectName
                                       ?? throw new ArgumentNullException(nameof(activeProjectName));
             this._projectManager = projectManager
-                                    ?? throw new ArgumentNullException(nameof(projectManager));
+                                   ?? throw new ArgumentNullException(nameof(projectManager));
+            this._importManager = importManager
+                                   ?? throw new ArgumentNullException(nameof(importManager));
+            this._resultManager = resultManager
+                                  ?? throw new ArgumentNullException(nameof(resultManager));
         }
 
         /// <summary>
@@ -230,11 +250,10 @@ namespace TvpMain.Check
 
             // busy-wait until helper thread is done,
             // keeping the UI responsive w/DoEvents()
-            const int threadSleepInMs = (int)(1000f / (float)MainConsts.CHECK_EVENTS_UPDATE_RATE_IN_FPS);
             while (workThread.IsAlive)
             {
                 Application.DoEvents();
-                Thread.Sleep(threadSleepInMs);
+                Thread.Sleep(MainConsts.CHECK_EVENTS_DELAY_IN_MSEC);
             }
 
             // populate output
@@ -297,8 +316,6 @@ namespace TvpMain.Check
                 {
                     // get utility items
                     var versificationName = _host.GetProjectVersificationName(_activeProjectName);
-                    var scriptureExtractor = _host.GetScriptureExtractor(_activeProjectName, ExtractorType.USFM);
-                    scriptureExtractor.IncludeNotes = true;
 
                     var checkList = _runChecks.ToList();
                     var emptyVerseCtr = 0;
@@ -337,12 +354,12 @@ namespace TvpMain.Check
                                 return;
                             }
 
-                            var checkRef = BookUtil.BcvToRef(inputBookNum, chapterNum, verseNum);
                             resultItems.Clear();
 
                             try
                             {
-                                var verseText = scriptureExtractor.Extract(checkRef, checkRef);
+                                var verseLocation = new VerseLocation(inputBookNum, chapterNum, verseNum);
+                                var verseText = _importManager.Extract(verseLocation);
 
                                 // empty text = consecutive check, in case we're looking at an empty chapter
                                 if (string.IsNullOrWhiteSpace(verseText))
@@ -359,9 +376,7 @@ namespace TvpMain.Check
 
                                     // clear out part lists & get ready to create new ones
                                     foundParts.Clear();
-                                    var verseData = ProjectVerse.Create(
-                                        inputBookNum, chapterNum, verseNum,
-                                        verseText);
+                                    var verseData = new ProjectVerse(verseLocation, verseText);
 
                                     // find verse parts
                                     if (VerseRegexUtil.FindVerseParts(
@@ -381,7 +396,7 @@ namespace TvpMain.Check
                                     IList<ResultItem> outputItems = resultItems;
                                     if (_runSaveResults)
                                     {
-                                        _projectManager.ResultManager.SetVerseResults(
+                                        _resultManager.SetVerseResults(
                                             _runCheckTypes, _runContexts,
                                             verseData.VerseLocation, resultItems,
                                             out outputItems);

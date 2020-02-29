@@ -7,7 +7,7 @@ namespace TvpMain.Text
     /// <summary>
     /// A specific part of a verse.
     ///
-    /// Note "private set" fields support JSON serialization
+    /// Note "private set" fields enable JSON serialization
     /// while maintaining runtime immutability.
     /// </summary>
     [JsonObject(MemberSerialization.OptIn)]
@@ -16,8 +16,8 @@ namespace TvpMain.Text
         /// <summary>
         /// Source verse text.
         /// </summary>
-        [JsonProperty]
-        public ProjectVerse ParatextVerse { get; private set; }
+        [JsonProperty(propertyName: "ParatextVerse")]
+        public ProjectVerse ProjectVerse { get; private set; }
 
         /// <summary>
         /// Part location.
@@ -36,17 +36,17 @@ namespace TvpMain.Text
         /// </summary>
         [Ignore]
         public string PartCoordinateText =>
-            $"{ParatextVerse.VerseLocation.VerseCoordinateText + "." + PartLocation.PartRangeText}";
+            $"{ProjectVerse.VerseLocation.VerseCoordinateText + "." + PartLocation.PartRangeText}";
 
         /// <summary>
         /// Basic ctor.
         /// </summary>
-        /// <param name="verseData">Source verse data (required).</param>
+        /// <param name="projectVerse">Source verse data (required).</param>
         /// <param name="partText">Part text within verse.</param>
         /// <param name="partLocation"></param>
-        public VersePart(ProjectVerse verseData, PartLocation partLocation, string partText)
+        public VersePart(ProjectVerse projectVerse, PartLocation partLocation, string partText)
         {
-            ParatextVerse = verseData ?? throw new ArgumentNullException(nameof(verseData));
+            ProjectVerse = projectVerse ?? throw new ArgumentNullException(nameof(projectVerse));
             PartLocation = partLocation ?? throw new ArgumentNullException(nameof(partLocation));
             PartText = partText ?? throw new ArgumentNullException(nameof(partText));
         }
@@ -106,7 +106,7 @@ namespace TvpMain.Text
         /// <returns>True if equal, false otherwise</returns>
         protected bool Equals(VersePart other)
         {
-            return Equals(ParatextVerse, other.ParatextVerse)
+            return Equals(ProjectVerse, other.ProjectVerse)
                    && Equals(PartLocation, other.PartLocation)
                    && PartText == other.PartText;
         }
@@ -132,7 +132,7 @@ namespace TvpMain.Text
         {
             unchecked
             {
-                var hashCode = (ParatextVerse != null ? ParatextVerse.GetHashCode() : 0);
+                var hashCode = (ProjectVerse != null ? ProjectVerse.GetHashCode() : 0);
                 hashCode = (hashCode * 397) ^ (PartLocation != null ? PartLocation.GetHashCode() : 0);
                 hashCode = (hashCode * 397) ^ (PartText != null ? PartText.GetHashCode() : 0);
                 return hashCode;

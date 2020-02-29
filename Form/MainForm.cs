@@ -9,13 +9,17 @@ using System.Drawing;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Reflection;
+using System.Threading;
 using System.Windows.Forms;
+using Paratext.Data;
 using TvpMain.Check;
 using TvpMain.Filter;
 using TvpMain.Project;
 using TvpMain.Punctuation;
 using TvpMain.Reference;
 using TvpMain.Result;
+using TvpMain.Import;
 using TvpMain.Text;
 using TvpMain.Util;
 using static System.Environment;
@@ -27,7 +31,20 @@ namespace TvpMain.Form
     /// </summary>
     public partial class MainForm : System.Windows.Forms.Form
     {
+        /// <summary>
+        /// Column index for ignore button.
+        /// </summary>
         private const int IGNORE_BUTTON_COLUMN = 2;
+
+        /// <summary>
+        /// Semaphore for filter objects, created and managed in the background.
+        /// </summary>
+        private readonly CountdownEvent _filterSetupEvent = new CountdownEvent(1);
+
+        /// <summary>
+        /// Semaphore for check runner-related objects, created and managed in the background.
+        /// </summary>
+        private readonly CountdownEvent _runnerSetupEvent = new CountdownEvent(1);
 
         /// <summary>
         /// Paratext host interface.
@@ -45,7 +62,7 @@ namespace TvpMain.Form
         /// Only check currently implemented. This will grow to an aggregate model of some kind
         /// (maybe even just a list of checks, run in series or parallel). 
         /// </summary>
-        private readonly TextCheckRunner _textCheckRunner;
+        private TextCheckRunner _textCheckRunner;
 
         /// <summary>
         /// List of all checks to be performed.
@@ -93,11 +110,6 @@ namespace TvpMain.Form
         private IList<ResultItem> _filteredResultItems;
 
         /// <summary>
-        /// An ordered dictionary of results for faster lookups. Sorted by BCV. Used for display of references checks results.
-        /// </summary>
-        private IDictionary<VerseLocation, IList<ResultItem>> _filteredReferencesResultMap;
-
-        /// <summary>
         /// Check contexts, per menu items.
         /// </summary>
         private readonly ISet<PartContext> _checkContexts = new HashSet<PartContext>();
@@ -106,6 +118,16 @@ namespace TvpMain.Form
         /// Provides project setting & metadata access.
         /// </summary>
         private readonly ProjectManager _projectManager;
+
+        /// <summary>
+        /// Provides access to results.
+        /// </summary>
+        private readonly ResultManager _resultManager;
+
+        /// <summary>
+        /// Project import manager.
+        /// </summary>
+        private ImportManager _importManager;
 
         /// <summary>
         /// Current check area.
@@ -125,17 +147,12 @@ namespace TvpMain.Form
             _host = host ?? throw new ArgumentNullException(nameof(host));
             _activeProjectName = activeProjectName ?? throw new ArgumentNullException(nameof(activeProjectName));
 
+            _projectManager = new ProjectManager(_host, _activeProjectName);
+            _resultManager = new ResultManager(_host, _activeProjectName);
+            _resultManager.ScheduleLoadBooks(_projectManager.PresentBookNums);
+
             _progressForm = new ProgressForm();
             _progressForm.Cancelled += OnProgressFormCancelled;
-
-            try
-            {
-                _projectManager = new ProjectManager(host, activeProjectName);
-            } catch( Exception)
-            {
-                this.Close();
-            }
-            _textCheckRunner = new TextCheckRunner(_host, _activeProjectName, _projectManager);
 
             _allChecks = new List<ITextCheck>()
             {
@@ -153,8 +170,6 @@ namespace TvpMain.Form
                 new MissingSentencePunctuationCheck(_projectManager)
             };
 
-            _textCheckRunner.CheckUpdated += OnCheckUpdated;
-
             searchMenuTextBox.TextChanged += OnSearchTextChanged;
             contextMenu.Opening += OnContextMenuOpening;
 
@@ -164,25 +179,12 @@ namespace TvpMain.Form
             UpdateCheckContexts();
 
             // Background worker to build the biblical term list filter at startup
-            termWorker.DoWork += OnTermWorkerDoWork;
-            termWorker.RunWorkerAsync();
-        }
+            filterSetupWorker.DoWork += OnFilterSetupWorkerDoWork;
+            filterSetupWorker.RunWorkerAsync();
 
-        /// <summary>
-        /// Displays existing result items on startup.
-        /// </summary>
-        /// <param name="sender">Event sender (ignored).</param>
-        /// <param name="e">Event args (ignored).</param>
-        private void OnResultWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
-        {
-            try
-            {
-                DoPrimaryUpdate();
-            }
-            catch (Exception ex)
-            {
-                HostUtil.Instance.ReportError(ex);
-            }
+            // Background worker to fire up ParatextData
+            runnerSetupWorker.DoWork += OnRunnerSetupWorkerDoWork;
+            runnerSetupWorker.RunWorkerAsync();
         }
 
         /// <summary>
@@ -192,7 +194,7 @@ namespace TvpMain.Form
         {
             if (referencesCheckMenuItem.Checked)
             {
-                UpdateReferencesCheckUI();
+                UpdateReferencesCheckUi();
             }
             else
             {
@@ -215,37 +217,58 @@ namespace TvpMain.Form
         /// </summary>
         /// <param name="sender">Event sender (ignored).</param>
         /// <param name="e">Event args (ignored).</param>
-        private void OnTermWorkerDoWork(object sender, DoWorkEventArgs e)
+        private void OnFilterSetupWorkerDoWork(object sender, DoWorkEventArgs e)
         {
             try
             {
-                lock (_wordListFilter)
+                var projectTerms = _host.GetProjectKeyTerms(
+                    _activeProjectName,
+                    _host.GetProjectLanguageId(_activeProjectName, "translation validation"));
+                if (projectTerms != null
+                    && projectTerms.Count > 0)
                 {
-                    var projectTerms = _host.GetProjectKeyTerms(
-                        _activeProjectName,
-                        _host.GetProjectLanguageId(_activeProjectName, "translation validation"));
-                    if (projectTerms != null
-                        && projectTerms.Count > 0)
-                    {
-                        _wordListFilter.SetKeyTerms(projectTerms);
-                    }
+                    _wordListFilter.SetKeyTerms(projectTerms);
                 }
 
-                lock (_biblicalTermFilter)
+                var factoryTerms = _host.GetFactoryKeyTerms(
+                    _host.GetProjectKeyTermListType(_activeProjectName),
+                    _host.GetProjectLanguageId(_activeProjectName, "translation validation"));
+                if (factoryTerms != null
+                    && factoryTerms.Count > 0)
                 {
-                    var factoryTerms = _host.GetFactoryKeyTerms(
-                        _host.GetProjectKeyTermListType(_activeProjectName),
-                        _host.GetProjectLanguageId(_activeProjectName, "translation validation"));
-                    if (factoryTerms != null
-                        && factoryTerms.Count > 0)
-                    {
-                        _biblicalTermFilter.SetKeyTerms(factoryTerms);
-                    }
+                    _biblicalTermFilter.SetKeyTerms(factoryTerms);
                 }
+
+                _filterSetupEvent.Signal();
             }
             catch (Exception ex)
             {
                 HostUtil.Instance.ReportError(ex);
+                Close();
+            }
+        }
+
+        /// <summary>
+        /// Initializes ParatextData libraries.
+        /// </summary>
+        /// <param name="sender">Event sender (ignored).</param>
+        /// <param name="e">Event args (ignored).</param>
+        private void OnRunnerSetupWorkerDoWork(object sender, DoWorkEventArgs e)
+        {
+            try
+            {
+                _importManager = new ImportManager(_host, _activeProjectName);
+
+                _textCheckRunner = new TextCheckRunner(_host, _activeProjectName,
+                    _projectManager, _importManager, _resultManager);
+                _textCheckRunner.CheckUpdated += OnCheckUpdated;
+
+                _runnerSetupEvent.Signal();
+            }
+            catch (Exception ex)
+            {
+                HostUtil.Instance.ReportError(ex);
+                Close();
             }
         }
 
@@ -279,19 +302,33 @@ namespace TvpMain.Form
         {
             FilterResults();
 
-            dgvCheckResults.Rows.Clear();
+            var selectedVerse = GetSelectedGridRow(dgvCheckResults)?.Cells[0].Value.ToString();
             statusLabel.Text = CheckResults.GetSummaryText(_filteredResultItems);
 
-            foreach (var resultItem in _filteredResultItems)
+            dgvCheckResults.Enabled = false;
+
+            try
             {
-                dgvCheckResults.Rows.Add(
-                    $"{resultItem.VerseLocation.VerseCoordinateText}",
-                    $"{resultItem.MatchText}",
-                    $"{resultItem.VersePart.PartText}",
-                    $"{resultItem.ErrorText}");
-                dgvCheckResults.Rows[(dgvCheckResults.Rows.Count - 1)].HeaderCell.Value =
-                    $"{dgvCheckResults.Rows.Count:N0}";
-                dgvCheckResults.Rows[(dgvCheckResults.Rows.Count - 1)].Tag = resultItem;
+                dgvCheckResults.Rows.Clear();
+
+                foreach (var resultItem in _filteredResultItems)
+                {
+                    var rowIndex = dgvCheckResults.Rows.Add(
+                        $"{resultItem.VerseLocation.VerseCoordinateText}",
+                        $"{resultItem.MatchText}",
+                        $"{resultItem.VersePart.PartText}",
+                        $"{resultItem.ErrorText}");
+                    dgvCheckResults.Rows[rowIndex].HeaderCell.Value =
+                        $"{dgvCheckResults.Rows.Count:N0}";
+                    dgvCheckResults.Rows[rowIndex].Tag = resultItem;
+                }
+
+                // select previously-selected item (or) first
+                SortGridAndSetSelectedRow(dgvCheckResults, selectedVerse);
+            }
+            finally
+            {
+                dgvCheckResults.Enabled = true;
             }
         }
 
@@ -319,23 +356,22 @@ namespace TvpMain.Form
                         ? resultItem.VersePart.PartText : resultItem.MatchText)).ToList();
                 }
 
-                // lock in case the background worker hasn't finished yet
-                lock (_wordListFilter)
+                // block in case the background worker hasn't finished yet
+                _filterSetupEvent.Wait();
+
+                if (wordListFiltersMenuItem.Checked
+                && !_wordListFilter.IsEmpty)
                 {
-                    if (wordListFiltersMenuItem.Checked
-                    && !_wordListFilter.IsEmpty)
-                    {
-                        _filteredResultItems = _filteredResultItems.Where(
-                            resultItem => !_wordListFilter.FilterText(isEntireVerse
-                        ? resultItem.VersePart.PartText : resultItem.MatchText)).ToList();
-                    }
-                    if (biblicaTermsFiltersMenuItem.Checked
-                        && !_biblicalTermFilter.IsEmpty)
-                    {
-                        _filteredResultItems = _filteredResultItems.Where(
-                            resultItem => !_biblicalTermFilter.FilterText(isEntireVerse
-                                ? resultItem.VersePart.PartText : resultItem.MatchText)).ToList();
-                    }
+                    _filteredResultItems = _filteredResultItems.Where(
+                        resultItem => !_wordListFilter.FilterText(isEntireVerse
+                    ? resultItem.VersePart.PartText : resultItem.MatchText)).ToList();
+                }
+                if (biblicaTermsFiltersMenuItem.Checked
+                    && !_biblicalTermFilter.IsEmpty)
+                {
+                    _filteredResultItems = _filteredResultItems.Where(
+                        resultItem => !_biblicalTermFilter.FilterText(isEntireVerse
+                            ? resultItem.VersePart.PartText : resultItem.MatchText)).ToList();
                 }
 
                 var searchText = searchMenuTextBox.TextBox.Text.Trim();
@@ -402,7 +438,7 @@ namespace TvpMain.Form
                 ShowProgress();
 
                 // by default only run the punctuation check
-                IEnumerable<ITextCheck> checksToRun = _punctuationCheck;
+                var checksToRun = _punctuationCheck;
 
                 // only run the references check if that's the mode
                 if (referencesCheckMenuItem.Checked)
@@ -412,6 +448,9 @@ namespace TvpMain.Form
 
                 try
                 {
+                    // block in case the background worker hasn't finished yet
+                    _runnerSetupEvent.Wait();
+
                     if (_textCheckRunner.RunChecks(
                         _checkArea, checksToRun,
                         _checkContexts, true,
@@ -748,7 +787,7 @@ namespace TvpMain.Form
         /// </summary>
         /// <param name="sender">Event sender (ignored).</param>
         /// <param name="e">Event args (ignored).</param>
-        private void OnFileSaveMenuClick(object sender, EventArgs e)
+        private void OnFileSaveResultsMenuClick(object sender, EventArgs e)
         {
             using var saveFile = new SaveFileDialog();
 
@@ -910,6 +949,51 @@ namespace TvpMain.Form
             referencesListView.RowHeadersVisible = false;
             referencesActionsGridView.RowHeadersVisible = false;
 
+            dgvCheckResults.SortCompare += (o, args) =>
+            {
+                if (args.Column.Index != 0)
+                {
+                    return;
+                }
+
+                var firstResult = (dgvCheckResults.Rows[args.RowIndex1].Tag as ResultItem);
+                var secondResult = (dgvCheckResults.Rows[args.RowIndex2].Tag as ResultItem);
+
+                args.SortResult =
+                    firstResult.VerseLocation.VerseCoordinate.CompareTo(
+                        secondResult.VerseLocation.VerseCoordinate);
+                args.Handled = true;
+            };
+            dgvCheckResults.Sort(
+                dgvCheckResults.Columns[0],
+                ListSortDirection.Ascending);
+
+            referencesListView.SortCompare += (o, args) =>
+            {
+                if (args.Column.Index < 0
+                    || args.Column.Index > 1)
+                {
+                    return;
+                }
+
+                var firstResults = (referencesListView.Rows[args.RowIndex1].Tag as IList<ResultItem>);
+                var secondResults = (referencesListView.Rows[args.RowIndex2].Tag as IList<ResultItem>);
+
+                args.SortResult = args.Column.Index switch
+                {
+                    0 => firstResults[0]
+                        .VerseLocation.VerseCoordinate.CompareTo(
+                            secondResults[0].VerseLocation.VerseCoordinate),
+                    1 => firstResults.Count.CompareTo(
+                        secondResults.Count),
+                    _ => args.SortResult
+                };
+                args.Handled = true;
+            };
+            referencesListView.Sort(
+                referencesListView.Columns[0],
+                ListSortDirection.Ascending);
+
             ShowScriptureReferencesCheckControls(false);
         }
 
@@ -979,57 +1063,130 @@ namespace TvpMain.Form
         /// <summary>
         /// Kicks off updating the scripture reference controls update with the latest results
         /// </summary>
-        private void UpdateReferencesCheckUI()
+        private void UpdateReferencesCheckUi()
         {
-            referencesListView.Rows.Clear();
+            var selectedVerse = GetSelectedGridRow(referencesListView)?.Cells[0].Value.ToString();
+            FilterReferencesCheckResults();
+
             referencesTextBox.Text = "";
             referencesActionsGridView.Rows.Clear();
 
-            FilterReferencesCheckResults();
+            referencesListView.Enabled = false;
 
-            // reset the result map
-            _filteredReferencesResultMap = new Dictionary<VerseLocation, IList<ResultItem>>();
-
-            // for each result, place into the dictionary at the same verse location
-            foreach (ResultItem resultItem in _filteredResultItems)
+            try
             {
-                var verseLocation = resultItem.VerseLocation;
-                IList<ResultItem> localList;
+                referencesListView.Rows.Clear();
 
-                if (_filteredReferencesResultMap.ContainsKey(verseLocation))
+                // for each verse location in the map, update the left panel, the list of verses
+                foreach (var verseGroup in _filteredResultItems
+                    .GroupBy(resultItem => resultItem.VerseLocation))
                 {
-                    localList = _filteredReferencesResultMap[verseLocation];
+                    var localList = verseGroup.ToImmutableList();
+                    var rowIndex = referencesListView.Rows.Add(
+                        $"{verseGroup.Key.VerseCoordinateText}",
+                        $"{localList.Count}");
+
+                    // keep the list of exceptions with the row for use in the right-hand UI
+                    referencesListView.Rows[rowIndex].Tag = localList;
                 }
-                else
-                {
-                    localList = Enumerable.Empty<ResultItem>().ToList();
-                    _filteredReferencesResultMap.Add(verseLocation, localList);
-                }
-                localList.Add(resultItem);
+
+                // select previously-selected item (or) first
+                SortGridAndSetSelectedRow(referencesListView, selectedVerse);
             }
-
-            // for each verse location in the map, update the left panel, the list of verses
-            foreach (var verseLocation in _filteredReferencesResultMap.Keys)
+            finally
             {
-                var rowIndex = referencesListView.Rows.Add();
-
-                IList<ResultItem> localList = _filteredReferencesResultMap[verseLocation];
-                // keep the list of exceptions with the row for use in the right-hand UI
-                referencesListView.Rows[rowIndex].Tag = localList;
-                referencesListView.Rows[rowIndex].Cells[0].Value = $"{verseLocation.VerseCoordinateText}";
-                // keep the verse location with the first cell so we can use later
-                referencesListView.Rows[rowIndex].Cells[0].Tag = verseLocation;
-                referencesListView.Rows[rowIndex].Cells[1].Value = $"{localList.Count}";
-            }
-
-            // select the top of the list
-            if (referencesListView.Rows.Count > 0)
-            {
-                referencesListView.Rows[0].Selected = true;
+                referencesListView.Enabled = true;
             }
 
             // update the right portion of the UI, the text and list of exceptions
-            UpdateReferencesUIRight();
+            UpdateReferencesUiRight();
+        }
+
+        /// <summary>
+        /// Gets current grid row, checking first the selected list then the current
+        /// row (rows may be _current_ but not _selected_ in data grids).
+        /// </summary>
+        /// <returns>Current reference list row if found, null otherwise.</returns>
+        private DataGridViewRow GetSelectedGridRow(DataGridView gridView)
+        {
+            if (gridView.RowCount < 1)
+            {
+                return null;
+            }
+            else if (gridView.SelectedRows.Count > 0)
+            {
+                return gridView.SelectedRows[0]
+                       ?? gridView.CurrentRow;
+            }
+            return gridView.CurrentRow;
+        }
+
+        /// <summary>
+        /// Sorts a grid as needed, scrolls to a row in data grid with supplied BCV text
+        /// and selects it, as needed.
+        /// 
+        /// Used after repopulating the list, as (a) this will cause grids to scroll randomly
+        /// and (b) sorting will not be automatic after programmatic changes to row collections.
+        /// 
+        /// Assumes first column of data grid is BCV text.
+        /// </summary>
+        /// <param name="gridView">Data grid to work with (required).</param>
+        /// <param name="selectedVerse">Selected verse text (optional, may be null; null selects first row).</param>
+        private void SortGridAndSetSelectedRow(DataGridView gridView, string selectedVerse)
+        {
+            // check for nothing to do 
+            var maxRows = gridView.RowCount;
+            if (maxRows < 1)
+            {
+                return;
+            }
+
+            // sort first, as that changes row order
+            if (gridView.SortedColumn != null
+                && gridView.SortOrder != SortOrder.None)
+            {
+                gridView.Sort(
+                    gridView.SortedColumn,
+                    gridView.SortOrder == SortOrder.Ascending
+                        ? ListSortDirection.Ascending
+                        : ListSortDirection.Descending);
+            }
+
+            // check to see if we need to do anything
+            var currSelectedRow = GetSelectedGridRow(gridView);
+            if (currSelectedRow != null
+                && currSelectedRow.Cells[0].Value.ToString()
+                    .Equals(selectedVerse))
+            {
+                return;
+            }
+
+            // default to first row, then find BCV
+            var nextSelectedRow = gridView.Rows[0];
+            if (selectedVerse != null)
+            {
+                for (var rowCtr = 0;
+                    rowCtr < maxRows;
+                    rowCtr++)
+                {
+                    var rowItem = gridView.Rows[rowCtr];
+                    if (!rowItem.Cells[0].Value.ToString()
+                        .Equals(selectedVerse))
+                    {
+                        continue;
+                    }
+
+                    nextSelectedRow = rowItem;
+                    break;
+                }
+            }
+
+            // scroll to found row, as needed and select
+            if (!nextSelectedRow.Displayed)
+            {
+                gridView.FirstDisplayedScrollingRowIndex = nextSelectedRow.Index;
+            }
+            nextSelectedRow.Selected = true;
         }
 
         /// <summary>
@@ -1122,45 +1279,55 @@ namespace TvpMain.Form
         /// </summary>
         private void OnReferencesListViewSelectionChanged(object sender, EventArgs e)
         {
-            UpdateReferencesUIRight();
+            UpdateReferencesUiRight();
         }
 
         /// <summary>
         /// Updates the verse level exception list and text, with highlighting
         /// </summary>
-        private void UpdateReferencesUIRight()
+        private void UpdateReferencesUiRight()
         {
             Debug.WriteLine("updateReferencesUIRight");
+            var selectedRow = GetSelectedGridRow(referencesListView);
 
-            if (referencesListView.CurrentRow != null)
+            if (selectedRow != null)
             {
-
-                VerseLocation verseLocation = (VerseLocation)referencesListView.CurrentRow.Cells[0].Tag;
-
-                if (verseLocation != null)
+                if (selectedRow.Tag is IList<ResultItem> localList
+                    && localList.Any())
                 {
-                    referencesTextBox.Text = _filteredReferencesResultMap[verseLocation][0].VersePart.ParatextVerse.VerseText;
+                    referencesTextBox.Text = localList[0].VersePart.ProjectVerse.VerseText;
                     Debug.WriteLine("updateReferencesUIRight - Text Set");
 
-                    referencesActionsGridView.Rows.Clear();
+                    referencesActionsGridView.Enabled = false;
 
-                    var localList = _filteredReferencesResultMap[verseLocation];
-
-                    foreach (var resultItem in localList)
+                    try
                     {
-                        int rowNum = referencesActionsGridView.Rows.Add(
-                                $"{(ScriptureReferenceErrorType)resultItem.ResultTypeCode}", "Accept", resultItem.ResultState == ResultState.Ignored ? "Un-Ignore" : "Ignore"
+                        referencesActionsGridView.Rows.Clear();
+
+                        foreach (var resultItem in localList)
+                        {
+                            var rowNum = referencesActionsGridView.Rows.Add(
+                                $"{(ScriptureReferenceErrorType)resultItem.ResultTypeCode}",
+                                "Accept",
+                                resultItem.ResultState == ResultState.Ignored
+                                    ? "Un-Ignore"
+                                    : "Ignore"
                             );
 
-                        Debug.WriteLine("updateReferencesUIRight - Setting Tag resultItem for " + rowNum);
+                            Debug.WriteLine("updateReferencesUIRight - Setting Tag resultItem for " + rowNum);
 
-                        // keep the result item with the row of exceptions for future reference
-                        referencesActionsGridView.Rows[rowNum].Tag = resultItem;
+                            // keep the result item with the row of exceptions for future reference
+                            referencesActionsGridView.Rows[rowNum].Tag = resultItem;
+                        }
+
+                        if (referencesActionsGridView.Rows.Count > 0)
+                        {
+                            referencesActionsGridView.Rows[0].Selected = true;
+                        }
                     }
-
-                    if (referencesActionsGridView.Rows.Count > 0)
+                    finally
                     {
-                        referencesActionsGridView.Rows[0].Selected = true;
+                        referencesActionsGridView.Enabled = true;
                     }
                 }
             }
@@ -1188,7 +1355,7 @@ namespace TvpMain.Form
 
             if (e.ColumnIndex == IGNORE_BUTTON_COLUMN)
             {
-                ResultItem resultItem = (ResultItem)referencesActionsGridView.Rows[e.RowIndex].Tag;
+                var resultItem = (ResultItem)referencesActionsGridView.Rows[e.RowIndex].Tag;
 
                 if (resultItem != null)
                 {
@@ -1204,7 +1371,7 @@ namespace TvpMain.Form
                         referencesActionsGridView.Rows[e.RowIndex].Cells[IGNORE_BUTTON_COLUMN].Value = "Un-Ignore";
                     }
 
-                    _projectManager.ResultManager.SetVerseResult(resultItem);
+                    _resultManager.SetVerseResult(resultItem);
 
                     // update ui so that the change is reflected by re-running the filter
                     DoPrimaryUpdate();
@@ -1274,15 +1441,14 @@ namespace TvpMain.Form
             {
                 if (referencesActionsGridView.CurrentRow.Tag != null)
                 {
-                    ResultItem resultItem = (ResultItem)referencesActionsGridView.CurrentRow.Tag;
-
+                    var resultItem = (ResultItem)referencesActionsGridView.CurrentRow.Tag;
                     if (resultItem != null)
                     {
                         referencesTextBox.SelectAll();
                         referencesTextBox.SelectionBackColor = Color.White;
 
                         referencesTextBox.SelectionStart = MinusPrecedingChars(
-                            resultItem.VersePart.ParatextVerse.VerseText,
+                            resultItem.VersePart.ProjectVerse.VerseText,
                             resultItem.MatchStart,
                             '\r');
                         referencesTextBox.SelectionLength = resultItem.MatchLength;

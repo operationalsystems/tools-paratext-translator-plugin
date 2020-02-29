@@ -250,21 +250,22 @@ namespace TvpMain.Reference
             ICollection<ResultItem> outputResults)
         {
             // check for unknown books
-            var unknownBooks = string.Join(", ",
-                parsedReference.ScriptureReference.BookReferences
+            var unknownBooks = parsedReference.ScriptureReference.BookReferences
                     .Where(referenceItem => !referenceItem.IsLocalReference)
                     .Select(referenceItem => referenceItem.BookReferenceName)
                     .Where(rangeItem => !rangeItem.IsKnownBook)
-                    .Select(rangeItem => rangeItem.NameText));
-
-            if (string.IsNullOrWhiteSpace(unknownBooks))
+                    .Select(rangeItem => rangeItem.NameText)
+                    .Distinct()
+                    .ToImmutableList();
+            if (!unknownBooks.Any())
             {
                 return false;
             }
 
+            var unknownBooksText = string.Join(", ", unknownBooks);
             var nameLabel = unknownBooks.SingularOrPlural("name", "names");
             outputResults.Add(new ResultItem(inputPart,
-                $"Invalid book {nameLabel} at position {matchStart}: {unknownBooks}.",
+                $"Invalid book {nameLabel} at position {matchStart}: {unknownBooksText}.",
                 matchText, matchStart,
                 null, CheckType.ScriptureReference,
                 (int)ScriptureReferenceErrorType.BadReference));
@@ -396,15 +397,17 @@ namespace TvpMain.Reference
             }
 
             var contextTitle = ContextTitles[inputPart.PartLocation.PartContext];
-            var tagList = badTags.Select(tagItem => string.Concat(@"\", tagItem))
-                .ToNiceList(",", "and");
-            var tagLabel = badTags.SingularOrPlural("tag", "tags");
-            outputResults.Add(new ResultItem(inputPart,
-                $@"Incorrect use of {tagList} {tagLabel} in {contextTitle} text at position {matchStart}.",
-                matchText, matchStart,
-                null, CheckType.ScriptureReference,
-                (int)ScriptureReferenceErrorType.IncorrectTag));
-
+            foreach (var tagName in badTags)
+            {
+                var tagIndex = FindContentTag(inputPart.PartText, tagName);
+                var tagText = inputPart.PartText.Substring(tagIndex, tagName.Length + 1);
+                var tagStart = (tagIndex + inputPart.PartLocation.PartStart);
+                outputResults.Add(new ResultItem(inputPart,
+                    $@"Incorrect use of {tagText.ToLower()} tag in {contextTitle} text at position {tagStart}.",
+                    tagText, tagStart,
+                    null, CheckType.ScriptureReference,
+                    (int)ScriptureReferenceErrorType.IncorrectTag));
+            }
             return true;
         }
 
@@ -543,7 +546,7 @@ namespace TvpMain.Reference
         }
 
         /// <summary>
-        /// Checks whether supplied text contains any of the supplied tags.
+        /// Finds which of the the supplied tags are in the supplied text.
         /// </summary>
         /// <param name="inputText">Input text (required).</param>
         /// <param name="tagNames">Tag names to search for, without leading backslashes or trailing stars (required).</param>
@@ -551,9 +554,33 @@ namespace TvpMain.Reference
         private static IList<string> FindContentTags(string inputText, IEnumerable<string> tagNames)
         {
             return tagNames.Where(tagName =>
-                inputText.IndexOf($@"\{tagName}", StringComparison.InvariantCultureIgnoreCase) >= 0
-                || inputText.IndexOf($@"\{tagName}*", StringComparison.InvariantCultureIgnoreCase) >= 0)
+                    FindContentTag(inputText, tagName) >= 0)
                 .ToImmutableList();
+        }
+
+        /// <summary>
+        /// Find the position of one content tag in supplied text.
+        /// </summary>
+        /// <param name="inputText">Input text (required).</param>
+        /// <param name="tagName">Tag name to search for, without leading backslashes or trailing stars (required).</param>
+        /// <returns>-1 if not found, lowest 0-based index of opening/closing tag otherwise.</returns>
+        private static int FindContentTag(string inputText, string tagName)
+        {
+            var startIndex = inputText.IndexOf($@"\{tagName}", StringComparison.InvariantCultureIgnoreCase);
+            var endIndex = inputText.IndexOf($@"\{tagName}*", StringComparison.InvariantCultureIgnoreCase);
+            if (startIndex >= 0 && endIndex >= 0)
+            {
+                return Math.Min(startIndex, endIndex);
+            }
+            else if (startIndex >= 0)
+            {
+                return startIndex;
+            }
+            else if (endIndex >= 0)
+            {
+                return endIndex;
+            }
+            return -1;
         }
     }
 }

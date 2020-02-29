@@ -2,8 +2,10 @@
 using Moq;
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.IO;
 using System.Threading;
+using Paratext.Data.Terms;
 using TvpMain.Check;
 using TvpMain.Punctuation;
 using TvpMain.Text;
@@ -14,8 +16,13 @@ namespace TvpTest
     /// Basic tests for project, book, and chapter-scope text checks.
     /// </summary>
     [TestClass]
-    public class CheckRunnerTests : AbstractCheckTests
+    public class TextCheckRunnerTests : AbstractCheckTests
     {
+        /// <summary>
+        /// Per-test context, provided by MsTest framework.
+        /// </summary>
+        public TestContext TestContext { get; set; }
+
         /// <summary>
         /// Max book number.
         /// </summary>
@@ -44,7 +51,7 @@ namespace TvpTest
         /// <summary>
         /// True to delay verse extraction, false otherwise (for cancellation tests).
         /// </summary>
-        protected bool IsVersesDelayed;
+        protected bool AreVersesDelayed;
 
         /// <summary>
         /// Test contexts.
@@ -52,36 +59,33 @@ namespace TvpTest
         protected readonly ISet<PartContext> TestContexts = new HashSet<PartContext>()
         {
             PartContext.MainText
-        };
+        }.ToImmutableHashSet();
 
         /// <summary>
         /// Test setup for verse lines and main mocks.
         /// </summary>
         [TestInitialize]
         [DeploymentItem(@"Resources\test-verses-1.txt", "Resources")]
-        public override void TestSetup()
+        public void TestSetup()
         {
-            base.TestSetup();
+            base.AbstractTestSetup(TestContext);
 
             VerseLines = File.ReadAllLines(@"Resources\test-verses-1.txt");
             ExpectedRefs = new HashSet<int>();
-            IsVersesDelayed = false;
+            AreVersesDelayed = false;
 
             // extractor setup
-            MockExtractor.Setup(extractorItem => extractorItem.Extract(It.IsAny<int>(), It.IsAny<int>()))
+            MockImportManager.Setup(extractorItem =>
+                    extractorItem.Extract(It.IsAny<VerseLocation>()))
                 .Callback(() =>
                 {
-                    if (IsVersesDelayed)
+                    if (AreVersesDelayed)
                     {
                         Thread.Sleep(TEST_DELAY_IN_MS);
                     }
                 })
-                .Returns<int, int>((fromRef, toRef) =>
-                {
-                    Assert.AreEqual(fromRef, toRef, ">1 verse requested."); // always request one verse at a time
-                    return GetVerseText(fromRef);
-                });
-            MockExtractor.SetupAllProperties();
+                .Returns<VerseLocation>((verseLocation) =>
+                    GetVerseText(verseLocation.VerseCoordinate));
         }
 
         /// <summary>
@@ -121,7 +125,9 @@ namespace TvpTest
             var checkRunner = new TextCheckRunner(
                 MockHost.Object,
                 TEST_PROJECT_NAME,
-                MockProjectManager.Object);
+                MockProjectManager.Object,
+                MockImportManager.Object,
+                MockResultManager.Object);
             checkRunner.RunChecks(
                CheckArea.CurrentProject,
                new List<ITextCheck>()
@@ -154,7 +160,9 @@ namespace TvpTest
             var checkRunner = new TextCheckRunner(
                 MockHost.Object,
                 TEST_PROJECT_NAME,
-                MockProjectManager.Object);
+                MockProjectManager.Object,
+                MockImportManager.Object,
+                MockResultManager.Object);
             checkRunner.RunChecks(
                 CheckArea.CurrentBook,
                 new List<ITextCheck>()
@@ -184,7 +192,9 @@ namespace TvpTest
             var checkRunner = new TextCheckRunner(
                 MockHost.Object,
                 TEST_PROJECT_NAME,
-                MockProjectManager.Object);
+                MockProjectManager.Object,
+                MockImportManager.Object,
+                MockResultManager.Object);
             checkRunner.RunChecks(
                 CheckArea.CurrentChapter,
                 new List<ITextCheck>()
@@ -215,13 +225,15 @@ namespace TvpTest
                     }
                 }
             }
-            IsVersesDelayed = true;
+            AreVersesDelayed = true;
 
             // setup
             var checkRunner = new TextCheckRunner(
                 MockHost.Object,
                 TEST_PROJECT_NAME,
-                MockProjectManager.Object);
+                MockProjectManager.Object,
+                MockImportManager.Object,
+                MockResultManager.Object);
 
             // start check in background thread, then cancel from test thread.
             var workThread = new Thread(() =>
