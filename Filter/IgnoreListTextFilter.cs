@@ -75,11 +75,11 @@ namespace TvpMain.Filter
 
             foreach (var listItem in inputItems)
             {
-                if (listItem.IsPhrase)
+                if (listItem.IsPhrase())
                 {
                     if (listItem.IsIgnoreCase)
                     {
-                        caseInsensitivePhraseSet.Add(listItem.CaseInsensitiveText);
+                        caseInsensitivePhraseSet.Add(listItem.CaseInsensitiveText());
                     }
                     else
                     {
@@ -90,7 +90,7 @@ namespace TvpMain.Filter
                 {
                     if (listItem.IsIgnoreCase)
                     {
-                        _caseInsensitiveWords.Add(listItem.CaseInsensitiveText);
+                        _caseInsensitiveWords.Add(listItem.CaseInsensitiveText());
                     }
                     else
                     {

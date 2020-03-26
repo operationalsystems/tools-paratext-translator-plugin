@@ -203,9 +203,15 @@ namespace TvpMain.Util
             var inputData =
                 _host.GetPlugInData(_translationValidationPlugin,
                     projectName, MainConsts.IGNORE_LIST_ITEMS_DATA_ID);
-            return inputData == null
-                ? Enumerable.Empty<IgnoreListItem>().ToList()
-                : JsonConvert.DeserializeObject<List<IgnoreListItem>>(inputData);
+            if(inputData == null)
+            {
+                return Enumerable.Empty<IgnoreListItem>().ToList();
+            }
+            else
+            {
+                IList<IgnoreListItem> ignoreList = JsonConvert.DeserializeObject<List<IgnoreListItem>>(inputData);
+                return ignoreList;
+            }
         }
 
         /// <summary>

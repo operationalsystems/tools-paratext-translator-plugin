@@ -1,5 +1,4 @@
-﻿using CsvHelper.Configuration.Attributes;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using System;
 using System.Linq;
 
@@ -7,6 +6,9 @@ namespace TvpMain.Result
 {
     /// <summary>
     /// Model class for ignore list entries.
+    /// 
+    /// Note "private set" fields enable JSON serialization
+    /// while maintaining runtime immutability.
     /// </summary>
     [JsonObject(MemberSerialization.OptIn)]
     public class IgnoreListItem
@@ -14,29 +16,30 @@ namespace TvpMain.Result
         /// <summary>
         /// Case-sensitive version of text.
         /// </summary>
-        [JsonProperty]
-        [Index(0)]
-        public string CaseSensitiveText { get; }
+        [JsonProperty] 
+        public string CaseSensitiveText { get; private set;  }
 
         /// <summary>
         /// True if item is meant to be case-insensitive (i.e., ignores case), false otherwise.
         /// </summary>
-        [JsonProperty]
-        [Index(1)]
-        [Default(false)]
-        public bool IsIgnoreCase { get; }
+        [JsonProperty] 
+        public bool IsIgnoreCase { get; private set; }
 
         /// <summary>
         /// True if case-sensitive text contains any whitespace.
         /// </summary>
-        [Ignore]
-        public bool IsPhrase => CaseSensitiveText.Any(char.IsWhiteSpace);
+        public bool IsPhrase() 
+        { 
+            return CaseSensitiveText.Any(char.IsWhiteSpace); 
+        }
 
         /// <summary>
         /// Provide a case-insensitive version of the text (lower case).
         /// </summary>
-        [Ignore]
-        public string CaseInsensitiveText => CaseSensitiveText.ToLower();
+        public string CaseInsensitiveText()
+        {
+            return CaseSensitiveText.ToLower();
+        }
 
         /// <summary>
         /// Basic ctor.
