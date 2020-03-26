@@ -18,8 +18,9 @@ namespace TvpMain
     /// Translation validation plugin entry point.
     /// </summary>
     [AddIn("Translation Validation Plugin", Description = "Provides validation checks for translated text.", Version = "1.0", Publisher = "Biblica")]
-    [QualificationData(PluginMetaDataKeys.menuText, "Translation Validation")]
+    [QualificationData(PluginMetaDataKeys.menuText, "Translation-Validation")]
     [QualificationData(PluginMetaDataKeys.insertAfterMenuName, "Tools|")]
+    [QualificationData(PluginMetaDataKeys.enableWhen, WhenToEnable.anyProjectActive)]
     [QualificationData(PluginMetaDataKeys.multipleInstances, CreateInstanceRule.always)]
     public class TranslationValidationPlugin : IParatextAddIn2
     {
@@ -35,34 +36,34 @@ namespace TvpMain
 
                 HostUtil.Instance.Host = host;
                 HostUtil.Instance.TranslationValidationPlugin = this;
-
 #if DEBUG
                 // Provided because plugins are separate processes that may only be attached to,
                 // once instantiated (can't run Paratext and automatically attach, as with shared libraries).
                 MessageBox.Show($"Attach debugger now to PID {Process.GetCurrentProcess().Id}, if needed!",
                     "Notice...", MessageBoxButtons.OK, MessageBoxIcon.Information);
 #endif
+                HostUtil.Instance.InitParatextData(false);
 
                 try
                 {
-                    Thread uiThread = new Thread(() =>
+                    var uiThread = new Thread(() =>
                     {
                         try
                         {
                             Application.EnableVisualStyles();
                             Application.Run(new MainForm(host, activeProjectName));
                         }
-                        catch (Exception ex)
+                        catch (Exception)
                         {
-                            HostUtil.Instance.ReportError($"Can't perform translation validation for project \"{activeProjectName}\".", ex);
+                            // Do not report this as it's already been reported elsewhere.
                         }
                         finally
                         {
                             Environment.Exit(0);
                         }
-                    });
+                    })
+                    { IsBackground = false };
 
-                    uiThread.IsBackground = false;
                     uiThread.SetApartmentState(ApartmentState.STA);
                     uiThread.Start();
                 }
@@ -95,9 +96,6 @@ namespace TvpMain
         /// <summary>
         /// Data file key spec accessor (no-op, not used by this plugin).
         /// </summary>
-        public Dictionary<string, IPluginDataFileMergeInfo> DataFileKeySpecifications
-        {
-            get { return null; }
-        }
+        public Dictionary<string, IPluginDataFileMergeInfo> DataFileKeySpecifications => null;
     }
 }

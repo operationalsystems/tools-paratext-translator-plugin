@@ -1,9 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using AddInSideViews;
+﻿using AddInSideViews;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using TvpMain.Data;
+using System;
+using System.Collections.Generic;
 using TvpMain.Filter;
+using TvpMain.Result;
 
 namespace TvpTest
 {
@@ -17,7 +17,7 @@ namespace TvpTest
         public void TestIgnoreListFilter()
         {
             // empty checks
-            IgnoreListTextFilter ignoreFilter = new IgnoreListTextFilter();
+            var ignoreFilter = new IgnoreListTextFilter();
             Assert.IsTrue(ignoreFilter.IsEmpty);
 
             IList<IgnoreListItem> ignoreList = new List<IgnoreListItem>();
@@ -68,7 +68,7 @@ namespace TvpTest
         public void TestBiblicalTermsFilter()
         {
             // empty checks
-            BiblicalTermsTextFilter termFilter = new BiblicalTermsTextFilter();
+            var termFilter = new KeyTermsTextFilter();
             Assert.IsTrue(termFilter.IsEmpty);
 
             IList<IKeyTerm> termList = new List<IKeyTerm>();

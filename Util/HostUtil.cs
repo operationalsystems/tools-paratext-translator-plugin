@@ -2,13 +2,16 @@
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Reflection;
+using System.Threading;
 using System.Windows.Forms;
-using TvpMain.Data;
+using System.Threading.Tasks;
+using Paratext.Data;
+using Paratext.Data.ProjectProgress;
+using TvpMain.Result;
 
-/// <summary>
-/// Global error-handling and other maintenance capabilities.
-/// </summary>
 namespace TvpMain.Util
 {
     /// <summary>
@@ -17,17 +20,21 @@ namespace TvpMain.Util
     public class HostUtil
     {
         /// <summary>
-        /// Thread-safe singleton pattern.
-        /// </summary>
-        private static readonly HostUtil _instance = new HostUtil();
-
-        /// <summary>
         /// Thread-safe singleton accessor.
         /// </summary>
-        public static HostUtil Instance
-        {
-            get => _instance;
-        }
+        public static HostUtil Instance { get; } = new HostUtil();
+
+        /// <summary>
+        /// Indicates whether ParatextData has been initialized.
+        ///
+        /// Note: Uses int because Interlocked.CompareExchange doesn't work with bool.
+        /// </summary>
+        private int _isParatextDataInit = 0;
+
+        /// <summary>
+        /// Event used to track paratext data initialization complete.
+        /// </summary>
+        private readonly CountdownEvent _paratextDataSetupEvent = new CountdownEvent(1);
 
         /// <summary>
         /// Global reference to plugin, to route logging.
@@ -69,25 +76,108 @@ namespace TvpMain.Util
         }
 
         /// <summary>
+        /// Set up the ParatextData libraries for project input/output.
+        ///
+        /// Will block until initialization complete, which takes at least a few seconds
+        /// on typical systems and may scale per the number of projects.
+        /// 
+        /// Thread safe, may be called repeatedly
+        /// </summary>
+        /// <param name="isToBlock">True to block until initialization complete, false otherwise.</param>
+        public void InitParatextData(bool isToBlock)
+        {
+            if (Interlocked.CompareExchange(ref _isParatextDataInit, 1, 0) == 0)
+            {
+                System.Threading.Tasks.Task.Run(() =>
+                {
+                    try
+                    {
+                        var executingAssembly = Assembly.GetExecutingAssembly();
+                        var assemblyPath = Path.GetDirectoryName(executingAssembly.Location);
+                        if (assemblyPath == null)
+                        {
+                            throw new InvalidOperationException(
+                                $"plugin assembly in unexpected location: {executingAssembly.Location}");
+                        }
+
+                        var assemblyDir = new DirectoryInfo(assemblyPath);
+                        if (assemblyDir.Parent?.Parent == null)
+                        {
+                            throw new InvalidOperationException(
+                                $"plugin directory in unexpected location: {assemblyDir.FullName}");
+                        }
+
+                        // fall back on plugin working dir, if paratext.exe not found
+                        var paratextDir = assemblyDir.Parent.Parent;
+                        PtxUtils.Platform.BaseDirectory =
+                            File.Exists(Path.Combine(paratextDir.FullName, "Paratext.exe"))
+                                ? paratextDir.FullName : assemblyPath;
+                        ParatextData.Initialize();
+
+#if DEBUG
+                        ReportNonFatalParatextDataErrors();
+#endif
+                    }
+                    catch (Exception ex)
+                    {
+                        ReportError("Can't initialize ParatextData", true, ex);
+                    }
+                    finally
+                    {
+                        _paratextDataSetupEvent.Signal();
+                    }
+                });
+            }
+
+            if (isToBlock)
+            {
+                _paratextDataSetupEvent.Wait();
+            }
+        }
+
+        /// <summary>
+        /// Reports non-fatal ParatextData initialization errors.
+        /// </summary>
+        public void ReportNonFatalParatextDataErrors()
+        {
+            var errorText = string.Join(Environment.NewLine,
+                ScrTextCollection.ErrorMessages.Select(messageItem => $"Project: {messageItem.ProjectName}, type: {messageItem.ProjecType}, reason: {messageItem.Reason}, exception: {messageItem.Exception}."));
+            if (!string.IsNullOrWhiteSpace(errorText))
+            {
+                ReportError("There were non-fatal initialization errors (performance may be impacted)."
+                            + Environment.NewLine + Environment.NewLine
+                            + errorText, false, null);
+            }
+        }
+
+        /// <summary>
         /// Reports exception to log and message box w/prefix text.
         /// </summary>
         /// <param name="prefixText">Prefix text (optional, may be null; default used when null).</param>
         /// <param name="includeStackTrace">True to include stack trace, false otherwise.</param>
-        /// <param name="ex">Exception (required).</param>
+        /// <param name="ex">Exception (optional, may be null).</param>
         public void ReportError(string prefixText, bool includeStackTrace, Exception ex)
         {
             string messageText = null;
-            if (includeStackTrace)
+            if (ex == null)
             {
-                messageText = (prefixText ?? "Error: Please contact support.")
-                    + Environment.NewLine + Environment.NewLine
-                    + "Details: " + ex.ToString() + Environment.NewLine;
+                messageText = (prefixText ?? "Error: Please contact support");
             }
             else
             {
-                messageText = (prefixText ?? "Error: Please contact support")
-                    + $" (Details: {ex.Message}).";
+                if (includeStackTrace)
+                {
+                    messageText = (prefixText ?? "Error: Please contact support.")
+                                  + Environment.NewLine + Environment.NewLine
+                                  + "Details: " + ex.ToString() + Environment.NewLine;
+                }
+                else
+                {
+                    messageText = (prefixText ?? "Error: Please contact support")
+                                  + $" (Details: {ex.Message}).";
+                }
             }
+
             MessageBox.Show(messageText, "Notice...", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             LogLine(messageText, true);
         }
@@ -97,74 +187,66 @@ namespace TvpMain.Util
         /// </summary>
         /// <param name="inputText">Input text (required).</param>
         /// <param name="isError">Error flag.</param>
-        public void LogLine(String inputText, bool isError)
+        public void LogLine(string inputText, bool isError)
         {
             (isError ? Console.Error : Console.Out).WriteLine(inputText);
-            if (_host != null)
-            {
-                _host.WriteLineToLog(_translationValidationPlugin, inputText);
-            }
+            _host?.WriteLineToLog(_translationValidationPlugin, inputText);
         }
 
         /// <summary>
         /// Retrieve the ignore list from the host's plugin data storage.
         /// </summary>
-        /// <param name="activeProjectName">Active project name (required).</param>
+        /// <param name="projectName">Active project name (required).</param>
         /// <returns>Ignore list.</returns>
-        public IList<IgnoreListItem> GetIgnoreList(string activeProjectName)
+        public IList<IgnoreListItem> GetIgnoreList(string projectName)
         {
-            string inputData =
-                    _host.GetPlugInData(_translationValidationPlugin,
-                activeProjectName, MainConsts.IGNORE_LIST_ITEMS_ID);
-            if (inputData == null)
-            {
-                return Enumerable.Empty<IgnoreListItem>().ToList();
-            }
-            else
-            {
-                return JsonConvert.DeserializeObject<List<IgnoreListItem>>(inputData);
-            }
+            var inputData =
+                _host.GetPlugInData(_translationValidationPlugin,
+                    projectName, MainConsts.IGNORE_LIST_ITEMS_DATA_ID);
+            return inputData == null
+                ? Enumerable.Empty<IgnoreListItem>().ToList()
+                : JsonConvert.DeserializeObject<List<IgnoreListItem>>(inputData);
         }
 
         /// <summary>
         /// Stores the ignore list to the host's plugin data storage.
         /// </summary>
-        /// <param name="activeProjectName">Active project name (required).</param>
+        /// <param name="projectName">Active project name (required).</param>
         /// <param name="outputItems">Ignore list.</param>
-        public void PutIgnoreList(string activeProjectName, IList<IgnoreListItem> outputItems)
+        public void PutIgnoreList(string projectName, IEnumerable<IgnoreListItem> outputItems)
         {
             _host.PutPlugInData(_translationValidationPlugin,
-                activeProjectName, MainConsts.IGNORE_LIST_ITEMS_ID,
+                projectName, MainConsts.IGNORE_LIST_ITEMS_DATA_ID,
                 JsonConvert.SerializeObject(outputItems));
         }
 
         /// <summary>
-        /// Converts a Paratext coordinate reference to specific book, chapter, and verse.
+        /// Retrieve the ignore list from the host's plugin data storage.
         /// </summary>
-        /// <param name="inputRef">Input coordinate reference (BBBCCCVVV).</param>
-        /// <param name="outputBook">Output book number (1-66).</param>
-        /// <param name="outputChapter">Output chapter number (1-1000; Max varies by book & versification).</param>
-        /// <param name="outputVerse">Output verse number (1-1000; Max varies by chapter & versification).</param>
-        static public void RefToBCV(int inputRef, out int outputBook, out int outputChapter, out int outputVerse)
+        /// <param name="projectName">Active project name (required).</param>
+        /// <param name="bookId"></param>
+        /// <returns>Ignore list.</returns>
+        public IList<ResultItem> GetResultItems(string projectName, string bookId)
         {
-            outputBook = (inputRef / MainConsts.BOOK_REF_MULTIPLIER);
-            outputChapter = (inputRef / MainConsts.CHAP_REF_MULTIPLIER) % MainConsts.REF_PART_RANGE;
-            outputVerse = inputRef % MainConsts.REF_PART_RANGE;
+            var inputData =
+                _host.GetPlugInData(_translationValidationPlugin, projectName,
+                    string.Format(MainConsts.RESULT_ITEMS_DATA_ID_FORMAT, bookId));
+            return inputData == null
+                ? Enumerable.Empty<ResultItem>().ToList()
+                : JsonConvert.DeserializeObject<List<ResultItem>>(inputData);
         }
 
-
         /// <summary>
-        /// Converts specific book, chapter, and verse to a Paratext coordinate reference.
+        /// Stores the ignore list to the host's plugin data storage.
         /// </summary>
-        /// <param name="inputBook">Input book number (1-66).</param>
-        /// <param name="inputChapter">Input chapter number (1-1000; Max varies by book & versification).</param>
-        /// <param name="inputVerse">Input verse number (1-1000; Max varies by chapter & versification).</param>
-        /// <returns>Output coordinate reference (BBBCCCVVV).</returns>
-        static public int BcvToRef(int inputBook, int inputChapter, int inputVerse)
+        /// <param name="projectName">Active project name (required).</param>
+        /// <param name="bookId"></param>
+        /// <param name="outputItems">Ignore list.</param>
+        public void PutResultItems(string projectName, string bookId, IEnumerable<ResultItem> outputItems)
         {
-            return (inputBook * MainConsts.BOOK_REF_MULTIPLIER)
-                + (inputChapter * MainConsts.CHAP_REF_MULTIPLIER)
-                + inputVerse;
+            _host.PutPlugInData(_translationValidationPlugin, projectName,
+                string.Format(MainConsts.RESULT_ITEMS_DATA_ID_FORMAT, bookId),
+                JsonConvert.SerializeObject(outputItems));
         }
     }
 }
