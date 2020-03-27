@@ -39,7 +39,7 @@ namespace TvpMain.Filter
         public bool FilterText(string inputText)
         {
             // empty filter = ignore
-            if (IsEmpty)
+            if (inputText == null || inputText.Trim().Length == 0 || IsEmpty)
             {
                 return false;
             }

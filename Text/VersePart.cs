@@ -1,6 +1,7 @@
 ﻿using CsvHelper.Configuration.Attributes;
 using Newtonsoft.Json;
 using System;
+using TvpMain.Util;
 
 namespace TvpMain.Text
 {
@@ -13,6 +14,7 @@ namespace TvpMain.Text
     [JsonObject(MemberSerialization.OptIn)]
     public class VersePart
     {
+
         /// <summary>
         /// Source verse text.
         /// </summary>
@@ -133,8 +135,8 @@ namespace TvpMain.Text
             unchecked
             {
                 var hashCode = (ProjectVerse != null ? ProjectVerse.GetHashCode() : 0);
-                hashCode = (hashCode * 397) ^ (PartLocation != null ? PartLocation.GetHashCode() : 0);
-                hashCode = (hashCode * 397) ^ (PartText != null ? PartText.GetHashCode() : 0);
+                hashCode = (hashCode * MainConsts.V) ^ (PartLocation != null ? PartLocation.GetHashCode() : 0);
+                hashCode = (hashCode * MainConsts.V) ^ (PartText != null ? PartText.GetHashCode() : 0);
                 return hashCode;
             }
         }

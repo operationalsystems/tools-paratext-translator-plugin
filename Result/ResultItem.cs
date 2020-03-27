@@ -2,6 +2,7 @@
 using System;
 using TvpMain.Check;
 using TvpMain.Text;
+using TvpMain.Util;
 
 namespace TvpMain.Result
 {
@@ -18,6 +19,7 @@ namespace TvpMain.Result
     [JsonObject(MemberSerialization.OptIn)]
     public class ResultItem
     {
+
         /// <summary>
         /// Verse part data, including original verse, location, etc.
         /// </summary>
@@ -169,12 +171,12 @@ namespace TvpMain.Result
             unchecked
             {
                 var hashCode = (VersePart != null ? VersePart.GetHashCode() : 0);
-                hashCode = (hashCode * 397) ^ (ErrorText != null ? ErrorText.GetHashCode() : 0);
-                hashCode = (hashCode * 397) ^ (MatchText != null ? MatchText.GetHashCode() : 0);
-                hashCode = (hashCode * 397) ^ MatchStart;
-                hashCode = (hashCode * 397) ^ (SuggestionText != null ? SuggestionText.GetHashCode() : 0);
-                hashCode = (hashCode * 397) ^ (int)CheckType;
-                hashCode = (hashCode * 397) ^ ResultTypeCode;
+                hashCode = (hashCode * MainConsts.V) ^ (ErrorText != null ? ErrorText.GetHashCode() : 0);
+                hashCode = (hashCode * MainConsts.V) ^ (MatchText != null ? MatchText.GetHashCode() : 0);
+                hashCode = (hashCode * MainConsts.V) ^ MatchStart;
+                hashCode = (hashCode * MainConsts.V) ^ (SuggestionText != null ? SuggestionText.GetHashCode() : 0);
+                hashCode = (hashCode * MainConsts.V) ^ (int)CheckType;
+                hashCode = (hashCode * MainConsts.V) ^ ResultTypeCode;
                 return hashCode;
             }
         }

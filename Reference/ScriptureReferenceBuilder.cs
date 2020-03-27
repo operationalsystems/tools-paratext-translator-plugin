@@ -384,6 +384,8 @@ namespace TvpMain.Reference
 
         /// <summary>
         /// Formats book or chapter range text, based on text context.
+        /// For rebuilding an edited verse string based on formatting rules. 
+        /// Different separators are used at different types of or sections of text.
         /// </summary>
         /// <param name="inputContext">Input context (required).</param>
         /// <param name="inputRange">Input book or chapter range (required).</param>

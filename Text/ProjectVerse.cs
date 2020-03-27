@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using System;
+using TvpMain.Util;
 
 namespace TvpMain.Text
 {
@@ -12,6 +13,7 @@ namespace TvpMain.Text
     [JsonObject(MemberSerialization.OptIn)]
     public class ProjectVerse
     {
+
         /// <summary>
         /// Verse location.
         /// </summary>
@@ -91,7 +93,7 @@ namespace TvpMain.Text
             unchecked
             {
                 return ((VerseLocation != null
-                            ? VerseLocation.GetHashCode() : 0) * 397)
+                            ? VerseLocation.GetHashCode() : 0) * MainConsts.V)
                        ^ (VerseText != null ? VerseText.GetHashCode() : 0);
             }
         }

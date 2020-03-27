@@ -351,9 +351,7 @@ namespace TvpMain.Form
                 if (ignoreListFiltersMenuItem.Checked
                     && !_ignoreFilter.IsEmpty)
                 {
-                    _filteredResultItems = _filteredResultItems.Where(
-                        resultItem => !_ignoreFilter.FilterText(isEntireVerse
-                        ? resultItem.VersePart.PartText : resultItem.MatchText)).ToList();
+                    doFilter(_ignoreFilter, isEntireVerse);
                 }
 
                 // block in case the background worker hasn't finished yet
@@ -362,16 +360,12 @@ namespace TvpMain.Form
                 if (wordListFiltersMenuItem.Checked
                 && !_wordListFilter.IsEmpty)
                 {
-                    _filteredResultItems = _filteredResultItems.Where(
-                        resultItem => !_wordListFilter.FilterText(isEntireVerse
-                    ? resultItem.VersePart.PartText : resultItem.MatchText)).ToList();
+                    doFilter(_wordListFilter, isEntireVerse);
                 }
                 if (biblicaTermsFiltersMenuItem.Checked
                     && !_biblicalTermFilter.IsEmpty)
                 {
-                    _filteredResultItems = _filteredResultItems.Where(
-                        resultItem => !_biblicalTermFilter.FilterText(isEntireVerse
-                            ? resultItem.VersePart.PartText : resultItem.MatchText)).ToList();
+                    doFilter(_biblicalTermFilter, isEntireVerse);
                 }
 
                 var searchText = searchMenuTextBox.TextBox.Text.Trim();
@@ -393,6 +387,17 @@ namespace TvpMain.Form
                     }
                 }
             }
+        }
+
+        /// <summary>
+        /// Utility function that updates the _filteredResultItems list based on the given filter and scope
+        /// </summary>
+        /// <param name="textFilter"></param>
+        /// <param name="isEntireVerse"></param>
+        private void doFilter(AbstractTextFilter textFilter, Boolean isEntireVerse) {
+            _filteredResultItems = _filteredResultItems.Where(
+                       resultItem => !textFilter.FilterText(isEntireVerse
+                   ? resultItem.VersePart.PartText : resultItem.MatchText)).ToList();
         }
 
         /// <summary>
@@ -691,6 +696,11 @@ namespace TvpMain.Form
             UpdateCheckContexts();
         }
 
+        /// <summary>
+        /// Introduction area filter menu item click handler
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void OnIntroductionsAreaMenuItemClick(object sender, EventArgs e)
         {
             introductionsAreaMenuItem.Checked = !introductionsAreaMenuItem.Checked;
@@ -700,6 +710,11 @@ namespace TvpMain.Form
             UpdateCheckContexts();
         }
 
+        /// <summary>
+        /// Outlines area filter menu item click handler
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void OnOutlinesAreaMenuItemClick(object sender, EventArgs e)
         {
             outlinesAreaMenuItem.Checked = !outlinesAreaMenuItem.Checked;
@@ -1495,7 +1510,12 @@ namespace TvpMain.Form
         /// <returns>Input position minus occurences of search char before it.</returns>
         private static int MinusPrecedingChars(string inputText, int inputPosition, char searchChar)
         {
-            var searchPosition = inputText.IndexOf(searchChar);
+            var searchPosition = 0;
+            if ( inputText != null && inputText.Length > 0)
+            {
+                searchPosition = inputText.IndexOf(searchChar);
+            }
+
             var charCtr = 0;
 
             while (searchPosition >= 0

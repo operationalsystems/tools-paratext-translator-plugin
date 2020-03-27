@@ -11,7 +11,7 @@ namespace TvpMain.Text
     /// <summary>
     /// Verse Regex-related utilities.
     /// </summary>
-    public class VerseRegexUtil
+    public static class VerseRegexUtil
     {
         /// <summary>
         /// Standard book name regex text (i.e., at least one letter surrounded by letters or digits).

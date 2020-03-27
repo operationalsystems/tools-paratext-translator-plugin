@@ -31,6 +31,11 @@ namespace TvpMain
         /// <param name="activeProjectName">Active project name (required).</param>
         public void Run(IHost host, string activeProjectName)
         {
+            if( activeProjectName == null || activeProjectName.Length == 0)
+            {
+                throw new ArgumentNullException(nameof(activeProjectName));
+            }
+
             lock (this)
             {
 
@@ -53,9 +58,10 @@ namespace TvpMain
                             Application.EnableVisualStyles();
                             Application.Run(new MainForm(host, activeProjectName));
                         }
-                        catch (Exception)
+                        catch (Exception ex)
                         {
                             // Do not report this as it's already been reported elsewhere.
+                            HostUtil.Instance.LogLine("Exception during run: " + ex.ToString() , true);
                         }
                         finally
                         {

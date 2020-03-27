@@ -27,9 +27,9 @@
         /// <param name="totalBooks">Max book position in check.</param>
         public CheckUpdatedArgs(int totalBooks, int bookCtr, int bookNum)
         {
-            this.TotalBooks = totalBooks;
-            this.BookCtr = bookCtr;
-            this.BookNum = bookNum;
+            this.TotalBooks = totalBooks > 0 ? totalBooks : 0;
+            this.BookCtr = bookCtr > 0 ? totalBooks : 0;
+            this.BookNum = bookNum > 0 ? totalBooks : 0;
         }
     }
 }

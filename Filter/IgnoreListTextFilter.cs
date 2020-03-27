@@ -39,12 +39,12 @@ namespace TvpMain.Filter
         public override ISet<string> CaseInsensitiveWords => _caseInsensitiveWords;
 
         /// <summary>
-        /// Case-insensitive phrase list.
+        /// Case-sensitive phrase list.
         /// </summary>
         public override IList<string> CaseSensitivePhrases => _caseSensitivePhrases;
 
         /// <summary>
-        /// Case-sensitive word set.
+        /// Case-insensitive word set.
         /// </summary>
         public override IList<string> CaseInsensitivePhrases => _caseInsensitivePhrases;
 

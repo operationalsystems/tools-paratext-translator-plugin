@@ -221,6 +221,11 @@ namespace TvpMain.Util
         /// <param name="outputItems">Ignore list.</param>
         public void PutIgnoreList(string projectName, IEnumerable<IgnoreListItem> outputItems)
         {
+            if(projectName == null || projectName.Length < 1)
+            {
+                throw new ArgumentNullException(nameof(projectName));
+            }
+
             _host.PutPlugInData(_translationValidationPlugin,
                 projectName, MainConsts.IGNORE_LIST_ITEMS_DATA_ID,
                 JsonConvert.SerializeObject(outputItems));
@@ -234,6 +239,16 @@ namespace TvpMain.Util
         /// <returns>Ignore list.</returns>
         public IList<ResultItem> GetResultItems(string projectName, string bookId)
         {
+            if (projectName == null || projectName.Length < 1)
+            {
+                throw new ArgumentNullException(nameof(projectName));
+            }
+
+            if (bookId == null || bookId.Length < 1)
+            {
+                throw new ArgumentNullException(nameof(bookId));
+            }
+
             var inputData =
                 _host.GetPlugInData(_translationValidationPlugin, projectName,
                     string.Format(MainConsts.RESULT_ITEMS_DATA_ID_FORMAT, bookId));
@@ -250,6 +265,16 @@ namespace TvpMain.Util
         /// <param name="outputItems">Ignore list.</param>
         public void PutResultItems(string projectName, string bookId, IEnumerable<ResultItem> outputItems)
         {
+            if (projectName == null || projectName.Length < 1)
+            {
+                throw new ArgumentNullException(nameof(projectName));
+            }
+
+            if (bookId == null || bookId.Length < 1)
+            {
+                throw new ArgumentNullException(nameof(bookId));
+            }
+
             _host.PutPlugInData(_translationValidationPlugin, projectName,
                 string.Format(MainConsts.RESULT_ITEMS_DATA_ID_FORMAT, bookId),
                 JsonConvert.SerializeObject(outputItems));
