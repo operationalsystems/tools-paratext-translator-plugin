@@ -58,7 +58,7 @@
             string abbreviation, string shortName,
             string longName)
         {
-            BookCode = bookCode;
+            BookCode = bookCode != null ? bookCode : "";
             BookNum = bookNum;
 
             Abbreviation = abbreviation?.Trim();
@@ -78,6 +78,12 @@
         /// <returns>First available name string or code string, whichever is first.</returns>
         public string GetAvailableName(params BookNameType[] inputTypes)
         {
+            if( inputTypes == null)
+            {
+                Util.HostUtil.Instance.LogLine("Instance types is null, responding with default book code", true);
+                return BookCode;
+            }
+
             foreach (var nameType in inputTypes)
             {
                 switch (nameType)

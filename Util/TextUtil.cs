@@ -86,7 +86,6 @@ namespace TvpMain.Util
         /// <param name="inputItems">Input items (provided).</param>
         /// <param name="singularText">Singular text (required).</param>
         /// <param name="pluralText">Plural text (required).</param>
-        /// <returns></returns>
         public static string SingularOrPlural<T>(
             this IEnumerable<T> inputItems,
             string singularText,

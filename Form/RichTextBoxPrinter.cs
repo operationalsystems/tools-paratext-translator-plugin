@@ -10,7 +10,7 @@ namespace TvpMain.Form
     /// http://support.microsoft.com/default.aspx?scid=kb;en-us;812425
     /// The RichTextBox control does not provide any method to print the content of the RichTextBox. 
     /// You can extend the RichTextBox class to use EM_FORMATRANGE message 
-    /// to send the content of a RichTextBox control to an output device such as printer.
+    /// to send the content of a RichTextBox control to an output device such as printer or to be used in a form control.
     /// </summary>
     public class RichTextBoxPrinter
     {

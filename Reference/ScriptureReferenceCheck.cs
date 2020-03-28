@@ -17,7 +17,8 @@ namespace TvpMain.Reference
     public class ScriptureReferenceCheck : ITextCheck
     {
         /// <summary>
-        /// All part contexts, for iteration.
+        /// Checks for problems in scripture references in all sections of verses and chapters.
+        /// Reference checks include missing tags, incorrect tags, incorrect tags in context, badly formed tags, and tags that shouldn't be there.
         /// </summary>
         private static readonly IEnumerable<PartContext> AllContexts
             = Enum.GetValues(typeof(PartContext)).Cast<PartContext>();
@@ -205,6 +206,12 @@ namespace TvpMain.Reference
             ScriptureReferenceWrapper parsedReference,
             ICollection<ResultItem> outputResults)
         {
+            if(matchText == null || matchText.Length == 0)
+            {
+                Util.HostUtil.Instance.LogLine("Match text is invalid, can't compare. Responding with no results found.", true);
+                return false;
+            }
+
             var result = CheckForBadReference(
                 inputPart, matchText,
                 matchStart, parsedReference,
@@ -249,6 +256,13 @@ namespace TvpMain.Reference
             ScriptureReferenceWrapper parsedReference,
             ICollection<ResultItem> outputResults)
         {
+
+            if (matchText == null || matchText.Length == 0)
+            {
+                Util.HostUtil.Instance.LogLine("Match text is invalid, can't compare. Responding with no results found.", true);
+                return false;
+            }
+
             // check for unknown books
             var unknownBooks = parsedReference.ScriptureReference.BookReferences
                     .Where(referenceItem => !referenceItem.IsLocalReference)
@@ -288,6 +302,13 @@ namespace TvpMain.Reference
             ScriptureReferenceWrapper parsedReference,
             ICollection<ResultItem> outputResults)
         {
+
+            if (matchText == null || matchText.Length == 0)
+            {
+                Util.HostUtil.Instance.LogLine("Match text is invalid, can't compare. Responding with no results found.", true);
+                return false;
+            }
+
             // check format (tight match)
             var standardText = _referenceBuilder.FormatStandardReference(
                 inputPart.PartLocation.PartContext,
@@ -379,6 +400,13 @@ namespace TvpMain.Reference
             ScriptureReferenceWrapper parsedReference,
             ICollection<ResultItem> outputResults)
         {
+
+            if (matchText == null || matchText.Length == 0)
+            {
+                Util.HostUtil.Instance.LogLine("Match text is invalid, can't compare. Responding with no results found.", true);
+                return false;
+            }
+
             var badTags = FindContentTags(
                     inputPart.PartText, AllContextContentTags)
                 .ToHashSet();
@@ -427,6 +455,12 @@ namespace TvpMain.Reference
             ScriptureReferenceWrapper parsedReference,
             ICollection<ResultItem> outputResults)
         {
+            if (matchText == null || matchText.Length == 0)
+            {
+                Util.HostUtil.Instance.LogLine("Match text is invalid, can't compare. Responding with no results found.", true);
+                return false;
+            }
+
             // deal with missing or malformed tags elsewhere
             if (!parsedReference.IsOpeningTag
                 && !parsedReference.IsClosingTag)
@@ -487,6 +521,12 @@ namespace TvpMain.Reference
             ScriptureReferenceWrapper parsedReference,
             ICollection<ResultItem> outputResults)
         {
+            if (matchText == null || matchText.Length == 0)
+            {
+                Util.HostUtil.Instance.LogLine("Match text is invalid, can't compare. Responding with no results found.", true);
+                return false;
+            }
+
             // get good tags for this context
             if (!ContextPairedTags.TryGetValue(inputPart.PartLocation.PartContext, out var goodTags)
                 || goodTags.Count < 1)
@@ -550,9 +590,15 @@ namespace TvpMain.Reference
         /// </summary>
         /// <param name="inputText">Input text (required).</param>
         /// <param name="tagNames">Tag names to search for, without leading backslashes or trailing stars (required).</param>
-        /// <returns>True if input starts or ends with any of the tags.</returns>
+        /// <returns>List of found tags.</returns>
         private static IList<string> FindContentTags(string inputText, IEnumerable<string> tagNames)
         {
+            if (inputText == null || inputText.Length == 0)
+            {
+                Util.HostUtil.Instance.LogLine("Match text is invalid, can't compare. Responding with no results found.", true);
+                return Array.Empty<string>();
+            }
+
             return tagNames.Where(tagName =>
                     FindContentTag(inputText, tagName) >= 0)
                 .ToImmutableList();
@@ -566,6 +612,18 @@ namespace TvpMain.Reference
         /// <returns>-1 if not found, lowest 0-based index of opening/closing tag otherwise.</returns>
         private static int FindContentTag(string inputText, string tagName)
         {
+            if (inputText == null || inputText.Length == 0)
+            {
+                Util.HostUtil.Instance.LogLine("Match text is invalid, can't compare. Responding with no results found.", true);
+                return -1;
+            }
+
+            if (tagName == null || tagName.Length == 0)
+            {
+                Util.HostUtil.Instance.LogLine("Tag name is invalid, can't compare. Responding with no results found.", true);
+                return -1;
+            }
+
             var startIndex = inputText.IndexOf($@"\{tagName}", StringComparison.InvariantCultureIgnoreCase);
             var endIndex = inputText.IndexOf($@"\{tagName}*", StringComparison.InvariantCultureIgnoreCase);
             if (startIndex >= 0 && endIndex >= 0)

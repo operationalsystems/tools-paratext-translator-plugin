@@ -4,9 +4,9 @@ using System.Windows.Forms;
 using TvpMain.Check;
 using TvpMain.Text;
 
-/*
- * Form to provide progress of Translation Validation Checks.
- */
+/// <summary>
+/// Form to provide progress of Translation Validation Checks.
+/// </summary>
 namespace TvpMain.Form
 {
     /// <summary>
@@ -70,7 +70,9 @@ namespace TvpMain.Form
             lblTitle.Text = "Cancelling Validation...";
             Cancelled?.Invoke(sender, e);
         }
-
+        /// <summary>
+        /// Reset the form back to now
+        /// </summary>
         public void ResetForm()
         {
             _startTime = DateTime.Now;
@@ -79,6 +81,9 @@ namespace TvpMain.Form
             ResetFormContents();
         }
 
+        /// <summary>
+        /// Reset the form contents
+        /// </summary>
         private void ResetFormContents()
         {
             pbrStatus.Value = pbrStatus.Minimum;

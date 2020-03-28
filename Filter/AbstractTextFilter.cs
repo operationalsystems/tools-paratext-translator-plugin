@@ -39,8 +39,9 @@ namespace TvpMain.Filter
         public bool FilterText(string inputText)
         {
             // empty filter = ignore
-            if (IsEmpty)
+            if (inputText == null || inputText.Trim().Length == 0 || IsEmpty)
             {
+                Util.HostUtil.Instance.LogLine("Input text is invalid for filtering, responding with false (nothing found)", true);
                 return false;
             }
 

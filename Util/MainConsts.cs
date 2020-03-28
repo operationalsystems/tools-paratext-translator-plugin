@@ -9,7 +9,7 @@ namespace TvpMain.Util
     /// <summary>
     /// Utility constants, magic numbers, etc.
     /// </summary>
-    public class MainConsts
+    public static class MainConsts
     {
         /// <summary>
         /// Default separator for a sequence of book names.
@@ -90,17 +90,17 @@ namespace TvpMain.Util
         /// <summary>
         /// Multiplier for book numbers in BCV-style references.
         /// </summary>
-        public static readonly int BookRefMultiplier = 1000000;
+        public const int BookRefMultiplier = 1000000;
 
         /// <summary>
         /// Multiplier for chapter numbers in BCV-style references.
         /// </summary>
-        public static readonly int ChapRefMultiplier = 1000;
+        public const int ChapRefMultiplier = 1000;
 
         /// <summary>
         /// Range ref parts (i.e., chapters, verses).
         /// </summary>
-        public static readonly int RefPartRange = 1000;
+        public const int RefPartRange = 1000;
 
         /// <summary>
         /// Number of seconds to wait after changes to save result items.
@@ -111,5 +111,10 @@ namespace TvpMain.Util
         /// Number of seconds to wait before loading result items.
         /// </summary>
         public const int RESULT_ITEM_LOAD_DELAY_IN_SEC = 5;
+
+        /// <summary>
+        /// A value used to create hashes
+        /// </summary>
+        public const int HASH_PRIME = 397;
     }
 }

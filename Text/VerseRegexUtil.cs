@@ -11,7 +11,7 @@ namespace TvpMain.Text
     /// <summary>
     /// Verse Regex-related utilities.
     /// </summary>
-    public class VerseRegexUtil
+    public static class VerseRegexUtil
     {
         /// <summary>
         /// Standard book name regex text (i.e., at least one letter surrounded by letters or digits).
@@ -123,7 +123,6 @@ namespace TvpMain.Text
         /// https://ubsicap.github.io/usfm/about/syntax.html#endmarkers-in-footnotes-and-cross-references
         /// </summary>
         /// <param name="tagName">Tag name (required).</param>
-        /// <returns></returns>
         public static Regex CreateNoteOrReferenceRegex(string tagName)
         {
             return new Regex($@"\\{tagName}\s+[\S]\s+(?:(?:(?!\\{tagName}[\*\s]).)*|\s*)(?:\\{tagName}\*)?",
