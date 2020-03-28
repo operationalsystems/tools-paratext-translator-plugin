@@ -389,7 +389,6 @@ namespace TvpMain.Reference
         /// </summary>
         /// <param name="inputContext">Input context (required).</param>
         /// <param name="inputRange">Input book or chapter range (required).</param>
-        /// <returns></returns>
         private string FormatBookOrChapterRange(
             PartContext inputContext,
             ChapterRange inputRange)

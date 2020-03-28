@@ -171,12 +171,12 @@ namespace TvpMain.Result
             unchecked
             {
                 var hashCode = (VersePart != null ? VersePart.GetHashCode() : 0);
-                hashCode = (hashCode * MainConsts.V) ^ (ErrorText != null ? ErrorText.GetHashCode() : 0);
-                hashCode = (hashCode * MainConsts.V) ^ (MatchText != null ? MatchText.GetHashCode() : 0);
-                hashCode = (hashCode * MainConsts.V) ^ MatchStart;
-                hashCode = (hashCode * MainConsts.V) ^ (SuggestionText != null ? SuggestionText.GetHashCode() : 0);
-                hashCode = (hashCode * MainConsts.V) ^ (int)CheckType;
-                hashCode = (hashCode * MainConsts.V) ^ ResultTypeCode;
+                hashCode = (hashCode * MainConsts.HASH_PRIME) ^ (ErrorText != null ? ErrorText.GetHashCode() : 0);
+                hashCode = (hashCode * MainConsts.HASH_PRIME) ^ (MatchText != null ? MatchText.GetHashCode() : 0);
+                hashCode = (hashCode * MainConsts.HASH_PRIME) ^ MatchStart;
+                hashCode = (hashCode * MainConsts.HASH_PRIME) ^ (SuggestionText != null ? SuggestionText.GetHashCode() : 0);
+                hashCode = (hashCode * MainConsts.HASH_PRIME) ^ (int)CheckType;
+                hashCode = (hashCode * MainConsts.HASH_PRIME) ^ ResultTypeCode;
                 return hashCode;
             }
         }

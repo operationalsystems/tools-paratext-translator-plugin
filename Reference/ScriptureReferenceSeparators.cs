@@ -119,7 +119,6 @@ namespace TvpMain.Reference
         /// <param name="prevSeparators"></param>
         /// <param name="isNormalized"></param>
         /// <param name="isAnyDuplicate"></param>
-        /// <returns></returns>
         private static IList<string> FilterSeparators(
             IEnumerable<string> inputSeparators, ISet<string> prevSeparators,
             bool isNormalized, ref bool isAnyDuplicate)

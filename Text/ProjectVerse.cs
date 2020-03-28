@@ -93,7 +93,7 @@ namespace TvpMain.Text
             unchecked
             {
                 return ((VerseLocation != null
-                            ? VerseLocation.GetHashCode() : 0) * MainConsts.V)
+                            ? VerseLocation.GetHashCode() : 0) * MainConsts.HASH_PRIME)
                        ^ (VerseText != null ? VerseText.GetHashCode() : 0);
             }
         }

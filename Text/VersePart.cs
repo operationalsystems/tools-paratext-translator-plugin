@@ -135,8 +135,8 @@ namespace TvpMain.Text
             unchecked
             {
                 var hashCode = (ProjectVerse != null ? ProjectVerse.GetHashCode() : 0);
-                hashCode = (hashCode * MainConsts.V) ^ (PartLocation != null ? PartLocation.GetHashCode() : 0);
-                hashCode = (hashCode * MainConsts.V) ^ (PartText != null ? PartText.GetHashCode() : 0);
+                hashCode = (hashCode * MainConsts.HASH_PRIME) ^ (PartLocation != null ? PartLocation.GetHashCode() : 0);
+                hashCode = (hashCode * MainConsts.HASH_PRIME) ^ (PartText != null ? PartText.GetHashCode() : 0);
                 return hashCode;
             }
         }

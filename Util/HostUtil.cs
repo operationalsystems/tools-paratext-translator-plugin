@@ -200,6 +200,12 @@ namespace TvpMain.Util
         /// <returns>Ignore list.</returns>
         public IList<IgnoreListItem> GetIgnoreList(string projectName)
         {
+            if(projectName == null || projectName.Length == 0)
+            {
+                Util.HostUtil.Instance.LogLine("Project name is invalid, responding with default empty list", true);
+                return Enumerable.Empty<IgnoreListItem>().ToList();
+            }
+
             var inputData =
                 _host.GetPlugInData(_translationValidationPlugin,
                     projectName, MainConsts.IGNORE_LIST_ITEMS_DATA_ID);
@@ -267,11 +273,13 @@ namespace TvpMain.Util
         {
             if (projectName == null || projectName.Length < 1)
             {
+                Util.HostUtil.Instance.LogLine("Project name is invalid, can't operate so throwing exception.", true);
                 throw new ArgumentNullException(nameof(projectName));
             }
 
             if (bookId == null || bookId.Length < 1)
             {
+                Util.HostUtil.Instance.LogLine("Book id is invalid, can't operate so throwing exception.", true);
                 throw new ArgumentNullException(nameof(bookId));
             }
 

@@ -454,8 +454,9 @@ namespace TvpMain.Project
         /// <returns>Book name type if found, default type otherwise.</returns>
         private BookNameType GetBookNameTypeSetting(string settingKey, BookNameType defaultType)
         {
-            if (settingKey == null)
+            if (settingKey == null || settingKey.Length == 0)
             {
+                Util.HostUtil.Instance.LogLine("Invalid setting key, responding with default.", true);
                 return defaultType;
             }
             var settingValue = Host.GetProjectSetting(ProjectName, settingKey);

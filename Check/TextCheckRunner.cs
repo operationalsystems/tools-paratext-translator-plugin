@@ -311,7 +311,6 @@ namespace TvpMain.Check
         /// Creates and runs a check task for a given book number.
         /// </summary>
         /// <param name="inputBookNum">Book number (1-based).</param>
-        /// <returns></returns>
         private Task RunBookTask(
             int inputBookNum)
         {

@@ -134,7 +134,6 @@ namespace TvpMain.Reference
         /// <summary>
         /// Parser for finding a single verse
         /// </summary>
-        /// <returns></returns>
         private static Parser<char, VerseRange> SingletonVerse()
             =>
                 OneToken(Parser.UnsignedInt(10)
@@ -145,7 +144,6 @@ namespace TvpMain.Reference
         /// Creates a parser fro finding general references
         /// </summary>
         /// <param name="referenceSeparators"></param>
-        /// <returns></returns>
         private static Parser<char, VerseRange> PairedVerseRange(
             ScriptureReferenceSeparators referenceSeparators)
             => Parser.Map((fromVerse, verseSeparator, toVerse) =>
@@ -159,7 +157,6 @@ namespace TvpMain.Reference
         /// Creates a parser for finding verse ranges ex. 1-2
         /// </summary>
         /// <param name="referenceSeparators"></param>
-        /// <returns></returns>
         private static Parser<char, VerseRange> VerseRange(
             ScriptureReferenceSeparators referenceSeparators)
             => Parser.OneOf(Parser.Try(PairedVerseRange(referenceSeparators)),
@@ -170,7 +167,6 @@ namespace TvpMain.Reference
         /// Creates a parser for finding verse range sequences ex. 1-2,3,3-4
         /// </summary>
         /// <param name="referenceSeparators"></param>
-        /// <returns></returns>
         private static Parser<char, IList<VerseRange>> VerseRangeSequence(
             ScriptureReferenceSeparators referenceSeparators)
             => VerseRange(referenceSeparators)
@@ -182,7 +178,6 @@ namespace TvpMain.Reference
         /// Creates a parser for finding chapters in verse ranges ex: 3:1-2,3,5:23,6:2-30
         /// </summary>
         /// <param name="referenceSeparators"></param>
-        /// <returns></returns>
         private static Parser<char, ChapterRange> SingletonChapterRangeWithVerses(
             ScriptureReferenceSeparators referenceSeparators)
             => Parser.Map((chapterNum, chapterSeparator, verseRanges) =>
@@ -196,7 +191,6 @@ namespace TvpMain.Reference
         /// Creates a parser for finding chapter ranges that don't have verses associated
         /// </summary>
         /// <param name="referenceSeparators"></param>
-        /// <returns></returns>
         private static Parser<char, ChapterRange> SingletonChapterRangeWithoutVerses(
             ScriptureReferenceSeparators referenceSeparators)
             => OneToken(Parser.UnsignedInt(10))
@@ -207,7 +201,6 @@ namespace TvpMain.Reference
         /// Creates a parser for finding verse/chapter reference separators
         /// </summary>
         /// <param name="referenceSeparators"></param>
-        /// <returns></returns>
         private static Parser<char, ChapterRange> SingletonChapterRange(
             ScriptureReferenceSeparators referenceSeparators)
             => Parser.OneOf(Parser.Try(SingletonChapterRangeWithVerses(referenceSeparators)),
@@ -218,7 +211,6 @@ namespace TvpMain.Reference
         /// Creates a parser for finding paired chapter ranges 2,3:34,4-8 , but that aren't verses
         /// </summary>
         /// <param name="referenceSeparators"></param>
-        /// <returns></returns>
         private static Parser<char, ChapterRange> PairedChapterRange(
             ScriptureReferenceSeparators referenceSeparators)
             => Parser.Map((fromChapter, bookSeparator, toChapter) => new ChapterRange(
@@ -234,7 +226,6 @@ namespace TvpMain.Reference
         /// </summary>
         /// <param name="projectManager"></param>
         /// <param name="referenceSeparators"></param>
-        /// <returns></returns>
         private static Parser<char, BookReferenceName> BookReferenceName(
             ProjectManager projectManager,
             ScriptureReferenceSeparators referenceSeparators)
@@ -253,7 +244,6 @@ namespace TvpMain.Reference
         /// Creates a parser for finding chapter ranges
         /// </summary>
         /// <param name="referenceSeparators"></param>
-        /// <returns></returns>
         private static Parser<char, ChapterRange> ChapterRange(
             ScriptureReferenceSeparators referenceSeparators)
             => Parser.OneOf(Parser.Try(PairedChapterRange(referenceSeparators)),
@@ -264,7 +254,6 @@ namespace TvpMain.Reference
         ///  Creates a parser for finding chapter range sequences
         /// </summary>
         /// <param name="referenceSeparators"></param>
-        /// <returns></returns>
         private static Parser<char, IList<ChapterRange>> ChapterRangeSequence(
             ScriptureReferenceSeparators referenceSeparators)
             => ChapterRange(referenceSeparators)
@@ -277,7 +266,6 @@ namespace TvpMain.Reference
         /// </summary>
         /// <param name="referenceSeparators"></param>
         /// <param name="referenceMode"></param>
-        /// <returns></returns>
         private static Parser<char, BookVerseReference> LocalBookVerseReference(
             ScriptureReferenceSeparators referenceSeparators,
             LocalReferenceMode referenceMode)
@@ -302,7 +290,6 @@ namespace TvpMain.Reference
         /// </summary>
         /// <param name="projectManager"></param>
         /// <param name="referenceSeparators"></param>
-        /// <returns></returns>
         private static Parser<char, BookVerseReference> OtherBookVerseReference(
             ProjectManager projectManager,
             ScriptureReferenceSeparators referenceSeparators)
@@ -318,7 +305,6 @@ namespace TvpMain.Reference
         /// </summary>
         /// <param name="projectManager"></param>
         /// <param name="referenceSeparators"></param>
-        /// <returns></returns>
         private static Parser<char, IList<BookVerseReference>> OtherBookVerseReferenceSequence(
             ProjectManager projectManager,
             ScriptureReferenceSeparators referenceSeparators)
@@ -334,7 +320,6 @@ namespace TvpMain.Reference
         /// <param name="projectManager"></param>
         /// <param name="referenceSeparators"></param>
         /// <param name="referenceMode"></param>
-        /// <returns></returns>
         private static Parser<char, ScriptureReference> ScriptureReference(
             ProjectManager projectManager,
             ScriptureReferenceSeparators referenceSeparators,
@@ -350,7 +335,6 @@ namespace TvpMain.Reference
         /// <summary>
         /// Creates a parser for finding opening reference tags
         /// </summary>
-        /// <returns></returns>
         private static Parser<char, string> OpeningScriptureReferenceTag()
             =>
                 OneToken(Parser.Char('\\')
@@ -361,7 +345,6 @@ namespace TvpMain.Reference
         /// <summary>
         /// Creates a parser for finding closing reference tags
         /// </summary>
-        /// <returns></returns>
         private static Parser<char, string> ClosingScriptureReferenceTag()
             =>
                 OneToken(Parser.Char('\\')
@@ -377,7 +360,6 @@ namespace TvpMain.Reference
         /// <param name="projectManager"></param>
         /// <param name="referenceSeparators"></param>
         /// <param name="referenceMode"></param>
-        /// <returns></returns>
         private static Parser<char, ScriptureReferenceWrapper> ScriptureReferenceWithNoTag(
             ParserType parserType,
             ProjectManager projectManager,
@@ -396,7 +378,6 @@ namespace TvpMain.Reference
         /// <param name="projectManager"></param>
         /// <param name="referenceSeparators"></param>
         /// <param name="referenceMode"></param>
-        /// <returns></returns>
         private static Parser<char, ScriptureReferenceWrapper> ScriptureReferenceWithOpeningTag(
             ParserType parserType,
             ProjectManager projectManager,
@@ -415,7 +396,6 @@ namespace TvpMain.Reference
         /// <param name="projectManager"></param>
         /// <param name="referenceSeparators"></param>
         /// <param name="referenceMode"></param>
-        /// <returns></returns>
         private static Parser<char, ScriptureReferenceWrapper> ScriptureReferenceWithClosingTag(
             ParserType parserType,
             ProjectManager projectManager,
@@ -434,7 +414,6 @@ namespace TvpMain.Reference
         /// <param name="projectManager"></param>
         /// <param name="referenceSeparators"></param>
         /// <param name="referenceMode"></param>
-        /// <returns></returns>
         private static Parser<char, ScriptureReferenceWrapper> ScriptureReferenceWithBothTags(
             ParserType parserType,
             ProjectManager projectManager,

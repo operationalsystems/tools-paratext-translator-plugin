@@ -115,6 +115,6 @@ namespace TvpMain.Util
         /// <summary>
         /// A value used to create hashes
         /// </summary>
-        public const int V = 397;
+        public const int HASH_PRIME = 397;
     }
 }

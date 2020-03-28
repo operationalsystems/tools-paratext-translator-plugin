@@ -123,7 +123,6 @@ namespace TvpMain.Text
         /// https://ubsicap.github.io/usfm/about/syntax.html#endmarkers-in-footnotes-and-cross-references
         /// </summary>
         /// <param name="tagName">Tag name (required).</param>
-        /// <returns></returns>
         public static Regex CreateNoteOrReferenceRegex(string tagName)
         {
             return new Regex($@"\\{tagName}\s+[\S]\s+(?:(?:(?!\\{tagName}[\*\s]).)*|\s*)(?:\\{tagName}\*)?",

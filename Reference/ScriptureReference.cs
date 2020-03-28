@@ -117,6 +117,9 @@ namespace TvpMain.Reference
             BookReferences = bookReferences ?? throw new ArgumentNullException(nameof(bookReferences)); ;
         }
 
+        /// <summary>
+        /// Creates a hashed score value to compare results
+        /// </summary>
         public long Score
         {
             get { return BookReferences.Sum(value => value.Score) * 10L; }
@@ -157,6 +160,9 @@ namespace TvpMain.Reference
             NameItem = nameItem;
         }
 
+        /// <summary>
+        /// Creates a hashed value to score results against
+        /// </summary>
         public long Score =>
             (NameText == null ? 0L : 1L)
             + (NameItem == null ? 0L : 10L);

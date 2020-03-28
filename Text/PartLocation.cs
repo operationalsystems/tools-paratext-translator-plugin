@@ -94,8 +94,8 @@ namespace TvpMain.Text
             unchecked
             {
                 var hashCode = PartStart;
-                hashCode = (hashCode * MainConsts.V) ^ PartLength;
-                hashCode = (hashCode * MainConsts.V) ^ (int)PartContext;
+                hashCode = (hashCode * MainConsts.HASH_PRIME) ^ PartLength;
+                hashCode = (hashCode * MainConsts.HASH_PRIME) ^ (int)PartContext;
                 return hashCode;
             }
         }

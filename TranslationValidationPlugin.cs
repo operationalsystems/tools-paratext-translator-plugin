@@ -33,6 +33,7 @@ namespace TvpMain
         {
             if( activeProjectName == null || activeProjectName.Length == 0)
             {
+                Util.HostUtil.Instance.LogLine("Active project name is invalid, throwing exception, can't operate.", true);
                 throw new ArgumentNullException(nameof(activeProjectName));
             }
 

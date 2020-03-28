@@ -57,6 +57,7 @@ namespace TvpMain.Project
         {
             if (ProjectDir == null)
             {
+                Util.HostUtil.Instance.LogLine("Project directory unavailable, responding with empty book name file.", true);
                 readOnlyStream = null;
                 return false;
             }

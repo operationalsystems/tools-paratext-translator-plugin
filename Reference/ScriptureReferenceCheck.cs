@@ -208,6 +208,7 @@ namespace TvpMain.Reference
         {
             if(matchText == null || matchText.Length == 0)
             {
+                Util.HostUtil.Instance.LogLine("Match text is invalid, can't compare. Responding with no results found.", true);
                 return false;
             }
 
@@ -258,6 +259,7 @@ namespace TvpMain.Reference
 
             if (matchText == null || matchText.Length == 0)
             {
+                Util.HostUtil.Instance.LogLine("Match text is invalid, can't compare. Responding with no results found.", true);
                 return false;
             }
 
@@ -303,6 +305,7 @@ namespace TvpMain.Reference
 
             if (matchText == null || matchText.Length == 0)
             {
+                Util.HostUtil.Instance.LogLine("Match text is invalid, can't compare. Responding with no results found.", true);
                 return false;
             }
 
@@ -400,6 +403,7 @@ namespace TvpMain.Reference
 
             if (matchText == null || matchText.Length == 0)
             {
+                Util.HostUtil.Instance.LogLine("Match text is invalid, can't compare. Responding with no results found.", true);
                 return false;
             }
 
@@ -453,6 +457,7 @@ namespace TvpMain.Reference
         {
             if (matchText == null || matchText.Length == 0)
             {
+                Util.HostUtil.Instance.LogLine("Match text is invalid, can't compare. Responding with no results found.", true);
                 return false;
             }
 
@@ -518,6 +523,7 @@ namespace TvpMain.Reference
         {
             if (matchText == null || matchText.Length == 0)
             {
+                Util.HostUtil.Instance.LogLine("Match text is invalid, can't compare. Responding with no results found.", true);
                 return false;
             }
 
@@ -584,11 +590,12 @@ namespace TvpMain.Reference
         /// </summary>
         /// <param name="inputText">Input text (required).</param>
         /// <param name="tagNames">Tag names to search for, without leading backslashes or trailing stars (required).</param>
-        /// <returns>True if input starts or ends with any of the tags.</returns>
+        /// <returns>List of found tags.</returns>
         private static IList<string> FindContentTags(string inputText, IEnumerable<string> tagNames)
         {
             if (inputText == null || inputText.Length == 0)
             {
+                Util.HostUtil.Instance.LogLine("Match text is invalid, can't compare. Responding with no results found.", true);
                 return Array.Empty<string>();
             }
 
@@ -607,11 +614,13 @@ namespace TvpMain.Reference
         {
             if (inputText == null || inputText.Length == 0)
             {
+                Util.HostUtil.Instance.LogLine("Match text is invalid, can't compare. Responding with no results found.", true);
                 return -1;
             }
 
             if (tagName == null || tagName.Length == 0)
             {
+                Util.HostUtil.Instance.LogLine("Tag name is invalid, can't compare. Responding with no results found.", true);
                 return -1;
             }
 

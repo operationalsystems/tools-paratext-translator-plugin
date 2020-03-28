@@ -103,8 +103,8 @@ namespace TvpMain.Text
             unchecked
             {
                 var hashCode = BookNum;
-                hashCode = (hashCode * MainConsts.V) ^ ChapterNum;
-                hashCode = (hashCode * MainConsts.V) ^ VerseNum;
+                hashCode = (hashCode * MainConsts.HASH_PRIME) ^ ChapterNum;
+                hashCode = (hashCode * MainConsts.HASH_PRIME) ^ VerseNum;
                 return hashCode;
             }
         }
