@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using Paratext.Data;
 using Paratext.Data.ProjectProgress;
 using TvpMain.Result;
+using TvpMain.Text;
 
 namespace TvpMain.Util
 {
@@ -286,6 +287,26 @@ namespace TvpMain.Util
             _host.PutPlugInData(_translationValidationPlugin, projectName,
                 string.Format(MainConsts.RESULT_ITEMS_DATA_ID_FORMAT, bookId),
                 JsonConvert.SerializeObject(outputItems));
+        }
+
+        /// <summary>
+        /// This function navigates to a specific project's BCV in the Paratext GUI.
+        /// 
+        /// <para>
+        /// Note: This isn't released yet for the stable Paratext client versions. Per Tim Steenwyk (Paratext software developer) 
+        /// "it will be a while before most users have the changes". For the meantime, the code will be commented out until it becomes
+        /// Mainstream.
+        /// </para><
+        /// </summary>
+        /// <param name="projectName">The Paratext project shortname. EG: "spaNVI15"</param>
+        /// <param name="book">The project's book 1-based index.</param>
+        /// <param name="chapter">The project's chapter 1-based index.</param>
+        /// <param name="verse">The project's verse 1-based index.</param>
+        public void GotoBcvInGui(string projectName, int book, int chapter, int verse)
+        {
+            var versificationName = _host.GetProjectVersificationName(projectName); ;
+            var bbbcccvvvReference = BookUtil.BcvToRef(book, chapter, verse);
+            _host.GotoReference(bbbcccvvvReference, versificationName, projectName);
         }
     }
 }
