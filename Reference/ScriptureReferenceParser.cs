@@ -162,7 +162,7 @@ namespace TvpMain.Reference
             => Parser.OneOf(Parser.Try(PairedVerseRange(referenceSeparators)),
                     Parser.Try(SingletonVerse()))
                 .Labelled("verse range");
-        
+
         /// <summary>
         /// Creates a parser for finding verse range sequences ex. 1-2,3,3-4
         /// </summary>

@@ -2,8 +2,6 @@
  * A Class to handle the Global Constants.
  */
 
-using System.Windows.Forms;
-
 namespace TvpMain.Util
 {
     /// <summary>

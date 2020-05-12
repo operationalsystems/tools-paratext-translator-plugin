@@ -182,7 +182,7 @@ namespace TvpMain.Reference
             {
                 result = true;
                 outputResults.Add(new ResultItem(inputPart,
-                    $"Invalid reference at position {matchStart} (can't parse).",
+                    $"Invalid reference, can't parse.",
                     matchText, matchStart, null,
                     CheckType.ScriptureReference, (int)ScriptureReferenceErrorType.MalformedTag));
             }
@@ -206,7 +206,7 @@ namespace TvpMain.Reference
             ScriptureReferenceWrapper parsedReference,
             ICollection<ResultItem> outputResults)
         {
-            if(matchText == null || matchText.Length == 0)
+            if (matchText == null || matchText.Length == 0)
             {
                 Util.HostUtil.Instance.LogLine("Match text is invalid, can't compare. Responding with no results found.", true);
                 return false;
@@ -279,7 +279,7 @@ namespace TvpMain.Reference
             var unknownBooksText = string.Join(", ", unknownBooks);
             var nameLabel = unknownBooks.SingularOrPlural("name", "names");
             outputResults.Add(new ResultItem(inputPart,
-                $"Invalid book {nameLabel} at position {matchStart}: {unknownBooksText}.",
+                $"Invalid book {nameLabel}: {unknownBooksText}.",
                 matchText, matchStart,
                 null, CheckType.ScriptureReference,
                 (int)ScriptureReferenceErrorType.BadReference));
@@ -328,7 +328,7 @@ namespace TvpMain.Reference
             if (matchNormalized1.Equals(standardNormalized1))
             {
                 outputResults.Add(new ResultItem(inputPart,
-                    $"Non-standard reference spacing at position {matchStart}.",
+                    $"Non-standard reference spacing.",
                     matchText, matchStart,
                     standardText, CheckType.ScriptureReference,
                     (int)ScriptureReferenceErrorType.LooseFormatting));
@@ -354,7 +354,7 @@ namespace TvpMain.Reference
             {
                 var contextTitle = ContextTitles[inputPart.PartLocation.PartContext];
                 outputResults.Add(new ResultItem(inputPart,
-                    $"Non-standard book name style or casing for {contextTitle} text at position {matchStart}.",
+                    $"Non-standard book name style or casing for {contextTitle}.",
                     matchText, matchStart,
                     standardText, CheckType.ScriptureReference,
                     (int)ScriptureReferenceErrorType.IncorrectNameStyle));
@@ -376,7 +376,7 @@ namespace TvpMain.Reference
             }
 
             outputResults.Add(new ResultItem(inputPart,
-                $"Non-standard reference punctuation at position {matchStart}.",
+                $"Non-standard reference punctuation.",
                 matchText, matchStart,
                 standardText, CheckType.ScriptureReference,
                 (int)ScriptureReferenceErrorType.LooseFormatting));
@@ -431,7 +431,7 @@ namespace TvpMain.Reference
                 var tagText = inputPart.PartText.Substring(tagIndex, tagName.Length + 1);
                 var tagStart = (tagIndex + inputPart.PartLocation.PartStart);
                 outputResults.Add(new ResultItem(inputPart,
-                    $@"Incorrect use of {tagText.ToLower()} tag in {contextTitle} text at position {tagStart}.",
+                    $@"Incorrect use of {tagText.ToLower()} tag in {contextTitle}.",
                     tagText, tagStart,
                     null, CheckType.ScriptureReference,
                     (int)ScriptureReferenceErrorType.IncorrectTag));
@@ -497,7 +497,7 @@ namespace TvpMain.Reference
             var tagList2 = goodTags.Select(tagItem => string.Concat(@"\", tagItem))
                 .ToNiceList(",", "or");
             outputResults.Add(new ResultItem(inputPart,
-                $@"Incorrect use of {tagList1} {tagLabel1} in {contextTitle} text at position {matchStart} (expecting paired {tagList2} tags).",
+                $@"Incorrect use of {tagList1} {tagLabel1} in {contextTitle} text, expecting paired {tagList2} tags.",
                 matchText, matchStart,
                 null, CheckType.ScriptureReference,
                 (int)ScriptureReferenceErrorType.IncorrectTag));
@@ -554,7 +554,7 @@ namespace TvpMain.Reference
                 var tagList2 = goodTags.Select(tagItem => string.Concat(@"\", tagItem))
                     .ToNiceList(",", "or");
                 outputResults.Add(new ResultItem(inputPart,
-                    $@"Malformed {tagList1} {tagLabel1} in {contextTitle} text at position {matchStart} (expecting paired {tagList2} tags).",
+                    $@"Malformed {tagList1} {tagLabel1} in {contextTitle} text, expecting paired {tagList2} tags.",
                     matchText, matchStart,
                     null, CheckType.ScriptureReference,
                     (int)ScriptureReferenceErrorType.MalformedTag));
@@ -575,7 +575,7 @@ namespace TvpMain.Reference
                     .ToNiceList(",", "or");
                 var tagLabel = goodTags.SingularOrPlural("tag", "tags");
                 outputResults.Add(new ResultItem(inputPart,
-                    $@"Missing {tagList} {tagLabel} in {contextTitle} text at position {matchStart}.",
+                    $@"Missing {tagList} {tagLabel} in {contextTitle} text.",
                     matchText, matchStart,
                     null, CheckType.ScriptureReference,
                     (int)ScriptureReferenceErrorType.MissingTag));

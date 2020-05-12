@@ -1,5 +1,6 @@
 ﻿using AddInSideViews;
 using Newtonsoft.Json;
+using Paratext.Data;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -7,9 +8,6 @@ using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Windows.Forms;
-using System.Threading.Tasks;
-using Paratext.Data;
-using Paratext.Data.ProjectProgress;
 using TvpMain.Result;
 using TvpMain.Text;
 
@@ -201,7 +199,7 @@ namespace TvpMain.Util
         /// <returns>Ignore list.</returns>
         public IList<IgnoreListItem> GetIgnoreList(string projectName)
         {
-            if(projectName == null || projectName.Length == 0)
+            if (projectName == null || projectName.Length == 0)
             {
                 Util.HostUtil.Instance.LogLine("Project name is invalid, responding with default empty list", true);
                 return Enumerable.Empty<IgnoreListItem>().ToList();
@@ -210,7 +208,7 @@ namespace TvpMain.Util
             var inputData =
                 _host.GetPlugInData(_translationValidationPlugin,
                     projectName, MainConsts.IGNORE_LIST_ITEMS_DATA_ID);
-            if(inputData == null)
+            if (inputData == null)
             {
                 return Enumerable.Empty<IgnoreListItem>().ToList();
             }
@@ -228,7 +226,7 @@ namespace TvpMain.Util
         /// <param name="outputItems">Ignore list.</param>
         public void PutIgnoreList(string projectName, IEnumerable<IgnoreListItem> outputItems)
         {
-            if(projectName == null || projectName.Length < 1)
+            if (projectName == null || projectName.Length < 1)
             {
                 throw new ArgumentNullException(nameof(projectName));
             }
@@ -306,7 +304,8 @@ namespace TvpMain.Util
         {
             var versificationName = _host.GetProjectVersificationName(projectName); ;
             var bbbcccvvvReference = BookUtil.BcvToRef(book, chapter, verse);
-            _host.GotoReference(bbbcccvvvReference, versificationName, projectName);
+            // Not yet available in latest version
+            // _host.GotoReference(bbbcccvvvReference, versificationName, projectName);
         }
     }
 }

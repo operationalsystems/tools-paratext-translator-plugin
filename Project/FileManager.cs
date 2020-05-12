@@ -1,6 +1,6 @@
-﻿using System;
+﻿using AddInSideViews;
+using System;
 using System.IO;
-using AddInSideViews;
 using System.Windows.Forms;
 
 namespace TvpMain.Project
