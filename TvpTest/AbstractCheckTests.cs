@@ -266,7 +266,6 @@ namespace TvpTest
         /// <param name="bookNum">Paratext book number (1-66).</param>
         /// <param name="chapterNum">Paratext chapter number (book- and versification-specific).</param>
         /// <param name="verseNum">Paratext verse number (chapter- and versification-specific).</param>
-        /// <returns></returns>
         protected static int GetVerseRef(int bookNum, int chapterNum, int verseNum)
         {
             var verseRef = bookNum * TestBookRefMultiplier;

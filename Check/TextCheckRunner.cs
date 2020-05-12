@@ -61,12 +61,12 @@ namespace TvpMain.Check
         private readonly ResultManager _resultManager;
 
         /// <summary>
-        /// Current book number at run start (1-based).
+        /// Current book number at run start (1-based indexing).
         /// </summary>
         private int _runBookNum;
 
         /// <summary>
-        /// Current chapter number at run start (1-based).
+        /// Current chapter number at run start (1-based indexing).
         /// </summary>
         private int _runChapterNum;
 
@@ -76,12 +76,12 @@ namespace TvpMain.Check
         private int _runVerseNum;
 
         /// <summary>
-        /// Total number of books in run.
+        /// Total number of books in run (1-based indexing).
         /// </summary>
         private int _runTotalBooks;
 
         /// <summary>
-        /// Progress of current run.
+        /// Progress of current run (1-based indexing).
         /// </summary>
         private int _runBookCtr;
 
@@ -189,6 +189,19 @@ namespace TvpMain.Check
             bool isSaveResults,
             out CheckResults outputResults)
         {
+            if(inputChecks == null)
+            {
+                HostUtil.Instance.ReportError("Input checks for running checks is null", new TextCheckException("Input checks for running checks is null"));
+                outputResults = null;
+                return false;
+            }
+            if (inputContexts == null)
+            {
+                HostUtil.Instance.ReportError("Input contexts for running checks is null", new TextCheckException("Input contexts for running checks is null"));
+                outputResults = null;
+                return false;
+            }
+
             // create run-based utilities
             _runArea = inputArea;
             _runChecks = inputChecks.ToImmutableList();
@@ -242,7 +255,7 @@ namespace TvpMain.Check
                             $"Error: Can't check area: {inputArea} in project: \"{_activeProjectName}\" (error: {ex.Message}).";
 
                         _runEx ??= new TextCheckException(messageText, ex);
-                        HostUtil.Instance.ReportError(messageText, ex);
+                        HostUtil.Instance.ReportError(messageText, _runEx);
                     }
                 })
             { IsBackground = true };
@@ -298,7 +311,6 @@ namespace TvpMain.Check
         /// Creates and runs a check task for a given book number.
         /// </summary>
         /// <param name="inputBookNum">Book number (1-based).</param>
-        /// <returns></returns>
         private Task RunBookTask(
             int inputBookNum)
         {
@@ -457,6 +469,15 @@ namespace TvpMain.Check
         /// <param name="causeEx">Cause exception (optional, may be null).</param>
         public TextCheckException(string messageText, Exception causeEx)
             : base(messageText, causeEx)
+        {
+        }
+
+        /// <summary>
+        /// Basic ctor.
+        /// </summary>
+        /// <param name="messageText">Message text (optional, may be null).</param>
+        public TextCheckException(string messageText)
+            : base(messageText)
         {
         }
     }

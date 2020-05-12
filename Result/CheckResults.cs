@@ -10,7 +10,8 @@ namespace TvpMain.Result
     public class CheckResults
     {
         /// <summary>
-        /// Collection of result items.
+        /// This is a container class for holding the results from the searches.
+        /// This class also allows for reproting about the results list itself.
         /// </summary>
         public ConcurrentQueue<ResultItem> ResultItems { get; }
 

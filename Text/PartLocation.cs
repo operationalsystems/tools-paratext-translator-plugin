@@ -1,5 +1,6 @@
 ﻿using CsvHelper.Configuration.Attributes;
 using Newtonsoft.Json;
+using TvpMain.Util;
 
 namespace TvpMain.Text
 {
@@ -12,6 +13,7 @@ namespace TvpMain.Text
     [JsonObject(MemberSerialization.OptIn)]
     public class PartLocation
     {
+
         /// <summary>
         /// Text context.
         /// </summary>
@@ -92,8 +94,8 @@ namespace TvpMain.Text
             unchecked
             {
                 var hashCode = PartStart;
-                hashCode = (hashCode * 397) ^ PartLength;
-                hashCode = (hashCode * 397) ^ (int)PartContext;
+                hashCode = (hashCode * MainConsts.HASH_PRIME) ^ PartLength;
+                hashCode = (hashCode * MainConsts.HASH_PRIME) ^ (int)PartContext;
                 return hashCode;
             }
         }

@@ -69,6 +69,9 @@ namespace TvpMain.Reference
                 : null;
         }
 
+        /// <summary>
+        /// Quick utility method for giving a hash value to the reference.
+        /// </summary>
         public long Score => (OpeningTag == null ? 0L : 1000L)
                           + (ScriptureReference.Score * 10L)
                           + (ClosingTag == null ? 0L : 1000L);
@@ -114,6 +117,9 @@ namespace TvpMain.Reference
             BookReferences = bookReferences ?? throw new ArgumentNullException(nameof(bookReferences)); ;
         }
 
+        /// <summary>
+        /// Creates a hashed score value to compare results
+        /// </summary>
         public long Score
         {
             get { return BookReferences.Sum(value => value.Score) * 10L; }
@@ -154,6 +160,9 @@ namespace TvpMain.Reference
             NameItem = nameItem;
         }
 
+        /// <summary>
+        /// Creates a hashed value to score results against
+        /// </summary>
         public long Score =>
             (NameText == null ? 0L : 1L)
             + (NameItem == null ? 0L : 10L);
@@ -192,6 +201,9 @@ namespace TvpMain.Reference
             ChapterRanges = chapterRanges ?? throw new ArgumentNullException(nameof(chapterRanges));
         }
 
+        /// <summary>
+        /// Quick utility method for giving hash value to reference and ranges
+        /// </summary>
         public long Score
         {
             get
@@ -282,6 +294,9 @@ namespace TvpMain.Reference
             }
         }
 
+        /// <summary>
+        /// Quick utility method for giving hash value to verse ranges
+        /// </summary>
         public long Score
         {
             get
@@ -355,6 +370,9 @@ namespace TvpMain.Reference
             }
         }
 
+        /// <summary>
+        ///  Quick utility method for giving hash value to verse range
+        /// </summary>
         public long Score => IsSingleton ? 1L : 2L;
 
         /// <inheritdoc />

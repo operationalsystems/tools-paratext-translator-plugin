@@ -1,6 +1,7 @@
 ﻿using CsvHelper.Configuration.Attributes;
 using Newtonsoft.Json;
 using System;
+using TvpMain.Util;
 
 namespace TvpMain.Text
 {
@@ -13,6 +14,7 @@ namespace TvpMain.Text
     [JsonObject(MemberSerialization.OptIn)]
     public class VerseLocation : IComparable<VerseLocation>
     {
+
         /// <summary>
         /// Book number of result (1-based).
         /// </summary>
@@ -101,8 +103,8 @@ namespace TvpMain.Text
             unchecked
             {
                 var hashCode = BookNum;
-                hashCode = (hashCode * 397) ^ ChapterNum;
-                hashCode = (hashCode * 397) ^ VerseNum;
+                hashCode = (hashCode * MainConsts.HASH_PRIME) ^ ChapterNum;
+                hashCode = (hashCode * MainConsts.HASH_PRIME) ^ VerseNum;
                 return hashCode;
             }
         }

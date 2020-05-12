@@ -49,6 +49,11 @@ namespace TvpMain.Reference
             && VerseSequenceSeparators.Count > 0
             && VerseRangeSeparators.Count > 0;
 
+        /// <summary>
+        /// Standard constructor
+        /// </summary>
+        /// <param name="projectManager"></param>
+        /// <param name="isNormalized"></param>
         public ScriptureReferenceSeparators(
             ProjectManager projectManager,
             bool isNormalized)
@@ -61,6 +66,16 @@ namespace TvpMain.Reference
             isNormalized)
         { }
 
+        /// <summary>
+        /// Extended constructor
+        /// </summary>
+        /// <param name="bookSequenceSeparators"></param>
+        /// <param name="chapterSequenceSeparators"></param>
+        /// <param name="bookOrChapterRangeSeparators"></param>
+        /// <param name="chapterAndVerseSeparators"></param>
+        /// <param name="verseSequenceSeparators"></param>
+        /// <param name="verseRangeSeparators"></param>
+        /// <param name="isNormalized"></param>
         public ScriptureReferenceSeparators(
             IEnumerable<string> bookSequenceSeparators,
             IEnumerable<string> chapterSequenceSeparators,
@@ -97,6 +112,13 @@ namespace TvpMain.Reference
             IsAnyDuplicates = isAnyDuplicates;
         }
 
+        /// <summary>
+        /// Filters based on sepearators and returns a list of strings
+        /// </summary>
+        /// <param name="inputSeparators"></param>
+        /// <param name="prevSeparators"></param>
+        /// <param name="isNormalized"></param>
+        /// <param name="isAnyDuplicate"></param>
         private static IList<string> FilterSeparators(
             IEnumerable<string> inputSeparators, ISet<string> prevSeparators,
             bool isNormalized, ref bool isAnyDuplicate)

@@ -380,7 +380,8 @@ namespace TvpMain.Project
         }
 
         /// <summary>
-        /// Creates project-specific regexes.
+        /// Creates project-specific fluid api language to form regular expressions to be used later.
+        /// 
         /// </summary>
         private void CreateRegexes()
         {
@@ -453,6 +454,11 @@ namespace TvpMain.Project
         /// <returns>Book name type if found, default type otherwise.</returns>
         private BookNameType GetBookNameTypeSetting(string settingKey, BookNameType defaultType)
         {
+            if (settingKey == null || settingKey.Length == 0)
+            {
+                Util.HostUtil.Instance.LogLine("Invalid setting key, responding with default.", true);
+                return defaultType;
+            }
             var settingValue = Host.GetProjectSetting(ProjectName, settingKey);
             if (string.IsNullOrWhiteSpace(settingValue))
             {
