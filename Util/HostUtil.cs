@@ -1,5 +1,6 @@
 ﻿using AddInSideViews;
 using Newtonsoft.Json;
+using Paratext.Data;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -7,10 +8,8 @@ using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Windows.Forms;
-using System.Threading.Tasks;
-using Paratext.Data;
-using Paratext.Data.ProjectProgress;
 using TvpMain.Result;
+using TvpMain.Text;
 
 namespace TvpMain.Util
 {
@@ -200,7 +199,7 @@ namespace TvpMain.Util
         /// <returns>Ignore list.</returns>
         public IList<IgnoreListItem> GetIgnoreList(string projectName)
         {
-            if(projectName == null || projectName.Length == 0)
+            if (projectName == null || projectName.Length == 0)
             {
                 Util.HostUtil.Instance.LogLine("Project name is invalid, responding with default empty list", true);
                 return Enumerable.Empty<IgnoreListItem>().ToList();
@@ -209,7 +208,7 @@ namespace TvpMain.Util
             var inputData =
                 _host.GetPlugInData(_translationValidationPlugin,
                     projectName, MainConsts.IGNORE_LIST_ITEMS_DATA_ID);
-            if(inputData == null)
+            if (inputData == null)
             {
                 return Enumerable.Empty<IgnoreListItem>().ToList();
             }
@@ -227,7 +226,7 @@ namespace TvpMain.Util
         /// <param name="outputItems">Ignore list.</param>
         public void PutIgnoreList(string projectName, IEnumerable<IgnoreListItem> outputItems)
         {
-            if(projectName == null || projectName.Length < 1)
+            if (projectName == null || projectName.Length < 1)
             {
                 throw new ArgumentNullException(nameof(projectName));
             }
@@ -286,6 +285,27 @@ namespace TvpMain.Util
             _host.PutPlugInData(_translationValidationPlugin, projectName,
                 string.Format(MainConsts.RESULT_ITEMS_DATA_ID_FORMAT, bookId),
                 JsonConvert.SerializeObject(outputItems));
+        }
+
+        /// <summary>
+        /// This function navigates to a specific project's BCV in the Paratext GUI.
+        /// 
+        /// <para>
+        /// Note: This isn't released yet for the stable Paratext client versions. Per Tim Steenwyk (Paratext software developer) 
+        /// "it will be a while before most users have the changes". For the meantime, the code will be commented out until it becomes
+        /// Mainstream.
+        /// </para><
+        /// </summary>
+        /// <param name="projectName">The Paratext project shortname. EG: "spaNVI15"</param>
+        /// <param name="book">The project's book 1-based index.</param>
+        /// <param name="chapter">The project's chapter 1-based index.</param>
+        /// <param name="verse">The project's verse 1-based index.</param>
+        public void GotoBcvInGui(string projectName, int book, int chapter, int verse)
+        {
+            var versificationName = _host.GetProjectVersificationName(projectName); ;
+            var bbbcccvvvReference = BookUtil.BcvToRef(book, chapter, verse);
+            // Not yet available in latest version
+            // _host.GotoReference(bbbcccvvvReference, versificationName, projectName);
         }
     }
 }
