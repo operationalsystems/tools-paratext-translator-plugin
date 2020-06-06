@@ -1,15 +1,14 @@
-﻿using System;
-using AddInSideViews;
+﻿using AddInSideViews;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
+using Paratext.Data;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Paratext.Data;
+using TvpMain.Import;
 using TvpMain.Project;
 using TvpMain.Result;
-using TvpMain.Import;
 using TvpMain.Text;
 using TvpMain.Util;
 

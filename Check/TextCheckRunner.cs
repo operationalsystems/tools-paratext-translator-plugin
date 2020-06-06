@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.Drawing.Design;
 using System.Linq;
 using System.Runtime.Serialization;
 using System.Threading;
@@ -189,7 +188,7 @@ namespace TvpMain.Check
             bool isSaveResults,
             out CheckResults outputResults)
         {
-            if(inputChecks == null)
+            if (inputChecks == null)
             {
                 HostUtil.Instance.ReportError("Input checks for running checks is null", new TextCheckException("Input checks for running checks is null"));
                 outputResults = null;

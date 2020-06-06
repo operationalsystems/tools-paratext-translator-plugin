@@ -78,7 +78,7 @@
         /// <returns>First available name string or code string, whichever is first.</returns>
         public string GetAvailableName(params BookNameType[] inputTypes)
         {
-            if( inputTypes == null)
+            if (inputTypes == null)
             {
                 Util.HostUtil.Instance.LogLine("Instance types is null, responding with default book code", true);
                 return BookCode;
