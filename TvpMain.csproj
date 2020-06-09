@@ -310,7 +310,7 @@
   </Target>
   <Target Name="AfterBuild" Condition="$(Configuration) == 'Release'">
     <ItemGroup>
-      <ZipFiles Include="$(OutputPath)*.dll"/>
+      <ZipFiles Include="$(OutputPath)*.dll" Exclude="$(OutputPath)CC32.dll;$(OutputPath)libgcc_s_sjlj-1.dll;$(OutputPath)libstdc++-6.dll;$(OutputPath)TECkit_Compiler_x86.dll;$(OutputPath)TECkit_x86.dll"/>
 	  <ZipFiles Include="$(OutputPath)*.pdb"/>
 	  <ZipFiles Include="$(OutputPath)*.config"/>
 	  <ZipFiles Include="$(OutputPath)*.xml"/>

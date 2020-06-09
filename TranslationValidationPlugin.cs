@@ -3,7 +3,6 @@ using System;
 using System.AddIn;
 using System.AddIn.Pipeline;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Threading;
 using System.Windows.Forms;
 using TvpMain.Form;
@@ -31,7 +30,7 @@ namespace TvpMain
         /// <param name="activeProjectName">Active project name (required).</param>
         public void Run(IHost host, string activeProjectName)
         {
-            if( activeProjectName == null || activeProjectName.Length == 0)
+            if (activeProjectName == null || activeProjectName.Length == 0)
             {
                 Util.HostUtil.Instance.LogLine("Active project name is invalid, throwing exception, can't operate.", true);
                 throw new ArgumentNullException(nameof(activeProjectName));
@@ -62,7 +61,7 @@ namespace TvpMain
                         catch (Exception ex)
                         {
                             // Do not report this as it's already been reported elsewhere.
-                            HostUtil.Instance.LogLine("Exception during run: " + ex.ToString() , true);
+                            HostUtil.Instance.LogLine("Exception during run: " + ex.ToString(), true);
                         }
                         finally
                         {

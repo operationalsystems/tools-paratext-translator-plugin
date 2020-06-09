@@ -50,7 +50,7 @@ namespace TvpMain.Punctuation
             {
                 checkResults.Add
                 (new ResultItem(versePart,
-                    $"Punctuation check failure at position {matchItem.Index}.",
+                    $"Punctuation check failure.",
                     matchItem.Value, matchItem.Index, null,
                     CheckType.MissingSentencePunctuation,
                     (int)PunctuationErrorType.MissingSentenceEnd));

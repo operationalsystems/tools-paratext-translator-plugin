@@ -16,21 +16,21 @@ namespace TvpMain.Result
         /// <summary>
         /// Case-sensitive version of text.
         /// </summary>
-        [JsonProperty] 
-        public string CaseSensitiveText { get; private set;  }
+        [JsonProperty]
+        public string CaseSensitiveText { get; private set; }
 
         /// <summary>
         /// True if item is meant to be case-insensitive (i.e., ignores case), false otherwise.
         /// </summary>
-        [JsonProperty] 
+        [JsonProperty]
         public bool IsIgnoreCase { get; private set; }
 
         /// <summary>
         /// True if case-sensitive text contains any whitespace.
         /// </summary>
-        public bool IsPhrase() 
-        { 
-            return CaseSensitiveText.Any(char.IsWhiteSpace); 
+        public bool IsPhrase()
+        {
+            return CaseSensitiveText.Any(char.IsWhiteSpace);
         }
 
         /// <summary>

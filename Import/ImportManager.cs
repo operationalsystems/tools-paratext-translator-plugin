@@ -1,14 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using AddInSideViews;
+﻿using AddInSideViews;
 using Paratext.Data;
-using Paratext.Data.ProjectFileAccess;
-using Paratext.Data.ProjectSettingsAccess;
 using SIL.Scripture;
+using System;
+using System.Linq;
 using TvpMain.Text;
 using TvpMain.Util;
 
