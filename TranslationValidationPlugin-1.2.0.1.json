@@ -1,10 +1,10 @@
 {
   "name": "Translation Validation Plugin",
-  "short-name": "tvp",
+  "shortName": "tvp",
   "version": "1.2.0.1",
   "description": "",
-  "version-description": "",
-  "pt-versions": [
+  "versionDescription": "",
+  "ptVersions": [
     "8",
     "9"
   ],
