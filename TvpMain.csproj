@@ -57,7 +57,6 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <LangVersion>8.0</LangVersion>
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
@@ -68,11 +67,13 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <LangVersion>8.0</LangVersion>
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup>
     <StartupObject />
+  </PropertyGroup>
+  <PropertyGroup>
+    <GenerateResourceUsePreserializedResources>true</GenerateResourceUsePreserializedResources>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
     <DebugSymbols>true</DebugSymbols>
@@ -80,7 +81,6 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <DebugType>full</DebugType>
     <PlatformTarget>x86</PlatformTarget>
-    <LangVersion>8.0</LangVersion>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <Prefer32Bit>false</Prefer32Bit>
@@ -91,7 +91,6 @@
     <Optimize>true</Optimize>
     <DebugType>pdbonly</DebugType>
     <PlatformTarget>x86</PlatformTarget>
-    <LangVersion>8.0</LangVersion>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <Prefer32Bit>false</Prefer32Bit>
@@ -168,7 +167,7 @@
     <Reference Include="System.AddIn" />
     <Reference Include="System.AddIn.Contract" />
     <Reference Include="System.Buffers, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>packages\System.Buffers.4.5.0\lib\netstandard2.0\System.Buffers.dll</HintPath>
+      <HintPath>packages\System.Buffers.4.5.1\lib\net461\System.Buffers.dll</HintPath>
     </Reference>
     <Reference Include="System.Collections.Immutable, Version=1.2.5.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>packages\System.Collections.Immutable.1.7.0\lib\netstandard2.0\System.Collections.Immutable.dll</HintPath>
@@ -187,11 +186,14 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="System.Memory, Version=4.0.1.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>packages\System.Memory.4.5.3\lib\netstandard2.0\System.Memory.dll</HintPath>
+      <HintPath>packages\System.Memory.4.5.4\lib\net461\System.Memory.dll</HintPath>
     </Reference>
     <Reference Include="System.Numerics" />
     <Reference Include="System.Numerics.Vectors, Version=4.1.4.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>packages\System.Numerics.Vectors.4.5.0\lib\net46\System.Numerics.Vectors.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Resources.Extensions, Version=4.0.1.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>packages\System.Resources.Extensions.4.7.1\lib\net461\System.Resources.Extensions.dll</HintPath>
     </Reference>
     <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=4.0.6.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>packages\System.Runtime.CompilerServices.Unsafe.4.7.0\lib\netstandard2.0\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
@@ -281,6 +283,7 @@
     <None Include="App.config" />
     <None Include="packages.config" />
     <EmbeddedResource Include="Resources\book-ids-1.csv" />
+    <None Include="Scripts\PublishTvpToPpm.bat" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Form\IgnoreListForm.resx">
@@ -308,14 +311,14 @@
     <Error Condition="!Exists('packages\ParatextData.9.0.3\build\ParatextData.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\ParatextData.9.0.3\build\ParatextData.targets'))" />
     <Error Condition="!Exists('packages\SIL.Lib.6.0.11\build\SIL.Lib.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\SIL.Lib.6.0.11\build\SIL.Lib.targets'))" />
   </Target>
-  <Target Name="AfterBuild" Condition="$(Configuration) == 'Release'">
+  <Target Name="ArchiveBuild" AfterTargets="Build" Condition="$(Configuration) == 'Release'">
     <ItemGroup>
-      <ZipFiles Include="$(OutputPath)*.dll" Exclude="$(OutputPath)CC32.dll;$(OutputPath)libgcc_s_sjlj-1.dll;$(OutputPath)libstdc++-6.dll;$(OutputPath)TECkit_Compiler_x86.dll;$(OutputPath)TECkit_x86.dll"/>
-	  <ZipFiles Include="$(OutputPath)*.pdb"/>
-	  <ZipFiles Include="$(OutputPath)*.config"/>
-	  <ZipFiles Include="$(OutputPath)*.xml"/>
+      <ZipFiles Include="$(OutputPath)*.dll" Exclude="$(OutputPath)CC32.dll;$(OutputPath)libgcc_s_sjlj-1.dll;$(OutputPath)libstdc++-6.dll;$(OutputPath)TECkit_Compiler_x86.dll;$(OutputPath)TECkit_x86.dll" />
+      <ZipFiles Include="$(OutputPath)*.pdb" />
+      <ZipFiles Include="$(OutputPath)*.config" />
+      <ZipFiles Include="$(OutputPath)*.xml" />
     </ItemGroup>
-    <Zip OutputFilename="$(OutputPath)$(TargetName)-$(Version).zip" Files="@(ZipFiles)" />
+    <Zip OutputFilename="$(OutputPath)$(TargetName).zip" Files="@(ZipFiles)" />
   </Target>
   <Import Project="packages\SIL.Lib.6.0.11\build\SIL.Lib.targets" Condition="Exists('packages\SIL.Lib.6.0.11\build\SIL.Lib.targets')" />
   <PropertyGroup>
