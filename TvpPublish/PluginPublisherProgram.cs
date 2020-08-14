@@ -131,7 +131,7 @@ namespace TptPublish
                    awsCredentials.SessionToken);
 
                 // Create and return the S3 client with the temporary credentials.
-                var s3client = new AmazonS3Client(awsSessionCredentials);
+                var s3client = new AmazonS3Client(awsSessionCredentials, Region);
                 var s3TransferUtility = new TransferUtility(s3client);
                 return s3TransferUtility;
             }
