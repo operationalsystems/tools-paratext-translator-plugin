@@ -7,5 +7,4 @@ SET SOLUTON_ROOT=%SCRIPT_ROOT%..
 REM Run the publish executable
 cd %SOLUTON_ROOT%\TvpPublish\
 dotnet clean
-dotnet build
 dotnet run
