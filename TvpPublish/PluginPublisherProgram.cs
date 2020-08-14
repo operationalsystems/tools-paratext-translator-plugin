@@ -4,12 +4,12 @@ using Amazon.S3;
 using Amazon.S3.Transfer;
 using Amazon.SecurityToken;
 using Amazon.SecurityToken.Model;
-using PpmMain.Models;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using System.Threading.Tasks;
+using TptPublish.Models;
 
 namespace TptPublish
 {
@@ -64,7 +64,7 @@ namespace TptPublish
             pluginDescription.Version = version.ToString();
             pluginDescription.SaveToFile(PluginManifestPath);
 
-            // TODO provide a review of the plugin manifest
+            // provide a review of the plugin manifest
             Console.WriteLine("The plugin description");
             Console.WriteLine(pluginDescription.ToString());
 

@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Security.Cryptography;
 
-namespace PpmMain.Models
+namespace TptPublish.Models
 {
     /// <summary>
     /// The description of an installed plugin
