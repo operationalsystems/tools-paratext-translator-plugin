@@ -9,9 +9,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using System.Threading.Tasks;
-using TptPublish.Models;
+using TvpPublish.Models;
 
-namespace TptPublish
+namespace TvpPublish
 {
     /// <summary>
     /// The program is for publishing the Paratext plugin that's built in this solution.
