@@ -32,7 +32,7 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             this.btnRunChecks = new System.Windows.Forms.Button();
             this.dgvCheckResults = new System.Windows.Forms.DataGridView();
@@ -84,6 +84,8 @@
             this.directoryEntry1 = new System.DirectoryServices.DirectoryEntry();
             this.runnerSetupWorker = new System.ComponentModel.BackgroundWorker();
             this.splitContainerMain = new System.Windows.Forms.SplitContainer();
+            this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.licenseToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.dgvCheckResults)).BeginInit();
             this.contextMenu.SuspendLayout();
             this.mainMenu.SuspendLayout();
@@ -115,14 +117,14 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.dgvCheckResults.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
             this.dgvCheckResults.AutoSizeRowsMode = System.Windows.Forms.DataGridViewAutoSizeRowsMode.DisplayedCells;
-            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle1.BackColor = System.Drawing.SystemColors.Control;
-            dataGridViewCellStyle1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle1.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.dgvCheckResults.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
+            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle2.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle2.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle2.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle2.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle2.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.dgvCheckResults.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle2;
             this.dgvCheckResults.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dgvCheckResults.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.bcv,
@@ -241,7 +243,8 @@
             this.areaMenu,
             this.toolsToolStripMenuItem,
             this.searchMenuTextBox,
-            this.searchLabelMenu});
+            this.searchLabelMenu,
+            this.helpToolStripMenuItem});
             this.mainMenu.Location = new System.Drawing.Point(10, 10);
             this.mainMenu.Name = "mainMenu";
             this.mainMenu.Size = new System.Drawing.Size(836, 27);
@@ -286,35 +289,35 @@
             this.currentProjectAreaMenuItem.Checked = true;
             this.currentProjectAreaMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
             this.currentProjectAreaMenuItem.Name = "currentProjectAreaMenuItem";
-            this.currentProjectAreaMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.currentProjectAreaMenuItem.Size = new System.Drawing.Size(178, 22);
             this.currentProjectAreaMenuItem.Text = "Current &Project";
             this.currentProjectAreaMenuItem.Click += new System.EventHandler(this.OnMenuItemClickAndClearArea);
             // 
             // currentBookAreaMenuItem
             // 
             this.currentBookAreaMenuItem.Name = "currentBookAreaMenuItem";
-            this.currentBookAreaMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.currentBookAreaMenuItem.Size = new System.Drawing.Size(178, 22);
             this.currentBookAreaMenuItem.Text = "Current &Book";
             this.currentBookAreaMenuItem.Click += new System.EventHandler(this.OnMenuItemClickAndClearArea);
             // 
             // currentChapterAreaMenuItem
             // 
             this.currentChapterAreaMenuItem.Name = "currentChapterAreaMenuItem";
-            this.currentChapterAreaMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.currentChapterAreaMenuItem.Size = new System.Drawing.Size(178, 22);
             this.currentChapterAreaMenuItem.Text = "Current &Chapter";
             this.currentChapterAreaMenuItem.Click += new System.EventHandler(this.OnMenuItemClickAndClearArea);
             // 
             // toolStripSeparator2
             // 
             this.toolStripSeparator2.Name = "toolStripSeparator2";
-            this.toolStripSeparator2.Size = new System.Drawing.Size(177, 6);
+            this.toolStripSeparator2.Size = new System.Drawing.Size(175, 6);
             // 
             // mainTextAreaMenuItem
             // 
             this.mainTextAreaMenuItem.Checked = true;
             this.mainTextAreaMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
             this.mainTextAreaMenuItem.Name = "mainTextAreaMenuItem";
-            this.mainTextAreaMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.mainTextAreaMenuItem.Size = new System.Drawing.Size(178, 22);
             this.mainTextAreaMenuItem.Text = "&Main Text";
             this.mainTextAreaMenuItem.Click += new System.EventHandler(this.OnMenuItemClickAndCheckContexts);
             // 
@@ -323,7 +326,7 @@
             this.introductionsAreaMenuItem.Checked = true;
             this.introductionsAreaMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
             this.introductionsAreaMenuItem.Name = "introductionsAreaMenuItem";
-            this.introductionsAreaMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.introductionsAreaMenuItem.Size = new System.Drawing.Size(178, 22);
             this.introductionsAreaMenuItem.Text = "&Introductions";
             this.introductionsAreaMenuItem.Click += new System.EventHandler(this.OnMenuItemClickAndCheckContexts);
             // 
@@ -332,7 +335,7 @@
             this.outlinesAreaMenuItem.Checked = true;
             this.outlinesAreaMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
             this.outlinesAreaMenuItem.Name = "outlinesAreaMenuItem";
-            this.outlinesAreaMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.outlinesAreaMenuItem.Size = new System.Drawing.Size(178, 22);
             this.outlinesAreaMenuItem.Text = "&Outlines";
             this.outlinesAreaMenuItem.Click += new System.EventHandler(this.OnMenuItemClickAndCheckContexts);
             // 
@@ -341,7 +344,7 @@
             this.notesAndReferencesAreaMenuItem.Checked = true;
             this.notesAndReferencesAreaMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
             this.notesAndReferencesAreaMenuItem.Name = "notesAndReferencesAreaMenuItem";
-            this.notesAndReferencesAreaMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.notesAndReferencesAreaMenuItem.Size = new System.Drawing.Size(178, 22);
             this.notesAndReferencesAreaMenuItem.Text = "&Notes && References";
             this.notesAndReferencesAreaMenuItem.Click += new System.EventHandler(this.OnMenuItemClickAndCheckContexts);
             // 
@@ -543,6 +546,21 @@
             this.splitContainerMain.SplitterDistance = 234;
             this.splitContainerMain.TabIndex = 8;
             // 
+            // helpToolStripMenuItem
+            // 
+            this.helpToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.licenseToolStripMenuItem});
+            this.helpToolStripMenuItem.Name = "helpToolStripMenuItem";
+            this.helpToolStripMenuItem.Size = new System.Drawing.Size(44, 23);
+            this.helpToolStripMenuItem.Text = "Help";
+            // 
+            // licenseToolStripMenuItem
+            // 
+            this.licenseToolStripMenuItem.Name = "licenseToolStripMenuItem";
+            this.licenseToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.licenseToolStripMenuItem.Text = "License";
+            this.licenseToolStripMenuItem.Click += new System.EventHandler(this.licenseToolStripMenuItem_Click);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -632,5 +650,7 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn error;
         private System.Windows.Forms.DataGridViewTextBoxColumn actionsAcceptColumn;
         private System.Windows.Forms.DataGridViewButtonColumn actionsIgnoreColumn;
+        private System.Windows.Forms.ToolStripMenuItem helpToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem licenseToolStripMenuItem;
     }
 }

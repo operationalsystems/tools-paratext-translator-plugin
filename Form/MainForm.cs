@@ -15,6 +15,7 @@ using TvpMain.Check;
 using TvpMain.Filter;
 using TvpMain.Import;
 using TvpMain.Project;
+using TvpMain.Properties;
 using TvpMain.Punctuation;
 using TvpMain.Reference;
 using TvpMain.Result;
@@ -1062,5 +1063,17 @@ namespace TvpMain.Form
 
         }
 
+        private void licenseToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            string pluginName = System.Reflection.Assembly.GetExecutingAssembly().GetName().Name;
+            string formTitle = $"{pluginName} - End User License Agreement";
+
+            LicenseForm eulaForm = new LicenseForm();
+            eulaForm.FormType = LicenseForm.FormTypes.Info;
+            eulaForm.FormTitle = formTitle;
+            eulaForm.LicenseText = Resources.TVP_EULA;
+            eulaForm.OnDismiss = () => eulaForm.Close();
+            eulaForm.Show();
+        }
     }
 }
