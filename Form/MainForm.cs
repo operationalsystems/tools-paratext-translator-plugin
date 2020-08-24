@@ -132,6 +132,7 @@ namespace TvpMain.Form
         {
             InitializeComponent();
             Text = $"Translation Validations - Project: \"{activeProjectName}\"";
+            Copyright.Text = MainConsts.COPYRIGHT;
 
             _host = host ?? throw new ArgumentNullException(nameof(host));
             _activeProjectName = activeProjectName ?? throw new ArgumentNullException(nameof(activeProjectName));

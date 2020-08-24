@@ -1,4 +1,5 @@
 ﻿using System;
+using TvpMain.Util;
 
 namespace TvpMain.Form
 {
@@ -85,6 +86,7 @@ namespace TvpMain.Form
         public LicenseForm()
         {
             InitializeComponent();
+            Copyright.Text = MainConsts.COPYRIGHT;
         }
 
         private void LicenseForm_Load(object sender, EventArgs e)
