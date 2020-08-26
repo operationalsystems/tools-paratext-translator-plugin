@@ -538,7 +538,7 @@
             this.referencesTextBox.Location = new System.Drawing.Point(3, 3);
             this.referencesTextBox.Name = "referencesTextBox";
             this.referencesTextBox.ReadOnly = true;
-            this.referencesTextBox.Size = new System.Drawing.Size(821, 215);
+            this.referencesTextBox.Size = new System.Drawing.Size(821, 213);
             this.referencesTextBox.TabIndex = 3;
             this.referencesTextBox.Text = "";
             // 
@@ -565,10 +565,9 @@
             // Copyright
             // 
             this.Copyright.AutoSize = true;
-            this.Copyright.Location = new System.Drawing.Point(19, 542);
+            this.Copyright.Location = new System.Drawing.Point(19, 546);
             this.Copyright.Name = "Copyright";
-            this.Copyright.Padding = new System.Windows.Forms.Padding(0, 5, 0, 5);
-            this.Copyright.Size = new System.Drawing.Size(101, 23);
+            this.Copyright.Size = new System.Drawing.Size(101, 13);
             this.Copyright.TabIndex = 9;
             this.Copyright.Text = "© 2020 Biblica, Inc.";
             // 

@@ -122,10 +122,9 @@
             // Copyright
             // 
             this.Copyright.AutoSize = true;
-            this.Copyright.Location = new System.Drawing.Point(12, 357);
+            this.Copyright.Location = new System.Drawing.Point(12, 361);
             this.Copyright.Name = "Copyright";
-            this.Copyright.Padding = new System.Windows.Forms.Padding(0, 5, 0, 5);
-            this.Copyright.Size = new System.Drawing.Size(101, 23);
+            this.Copyright.Size = new System.Drawing.Size(101, 13);
             this.Copyright.TabIndex = 7;
             this.Copyright.Text = "© 2020 Biblica, Inc.";
             // 
