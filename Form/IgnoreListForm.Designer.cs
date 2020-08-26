@@ -121,6 +121,7 @@
             // 
             // Copyright
             // 
+            this.Copyright.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.Copyright.AutoSize = true;
             this.Copyright.Location = new System.Drawing.Point(12, 361);
             this.Copyright.Name = "Copyright";
