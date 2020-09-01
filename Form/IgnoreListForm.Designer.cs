@@ -36,13 +36,14 @@
             this.btnImport = new System.Windows.Forms.Button();
             this.btnCancel = new System.Windows.Forms.Button();
             this.btnClear = new System.Windows.Forms.Button();
+            this.Copyright = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.dgvIgnoreList)).BeginInit();
             this.SuspendLayout();
             // 
             // btnOk
             // 
             this.btnOk.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnOk.Location = new System.Drawing.Point(307, 348);
+            this.btnOk.Location = new System.Drawing.Point(307, 330);
             this.btnOk.Name = "btnOk";
             this.btnOk.Size = new System.Drawing.Size(75, 23);
             this.btnOk.TabIndex = 1;
@@ -65,7 +66,7 @@
             this.dgvIgnoreList.Name = "dgvIgnoreList";
             this.dgvIgnoreList.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.AutoSizeToDisplayedHeaders;
             this.dgvIgnoreList.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.dgvIgnoreList.Size = new System.Drawing.Size(451, 330);
+            this.dgvIgnoreList.Size = new System.Drawing.Size(451, 312);
             this.dgvIgnoreList.TabIndex = 3;
             // 
             // WordOrPhrase
@@ -87,7 +88,7 @@
             // btnImport
             // 
             this.btnImport.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.btnImport.Location = new System.Drawing.Point(12, 348);
+            this.btnImport.Location = new System.Drawing.Point(12, 330);
             this.btnImport.Name = "btnImport";
             this.btnImport.Size = new System.Drawing.Size(75, 23);
             this.btnImport.TabIndex = 4;
@@ -99,7 +100,7 @@
             // 
             this.btnCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.btnCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.btnCancel.Location = new System.Drawing.Point(388, 348);
+            this.btnCancel.Location = new System.Drawing.Point(388, 330);
             this.btnCancel.Name = "btnCancel";
             this.btnCancel.Size = new System.Drawing.Size(75, 23);
             this.btnCancel.TabIndex = 5;
@@ -110,7 +111,7 @@
             // btnClear
             // 
             this.btnClear.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.btnClear.Location = new System.Drawing.Point(93, 348);
+            this.btnClear.Location = new System.Drawing.Point(93, 330);
             this.btnClear.Name = "btnClear";
             this.btnClear.Size = new System.Drawing.Size(75, 23);
             this.btnClear.TabIndex = 6;
@@ -118,13 +119,24 @@
             this.btnClear.UseVisualStyleBackColor = true;
             this.btnClear.Click += new System.EventHandler(this.OnClickClear);
             // 
+            // Copyright
+            // 
+            this.Copyright.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.Copyright.AutoSize = true;
+            this.Copyright.Location = new System.Drawing.Point(12, 361);
+            this.Copyright.Name = "Copyright";
+            this.Copyright.Size = new System.Drawing.Size(101, 13);
+            this.Copyright.TabIndex = 7;
+            this.Copyright.Text = "© 2020 Biblica, Inc.";
+            // 
             // IgnoreListForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoScroll = true;
-            this.ClientSize = new System.Drawing.Size(475, 383);
+            this.ClientSize = new System.Drawing.Size(475, 382);
             this.ControlBox = false;
+            this.Controls.Add(this.Copyright);
             this.Controls.Add(this.btnClear);
             this.Controls.Add(this.btnCancel);
             this.Controls.Add(this.btnImport);
@@ -137,6 +149,7 @@
             this.Text = "Ignore List...";
             ((System.ComponentModel.ISupportInitialize)(this.dgvIgnoreList)).EndInit();
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 
@@ -148,5 +161,6 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn WordOrPhrase;
         private System.Windows.Forms.DataGridViewCheckBoxColumn IsIgnoreCase;
         private System.Windows.Forms.Button btnClear;
+        private System.Windows.Forms.Label Copyright;
     }
 }

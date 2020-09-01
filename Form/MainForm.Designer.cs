@@ -75,6 +75,8 @@
             this.hideBadReferencesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.searchMenuTextBox = new System.Windows.Forms.ToolStripTextBox();
             this.searchLabelMenu = new System.Windows.Forms.ToolStripMenuItem();
+            this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.licenseToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.btnShowIgnoreList = new System.Windows.Forms.Button();
             this.btnClose = new System.Windows.Forms.Button();
             this.filterSetupWorker = new System.ComponentModel.BackgroundWorker();
@@ -84,6 +86,7 @@
             this.directoryEntry1 = new System.DirectoryServices.DirectoryEntry();
             this.runnerSetupWorker = new System.ComponentModel.BackgroundWorker();
             this.splitContainerMain = new System.Windows.Forms.SplitContainer();
+            this.Copyright = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.dgvCheckResults)).BeginInit();
             this.contextMenu.SuspendLayout();
             this.mainMenu.SuspendLayout();
@@ -97,7 +100,7 @@
             // btnRunChecks
             // 
             this.btnRunChecks.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnRunChecks.Location = new System.Drawing.Point(686, 531);
+            this.btnRunChecks.Location = new System.Drawing.Point(686, 515);
             this.btnRunChecks.Name = "btnRunChecks";
             this.btnRunChecks.Size = new System.Drawing.Size(75, 23);
             this.btnRunChecks.TabIndex = 1;
@@ -140,7 +143,7 @@
             this.dgvCheckResults.RowHeadersVisible = false;
             this.dgvCheckResults.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.AutoSizeToDisplayedHeaders;
             this.dgvCheckResults.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.dgvCheckResults.Size = new System.Drawing.Size(821, 228);
+            this.dgvCheckResults.Size = new System.Drawing.Size(821, 220);
             this.dgvCheckResults.TabIndex = 2;
             this.dgvCheckResults.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvCheckResults_CellClick);
             this.dgvCheckResults.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvCheckResults_CellContentClick);
@@ -241,7 +244,8 @@
             this.areaMenu,
             this.toolsToolStripMenuItem,
             this.searchMenuTextBox,
-            this.searchLabelMenu});
+            this.searchLabelMenu,
+            this.helpToolStripMenuItem});
             this.mainMenu.Location = new System.Drawing.Point(10, 10);
             this.mainMenu.Name = "mainMenu";
             this.mainMenu.Size = new System.Drawing.Size(836, 27);
@@ -286,35 +290,35 @@
             this.currentProjectAreaMenuItem.Checked = true;
             this.currentProjectAreaMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
             this.currentProjectAreaMenuItem.Name = "currentProjectAreaMenuItem";
-            this.currentProjectAreaMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.currentProjectAreaMenuItem.Size = new System.Drawing.Size(178, 22);
             this.currentProjectAreaMenuItem.Text = "Current &Project";
             this.currentProjectAreaMenuItem.Click += new System.EventHandler(this.OnMenuItemClickAndClearArea);
             // 
             // currentBookAreaMenuItem
             // 
             this.currentBookAreaMenuItem.Name = "currentBookAreaMenuItem";
-            this.currentBookAreaMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.currentBookAreaMenuItem.Size = new System.Drawing.Size(178, 22);
             this.currentBookAreaMenuItem.Text = "Current &Book";
             this.currentBookAreaMenuItem.Click += new System.EventHandler(this.OnMenuItemClickAndClearArea);
             // 
             // currentChapterAreaMenuItem
             // 
             this.currentChapterAreaMenuItem.Name = "currentChapterAreaMenuItem";
-            this.currentChapterAreaMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.currentChapterAreaMenuItem.Size = new System.Drawing.Size(178, 22);
             this.currentChapterAreaMenuItem.Text = "Current &Chapter";
             this.currentChapterAreaMenuItem.Click += new System.EventHandler(this.OnMenuItemClickAndClearArea);
             // 
             // toolStripSeparator2
             // 
             this.toolStripSeparator2.Name = "toolStripSeparator2";
-            this.toolStripSeparator2.Size = new System.Drawing.Size(177, 6);
+            this.toolStripSeparator2.Size = new System.Drawing.Size(175, 6);
             // 
             // mainTextAreaMenuItem
             // 
             this.mainTextAreaMenuItem.Checked = true;
             this.mainTextAreaMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
             this.mainTextAreaMenuItem.Name = "mainTextAreaMenuItem";
-            this.mainTextAreaMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.mainTextAreaMenuItem.Size = new System.Drawing.Size(178, 22);
             this.mainTextAreaMenuItem.Text = "&Main Text";
             this.mainTextAreaMenuItem.Click += new System.EventHandler(this.OnMenuItemClickAndCheckContexts);
             // 
@@ -323,7 +327,7 @@
             this.introductionsAreaMenuItem.Checked = true;
             this.introductionsAreaMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
             this.introductionsAreaMenuItem.Name = "introductionsAreaMenuItem";
-            this.introductionsAreaMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.introductionsAreaMenuItem.Size = new System.Drawing.Size(178, 22);
             this.introductionsAreaMenuItem.Text = "&Introductions";
             this.introductionsAreaMenuItem.Click += new System.EventHandler(this.OnMenuItemClickAndCheckContexts);
             // 
@@ -332,7 +336,7 @@
             this.outlinesAreaMenuItem.Checked = true;
             this.outlinesAreaMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
             this.outlinesAreaMenuItem.Name = "outlinesAreaMenuItem";
-            this.outlinesAreaMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.outlinesAreaMenuItem.Size = new System.Drawing.Size(178, 22);
             this.outlinesAreaMenuItem.Text = "&Outlines";
             this.outlinesAreaMenuItem.Click += new System.EventHandler(this.OnMenuItemClickAndCheckContexts);
             // 
@@ -341,7 +345,7 @@
             this.notesAndReferencesAreaMenuItem.Checked = true;
             this.notesAndReferencesAreaMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
             this.notesAndReferencesAreaMenuItem.Name = "notesAndReferencesAreaMenuItem";
-            this.notesAndReferencesAreaMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.notesAndReferencesAreaMenuItem.Size = new System.Drawing.Size(178, 22);
             this.notesAndReferencesAreaMenuItem.Text = "&Notes && References";
             this.notesAndReferencesAreaMenuItem.Click += new System.EventHandler(this.OnMenuItemClickAndCheckContexts);
             // 
@@ -475,10 +479,25 @@
             this.searchLabelMenu.Size = new System.Drawing.Size(57, 23);
             this.searchLabelMenu.Text = "Search:";
             // 
+            // helpToolStripMenuItem
+            // 
+            this.helpToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.licenseToolStripMenuItem});
+            this.helpToolStripMenuItem.Name = "helpToolStripMenuItem";
+            this.helpToolStripMenuItem.Size = new System.Drawing.Size(44, 23);
+            this.helpToolStripMenuItem.Text = "Help";
+            // 
+            // licenseToolStripMenuItem
+            // 
+            this.licenseToolStripMenuItem.Name = "licenseToolStripMenuItem";
+            this.licenseToolStripMenuItem.Size = new System.Drawing.Size(113, 22);
+            this.licenseToolStripMenuItem.Text = "License";
+            this.licenseToolStripMenuItem.Click += new System.EventHandler(this.licenseToolStripMenuItem_Click);
+            // 
             // btnShowIgnoreList
             // 
             this.btnShowIgnoreList.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.btnShowIgnoreList.Location = new System.Drawing.Point(17, 531);
+            this.btnShowIgnoreList.Location = new System.Drawing.Point(17, 515);
             this.btnShowIgnoreList.Name = "btnShowIgnoreList";
             this.btnShowIgnoreList.Size = new System.Drawing.Size(75, 23);
             this.btnShowIgnoreList.TabIndex = 4;
@@ -490,7 +509,7 @@
             // 
             this.btnClose.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.btnClose.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.btnClose.Location = new System.Drawing.Point(767, 531);
+            this.btnClose.Location = new System.Drawing.Point(767, 515);
             this.btnClose.Name = "btnClose";
             this.btnClose.Size = new System.Drawing.Size(75, 23);
             this.btnClose.TabIndex = 5;
@@ -502,7 +521,7 @@
             // 
             this.statusLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.statusLabel.AutoSize = true;
-            this.statusLabel.Location = new System.Drawing.Point(98, 536);
+            this.statusLabel.Location = new System.Drawing.Point(98, 520);
             this.statusLabel.Name = "statusLabel";
             this.statusLabel.Size = new System.Drawing.Size(71, 13);
             this.statusLabel.TabIndex = 6;
@@ -519,7 +538,7 @@
             this.referencesTextBox.Location = new System.Drawing.Point(3, 3);
             this.referencesTextBox.Name = "referencesTextBox";
             this.referencesTextBox.ReadOnly = true;
-            this.referencesTextBox.Size = new System.Drawing.Size(821, 222);
+            this.referencesTextBox.Size = new System.Drawing.Size(821, 213);
             this.referencesTextBox.TabIndex = 3;
             this.referencesTextBox.Text = "";
             // 
@@ -539,9 +558,19 @@
             // splitContainerMain.Panel2
             // 
             this.splitContainerMain.Panel2.Controls.Add(this.referencesTextBox);
-            this.splitContainerMain.Size = new System.Drawing.Size(827, 469);
-            this.splitContainerMain.SplitterDistance = 234;
+            this.splitContainerMain.Size = new System.Drawing.Size(827, 454);
+            this.splitContainerMain.SplitterDistance = 226;
             this.splitContainerMain.TabIndex = 8;
+            // 
+            // Copyright
+            // 
+            this.Copyright.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.Copyright.AutoSize = true;
+            this.Copyright.Location = new System.Drawing.Point(19, 546);
+            this.Copyright.Name = "Copyright";
+            this.Copyright.Size = new System.Drawing.Size(101, 13);
+            this.Copyright.TabIndex = 9;
+            this.Copyright.Text = "© 2020 Biblica, Inc.";
             // 
             // MainForm
             // 
@@ -552,6 +581,7 @@
             this.CancelButton = this.btnClose;
             this.ClientSize = new System.Drawing.Size(856, 567);
             this.ControlBox = false;
+            this.Controls.Add(this.Copyright);
             this.Controls.Add(this.splitContainerMain);
             this.Controls.Add(this.btnShowIgnoreList);
             this.Controls.Add(this.statusLabel);
@@ -561,7 +591,7 @@
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MainMenuStrip = this.mainMenu;
             this.Name = "MainForm";
-            this.Padding = new System.Windows.Forms.Padding(10);
+            this.Padding = new System.Windows.Forms.Padding(10, 10, 10, 25);
             this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Show;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Translation Validations...";
@@ -632,5 +662,8 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn error;
         private System.Windows.Forms.DataGridViewTextBoxColumn actionsAcceptColumn;
         private System.Windows.Forms.DataGridViewButtonColumn actionsIgnoreColumn;
+        private System.Windows.Forms.ToolStripMenuItem helpToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem licenseToolStripMenuItem;
+        private System.Windows.Forms.Label Copyright;
     }
 }

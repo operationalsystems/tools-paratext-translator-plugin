@@ -27,6 +27,7 @@ namespace TvpMain.Form
         public IgnoreListForm()
         {
             InitializeComponent();
+            Copyright.Text = MainConsts.COPYRIGHT;
             Shown += OnFormShown;
         }
 

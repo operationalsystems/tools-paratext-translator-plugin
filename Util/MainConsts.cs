@@ -111,8 +111,13 @@ namespace TvpMain.Util
         public const int RESULT_ITEM_LOAD_DELAY_IN_SEC = 5;
 
         /// <summary>
-        /// A value used to create hashes
+        /// A value used to create hashes.
         /// </summary>
         public const int HASH_PRIME = 397;
+
+        /// <summary>
+        /// The copyright for this plugin.
+        /// </summary>
+        public const string COPYRIGHT = "© 2020 Biblica, Inc.";
     }
 }

@@ -10,7 +10,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("TranslationValidationPlugin")]
-[assembly: AssemblyCopyright("Copyright ©  2019, 2020")]
+[assembly: AssemblyCopyright("© 2020 Biblica, Inc.")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
