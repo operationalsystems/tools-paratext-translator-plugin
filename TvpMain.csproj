@@ -213,6 +213,7 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Check\CheckAndFixItem.cs" />
     <Compile Include="Check\CheckArea.cs" />
     <Compile Include="Form\LicenseForm.cs">
       <SubType>Form</SubType>
