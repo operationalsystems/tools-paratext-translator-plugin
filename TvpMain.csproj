@@ -214,6 +214,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CheckManager\ICheckManager.cs" />
+    <Compile Include="CheckManager\IRepository.cs" />
     <Compile Include="Check\CheckAndFixItem.cs" />
     <Compile Include="Check\CheckArea.cs" />
     <Compile Include="Check\LocalCheckAndFixManager.cs" />
