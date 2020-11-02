@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Runtime.Remoting.Messaging;
 using System.Xml;
 using System.Xml.Serialization;
 
@@ -33,8 +31,9 @@ namespace TvpMain.Check
         /// <summary>
         /// The GUID for this Check and Fix.
         /// </summary>
-        public String Id {
-            get { return _id.ToString();  }
+        public String Id
+        {
+            get { return _id.ToString(); }
             set
             {
                 _id = Guid.Parse(value);
@@ -52,11 +51,13 @@ namespace TvpMain.Check
         /// <summary>
         /// The version of this Check and Fix item.
         /// </summary>
-        public String Version { 
-            get { return _version.ToString(); } 
-            set {
+        public String Version
+        {
+            get { return _version.ToString(); }
+            set
+            {
                 _version = new Version(value);
-            } 
+            }
         }
         /// <summary>
         /// The Check's regular expression. The check regex will be evaluated before the check script.
