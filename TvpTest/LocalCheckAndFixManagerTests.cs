@@ -46,8 +46,8 @@ namespace TvpTest
             var items = localManager.GetAll();
 
             Assert.AreEqual(2, items.Count);
-            Assert.AreEqual(testCafItem1, items[testCafItem1.Id]);
-            Assert.AreEqual(testCafItem2, items[testCafItem2.Id]);
+            Assert.AreEqual(testCafItem1, items[0]);
+            Assert.AreEqual(testCafItem2, items[1]);
         }
 
         [TestMethod]
@@ -60,17 +60,17 @@ namespace TvpTest
             localManager.Create(testCafItem);
 
             // assess the item is as expected
-            var returnedCafItem = localManager.Get(testCafItem.Id);
+            var returnedCafItem = localManager.Get(testCafItem.Name, testCafItem.Version);
             Assert.AreEqual(testCafItem, returnedCafItem);
 
             // delete the item
-            localManager.Delete(returnedCafItem.Id);
+            localManager.Delete(testCafItem.Name, testCafItem.Version);
 
             // test that we can't retrieve the deleted item
             var failedAsExpected = false;
             try
             {
-                localManager.Get(testCafItem.Id);
+                localManager.Get(testCafItem.Name, testCafItem.Version);
             } catch
             {
                 failedAsExpected = true;
@@ -86,11 +86,12 @@ namespace TvpTest
 
             // create an item
             var testCafItem = CreateTestItem();
-            var originalId = testCafItem.Id;
+            var originalName = testCafItem.Name;
+            var originalVersion = testCafItem.Version;
             localManager.Create(testCafItem);
 
             // assess the item is as expected
-            var returnedCafItem = localManager.Get(originalId);
+            var returnedCafItem = localManager.Get(originalName, originalVersion);
             Assert.AreEqual(testCafItem, returnedCafItem);
 
             // update the item (hold onto the version as it should be revved if the version hasn't changed)
@@ -98,7 +99,7 @@ namespace TvpTest
             localManager.Update(returnedCafItem);
 
             // test that the returned updated item is equal (with the version change)
-            var returnedUpdatedCaF = localManager.Get(originalId);
+            var returnedUpdatedCaF = localManager.Get(originalName, returnedCafItem.Version);
             Assert.AreEqual(returnedCafItem, returnedUpdatedCaF);
             var prevVer = new Version(previousVersion);
             var updVer = new Version(returnedUpdatedCaF.Version);

@@ -31,10 +31,10 @@ namespace TvpMain.Check
         /// <summary>
         /// This function will retrieve all the <c>CheckAndFixItem</c> artifacts on disk.
         /// </summary>
-        /// <returns>A <c>Dictionary</c> with the ID as the key, and the corresponding <c>CheckAndFixItem</c> as the value. (required)</returns>
-        public Dictionary<String, CheckAndFixItem> GetAll()
+        /// <returns>A <c>List</c> with all corresponding <c>CheckAndFixItem</c>s. (required)</returns>
+        public List<CheckAndFixItem> GetAll()
         {
-            var map = new Dictionary<String, CheckAndFixItem>();
+            var map = new List<CheckAndFixItem>();
 
             foreach (FileInfo file in RootPath.GetFiles("*.xml"))
             {
@@ -43,11 +43,11 @@ namespace TvpMain.Check
                 {
                     // add the item to cache dictionary, indexed by the ID
                     var item = CheckAndFixItem.LoadFromXmlFile(file.FullName);
-                    map.Add(item.Id, item);
+                    map.Add(item);
                 }
                 catch (Exception ex)
                 {
-                    Console.Error.WriteLine($"We were unable to deserialize '{file.FullName}' into a CheckAndFixItem object. Error: {ex.Message}");
+                    Console.Error.WriteLine($"'{file.FullName}' could not be deserialized into a CheckAndFixItem object. Error: {ex.Message}");
                 }
             }
 
@@ -56,33 +56,35 @@ namespace TvpMain.Check
         }
 
         /// <summary>
-        /// This function will retrieve the corresponding <c>CheckAndFixItem</c> artifact on disk by its ID, If available.
+        /// This function will retrieve the corresponding <c>CheckAndFixItem</c> artifact on disk by its name and version, If available.
         /// </summary>
-        /// <param name="id">The ID of the <c>CheckAndFixItem</c> artifact to retrieve. (required)</param>
+        /// <param name="name">The name of the <c>CheckAndFixItem</c> artifact to retrieve. (required)</param>
+        /// <param name="version">The version of the <c>CheckAndFixItem</c> artifact to retrieve. (required)</param>
         /// <returns>The <c>CheckAndFixItem</c> artifact</returns>
-        public CheckAndFixItem Get(string id)
+        public CheckAndFixItem Get(string name, string version)
         {
             // validate input
-            ValidateNonEmptyId(id);
+            ValidateNonEmptyNameAndVersion(name, version);
 
             // return the deserialized file
-            return CheckAndFixItem.LoadFromXmlFile(GetCaFItemPathById(id));
+            return CheckAndFixItem.LoadFromXmlFile(GetCaFItemPathByNameAndVersion(name, version));
         }
 
         /// <summary>
-        /// This function will delete the corresponding <c>CheckAndFixItem</c> artifact on disk by its ID, If available.
+        /// This function will delete the corresponding <c>CheckAndFixItem</c> artifact on disk by its name and version, If available.
         /// </summary>
-        /// <param name="id">The ID of the <c>CheckAndFixItem</c> artifact to delete. (required)</param>
-        public void Delete(string id)
+        /// <param name="name">The name of the <c>CheckAndFixItem</c> artifact to delete. (required)</param>
+        /// <param name="version">The version of the <c>CheckAndFixItem</c> artifact to delete. (required)</param>
+        public void Delete(string name, string version)
         {
             // validate input
-            ValidateNonEmptyId(id);
+            ValidateNonEmptyNameAndVersion(name, version);
 
-            File.Delete(GetCaFItemPathById(id));
+            File.Delete(GetCaFItemPathByNameAndVersion(name, version));
         }
 
         /// <summary>
-        /// This function will create a new <c>CheckAndFixItem</c> artifact on disk..
+        /// This function will create a new <c>CheckAndFixItem</c> artifact on disk. The version is defaulted to "1.0.0".
         /// </summary>
         /// <param name="name">The name of the <c>CheckAndFixItem</c> artifact. (required)</param>
         /// <returns></returns>
@@ -96,7 +98,8 @@ namespace TvpMain.Check
 
             return Create(new CheckAndFixItem()
             {
-                Name = name
+                Name = name,
+                Version = "1.0.0"
             });
         }
 
@@ -110,10 +113,10 @@ namespace TvpMain.Check
             // validate input
             _ = item ?? throw new ArgumentNullException(nameof(item));
 
-            var pathById = GetCaFItemPathById(item.Id);
+            var pathById = GetCaFItemPathByNameAndVersion(item.Name, item.Version);
             if (File.Exists(pathById))
             {
-                throw new IOException($"An item with ID '{item.Id}' already exists.");
+                throw new IOException($"An item with name '{item.Name}' and version '{item.Version}' already exists.");
             }
 
             item.SaveToXmlFile(pathById);
@@ -131,7 +134,7 @@ namespace TvpMain.Check
             _ = item ?? throw new ArgumentNullException(nameof(item));
 
             // get the original item for comparison
-            var origItem = Get(item.Id);
+            var origItem = Get(item.Name, item.Version);
 
             // compare if the version changed; otherwise rev the build version
             if (origItem.Version.Equals(item.Version))
@@ -141,31 +144,42 @@ namespace TvpMain.Check
                 item.Version = updatedVersion.ToString();
             }
 
-            item.SaveToXmlFile(GetCaFItemPathById(item.Id));
+            item.SaveToXmlFile(GetCaFItemPathByNameAndVersion(item.Name, item.Version));
         }
 
         /// <summary>
-        /// A helper function to create the file path of a <c>CheckAndFixItem</c> artifact on disk by its ID and the root directory we're storing items.
+        /// A helper function to create the file path of a <c>CheckAndFixItem</c> artifact on disk by its name, version, and the root directory we're storing items.
         /// </summary>
-        /// <param name="id">The ID of the <c>CheckAndFixItem</c> artifact to create a path for. (required)</param>
-        /// <returns></returns>
-        private string GetCaFItemPathById(string id)
+        /// <param name="name">The name of the <c>CheckAndFixItem</c> artifact to create a path from. (required)</param>
+        /// <param name="version">The version of the <c>CheckAndFixItem</c> artifact to create a path from. (required)</param>
+        /// <returns>The normalized path.</returns>
+        private string GetCaFItemPathByNameAndVersion(string name, string version)
         {
             // validate input
-            ValidateNonEmptyId(id);
+            ValidateNonEmptyNameAndVersion(name, version);
 
-            return Path.Combine(RootPath.FullName, $"{id}.xml");
+            return Path.Combine(RootPath.FullName, $"{name}-{version}.xml");
         }
-
         /// <summary>
-        /// A helper function to validate a a <c>CheckAndFixItem</c>'s ID is not null and not empty.
         /// </summary>
         /// <param name="id">The ID of the <c>CheckAndFixItem</c> artifact to validate. (required)</param>
-        private void ValidateNonEmptyId(string id)
+
+
+        /// <summary>
+        /// A helper function to validate a name and version are not null and not empty.
+        /// </summary>
+        /// <param name="name">The name to validate. (required)</param>
+        /// <param name="version">The version to validate. (required)</param>
+        private void ValidateNonEmptyNameAndVersion(string name, string version)
         {
-            if (String.IsNullOrEmpty(id))
+            if (string.IsNullOrEmpty(name))
             {
-                throw new ArgumentException($"'{nameof(id)}' cannot be null or empty.");
+                throw new ArgumentException($"'{nameof(name)}' cannot be null or empty.");
+            }
+
+            if (string.IsNullOrEmpty(version))
+            {
+                throw new ArgumentException($"'{nameof(version)}' cannot be null or empty.");
             }
         }
     }
