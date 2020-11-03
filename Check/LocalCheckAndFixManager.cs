@@ -7,10 +7,20 @@ using System.Threading.Tasks;
 
 namespace TvpMain.Check
 {
+    /// <summary>
+    /// This class will manage access to <c>CheckAndFixItem</c> artifacts on disk and the artifacts themselves.
+    /// </summary>
     public class LocalCheckAndFixManager
     {
+        /// <summary>
+        /// This defines the directory to store and retrieve the <c>CheckAndFixItem</c> artifacts on disk.
+        /// </summary>
         public DirectoryInfo RootPath { get; private set; }
 
+        /// <summary>
+        /// The ctor.
+        /// </summary>
+        /// <param name="rootPath">The directory to store and retrieve the <c>CheckAndFixItem</c> items on disk. (required)</param>
         public LocalCheckAndFixManager(DirectoryInfo rootPath) {
             // validate input
             _ = rootPath ?? throw new ArgumentNullException(nameof(rootPath));
@@ -18,6 +28,10 @@ namespace TvpMain.Check
             RootPath = rootPath;
         }
 
+        /// <summary>
+        /// This function will retrieve all the <c>CheckAndFixItem</c> artifacts on disk.
+        /// </summary>
+        /// <returns>A <c>Dictionary</c> with the ID as the key, and the corresponding <c>CheckAndFixItem</c> as the value. (required)</returns>
         public Dictionary<String, CheckAndFixItem> GetAll()
         {
             var map = new Dictionary<String, CheckAndFixItem>();
@@ -41,6 +55,11 @@ namespace TvpMain.Check
             return map;
         }
 
+        /// <summary>
+        /// This function will retrieve the corresponding <c>CheckAndFixItem</c> artifact on disk by its ID, If available.
+        /// </summary>
+        /// <param name="id">The ID of the <c>CheckAndFixItem</c> artifact to retrieve. (required)</param>
+        /// <returns>The <c>CheckAndFixItem</c> artifact</returns>
         public CheckAndFixItem Get(string id)
         {
             // validate input
@@ -50,6 +69,10 @@ namespace TvpMain.Check
             return CheckAndFixItem.LoadFromXmlFile(GetCaFItemPathById(id));
         }
 
+        /// <summary>
+        /// This function will delete the corresponding <c>CheckAndFixItem</c> artifact on disk by its ID, If available.
+        /// </summary>
+        /// <param name="id">The ID of the <c>CheckAndFixItem</c> artifact to delete. (required)</param>
         public void Delete(string id)
         {
             // validate input
@@ -58,6 +81,11 @@ namespace TvpMain.Check
             File.Delete(GetCaFItemPathById(id));
         }
 
+        /// <summary>
+        /// This function will create a new <c>CheckAndFixItem</c> artifact on disk..
+        /// </summary>
+        /// <param name="name">The name of the <c>CheckAndFixItem</c> artifact. (required)</param>
+        /// <returns></returns>
         public CheckAndFixItem Create(string name)
         {
             // validate input
@@ -72,6 +100,11 @@ namespace TvpMain.Check
             });
         }
 
+        /// <summary>
+        /// This function will create a new <c>CheckAndFixItem</c> artifact on disk.
+        /// </summary>
+        /// <param name="item">The <c>CheckAndFixItem</c> artifact to be saved. (required)</param>
+        /// <returns>The saved <c>CheckAndFixItem</c> artifact.</returns>
         public CheckAndFixItem Create(CheckAndFixItem item)
         {
             // validate input
@@ -88,6 +121,10 @@ namespace TvpMain.Check
             return item;
         }
 
+        /// <summary>
+        /// This function will update an existing <c>CheckAndFixItem</c> artifact on disk. If the version hasn't been changed, the build version will be incremented by 1.
+        /// </summary>
+        /// <param name="item">The <c>CheckAndFixItem</c> artifact to be updated. (required)</param>
         public void Update(CheckAndFixItem item)
         {
             // validate input
@@ -107,6 +144,11 @@ namespace TvpMain.Check
             item.SaveToXmlFile(GetCaFItemPathById(item.Id));
         }
 
+        /// <summary>
+        /// A helper function to create the file path of a <c>CheckAndFixItem</c> artifact on disk by its ID and the root directory we're storing items.
+        /// </summary>
+        /// <param name="id">The ID of the <c>CheckAndFixItem</c> artifact to create a path for. (required)</param>
+        /// <returns></returns>
         private string GetCaFItemPathById(string id)
         {
             // validate input
@@ -115,13 +157,16 @@ namespace TvpMain.Check
             return Path.Combine(RootPath.FullName, $"{id}.xml");
         }
 
+        /// <summary>
+        /// A helper function to validate a a <c>CheckAndFixItem</c>'s ID is not null and not empty.
+        /// </summary>
+        /// <param name="id">The ID of the <c>CheckAndFixItem</c> artifact to validate. (required)</param>
         private void ValidateNonEmptyId(string id)
         {
             if (String.IsNullOrEmpty(id))
             {
                 throw new ArgumentException($"'{nameof(id)}' cannot be null or empty.");
             }
-
         }
     }
 }

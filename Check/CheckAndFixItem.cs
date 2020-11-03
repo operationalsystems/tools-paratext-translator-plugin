@@ -12,6 +12,9 @@ namespace TvpMain.Check
     /// </summary>
     public class CheckAndFixItem : ICloneable
     {
+        /// <summary>
+        /// The item's default constructor. It will ensure that a unique ID is generated.
+        /// </summary>
         public CheckAndFixItem()
         {
             _id = Guid.NewGuid();
@@ -141,6 +144,11 @@ namespace TvpMain.Check
             return textWriter.ToString();
         }
 
+        /// <summary>
+        /// An override of the equals capability to validate the content of two <c>CheckAndFixItem</c>s are the same.
+        /// </summary>
+        /// <param name="obj">The <c>CheckAndFixItem</c> to compare against. (required)</param>
+        /// <returns>True: if both objects are equal, False: otherwise.</returns>
         public override bool Equals(object obj)
         {
             return obj is CheckAndFixItem item &&
@@ -154,6 +162,10 @@ namespace TvpMain.Check
                    FixScript == item.FixScript;
         }
 
+        /// <summary>
+        /// This function will make a deep copy of our <c>CheckAndFixItem</c>.
+        /// </summary>
+        /// <returns>A copy of the current <c>CheckAndFixItem</c> artifact.</returns>
         public object Clone()
         {
             // deep clone the object by utilizing the serializing and deserializing functions.
