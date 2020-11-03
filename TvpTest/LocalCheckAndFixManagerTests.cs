@@ -46,8 +46,8 @@ namespace TvpTest
             var items = localManager.GetAll();
 
             Assert.AreEqual(2, items.Count);
-            Assert.AreEqual(testCafItem1, items[0]);
-            Assert.AreEqual(testCafItem2, items[1]);
+            Assert.IsTrue(items.Contains(testCafItem1));
+            Assert.IsTrue(items.Contains(testCafItem2));
         }
 
         [TestMethod]
