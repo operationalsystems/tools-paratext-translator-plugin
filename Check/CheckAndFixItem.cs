@@ -10,7 +10,7 @@ namespace TvpMain.Check
     /// <summary>
     /// This is a model class that represents a Translation Check and Fix.
     /// </summary>
-    public class CheckAndFixItem
+    public class CheckAndFixItem : ICloneable
     {
         public CheckAndFixItem()
         {
@@ -86,7 +86,8 @@ namespace TvpMain.Check
 
             // deserialize the file into an object
             var serializer = new XmlSerializer(typeof(CheckAndFixItem));
-            var obj = (CheckAndFixItem)serializer.Deserialize(new XmlTextReader(xmlFilePath));
+            using var xmlReader = new XmlTextReader(xmlFilePath);
+            var obj = (CheckAndFixItem)serializer.Deserialize(xmlReader);
 
             return obj;
         }
@@ -105,6 +106,7 @@ namespace TvpMain.Check
             var serializer = new XmlSerializer(typeof(CheckAndFixItem));
 
             using TextReader reader = new StringReader(xmlContent);
+            var testString = reader.ReadToEnd();
             CheckAndFixItem result = (CheckAndFixItem)serializer.Deserialize(reader);
             return result;
         }
@@ -120,7 +122,7 @@ namespace TvpMain.Check
 
             XmlSerializer writer = new XmlSerializer(this.GetType());
 
-            System.IO.FileStream file = System.IO.File.Create(xmlFilePath);
+            FileStream file = File.Create(xmlFilePath);
 
             writer.Serialize(file, this);
             file.Close();
@@ -150,6 +152,12 @@ namespace TvpMain.Check
                    CheckScript == item.CheckScript &&
                    FixRegex == item.FixRegex &&
                    FixScript == item.FixScript;
+        }
+
+        public object Clone()
+        {
+            // deep clone the object by utilizing the serializing and deserializing functions.
+            return CheckAndFixItem.LoadFromXmlContent(this.WriteToXmlString());
         }
     }
 }

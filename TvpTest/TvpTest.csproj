@@ -140,6 +140,7 @@
   <ItemGroup>
     <Compile Include="AbstractCheckTests.cs" />
     <Compile Include="ImportManagerTests.cs" />
+    <Compile Include="CheckAndFixTests.cs" />
     <Compile Include="TextCheckRunnerTests.cs" />
     <Compile Include="FilterTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
