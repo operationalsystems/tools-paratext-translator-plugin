@@ -27,7 +27,7 @@ return input;
 }",
             };
 
-            var testSavePath = Path.Combine(@"C:\Users\mark\AppData\Local\Temp", "tempCafItem1.xml");
+            var testSavePath = Path.Combine(Path.GetTempPath(), "tempCafItem1.xml");
 
             testCafItem.SaveToXmlFile(testSavePath);
 
