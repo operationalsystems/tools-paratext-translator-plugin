@@ -13,6 +13,12 @@ namespace TvpMain.CheckManager
         public List<CheckAndFixItem> GetCheckAndFixItems();
 
         /// <summary>
+        /// This method gets check and fix items from a repository.
+        /// </summary>
+        /// <returns>A task representing a list of check and fix items that are available in the repository.</returns>
+        public Task<List<CheckAndFixItem>> GetCheckAndFixItemsAsync();
+
+        /// <summary>
         /// This method adds a check and fix item to a repository.
         /// </summary>
         /// <param name="item">The check and fix item to add to the repository.</param>

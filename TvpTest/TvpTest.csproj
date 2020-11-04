@@ -139,6 +139,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AbstractCheckTests.cs" />
+    <Compile Include="CheckManager\CheckManagerTests.cs" />
+    <Compile Include="CheckManager\FolderRepositoryTests.cs" />
     <Compile Include="ImportManagerTests.cs" />
     <Compile Include="CheckAndFixTests.cs" />
     <Compile Include="TextCheckRunnerTests.cs" />
@@ -146,11 +148,13 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ScriptureReferenceCheckTests.cs" />
     <Compile Include="ScriptureReferenceParserTests.cs" />
-    <Compile Include="LocalCheckAndFixManagerTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
     <None Include="packages.config" />
+    <Content Include="Resources\checks\test-checkandfixitem-1.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Resources\reference-results-1.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
