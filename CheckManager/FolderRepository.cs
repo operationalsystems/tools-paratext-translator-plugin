@@ -1,4 +1,5 @@
-﻿using System;
+﻿using PtxUtils;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
@@ -7,19 +8,35 @@ using TvpMain.Util;
 
 namespace TvpMain.CheckManager
 {
+    /// <summary>
+    /// This class works with a local, file-based repository for checks and fixes.
+    /// </summary>
     public class FolderRepository : IRepository
     {
+        /// <summary>
+        /// The filesystem path where checks are located.
+        /// </summary>
         public virtual string FolderPath { get; private set; } = Path.Combine(Directory.GetCurrentDirectory(), MainConsts.CHECK_FOLDER_NAME);
-
 
         public void AddCheckAndFixItem(CheckAndFixItem item)
         {
-            throw new NotImplementedException();
+            _ = item.Name ?? throw new ArgumentNullException(nameof(item.Name));
+
+            string filename = $"{item.Name}-{item.Version}.xml";
+            string filePath = Path.Combine(FolderPath, filename);
+
+            try
+            {
+                item.SaveToXmlFile(filePath);
+            } catch (Exception e)
+            {
+                new FileWriteException($"There was a problem writing to '{filePath}'.", e.InnerException);
+            }
         }
 
         public Task AddCheckAndFixItemAsync(CheckAndFixItem item)
         {
-            throw new NotImplementedException();
+            return Task.Run(() => AddCheckAndFixItem(item));
         }
 
         public List<CheckAndFixItem> GetCheckAndFixItems()
@@ -52,7 +69,7 @@ namespace TvpMain.CheckManager
         /// <summary>
         /// This method ensures that the folder exists.
         /// </summary>
-        public void VerifyFolderPath()
+        private void VerifyFolderPath()
         {
             Directory.CreateDirectory(FolderPath);
         }
