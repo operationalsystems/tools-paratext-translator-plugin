@@ -128,6 +128,6 @@ namespace TvpMain.Util
         /// <summary>
         /// The file extension used by checks.
         /// </summary>
-        public const string CHECK_FILE_EXTENSION = "*.xml";
+        public const string CHECK_FILE_EXTENSION = "xml";
     }
 }

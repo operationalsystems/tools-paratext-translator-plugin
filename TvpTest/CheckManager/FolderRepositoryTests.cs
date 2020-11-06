@@ -1,10 +1,7 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
-using PtxUtils;
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using TvpMain.Check;
 using TvpMain.CheckManager;
@@ -52,7 +49,7 @@ namespace TvpTest
             };
 
             //Throws an exception if Name is null.
-            Assert.ThrowsException<ArgumentNullException>(() => mockFolderRepository.Object.AddCheckAndFixItem(checkAndFixItem));
+            Assert.ThrowsException<ArgumentNullException>(() => mockFolderRepository.Object.AddCheckAndFixItem(null, checkAndFixItem));
         }
 
         [TestMethod()]
@@ -66,15 +63,17 @@ namespace TvpTest
             //Throws an exception if Name is null. Tasks throw AggregateExceptions, so we need to check the first error within.
             try
             {
-                mockFolderRepository.Object.AddCheckAndFixItemAsync(checkAndFixItem).Wait();
-            } catch (AggregateException ae)
+                mockFolderRepository.Object.AddCheckAndFixItemAsync(null, checkAndFixItem).Wait();
+            }
+            catch (AggregateException ae)
             {
                 var e = ae.Flatten().InnerExceptions[0];
                 // Check the type of the first exception.
                 if (e.GetType() == typeof(ArgumentNullException))
                 {
                     Assert.IsTrue(true);
-                } else
+                }
+                else
                 {
                     Assert.Fail($"Expected ArgumentNullException, got {e.GetType()}.");
                 }

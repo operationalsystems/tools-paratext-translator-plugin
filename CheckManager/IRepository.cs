@@ -21,14 +21,16 @@ namespace TvpMain.CheckManager
         /// <summary>
         /// This method adds a check and fix item to a repository.
         /// </summary>
+        /// <param name="filename">The filename to use for the item in the repository.</param>
         /// <param name="item">The check and fix item to add to the repository.</param>
-        public void AddCheckAndFixItem(CheckAndFixItem item);
+        public void AddCheckAndFixItem(string filename, CheckAndFixItem item);
 
         /// <summary>
         /// This method adds a check and fix item to a repository.
         /// </summary>
+        /// <param name="filename">The filename to use for the item in the repository.</param>
         /// <param name="item">The check and fix item to add to the repository.</param>
         /// <returns>A task representing the result of the operation.</returns>
-        public Task AddCheckAndFixItemAsync(CheckAndFixItem item);
+        public Task AddCheckAndFixItemAsync(string filename, CheckAndFixItem item);
     }
 }

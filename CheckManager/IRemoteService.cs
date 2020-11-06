@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
+using System.Net;
 using System.Threading.Tasks;
 
 namespace TvpMain.CheckManager
@@ -34,5 +32,21 @@ namespace TvpMain.CheckManager
         /// </summary>
         /// <returns>An operation that results in the available filenames.</returns>
         public Task<List<string>> ListAllFilesAsync();
+
+        /// <summary>
+        /// This method uploads a file.
+        /// </summary>
+        /// <param name="filename">The name the file will have in the remote repository.</param>
+        /// <param name="filestream">The file as a <c>Stream</c>.</param>
+        /// <returns>The <c>HttpStatusCode</c> returned by the remote repository.</returns>
+        HttpStatusCode PutFileStream(string filename, Stream filestream);
+
+        /// <summary>
+        /// This method asynchonously uploads a file.
+        /// </summary>
+        /// <param name="filename">The name the file will have in the remote repository.</param>
+        /// <param name="filestream">The file as a <c>Stream</c>.</param>
+        /// <returns>An operation that results in the <c>HttpStatusCode</c> returned by the remote repository.</returns>
+        Task<HttpStatusCode> PutFileStreamAsync(string filename, Stream filestream);
     }
 }

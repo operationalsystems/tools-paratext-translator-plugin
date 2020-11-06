@@ -10,14 +10,18 @@ namespace TvpMain.CheckManager
     {
         private S3Service service = new S3Service();
 
-        public void AddCheckAndFixItem(CheckAndFixItem item)
+        public void AddCheckAndFixItem(string filename, CheckAndFixItem item)
         {
-            throw new NotImplementedException();
+            if (String.IsNullOrEmpty(filename)) new ArgumentNullException(nameof(filename));
+
+            service.PutFileStream(filename, item.WriteToXmlStream());
         }
 
-        public Task AddCheckAndFixItemAsync(CheckAndFixItem item)
+        public async Task AddCheckAndFixItemAsync(string filename, CheckAndFixItem item)
         {
-            throw new NotImplementedException();
+            if (String.IsNullOrEmpty(filename)) new ArgumentNullException(nameof(filename));
+
+            await service.PutFileStreamAsync(filename, item.WriteToXmlStream());
         }
 
         public List<CheckAndFixItem> GetCheckAndFixItems()
@@ -60,8 +64,9 @@ namespace TvpMain.CheckManager
             CheckAndFixItem checkAndFixItem = null;
             try
             {
-               checkAndFixItem = CheckAndFixItem.LoadFromXmlContent(stream);
-            } catch (Exception)
+                checkAndFixItem = CheckAndFixItem.LoadFromXmlContent(stream);
+            }
+            catch (Exception)
             {
                 //TODO: log the error but continue
             }

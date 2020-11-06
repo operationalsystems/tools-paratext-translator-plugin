@@ -18,25 +18,25 @@ namespace TvpMain.CheckManager
         /// </summary>
         public virtual string FolderPath { get; private set; } = Path.Combine(Directory.GetCurrentDirectory(), MainConsts.CHECK_FOLDER_NAME);
 
-        public void AddCheckAndFixItem(CheckAndFixItem item)
+        public void AddCheckAndFixItem(string filename, CheckAndFixItem item)
         {
-            _ = item.Name ?? throw new ArgumentNullException(nameof(item.Name));
+            if (String.IsNullOrEmpty(filename)) throw new ArgumentNullException(nameof(filename));
 
-            string filename = $"{item.Name}-{item.Version}.xml";
             string filePath = Path.Combine(FolderPath, filename);
 
             try
             {
                 item.SaveToXmlFile(filePath);
-            } catch (Exception e)
+            }
+            catch (Exception e)
             {
                 new FileWriteException($"There was a problem writing to '{filePath}'.", e.InnerException);
             }
         }
 
-        public Task AddCheckAndFixItemAsync(CheckAndFixItem item)
+        public Task AddCheckAndFixItemAsync(string filename, CheckAndFixItem item)
         {
-            return Task.Run(() => AddCheckAndFixItem(item));
+            return Task.Run(() => AddCheckAndFixItem(filename, item));
         }
 
         public List<CheckAndFixItem> GetCheckAndFixItems()

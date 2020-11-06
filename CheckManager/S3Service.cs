@@ -1,11 +1,10 @@
 ﻿using Amazon;
 using Amazon.S3;
 using Amazon.S3.Model;
-using Amazon.S3.Model.Internal.MarshallTransformations;
-using Amazon.S3.Transfer;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Net;
 using System.Threading.Tasks;
 
 namespace TvpMain.CheckManager
@@ -51,22 +50,41 @@ namespace TvpMain.CheckManager
             return checkFileNames;
         }
 
-        public Stream GetFileStream(string key)
+        public Stream GetFileStream(string file)
         {
-            return GetFileStreamAsync(key).Result;
+            return GetFileStreamAsync(file).Result;
         }
 
-        public async Task<Stream> GetFileStreamAsync(string key)
+        public async Task<Stream> GetFileStreamAsync(string file)
         {
             GetObjectRequest getObjectRequest = new GetObjectRequest
             {
                 BucketName = bucketName,
-                Key = key
+                Key = file
             };
 
             GetObjectResponse getObjectResponse = await S3Client.GetObjectAsync(getObjectRequest);
 
             return getObjectResponse.ResponseStream;
+        }
+
+        public HttpStatusCode PutFileStream(string filename, Stream file)
+        {
+            return PutFileStreamAsync(filename, file).Result;
+        }
+
+        public async Task<HttpStatusCode> PutFileStreamAsync(string filename, Stream file)
+        {
+            PutObjectRequest putObjectRequest = new PutObjectRequest
+            {
+                BucketName = bucketName,
+                Key = filename,
+                InputStream = file
+            };
+
+            PutObjectResponse putObjectResponse = await S3Client.PutObjectAsync(putObjectRequest);
+
+            return putObjectResponse.HttpStatusCode;
         }
     }
 }
