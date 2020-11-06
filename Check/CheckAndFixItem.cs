@@ -150,6 +150,19 @@ namespace TvpMain.Check
         }
 
         /// <summary>
+        /// Serialize the current <c>CheckAndFixItem</c> object into an XML <c>Stream</c>.
+        /// </summary>
+        /// <returns>Corresponding <c>CheckAndFixItem</c> object as an XML <c>Stream</c>.</returns>
+        public Stream WriteToXmlStream()
+        {
+            XmlSerializer xmlSerializer = new XmlSerializer(this.GetType());
+
+            MemoryStream stream = new MemoryStream();
+            xmlSerializer.Serialize(stream, this);
+            return (Stream)stream;
+        }
+
+        /// <summary>
         /// Serialize the current <c>CheckAndFixItem</c> object into an XML string.
         /// </summary>
         /// <returns>Corresponding <c>CheckAndFixItem</c> object as an XML string.</returns>
