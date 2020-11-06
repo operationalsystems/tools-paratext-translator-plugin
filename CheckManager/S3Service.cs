@@ -18,9 +18,9 @@ namespace TvpMain.CheckManager
         const String bucketName = "biblica-tvp-checks-repo";
 
         /// <summary>
-        /// The temporary AWS credentials we use for S3 requests.
+        /// The S3 client we use for S3 requests.
         /// </summary>
-        public AmazonS3Client S3Client { get; set; } = new AmazonS3Client(accessKey, secretKey, RegionEndpoint.USEast1);
+        private AmazonS3Client S3Client { get; set; } = new AmazonS3Client(accessKey, secretKey, RegionEndpoint.USEast1);
 
         public List<string> ListAllFiles()
         {

@@ -1,12 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Threading.Tasks;
 using TvpMain.Check;
 
 namespace TvpMain.CheckManager
 {
-    class S3Repository : IRepository
+    public class S3Repository : IRepository
     {
+        private S3Service service = new S3Service();
+
         public void AddCheckAndFixItem(CheckAndFixItem item)
         {
             throw new NotImplementedException();
@@ -19,12 +22,50 @@ namespace TvpMain.CheckManager
 
         public List<CheckAndFixItem> GetCheckAndFixItems()
         {
-            throw new NotImplementedException();
+            List<CheckAndFixItem> checkAndFixItems = new List<CheckAndFixItem>();
+
+            List<String> filenames = service.ListAllFiles();
+            foreach (string file in filenames)
+            {
+                using Stream fileStream = service.GetFileStream(file);
+                CheckAndFixItem checkAndFixItem = ReadCheckAndFixItemFromStream(fileStream);
+                if (checkAndFixItem != null) checkAndFixItems.Add(checkAndFixItem);
+            }
+
+            return checkAndFixItems;
         }
 
-        public Task<List<CheckAndFixItem>> GetCheckAndFixItemsAsync()
+        public async Task<List<CheckAndFixItem>> GetCheckAndFixItemsAsync()
         {
-            throw new NotImplementedException();
+            List<CheckAndFixItem> checkAndFixItems = new List<CheckAndFixItem>();
+
+            List<String> filenames = await service.ListAllFilesAsync();
+            foreach (string file in filenames)
+            {
+                using Stream fileStream = await service.GetFileStreamAsync(file);
+                CheckAndFixItem checkAndFixItem = ReadCheckAndFixItemFromStream(fileStream);
+                if (checkAndFixItem != null) checkAndFixItems.Add(checkAndFixItem);
+            }
+
+            return checkAndFixItems;
+        }
+
+        /// <summary>
+        /// This loads a <c>CheckAndFixItem</c> from a <c>Stream</c>, guarding against invalid files.
+        /// </summary>
+        /// <param name="stream">The <c>Stream</c> of a file representing a <c>CheckAndFixItem</c>.</param>
+        /// <returns></returns>
+        private CheckAndFixItem ReadCheckAndFixItemFromStream(Stream stream)
+        {
+            CheckAndFixItem checkAndFixItem = null;
+            try
+            {
+               checkAndFixItem = CheckAndFixItem.LoadFromXmlContent(stream);
+            } catch (Exception)
+            {
+                //TODO: log the error but continue
+            }
+            return checkAndFixItem;
         }
     }
 }
