@@ -99,7 +99,24 @@ namespace TvpMain.Check
         /// <summary>
         /// Deserialize <c>CheckAndFixItem</c> XML content into a corresonding object.
         /// </summary>
-        /// <param name="xmlContent">The absolute path of the <c>CheckAndFixItem</c> XML file. (required)</param>
+        /// <param name="xmlContent">A <c>Stream</c> representing a <c>CheckAndFixItem</c>. (required)</param>
+        /// <returns>Corresponding <c>CheckAndFixItem</c> object.</returns>
+        public static CheckAndFixItem LoadFromXmlContent(Stream xmlContent)
+        {
+            // validate input
+            _ = xmlContent ?? throw new ArgumentNullException(nameof(xmlContent));
+
+            // deserialize the file into an object
+            var serializer = new XmlSerializer(typeof(CheckAndFixItem));
+
+            CheckAndFixItem result = (CheckAndFixItem)serializer.Deserialize(xmlContent);
+            return result;
+        }
+
+        /// <summary>
+        /// Deserialize <c>CheckAndFixItem</c> XML content into a corresonding object.
+        /// </summary>
+        /// <param name="xmlContent">A string representing a <c>CheckAndFixItem</c>. (required)</param>
         /// <returns>Corresponding <c>CheckAndFixItem</c> object.</returns>
         public static CheckAndFixItem LoadFromXmlContent(string xmlContent)
         {
