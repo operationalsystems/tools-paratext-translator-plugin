@@ -6,14 +6,15 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Threading.Tasks;
+using TVPMain.Util;
 
 namespace TvpMain.CheckManager
 {
     public class S3Service : IRemoteService
     {
         // Read-only PPM repository and CLI AWS configuration parameters.
-        const String accessKey = "";
-        const String secretKey = "";
+        const String accessKey = AWSCredentials.AWS_ACCESS_KEY_ID;
+        const String secretKey = AWSCredentials.AWS_ACCESS_KEY_SECRET;
         const String bucketName = "biblica-tvp-checks-repo";
 
         /// <summary>
