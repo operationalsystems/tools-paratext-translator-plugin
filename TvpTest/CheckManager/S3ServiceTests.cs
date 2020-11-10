@@ -11,8 +11,8 @@ namespace TvpTest
     public class TestS3Service : S3Service
     {
         // Read-only PPM repository and CLI AWS configuration parameters.
-        const string accessKey = "";
-        const string secretKey = "";
+        const string accessKey = "ACCESS_KEY_PLACEHOLDER";
+        const string secretKey = "KEY_SECRET_PLACEHOLDER";
         const string bucketName = "biblica-tvp-checks-repo";
         private readonly AmazonS3Client s3Client = new AmazonS3Client(accessKey, secretKey, RegionEndpoint.USEast1);
 

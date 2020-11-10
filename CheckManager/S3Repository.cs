@@ -10,28 +10,38 @@ namespace TvpMain.CheckManager
     {
         private S3Service service = new S3Service();
 
+        public virtual S3Service GetService()
+        {
+            return service;
+        }
+
+        private void SetService(S3Service value)
+        {
+            service = value;
+        }
+
         public void AddCheckAndFixItem(string filename, CheckAndFixItem item)
         {
             if (String.IsNullOrEmpty(filename)) new ArgumentNullException(nameof(filename));
 
-            service.PutFileStream(filename, item.WriteToXmlStream());
+            GetService().PutFileStream(filename, item.WriteToXmlStream());
         }
 
         public async Task AddCheckAndFixItemAsync(string filename, CheckAndFixItem item)
         {
             if (String.IsNullOrEmpty(filename)) new ArgumentNullException(nameof(filename));
 
-            await service.PutFileStreamAsync(filename, item.WriteToXmlStream());
+            await GetService().PutFileStreamAsync(filename, item.WriteToXmlStream());
         }
 
         public List<CheckAndFixItem> GetCheckAndFixItems()
         {
             List<CheckAndFixItem> checkAndFixItems = new List<CheckAndFixItem>();
 
-            List<String> filenames = service.ListAllFiles();
+            List<String> filenames = GetService().ListAllFiles();
             foreach (string file in filenames)
             {
-                using Stream fileStream = service.GetFileStream(file);
+                using Stream fileStream = GetService().GetFileStream(file);
                 CheckAndFixItem checkAndFixItem = ReadCheckAndFixItemFromStream(fileStream);
                 if (checkAndFixItem != null) checkAndFixItems.Add(checkAndFixItem);
             }
@@ -43,10 +53,10 @@ namespace TvpMain.CheckManager
         {
             List<CheckAndFixItem> checkAndFixItems = new List<CheckAndFixItem>();
 
-            List<String> filenames = await service.ListAllFilesAsync();
+            List<String> filenames = await GetService().ListAllFilesAsync();
             foreach (string file in filenames)
             {
-                using Stream fileStream = await service.GetFileStreamAsync(file);
+                using Stream fileStream = await GetService().GetFileStreamAsync(file);
                 CheckAndFixItem checkAndFixItem = ReadCheckAndFixItemFromStream(fileStream);
                 if (checkAndFixItem != null) checkAndFixItems.Add(checkAndFixItem);
             }
