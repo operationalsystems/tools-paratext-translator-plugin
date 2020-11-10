@@ -15,7 +15,7 @@ namespace TvpMain.CheckManager
         // Read-only PPM repository and CLI AWS configuration parameters.
         const String accessKey = AWSCredentials.AWS_ACCESS_KEY_ID;
         const String secretKey = AWSCredentials.AWS_ACCESS_KEY_SECRET;
-        const String bucketName = "biblica-tvp-checks-repo";
+        const String bucketName = "biblica-tvp-check-repo";
         private AmazonS3Client s3Client = new AmazonS3Client(accessKey, secretKey, RegionEndpoint.USEast1);
 
         /// <summary>
