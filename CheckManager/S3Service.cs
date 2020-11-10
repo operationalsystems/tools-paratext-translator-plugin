@@ -16,11 +16,23 @@ namespace TvpMain.CheckManager
         const String accessKey = AWSCredentials.AWS_ACCESS_KEY_ID;
         const String secretKey = AWSCredentials.AWS_ACCESS_KEY_SECRET;
         const String bucketName = "biblica-tvp-checks-repo";
+        private AmazonS3Client s3Client = new AmazonS3Client(accessKey, secretKey, RegionEndpoint.USEast1);
 
         /// <summary>
         /// The S3 client we use for S3 requests.
         /// </summary>
-        private AmazonS3Client S3Client { get; set; } = new AmazonS3Client(accessKey, secretKey, RegionEndpoint.USEast1);
+        public virtual AmazonS3Client GetS3Client()
+        {
+            return s3Client;
+        }
+
+        /// <summary>
+        /// The S3 client we use for S3 requests.
+        /// </summary>
+        private void SetS3Client(AmazonS3Client value)
+        {
+            s3Client = value;
+        }
 
         public List<string> ListAllFiles()
         {
@@ -38,7 +50,7 @@ namespace TvpMain.CheckManager
             ListObjectsV2Response response;
             do
             {
-                response = await S3Client.ListObjectsV2Async(request);
+                response = await GetS3Client().ListObjectsV2Async(request);
 
                 // Process the response.
                 foreach (S3Object entry in response.S3Objects)
@@ -64,7 +76,7 @@ namespace TvpMain.CheckManager
                 Key = file
             };
 
-            GetObjectResponse getObjectResponse = await S3Client.GetObjectAsync(getObjectRequest);
+            GetObjectResponse getObjectResponse = await GetS3Client().GetObjectAsync(getObjectRequest);
 
             return getObjectResponse.ResponseStream;
         }
@@ -83,7 +95,7 @@ namespace TvpMain.CheckManager
                 InputStream = file
             };
 
-            PutObjectResponse putObjectResponse = await S3Client.PutObjectAsync(putObjectRequest);
+            PutObjectResponse putObjectResponse = await GetS3Client().PutObjectAsync(putObjectRequest);
 
             return putObjectResponse.HttpStatusCode;
         }
