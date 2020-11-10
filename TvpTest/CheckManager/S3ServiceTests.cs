@@ -5,15 +5,22 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.IO;
 using TvpMain.Check;
 using TvpMain.CheckManager;
+using TVPTest;
 
 namespace TvpTest
 {
     public class TestS3Service : S3Service
     {
         // Read-only PPM repository and CLI AWS configuration parameters.
-        const string accessKey = "ACCESS_KEY_PLACEHOLDER";
-        const string secretKey = "KEY_SECRET_PLACEHOLDER";
-        const string bucketName = "biblica-tvp-check-repo";
+        const string accessKey = TestAWSCredentials.AWS_TVP_TEST_ACCESS_KEY_ID;
+        const string secretKey = TestAWSCredentials.AWS_TVP_TEST_ACCESS_KEY_SECRET;
+        private string BucketName = TestAWSCredentials.AWS_TVP_TEST_BUCKET_NAME;
+
+        public override string GetBucketName()
+        {
+            return BucketName;
+        }
+
         private readonly AmazonS3Client s3Client = new AmazonS3Client(accessKey, secretKey, RegionEndpoint.USEast1);
 
         public override AmazonS3Client GetS3Client()
@@ -25,7 +32,7 @@ namespace TvpTest
         {
             DeleteObjectRequest deleteObjectRequest = new DeleteObjectRequest
             {
-                BucketName = bucketName,
+                BucketName = GetBucketName(),
                 Key = file
             };
             s3Client.DeleteObject(deleteObjectRequest);
@@ -45,7 +52,11 @@ namespace TvpTest
             CheckAndFixItem checkAndFix = new CheckAndFixItem
             {
                 Name = "test",
-                Version = "1.2.3.4"
+                Version = "1.2.3.4",
+                CheckRegex = "*.",
+                FixRegex = "*.",
+                CheckScript = "return null;",
+                FixScript = "return null;"
             };
             Service.PutFileStream(filename, checkAndFix.WriteToXmlStream());
         }
@@ -56,7 +67,11 @@ namespace TvpTest
             CheckAndFixItem checkAndFix = new CheckAndFixItem
             {
                 Name = "test",
-                Version = "1.2.3.5"
+                Version = "1.2.3.5",
+                CheckRegex = "*.",
+                FixRegex = "*.",
+                CheckScript = "return null;",
+                FixScript = "return null;"
             };
             Service.PutFileStream(filename, checkAndFix.WriteToXmlStream());
 
@@ -75,7 +90,7 @@ namespace TvpTest
         public void GetFileTest()
         {
             using Stream file = Service.GetFileStream(filename);
-            Assert.IsTrue(file.Length > 0);
+            Assert.IsTrue(CheckAndFixItem.LoadFromXmlContent(file) is CheckAndFixItem);
         }
 
         [TestCleanup()]

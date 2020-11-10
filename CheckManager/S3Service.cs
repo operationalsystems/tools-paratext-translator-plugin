@@ -13,9 +13,20 @@ namespace TvpMain.CheckManager
     public class S3Service : IRemoteService
     {
         // Read-only PPM repository and CLI AWS configuration parameters.
-        const String accessKey = AWSCredentials.AWS_ACCESS_KEY_ID;
-        const String secretKey = AWSCredentials.AWS_ACCESS_KEY_SECRET;
-        const String bucketName = "biblica-tvp-check-repo";
+        const string accessKey = AWSCredentials.AWS_TVP_ACCESS_KEY_ID;
+        const string secretKey = AWSCredentials.AWS_TVP_ACCESS_KEY_SECRET;
+        private string BucketName = AWSCredentials.AWS_TVP_BUCKET_NAME;
+
+        public virtual string GetBucketName()
+        {
+            return BucketName;
+        }
+
+        private void SetBucketName(string value)
+        {
+            BucketName = value;
+        }
+
         private AmazonS3Client s3Client = new AmazonS3Client(accessKey, secretKey, RegionEndpoint.USEast1);
 
         /// <summary>
@@ -44,7 +55,7 @@ namespace TvpMain.CheckManager
             List<string> checkFileNames = new List<string>();
             ListObjectsV2Request request = new ListObjectsV2Request
             {
-                BucketName = bucketName,
+                BucketName = GetBucketName(),
                 MaxKeys = 10
             };
             ListObjectsV2Response response;
@@ -72,7 +83,7 @@ namespace TvpMain.CheckManager
         {
             GetObjectRequest getObjectRequest = new GetObjectRequest
             {
-                BucketName = bucketName,
+                BucketName = GetBucketName(),
                 Key = file
             };
 
@@ -90,7 +101,7 @@ namespace TvpMain.CheckManager
         {
             PutObjectRequest putObjectRequest = new PutObjectRequest
             {
-                BucketName = bucketName,
+                BucketName = GetBucketName(),
                 Key = filename,
                 InputStream = file
             };

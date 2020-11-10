@@ -27,7 +27,7 @@ namespace TvpTest
         {
             CheckAndFixItem checkAndFixItem = new CheckAndFixItem
             {
-                Version = "1.2.3.5"
+                Version = "1.2.3.4"
             };
 
             //Throws an exception if Name is null.
@@ -36,19 +36,19 @@ namespace TvpTest
             CheckAndFixItem checkAndFixItem2 = new CheckAndFixItem
             {
                 Name = "Test Check",
-                Version = "1.2.3.5",
+                Version = "1.2.3.4",
                 Description = "A test check",
                 CheckRegex = "*.",
                 FixRegex = "*.",
                 CheckScript = "return null;",
-                FixScript = ""
+                FixScript = "return null;"
             };
 
             testFolderRepository.AddCheckAndFixItem(filename, checkAndFixItem2);
 
             List<CheckAndFixItem> checkAndFixItems = testFolderRepository.GetCheckAndFixItems();
             Assert.IsTrue(checkAndFixItems.Count == 1);
-            Assert.IsTrue(checkAndFixItems[0].Version == "1.2.3.5");
+            Assert.IsTrue(checkAndFixItems[0].Version == "1.2.3.4");
         }
 
         [TestCleanup()]

@@ -37,7 +37,11 @@ namespace TvpTest
             {
                 Name = "A Sample Check",
                 Version = "1.0.1",
-                Description = "A check pushed by the AddCheckAndFixItem test"
+                Description = "A check pushed by the AddCheckAndFixItem test",
+                CheckRegex = "*.",
+                FixRegex = "*.",
+                CheckScript = "return null;",
+                FixScript = "return null;"
             };
             s3Repository.AddCheckAndFixItem(filename1, check);
 
@@ -54,7 +58,11 @@ namespace TvpTest
             {
                 Name = "A Sample Async Check",
                 Version = "1.0.0",
-                Description = "A check pushed by the AddCheckAndFixItemAsync test"
+                Description = "A check pushed by the AddCheckAndFixItemAsync test",
+                CheckRegex = "*.",
+                FixRegex = "*.",
+                CheckScript = "return null;",
+                FixScript = "return null;"
             };
             s3Repository.AddCheckAndFixItemAsync(filename2, check).Wait();
 

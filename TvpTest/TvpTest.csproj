@@ -150,6 +150,7 @@
     <Compile Include="CheckManager\S3ServiceTests.cs" />
     <Compile Include="ImportManagerTests.cs" />
     <Compile Include="CheckAndFixTests.cs" />
+    <Compile Include="TestAWSCredentials.cs" />
     <Compile Include="TextCheckRunnerTests.cs" />
     <Compile Include="FilterTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -217,4 +218,21 @@
   <Import Project="..\packages\ParatextData.9.0.3\build\ParatextData.targets" Condition="Exists('..\packages\ParatextData.9.0.3\build\ParatextData.targets')" />
   <Import Project="..\packages\SIL.Lib.6.0.11\build\SIL.Lib.targets" Condition="Exists('..\packages\SIL.Lib.6.0.11\build\SIL.Lib.targets')" />
   <Import Project="..\packages\MSTest.TestAdapter.1.3.2\build\net45\MSTest.TestAdapter.targets" Condition="Exists('..\packages\MSTest.TestAdapter.1.3.2\build\net45\MSTest.TestAdapter.targets')" />
+  <PropertyGroup>
+    <PreBuildEvent>echo /// This is an auto-generated file, created by a Pre-Build event. &gt; "$(ProjectDir)TestAWSCredentials.cs"
+echo /// After changing environment variables, restart Visual Studio. &gt;&gt; "$(ProjectDir)TestAWSCredentials.cs"
+echo namespace TVPTest &gt;&gt; "$(ProjectDir)TestAWSCredentials.cs"
+echo { &gt;&gt; "$(ProjectDir)TestAWSCredentials.cs"
+echo     ///^&lt;summary^&gt;Configuration information for AWS services.^&lt;/summary^&gt; &gt;&gt; "$(ProjectDir)TestAWSCredentials.cs"
+echo     public static class TestAWSCredentials &gt;&gt; "$(ProjectDir)TestAWSCredentials.cs"
+echo     { &gt;&gt; "$(ProjectDir)TestAWSCredentials.cs"
+echo         ///^&lt;summary^&gt;The AWS Access Key ID. Provided by an environment eariable of the same name.^&lt;/summary^&gt; &gt;&gt;"$(ProjectDir)TestAWSCredentials.cs"
+echo         public const string AWS_TVP_TEST_ACCESS_KEY_ID = "$(AWS_TVP_TEST_ACCESS_KEY_ID)"; &gt;&gt; "$(ProjectDir)TestAWSCredentials.cs"
+echo         ///^&lt;summary^&gt;The AWS Access Key Secret. Provided by an environment eariable of the same name.^&lt;/summary^&gt; &gt;&gt; "$(ProjectDir)TestAWSCredentials.cs"
+echo         public const string AWS_TVP_TEST_ACCESS_KEY_SECRET = "$(AWS_TVP_TEST_ACCESS_KEY_SECRET)"; &gt;&gt; "$(ProjectDir)TestAWSCredentials.cs"
+echo         ///^&lt;summary^&gt;The AWS Bucket Name. Provided by an environment eariable of the same name.^&lt;/summary^&gt; &gt;&gt; "$(ProjectDir)TestAWSCredentials.cs"
+echo         public const string AWS_TVP_TEST_BUCKET_NAME = "$(AWS_TVP_TEST_BUCKET_NAME)"; &gt;&gt; "$(ProjectDir)TestAWSCredentials.cs"
+echo     } &gt;&gt; "$(ProjectDir)TestAWSCredentials.cs"
+echo } &gt;&gt; "$(ProjectDir)TestAWSCredentials.cs"</PreBuildEvent>
+  </PropertyGroup>
 </Project>
