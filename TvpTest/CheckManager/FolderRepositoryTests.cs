@@ -2,82 +2,60 @@
 using Moq;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Threading.Tasks;
 using TvpMain.Check;
 using TvpMain.CheckManager;
 
 namespace TvpTest
 {
+    public class TestFolderRepository : FolderRepository
+    {
+        public const string folderName = "checks";
+        public override string FolderPath => Path.Combine(Directory.GetCurrentDirectory(), folderName);
+    }
+
     [TestClass()]
     public class FolderRepositoryTests
     {
-        private Mock<FolderRepository> mockFolderRepository;
+        const string filename = "test.xml";
 
-        [TestInitialize]
-        [DeploymentItem(@"Resources\checks\test-checkandfixitem-1.xml", "Resources")]
-        public void TestSetup()
-        {
-            // Set up a fully-functional mock of the repository class so that we can easily override members and methods.
-            mockFolderRepository = new Mock<FolderRepository>
-            {
-                CallBase = true
-            };
-            mockFolderRepository.Setup(folderRepository => folderRepository.FolderPath).Returns("Resources\\checks");
-        }
-
-        [TestMethod()]
-        public void GetCheckAndFixItemsTest()
-        {
-            List<TvpMain.Check.CheckAndFixItem> checkAndFixItems = mockFolderRepository.Object.GetCheckAndFixItems();
-            Assert.IsTrue(checkAndFixItems.Count == 1);
-        }
-
-        [TestMethod()]
-        public void GetCheckAndFixItemsTestAsync()
-        {
-            Task<List<TvpMain.Check.CheckAndFixItem>> checkAndFixItems = mockFolderRepository.Object.GetCheckAndFixItemsAsync();
-            checkAndFixItems.Wait();
-            Assert.IsTrue(checkAndFixItems.Result.Count == 1);
-        }
+        private readonly TestFolderRepository testFolderRepository = new TestFolderRepository();
 
         [TestMethod()]
         public void AddCheckAndFixItemsTest()
         {
             CheckAndFixItem checkAndFixItem = new CheckAndFixItem
             {
-                Version = "1.2.3.4"
+                Version = "1.2.3.5"
             };
 
             //Throws an exception if Name is null.
-            Assert.ThrowsException<ArgumentNullException>(() => mockFolderRepository.Object.AddCheckAndFixItem(null, checkAndFixItem));
-        }
+            Assert.ThrowsException<ArgumentNullException>(() => testFolderRepository.AddCheckAndFixItem(null, checkAndFixItem));
 
-        [TestMethod()]
-        public void AddCheckAndFixItemsTestAsync()
-        {
-            CheckAndFixItem checkAndFixItem = new CheckAndFixItem
+            CheckAndFixItem checkAndFixItem2 = new CheckAndFixItem
             {
-                Version = "1.2.3.4"
+                Name = "Test Check",
+                Version = "1.2.3.5",
+                Description = "A test check",
+                CheckRegex = "*.",
+                FixRegex = "*.",
+                CheckScript = "return null;",
+                FixScript = ""
             };
 
-            //Throws an exception if Name is null. Tasks throw AggregateExceptions, so we need to check the first error within.
-            try
-            {
-                mockFolderRepository.Object.AddCheckAndFixItemAsync(null, checkAndFixItem).Wait();
-            }
-            catch (AggregateException ae)
-            {
-                var e = ae.Flatten().InnerExceptions[0];
-                // Check the type of the first exception.
-                if (e.GetType() == typeof(ArgumentNullException))
-                {
-                    Assert.IsTrue(true);
-                }
-                else
-                {
-                    Assert.Fail($"Expected ArgumentNullException, got {e.GetType()}.");
-                }
-            }
+            testFolderRepository.AddCheckAndFixItem(filename, checkAndFixItem2);
+
+            List<CheckAndFixItem> checkAndFixItems = testFolderRepository.GetCheckAndFixItems();
+            Assert.IsTrue(checkAndFixItems.Count == 1);
+            Assert.IsTrue(checkAndFixItems[0].Version == "1.2.3.5");
+        }
+
+        [TestCleanup()]
+        public void TestCleanup()
+        {
+            File.Delete(Path.Combine(testFolderRepository.FolderPath, filename));
+            Directory.Delete(testFolderRepository.FolderPath);
         }
     }
 }

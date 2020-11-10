@@ -145,7 +145,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AbstractCheckTests.cs" />
-    <Compile Include="CheckManager\CheckManagerTests.cs" />
     <Compile Include="CheckManager\FolderRepositoryTests.cs" />
     <Compile Include="CheckManager\S3RepositoryTests.cs" />
     <Compile Include="CheckManager\S3ServiceTests.cs" />
@@ -160,9 +159,6 @@
   <ItemGroup>
     <None Include="app.config" />
     <None Include="packages.config" />
-    <Content Include="Resources\checks\test-checkandfixitem-1.XML">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
     <Content Include="Resources\reference-results-1.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

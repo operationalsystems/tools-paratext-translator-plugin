@@ -22,6 +22,7 @@ namespace TvpMain.CheckManager
         {
             if (String.IsNullOrEmpty(filename)) throw new ArgumentNullException(nameof(filename));
 
+            VerifyFolderPath();
             string filePath = Path.Combine(FolderPath, filename);
 
             try
