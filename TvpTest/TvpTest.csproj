@@ -149,6 +149,7 @@
     <Compile Include="CheckManager\S3RepositoryTests.cs" />
     <Compile Include="CheckManager\S3ServiceTests.cs" />
     <Compile Include="ImportManagerTests.cs" />
+    <Compile Include="LocalCheckAndFixManagerTests.cs" />
     <Compile Include="CheckAndFixTests.cs" />
     <Compile Include="TestAWSCredentials.cs" />
     <Compile Include="TextCheckRunnerTests.cs" />
