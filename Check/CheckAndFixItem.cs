@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Runtime.Remoting.Messaging;
 using System.Xml;
 using System.Xml.Serialization;
 
@@ -33,8 +31,9 @@ namespace TvpMain.Check
         /// <summary>
         /// The GUID for this Check and Fix.
         /// </summary>
-        public String Id {
-            get { return _id.ToString();  }
+        public String Id
+        {
+            get { return _id.ToString(); }
             set
             {
                 _id = Guid.Parse(value);
@@ -52,11 +51,13 @@ namespace TvpMain.Check
         /// <summary>
         /// The version of this Check and Fix item.
         /// </summary>
-        public String Version { 
-            get { return _version.ToString(); } 
-            set {
+        public String Version
+        {
+            get { return _version.ToString(); }
+            set
+            {
                 _version = new Version(value);
-            } 
+            }
         }
         /// <summary>
         /// The Check's regular expression. The check regex will be evaluated before the check script.
@@ -98,7 +99,24 @@ namespace TvpMain.Check
         /// <summary>
         /// Deserialize <c>CheckAndFixItem</c> XML content into a corresonding object.
         /// </summary>
-        /// <param name="xmlContent">The absolute path of the <c>CheckAndFixItem</c> XML file. (required)</param>
+        /// <param name="xmlContent">A <c>Stream</c> representing a <c>CheckAndFixItem</c>. (required)</param>
+        /// <returns>Corresponding <c>CheckAndFixItem</c> object.</returns>
+        public static CheckAndFixItem LoadFromXmlContent(Stream xmlContent)
+        {
+            // validate input
+            _ = xmlContent ?? throw new ArgumentNullException(nameof(xmlContent));
+
+            // deserialize the file into an object
+            var serializer = new XmlSerializer(typeof(CheckAndFixItem));
+
+            CheckAndFixItem result = (CheckAndFixItem)serializer.Deserialize(xmlContent);
+            return result;
+        }
+
+        /// <summary>
+        /// Deserialize <c>CheckAndFixItem</c> XML content into a corresonding object.
+        /// </summary>
+        /// <param name="xmlContent">A string representing a <c>CheckAndFixItem</c>. (required)</param>
         /// <returns>Corresponding <c>CheckAndFixItem</c> object.</returns>
         public static CheckAndFixItem LoadFromXmlContent(string xmlContent)
         {
@@ -129,6 +147,19 @@ namespace TvpMain.Check
 
             writer.Serialize(file, this);
             file.Close();
+        }
+
+        /// <summary>
+        /// Serialize the current <c>CheckAndFixItem</c> object into an XML <c>Stream</c>.
+        /// </summary>
+        /// <returns>Corresponding <c>CheckAndFixItem</c> object as an XML <c>Stream</c>.</returns>
+        public Stream WriteToXmlStream()
+        {
+            XmlSerializer xmlSerializer = new XmlSerializer(this.GetType());
+
+            MemoryStream stream = new MemoryStream();
+            xmlSerializer.Serialize(stream, this);
+            return (Stream)stream;
         }
 
         /// <summary>

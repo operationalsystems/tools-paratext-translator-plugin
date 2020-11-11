@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace TvpMain.Check
 {
@@ -21,7 +18,8 @@ namespace TvpMain.Check
         /// The ctor.
         /// </summary>
         /// <param name="rootPath">The directory to store and retrieve the <c>CheckAndFixItem</c> items on disk. (required)</param>
-        public LocalCheckAndFixManager(DirectoryInfo rootPath) {
+        public LocalCheckAndFixManager(DirectoryInfo rootPath)
+        {
             // validate input
             _ = rootPath ?? throw new ArgumentNullException(nameof(rootPath));
 

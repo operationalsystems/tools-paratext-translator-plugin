@@ -119,5 +119,15 @@ namespace TvpMain.Util
         /// The copyright for this plugin.
         /// </summary>
         public const string COPYRIGHT = "© 2020 Biblica, Inc.";
+
+        /// <summary>
+        /// The folder name where checks should be installed. Assumes that the plugin shortname is "TVP".
+        /// </summary>
+        public const string CHECK_FOLDER_NAME = @"plugins\TVP\checks";
+
+        /// <summary>
+        /// The file extension used by checks.
+        /// </summary>
+        public const string CHECK_FILE_EXTENSION = "xml";
     }
 }
