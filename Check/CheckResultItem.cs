@@ -17,7 +17,7 @@ namespace TvpMain.Check
     /// </summary>
     [JsonObject(MemberSerialization.OptIn)]
 
-    public class CheckItem
+    public class CheckResultItem
     {
         /// <summary>
         /// Message describing the result
@@ -76,7 +76,7 @@ namespace TvpMain.Check
         /// <param name="fixText">Suggested replacement text (optional, may be null).</param>
         /// <param name="checkType">Check type (i.e., source).</param>
         /// <param name="resultTypeCode">Result type code (i.e., a discrete error sub-type).</param>
-        public CheckItem(string description,
+        public CheckResultItem(string description,
             string matchText, int matchStart,
             string fixText, CheckType checkType,
             int resultTypeCode)
@@ -96,7 +96,7 @@ namespace TvpMain.Check
         /// <param name="checkType">Check type (i.e., source).</param>
         /// <param name="resultTypeCode">Result type code (i.e., a discrete error sub-type).</param>
         /// <param name="resultState">User-controlled result state.</param>
-        public CheckItem(string description,
+        public CheckResultItem(string description,
             string matchText, int matchStart,
             string fixText, CheckType checkType,
             int resultTypeCode, ResultState resultState)
@@ -114,11 +114,11 @@ namespace TvpMain.Check
         /// Private ctor for serialization.
         /// </summary>
         [JsonConstructor]
-        private CheckItem()
+        private CheckResultItem()
         {
         }
 
-        protected bool Equals(CheckItem other)
+        protected bool Equals(CheckResultItem other)
         {
             return Description == other.Description
                    && MatchText == other.MatchText
@@ -148,16 +148,17 @@ namespace TvpMain.Check
                 hashCode = (hashCode * MainConsts.HASH_PRIME) ^ (FixText != null ? FixText.GetHashCode() : 0);
                 hashCode = (hashCode * MainConsts.HASH_PRIME) ^ (int)CheckType;
                 hashCode = (hashCode * MainConsts.HASH_PRIME) ^ ResultTypeCode;
+                hashCode = (hashCode * MainConsts.HASH_PRIME) ^ (int)ResultState;
                 return hashCode;
             }
         }
 
-        public static bool operator ==(CheckItem left, CheckItem right)
+        public static bool operator ==(CheckResultItem left, CheckResultItem right)
         {
             return Equals(left, right);
         }
 
-        public static bool operator !=(CheckItem left, CheckItem right)
+        public static bool operator !=(CheckResultItem left, CheckResultItem right)
         {
             return !Equals(left, right);
         }
