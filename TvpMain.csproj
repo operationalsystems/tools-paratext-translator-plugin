@@ -228,6 +228,7 @@
     <Compile Include="CheckManager\S3Repository.cs" />
     <Compile Include="Check\CheckAndFixItem.cs" />
     <Compile Include="Check\CheckArea.cs" />
+    <Compile Include="Check\CheckResultItem.cs" />
     <Compile Include="Check\LocalCheckAndFixManager.cs" />
     <Compile Include="Form\LicenseForm.cs">
       <SubType>Form</SubType>

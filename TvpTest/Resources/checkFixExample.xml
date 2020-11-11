@@ -1,0 +1,27 @@
+﻿<?xml version="1.0"?>
+<CheckAndFixItem xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <Id>1f60fb2e-23d7-11eb-adc1-0242ac120002</Id>
+  <Name>Example Check Fix</Name>
+  <Description>
+    A simple example that turns all 5 character words from the given text into uppercase.
+  </Description>
+  <Version>1.0.0</Version>
+  <Scope>VERSE</Scope>
+  <DefaultItemDescription>Missing capitalization</DefaultItemDescription>
+  <CheckRegex>/\w+/gm</CheckRegex>
+  <CheckScript>
+    // The check javascript
+    function checkAndFix( items) {
+      // A simple example that could probably be done with just regex, but...
+      return items.filter(i => i[0].length === 5).map(i => ({
+        Description: '5 character word was not capitalized',
+        MatchText: i[0],
+        MatchStart: i.index,
+        MatchLength: i[0].length,
+        CheckType: 'LooseFormatting',
+        FixText: i[0].toUpperCase(),
+        ResultState: 'Found'
+      }))
+    }
+  </CheckScript>
+</CheckAndFixItem>

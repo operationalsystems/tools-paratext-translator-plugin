@@ -2,6 +2,7 @@
 using System.IO;
 using System.Xml;
 using System.Xml.Serialization;
+using TvpMain.Util;
 
 namespace TvpMain.Check
 {
@@ -60,6 +61,23 @@ namespace TvpMain.Check
             }
         }
         /// <summary>
+        /// Enumeration for the scope of the check
+        /// </summary>
+        public enum CheckScope : int {
+            PROJECT,
+            BOOK,
+            CHAPTER,
+            VERSE
+        }
+        /// <summary>
+        /// The scope of the check
+        /// </summary>
+        public CheckScope Scope { get; set; }
+        /// <summary>
+        /// Used for a default value in the resulting check items if there isn't a specific one already provided
+        /// </summary>
+        public String DefaultItemDescription { get; set; }
+        /// <summary>
         /// The Check's regular expression. The check regex will be evaluated before the check script.
         /// </summary>
         public String CheckRegex { get; set; }
@@ -67,15 +85,7 @@ namespace TvpMain.Check
         /// The Check's javascript script content.
         /// </summary>
         public String CheckScript { get; set; }
-        /// <summary>
-        /// The Fix's regular expression. The fix regex will be evaluated before the fix script.
-        /// </summary>
-        public String FixRegex { get; set; }
-        /// <summary>
-        /// The Fix's javascript script content.
-        /// </summary>
-        public String FixScript { get; set; }
-
+        
         //////////////// Serialization and Deserialization functions ///////////////////////
 
         /// <summary>
@@ -187,10 +197,10 @@ namespace TvpMain.Check
                    Name == item.Name &&
                    Description == item.Description &&
                    Version == item.Version &&
+                   Scope == item.Scope &&
+                   DefaultItemDescription == item.DefaultItemDescription &&
                    CheckRegex == item.CheckRegex &&
-                   CheckScript == item.CheckScript &&
-                   FixRegex == item.FixRegex &&
-                   FixScript == item.FixScript;
+                   CheckScript == item.CheckScript;
         }
 
         /// <summary>
@@ -202,5 +212,24 @@ namespace TvpMain.Check
             // deep clone the object by utilizing the serializing and deserializing functions.
             return CheckAndFixItem.LoadFromXmlContent(this.WriteToXmlString());
         }
+
+        /// <inheritdoc />
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                var hashCode = (MainConsts.HASH_PRIME) ^ (Description != null ? Description.GetHashCode() : 0);
+                hashCode = (hashCode * MainConsts.HASH_PRIME) ^ (Id != null ? Id.GetHashCode() : 0);
+                hashCode = (hashCode * MainConsts.HASH_PRIME) ^ (Name != null ? Name.GetHashCode() : 0);
+                hashCode = (hashCode * MainConsts.HASH_PRIME) ^ (Description != null ? Description.GetHashCode() : 0);
+                hashCode = (hashCode * MainConsts.HASH_PRIME) ^ (Version != null ? Version.GetHashCode() : 0);
+                hashCode = (hashCode * MainConsts.HASH_PRIME) ^ Scope.GetHashCode();
+                hashCode = (hashCode * MainConsts.HASH_PRIME) ^ (DefaultItemDescription != null ? DefaultItemDescription.GetHashCode() : 0);
+                hashCode = (hashCode * MainConsts.HASH_PRIME) ^ (CheckRegex != null ? CheckRegex.GetHashCode() : 0);
+                hashCode = (hashCode * MainConsts.HASH_PRIME) ^ (CheckScript != null ? CheckScript.GetHashCode() : 0);
+                return hashCode;
+            }
+        }
+
     }
 }

@@ -54,9 +54,7 @@ namespace TvpTest
                 Name = "test",
                 Version = "1.2.3.4",
                 CheckRegex = "*.",
-                FixRegex = "*.",
-                CheckScript = "return null;",
-                FixScript = "return null;"
+                CheckScript = "return null;"
             };
             Service.PutFileStream(filename, checkAndFix.WriteToXmlStream());
         }
@@ -69,9 +67,7 @@ namespace TvpTest
                 Name = "test",
                 Version = "1.2.3.5",
                 CheckRegex = "*.",
-                FixRegex = "*.",
-                CheckScript = "return null;",
-                FixScript = "return null;"
+                CheckScript = "return null;"
             };
             Service.PutFileStream(filename, checkAndFix.WriteToXmlStream());
 
