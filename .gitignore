@@ -355,3 +355,5 @@ MigrationBackup/
 # IntelliJ
 .idea
 *.iml
+/TvpTest/TestAWSCredentials.cs
+/Util/AWSCredentials.cs
