@@ -20,7 +20,7 @@ namespace TvpTest
                 CheckRegex = @"\b\w*z+\w*\b",
                 CheckScript = @"function(input){
                     return input;
-                }",
+                }"
             };
 
             var testSavePath = Path.Combine(Path.GetTempPath(), "tempCafItem1.xml");
@@ -29,6 +29,17 @@ namespace TvpTest
 
             var loadedCafItem = CheckAndFixItem.LoadFromXmlFile(testSavePath);
             Assert.AreEqual(testCafItem, loadedCafItem);
+        }
+
+        [TestMethod]
+        public void TestFromFileSerialization()
+        {
+            var testFilePath = @"Resources/checkFixExample.xml";
+
+            CheckAndFixItem checkAndFixItem = CheckAndFixItem.LoadFromXmlFile(testFilePath);
+
+            Assert.AreEqual("Example Check Fix", checkAndFixItem.Name);
+            Assert.AreEqual(CheckAndFixItem.CheckScope.VERSE, checkAndFixItem.Scope);
         }
     }
 }
