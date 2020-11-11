@@ -39,9 +39,7 @@ namespace TvpTest
                 Version = "1.0.1",
                 Description = "A check pushed by the AddCheckAndFixItem test",
                 CheckRegex = "*.",
-                FixRegex = "*.",
-                CheckScript = "return null;",
-                FixScript = "return null;"
+                CheckScript = "return null;"
             };
             s3Repository.AddCheckAndFixItem(filename1, check);
 
@@ -60,9 +58,7 @@ namespace TvpTest
                 Version = "1.0.0",
                 Description = "A check pushed by the AddCheckAndFixItemAsync test",
                 CheckRegex = "*.",
-                FixRegex = "*.",
-                CheckScript = "return null;",
-                FixScript = "return null;"
+                CheckScript = "return null;"
             };
             s3Repository.AddCheckAndFixItemAsync(filename2, check).Wait();
 

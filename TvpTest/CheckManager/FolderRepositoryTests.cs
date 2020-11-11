@@ -39,9 +39,7 @@ namespace TvpTest
                 Version = "1.2.3.4",
                 Description = "A test check",
                 CheckRegex = "*.",
-                FixRegex = "*.",
-                CheckScript = "return null;",
-                FixScript = "return null;"
+                CheckScript = "return null;"
             };
 
             testFolderRepository.AddCheckAndFixItem(filename, checkAndFixItem2);
