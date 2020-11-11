@@ -101,7 +101,7 @@ namespace TvpMain.Check
             string fixText, CheckType checkType,
             int resultTypeCode, ResultState resultState)
         {
-            this.Description = description ?? throw new ArgumentNullException(nameof(errorText));
+            this.Description = description ?? throw new ArgumentNullException(nameof(description));
             this.MatchText = matchText ?? throw new ArgumentNullException(nameof(matchText));
             this.MatchStart = matchStart;
             this.FixText = fixText;

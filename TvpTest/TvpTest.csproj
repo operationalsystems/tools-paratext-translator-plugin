@@ -151,6 +151,8 @@
   <ItemGroup>
     <None Include="app.config" />
     <None Include="packages.config" />
+    <Content Include="Resources\checkFixExample.xml" />
+    <Content Include="Resources\checkFixPrototype.js" />
     <Content Include="Resources\reference-results-1.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

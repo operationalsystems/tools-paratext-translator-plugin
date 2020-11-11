@@ -19,12 +19,8 @@ namespace TvpTest
                 Version = "1.0.0",
                 CheckRegex = @"\b\w*z+\w*\b",
                 CheckScript = @"function(input){
-return input;
-}",
-                FixRegex = @"\b\w*z+\w*\b",
-                FixScript = @"function(input){
-return input;
-}",
+                    return input;
+                }",
             };
 
             var testSavePath = Path.Combine(Path.GetTempPath(), "tempCafItem1.xml");
