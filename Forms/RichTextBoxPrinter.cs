@@ -4,7 +4,7 @@ using System.Drawing.Printing;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 
-namespace TvpMain.Form
+namespace TvpMain.Forms
 {
     /// <summary>
     /// http://support.microsoft.com/default.aspx?scid=kb;en-us;812425

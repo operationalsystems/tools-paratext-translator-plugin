@@ -1,4 +1,4 @@
-﻿namespace TvpMain.Form
+﻿namespace TvpMain.Forms
 {
     partial class LicenseForm
     {
