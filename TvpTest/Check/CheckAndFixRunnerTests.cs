@@ -32,7 +32,7 @@ namespace TvpMain.Check.Tests
         /// </summary>
         [TestCategory("IgnoreOnBuild")]
         [TestMethod()]
-        public void ExecCheckAndFixRunnerTest_InFootnotes()
+        public void TestInFootnotes()
         {
             // using Jerimiah chapter 1
             string testText = Jer1;
@@ -52,7 +52,7 @@ namespace TvpMain.Check.Tests
         /// </summary>
         [TestCategory("IgnoreOnBuild")]
         [TestMethod()]
-        public void ExecCheckAndFixRunnerTest_FinalizationCheck1()
+        public void TestFinalizationCheck1()
         {
             // using John chapter 1
             string testText = Jhn1;
