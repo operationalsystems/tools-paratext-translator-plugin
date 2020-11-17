@@ -82,6 +82,10 @@ namespace TvpMain.Check
         /// </summary>
         public String CheckRegex { get; set; }
         /// <summary>
+        /// The Fix's regular expression. The fix regex will be evaluated before the fix script, if present.
+        /// </summary>
+        public String FixRegex { get; set; }
+        /// <summary>
         /// The Check's javascript script content.
         /// </summary>
         public String CheckScript { get; set; }
@@ -200,6 +204,7 @@ namespace TvpMain.Check
                    Scope == item.Scope &&
                    DefaultItemDescription == item.DefaultItemDescription &&
                    CheckRegex == item.CheckRegex &&
+                   FixRegex == item.FixRegex &&
                    CheckScript == item.CheckScript;
         }
 
@@ -226,6 +231,7 @@ namespace TvpMain.Check
                 hashCode = (hashCode * MainConsts.HASH_PRIME) ^ Scope.GetHashCode();
                 hashCode = (hashCode * MainConsts.HASH_PRIME) ^ (DefaultItemDescription != null ? DefaultItemDescription.GetHashCode() : 0);
                 hashCode = (hashCode * MainConsts.HASH_PRIME) ^ (CheckRegex != null ? CheckRegex.GetHashCode() : 0);
+                hashCode = (hashCode * MainConsts.HASH_PRIME) ^ (FixRegex != null ? FixRegex.GetHashCode() : 0);
                 hashCode = (hashCode * MainConsts.HASH_PRIME) ^ (CheckScript != null ? CheckScript.GetHashCode() : 0);
                 return hashCode;
             }

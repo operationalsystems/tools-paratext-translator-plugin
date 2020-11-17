@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace TvpMain.Check
 {
-    class CheckAndFixRunner : ICheckAndFixRunner
+    public class CheckAndFixRunner : ICheckAndFixRunner
     {
         public List<CheckResultItem> ExecCheckAndFix(string text, CheckAndFixItem checkAndFixItem)
         {
