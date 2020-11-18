@@ -33,7 +33,7 @@ namespace TvpTest
         [TestMethod]
         public void TestFromFileSerialization()
         {
-            var testFilePath = @"Resources/checkFixExample.xml";
+            var testFilePath = @"Resources/checkFixes/checkFixExample.xml";
 
             CheckAndFixItem checkAndFixItem = CheckAndFixItem.LoadFromXmlFile(testFilePath);
 
