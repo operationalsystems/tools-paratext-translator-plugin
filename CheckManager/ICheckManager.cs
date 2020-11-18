@@ -7,6 +7,24 @@ namespace TvpMain.CheckManager
     interface ICheckManager
     {
         /// <summary>
+        /// This method returns a list of <c>CheckAndFixItem</c>s that can be installed to the local system.
+        /// </summary>
+        /// <returns>A list of <c>CheckAndFixItem</c>s that can be installed to the local system.</returns>
+        public List<CheckAndFixItem> GetAvailableCheckAndFixItems();
+
+        /// <summary>
+        /// This method returns a list of installed <c>CheckAndFixItem</c>s that have updates available.
+        /// </summary>
+        /// <returns>A key-value pair of installed and available check versions.</returns>
+        public Dictionary<CheckAndFixItem, CheckAndFixItem> GetOutdatedCheckAndFixItems();
+
+        /// <summary>
+        /// This method returns a list of installed <c>CheckAndFixItem</c>s.
+        /// </summary>
+        /// <returns>A list of installed <c>CheckAndFixItem</c>s.</returns>
+        public List<CheckAndFixItem> GetInstalledCheckAndFixItems();
+
+        /// <summary>
         /// This method gets check and fix items from a remote repository.
         /// </summary>
         /// <returns>A list of check and fix items that are available in a remote repository.</returns>

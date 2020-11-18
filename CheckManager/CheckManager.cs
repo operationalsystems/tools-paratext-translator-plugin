@@ -53,6 +53,31 @@ namespace TvpMain.CheckManager
             return s3Repository.AddCheckAndFixItemAsync(filename, item);
         }
 
+        public virtual List<CheckAndFixItem> GetAvailableCheckAndFixItems()
+        {
+            return GetRemoteCheckAndFixItems();
+        }
+        public virtual List<CheckAndFixItem> GetInstalledCheckAndFixItems()
+        {
+            return GetLocalCheckAndFixItems();
+        }
+
+        public virtual Dictionary<CheckAndFixItem, CheckAndFixItem> GetOutdatedCheckAndFixItems()
+        {
+            List<CheckAndFixItem> availableCheckAndFixItems = GetAvailableCheckAndFixItems();
+            availableCheckAndFixItems.Sort((x, y) => new Version(y.Version).CompareTo(new Version(x.Version)));
+            List<CheckAndFixItem> installedCheckAndFixItems = GetInstalledCheckAndFixItems();
+            Dictionary<CheckAndFixItem, CheckAndFixItem> outdatedCheckAndFixItems = new Dictionary<CheckAndFixItem, CheckAndFixItem>();
+
+            installedCheckAndFixItems.ForEach(installedCheck =>
+            {
+                CheckAndFixItem availableUpdate = availableCheckAndFixItems.Find(availableCheck => IsNewVersion(installedCheck, availableCheck));
+                if (availableUpdate != default(CheckAndFixItem)) outdatedCheckAndFixItems.Add(installedCheck, availableUpdate);
+            });
+
+            return outdatedCheckAndFixItems;
+        }
+
         /// <summary>
         /// This method creates a filename for the provided <c>CheckAndFixItem</c>.
         /// </summary>
@@ -61,6 +86,18 @@ namespace TvpMain.CheckManager
         private string GetCheckAndFixItemFilename(CheckAndFixItem item)
         {
             return $"{item.Name.ConvertToTitleCase().Replace(" ", String.Empty)}-{item.Version.Trim()}.{MainConsts.CHECK_FILE_EXTENSION}";
+        }
+
+        /// <summary>
+        /// This method compares two checks and determines whether the candidate is an updated version of the original.
+        /// </summary>
+        /// <param name="original"></param>
+        /// <param name="candidate"></param>
+        /// <returns></returns>
+        public virtual Boolean IsNewVersion(CheckAndFixItem original, CheckAndFixItem candidate)
+        {
+            return String.Equals(candidate.Name, original.Name) &&
+                    Version.Parse(candidate.Version) > Version.Parse(original.Version);
         }
     }
 }

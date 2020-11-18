@@ -156,6 +156,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AbstractCheckTests.cs" />
+    <Compile Include="CheckManager\CheckManagerTests.cs" />
     <Compile Include="CheckManager\FolderRepositoryTests.cs" />
     <Compile Include="CheckManager\S3RepositoryTests.cs" />
     <Compile Include="CheckManager\S3ServiceTests.cs" />
