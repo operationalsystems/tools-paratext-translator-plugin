@@ -4,7 +4,7 @@ using System.IO;
 using System.Threading.Tasks;
 using TvpMain.Check;
 
-namespace TvpMain.CheckManager
+namespace TvpMain.CheckManagement
 {
     public class S3Repository : IRepository
     {

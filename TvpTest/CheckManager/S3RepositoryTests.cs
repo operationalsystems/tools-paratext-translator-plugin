@@ -3,7 +3,7 @@ using Amazon.S3.Model;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Collections.Generic;
 using TvpMain.Check;
-using TvpMain.CheckManager;
+using TvpMain.CheckManagement;
 
 namespace TvpTest
 {

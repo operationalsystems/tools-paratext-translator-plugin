@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using TvpMain.Check;
 using TvpMain.Util;
 
-namespace TvpMain.CheckManager
+namespace TvpMain.CheckManagement
 {
     /// <summary>
     /// This class works with a local, file-based repository for checks and fixes.

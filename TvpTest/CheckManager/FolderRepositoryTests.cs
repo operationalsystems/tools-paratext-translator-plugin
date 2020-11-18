@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using TvpMain.Check;
-using TvpMain.CheckManager;
+using TvpMain.CheckManagement;
 
 namespace TvpTest
 {

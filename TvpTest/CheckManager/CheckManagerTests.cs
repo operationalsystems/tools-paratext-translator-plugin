@@ -3,7 +3,7 @@ using Moq;
 using System;
 using System.Collections.Generic;
 using TvpMain.Check;
-using TvpMain.CheckManager;
+using TvpMain.CheckManagement;
 
 namespace TvpTest
 {

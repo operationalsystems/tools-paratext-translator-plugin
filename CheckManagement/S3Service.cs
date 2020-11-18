@@ -8,7 +8,7 @@ using System.Net;
 using System.Threading.Tasks;
 using TVPMain.Util;
 
-namespace TvpMain.CheckManager
+namespace TvpMain.CheckManagement
 {
     public class S3Service : IRemoteService
     {

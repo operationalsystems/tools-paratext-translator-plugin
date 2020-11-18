@@ -230,13 +230,13 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CheckManager\CheckManager.cs" />
-    <Compile Include="CheckManager\ICheckManager.cs" />
-    <Compile Include="CheckManager\IRemoteService.cs" />
-    <Compile Include="CheckManager\IRepository.cs" />
-    <Compile Include="CheckManager\FolderRepository.cs" />
-    <Compile Include="CheckManager\S3Service.cs" />
-    <Compile Include="CheckManager\S3Repository.cs" />
+    <Compile Include="CheckManagement\CheckManager.cs" />
+    <Compile Include="CheckManagement\ICheckManager.cs" />
+    <Compile Include="CheckManagement\IRemoteService.cs" />
+    <Compile Include="CheckManagement\IRepository.cs" />
+    <Compile Include="CheckManagement\FolderRepository.cs" />
+    <Compile Include="CheckManagement\S3Service.cs" />
+    <Compile Include="CheckManagement\S3Repository.cs" />
     <Compile Include="Check\CheckAndFixItem.cs" />
     <Compile Include="Check\CheckAndFixRunner.cs" />
     <Compile Include="Check\CheckArea.cs" />
@@ -355,6 +355,9 @@
   </ItemGroup>
   <ItemGroup>
     <Analyzer Include="packages\AWSSDK.S3.3.5.3.10\analyzers\dotnet\cs\AWSSDK.S3.CodeAnalysis.dll" />
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadata Include="Connected Services\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="packages\ParatextData.9.0.3\build\ParatextData.targets" Condition="Exists('packages\ParatextData.9.0.3\build\ParatextData.targets')" />

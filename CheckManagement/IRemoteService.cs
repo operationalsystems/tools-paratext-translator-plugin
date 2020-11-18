@@ -3,7 +3,7 @@ using System.IO;
 using System.Net;
 using System.Threading.Tasks;
 
-namespace TvpMain.CheckManager
+namespace TvpMain.CheckManagement
 {
     interface IRemoteService
     {

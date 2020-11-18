@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using TvpMain.Check;
 using TvpMain.Util;
 
-namespace TvpMain.CheckManager
+namespace TvpMain.CheckManagement
 {
     public class CheckManager : ICheckManager
     {

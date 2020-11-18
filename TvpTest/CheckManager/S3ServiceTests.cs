@@ -4,7 +4,7 @@ using Amazon.S3.Model;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.IO;
 using TvpMain.Check;
-using TvpMain.CheckManager;
+using TvpMain.CheckManagement;
 using TVPTest;
 
 namespace TvpTest

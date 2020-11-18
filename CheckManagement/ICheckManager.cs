@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using TvpMain.Check;
 
-namespace TvpMain.CheckManager
+namespace TvpMain.CheckManagement
 {
     interface ICheckManager
     {
