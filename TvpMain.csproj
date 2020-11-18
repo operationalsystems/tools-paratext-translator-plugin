@@ -249,6 +249,12 @@
     <Compile Include="Forms\LicenseForm.Designer.cs">
       <DependentUpon>LicenseForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="Forms\ManageInstalledChecks.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\ManageInstalledChecks.Designer.cs">
+      <DependentUpon>ManageInstalledChecks.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\RichTextBoxPrinter.cs" />
     <Compile Include="Import\ImportManager.cs" />
     <Compile Include="Project\BookNameItem.cs" />
@@ -319,6 +325,9 @@
     <None Include="packages.config" />
     <EmbeddedResource Include="Forms\LicenseForm.resx">
       <DependentUpon>LicenseForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\ManageInstalledChecks.resx">
+      <DependentUpon>ManageInstalledChecks.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
