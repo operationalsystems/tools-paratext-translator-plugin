@@ -32,27 +32,27 @@
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.licenseToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.action = new System.Windows.Forms.Button();
+            this.actionButton = new System.Windows.Forms.Button();
             this.tabControl = new System.Windows.Forms.TabControl();
             this.Available = new System.Windows.Forms.TabPage();
             this.availableChecksGrid = new System.Windows.Forms.DataGridView();
-            this.availableCheckNameDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.availableCheckVersionDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Updates = new System.Windows.Forms.TabPage();
             this.outdatedChecksGrid = new System.Windows.Forms.DataGridView();
-            this.outdatedCheckNameDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.outdatedCheckInstalledVersionDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.outdatedCheckAvailableVersionDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.OutdatedCheckName = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.OutdatedCheckInstalledVersion = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.OutdatedCheckAvailableVersion = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Installed = new System.Windows.Forms.TabPage();
             this.installedChecksGrid = new System.Windows.Forms.DataGridView();
-            this.installedCheckNameDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.installedCheckVersionDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.InstalledCheckName = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.InstalledCheckVersion = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.textBox1 = new System.Windows.Forms.TextBox();
             this.search = new System.Windows.Forms.Button();
             this.checkDescription = new System.Windows.Forms.TextBox();
             this.copyrightText = new System.Windows.Forms.Label();
             this.progressLabel = new System.Windows.Forms.Label();
             this.progressBar = new System.Windows.Forms.ProgressBar();
+            this.AvailableCheckName = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.AvailableCheckVersion = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.menuStrip1.SuspendLayout();
             this.tabControl.SuspendLayout();
             this.Available.SuspendLayout();
@@ -87,14 +87,14 @@
             this.licenseToolStripMenuItem.Size = new System.Drawing.Size(113, 22);
             this.licenseToolStripMenuItem.Text = "License";
             // 
-            // action
+            // actionButton
             // 
-            this.action.Location = new System.Drawing.Point(699, 58);
-            this.action.Name = "action";
-            this.action.Size = new System.Drawing.Size(75, 23);
-            this.action.TabIndex = 1;
-            this.action.Text = "Action";
-            this.action.UseVisualStyleBackColor = true;
+            this.actionButton.Location = new System.Drawing.Point(699, 58);
+            this.actionButton.Name = "actionButton";
+            this.actionButton.Size = new System.Drawing.Size(75, 23);
+            this.actionButton.TabIndex = 1;
+            this.actionButton.Text = "Install";
+            this.actionButton.UseVisualStyleBackColor = true;
             // 
             // tabControl
             // 
@@ -106,6 +106,8 @@
             this.tabControl.SelectedIndex = 0;
             this.tabControl.Size = new System.Drawing.Size(775, 342);
             this.tabControl.TabIndex = 3;
+            this.tabControl.SelectedIndexChanged += new System.EventHandler(this.tabControl_TabIndexChanged);
+            this.tabControl.TabIndexChanged += new System.EventHandler(this.tabControl_TabIndexChanged);
             // 
             // Available
             // 
@@ -124,38 +126,23 @@
             this.availableChecksGrid.AllowUserToDeleteRows = false;
             this.availableChecksGrid.AllowUserToResizeColumns = false;
             this.availableChecksGrid.AllowUserToResizeRows = false;
+            this.availableChecksGrid.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.availableChecksGrid.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
             this.availableChecksGrid.BackgroundColor = System.Drawing.SystemColors.Window;
-            this.availableChecksGrid.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                        | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
-            this.availableChecksGrid.AutoGenerateColumns = false;
             this.availableChecksGrid.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.availableChecksGrid.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
-            this.availableCheckNameDataGridViewTextBoxColumn,
-            this.availableCheckVersionDataGridViewTextBoxColumn});
+            this.AvailableCheckName,
+            this.AvailableCheckVersion});
+            this.availableChecksGrid.Enabled = false;
             this.availableChecksGrid.Location = new System.Drawing.Point(0, 38);
-            this.availableChecksGrid.Name = "availableChecksGrid";
-            this.availableChecksGrid.Size = new System.Drawing.Size(767, 278);
-            this.availableChecksGrid.TabIndex = 0;
             this.availableChecksGrid.MultiSelect = false;
+            this.availableChecksGrid.Name = "availableChecksGrid";
             this.availableChecksGrid.ReadOnly = true;
             this.availableChecksGrid.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            // 
-            // availableCheckNameDataGridViewTextBoxColumn
-            // 
-            this.availableCheckNameDataGridViewTextBoxColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.availableCheckNameDataGridViewTextBoxColumn.DataPropertyName = "Name";
-            this.availableCheckNameDataGridViewTextBoxColumn.HeaderText = "Name";
-            this.availableCheckNameDataGridViewTextBoxColumn.Name = "nameDataGridViewTextBoxColumn";
-            this.availableCheckNameDataGridViewTextBoxColumn.ReadOnly = true;
-            // 
-            // availableCheckVersionDataGridViewTextBoxColumn
-            // 
-            this.availableCheckVersionDataGridViewTextBoxColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.availableCheckVersionDataGridViewTextBoxColumn.DataPropertyName = "Version";
-            this.availableCheckVersionDataGridViewTextBoxColumn.HeaderText = "Version";
-            this.availableCheckVersionDataGridViewTextBoxColumn.Name = "versionDataGridViewTextBoxColumn";
-            this.availableCheckVersionDataGridViewTextBoxColumn.ReadOnly = true;
+            this.availableChecksGrid.Size = new System.Drawing.Size(767, 278);
+            this.availableChecksGrid.TabIndex = 0;
             // 
             // Updates
             // 
@@ -174,47 +161,44 @@
             this.outdatedChecksGrid.AllowUserToDeleteRows = false;
             this.outdatedChecksGrid.AllowUserToResizeColumns = false;
             this.outdatedChecksGrid.AllowUserToResizeRows = false;
+            this.outdatedChecksGrid.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.outdatedChecksGrid.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
             this.outdatedChecksGrid.BackgroundColor = System.Drawing.SystemColors.Window;
-            this.outdatedChecksGrid.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                        | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
-            this.outdatedChecksGrid.AutoGenerateColumns = false;
             this.outdatedChecksGrid.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.outdatedChecksGrid.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
-            this.outdatedCheckNameDataGridViewTextBoxColumn,
-            this.outdatedCheckInstalledVersionDataGridViewTextBoxColumn,
-            this.outdatedCheckAvailableVersionDataGridViewTextBoxColumn});
+            this.OutdatedCheckName,
+            this.OutdatedCheckInstalledVersion,
+            this.OutdatedCheckAvailableVersion});
             this.outdatedChecksGrid.Location = new System.Drawing.Point(0, 38);
-            this.outdatedChecksGrid.Name = "outdatedChecksGrid";
-            this.outdatedChecksGrid.Size = new System.Drawing.Size(767, 278);
-            this.outdatedChecksGrid.TabIndex = 1;
             this.outdatedChecksGrid.MultiSelect = false;
+            this.outdatedChecksGrid.Name = "outdatedChecksGrid";
             this.outdatedChecksGrid.ReadOnly = true;
             this.outdatedChecksGrid.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
+            this.outdatedChecksGrid.Size = new System.Drawing.Size(767, 278);
+            this.outdatedChecksGrid.TabIndex = 1;
             // 
-            // outdatedCheckNameDataGridViewTextBoxColumn
+            // OutdatedCheckName
             // 
-            this.outdatedCheckNameDataGridViewTextBoxColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.outdatedCheckNameDataGridViewTextBoxColumn.DataPropertyName = "Name";
-            this.outdatedCheckNameDataGridViewTextBoxColumn.HeaderText = "Name";
-            this.outdatedCheckNameDataGridViewTextBoxColumn.Name = "outdatedCheckNameDataGridViewTextBoxColumn";
-            this.outdatedCheckNameDataGridViewTextBoxColumn.ReadOnly = true;
+            this.OutdatedCheckName.DataPropertyName = "Name";
+            this.OutdatedCheckName.HeaderText = "Name";
+            this.OutdatedCheckName.Name = "OutdatedCheckName";
+            this.OutdatedCheckName.ReadOnly = true;
             // 
-            // outdatedCheckInstalledVersionDataGridViewTextBoxColumn
+            // OutdatedCheckInstalledVersion
             // 
-            this.outdatedCheckInstalledVersionDataGridViewTextBoxColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.outdatedCheckInstalledVersionDataGridViewTextBoxColumn.DataPropertyName = "InstalledVersion";
-            this.outdatedCheckInstalledVersionDataGridViewTextBoxColumn.HeaderText = "Installed Version";
-            this.outdatedCheckInstalledVersionDataGridViewTextBoxColumn.Name = "outdatedCheckInstalledVersionDataGridViewTextBoxColumn";
-            this.outdatedCheckInstalledVersionDataGridViewTextBoxColumn.ReadOnly = true;
+            this.OutdatedCheckInstalledVersion.DataPropertyName = "InstalledVersion";
+            this.OutdatedCheckInstalledVersion.HeaderText = "Installed Version";
+            this.OutdatedCheckInstalledVersion.Name = "OutdatedCheckInstalledVersion";
+            this.OutdatedCheckInstalledVersion.ReadOnly = true;
             // 
-            // outdatedCheckAvailableVersionDataGridViewTextBoxColumn
+            // OutdatedCheckAvailableVersion
             // 
-            this.outdatedCheckAvailableVersionDataGridViewTextBoxColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.outdatedCheckAvailableVersionDataGridViewTextBoxColumn.DataPropertyName = "AvailableVersion";
-            this.outdatedCheckAvailableVersionDataGridViewTextBoxColumn.HeaderText = "Available Version";
-            this.outdatedCheckAvailableVersionDataGridViewTextBoxColumn.Name = "outdatedCheckAvailableVersionDataGridViewTextBoxColumn";
-            this.outdatedCheckAvailableVersionDataGridViewTextBoxColumn.ReadOnly = true;
+            this.OutdatedCheckAvailableVersion.DataPropertyName = "AvailableVersion";
+            this.OutdatedCheckAvailableVersion.HeaderText = "AvailableVersion";
+            this.OutdatedCheckAvailableVersion.Name = "OutdatedCheckAvailableVersion";
+            this.OutdatedCheckAvailableVersion.ReadOnly = true;
             // 
             // Installed
             // 
@@ -232,38 +216,36 @@
             this.installedChecksGrid.AllowUserToDeleteRows = false;
             this.installedChecksGrid.AllowUserToResizeColumns = false;
             this.installedChecksGrid.AllowUserToResizeRows = false;
+            this.installedChecksGrid.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.installedChecksGrid.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
             this.installedChecksGrid.BackgroundColor = System.Drawing.SystemColors.Window;
-            this.installedChecksGrid.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                        | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
-            this.installedChecksGrid.AutoGenerateColumns = false;
             this.installedChecksGrid.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.installedChecksGrid.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
-            this.installedCheckNameDataGridViewTextBoxColumn,
-            this.installedCheckVersionDataGridViewTextBoxColumn});
+            this.InstalledCheckName,
+            this.InstalledCheckVersion});
             this.installedChecksGrid.Location = new System.Drawing.Point(0, 38);
-            this.installedChecksGrid.Name = "installedChecksGrid";
-            this.installedChecksGrid.Size = new System.Drawing.Size(767, 278);
-            this.installedChecksGrid.TabIndex = 2;
             this.installedChecksGrid.MultiSelect = false;
+            this.installedChecksGrid.Name = "installedChecksGrid";
             this.installedChecksGrid.ReadOnly = true;
             this.installedChecksGrid.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
+            this.installedChecksGrid.Size = new System.Drawing.Size(767, 278);
+            this.installedChecksGrid.TabIndex = 2;
             // 
-            // installedCheckNameDataGridViewTextBoxColumn
+            // InstalledCheckName
             // 
-            this.installedCheckNameDataGridViewTextBoxColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.installedCheckNameDataGridViewTextBoxColumn.DataPropertyName = "Name";
-            this.installedCheckNameDataGridViewTextBoxColumn.HeaderText = "Name";
-            this.installedCheckNameDataGridViewTextBoxColumn.Name = "installedCheckNameDataGridViewTextBoxColumn";
-            this.installedCheckNameDataGridViewTextBoxColumn.ReadOnly = true;
+            this.InstalledCheckName.DataPropertyName = "Name";
+            this.InstalledCheckName.HeaderText = "Name";
+            this.InstalledCheckName.Name = "InstalledCheckName";
+            this.InstalledCheckName.ReadOnly = true;
             // 
-            // installedCheckVersionDataGridViewTextBoxColumn
+            // InstalledCheckVersion
             // 
-            this.installedCheckVersionDataGridViewTextBoxColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.installedCheckVersionDataGridViewTextBoxColumn.DataPropertyName = "Version";
-            this.installedCheckVersionDataGridViewTextBoxColumn.HeaderText = "Version";
-            this.installedCheckVersionDataGridViewTextBoxColumn.Name = "installedCheckVersionDataGridViewTextBoxColumn";
-            this.installedCheckVersionDataGridViewTextBoxColumn.ReadOnly = true;
+            this.InstalledCheckVersion.DataPropertyName = "Version";
+            this.InstalledCheckVersion.HeaderText = "Version";
+            this.InstalledCheckVersion.Name = "InstalledCheckVersion";
+            this.InstalledCheckVersion.ReadOnly = true;
             // 
             // textBox1
             // 
@@ -314,6 +296,20 @@
             this.progressBar.Size = new System.Drawing.Size(114, 14);
             this.progressBar.TabIndex = 9;
             // 
+            // AvailableCheckName
+            // 
+            this.AvailableCheckName.DataPropertyName = "Name";
+            this.AvailableCheckName.HeaderText = "Name";
+            this.AvailableCheckName.Name = "AvailableCheckName";
+            this.AvailableCheckName.ReadOnly = true;
+            // 
+            // AvailableCheckVersion
+            // 
+            this.AvailableCheckVersion.DataPropertyName = "Version";
+            this.AvailableCheckVersion.HeaderText = "Version";
+            this.AvailableCheckVersion.Name = "AvailableCheckVersion";
+            this.AvailableCheckVersion.ReadOnly = true;
+            // 
             // ManageInstalledChecks
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -325,7 +321,7 @@
             this.Controls.Add(this.checkDescription);
             this.Controls.Add(this.search);
             this.Controls.Add(this.textBox1);
-            this.Controls.Add(this.action);
+            this.Controls.Add(this.actionButton);
             this.Controls.Add(this.menuStrip1);
             this.Controls.Add(this.tabControl);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
@@ -351,7 +347,7 @@
         private System.Windows.Forms.MenuStrip menuStrip1;
         private System.Windows.Forms.ToolStripMenuItem helpToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem licenseToolStripMenuItem;
-        private System.Windows.Forms.Button action;
+        private System.Windows.Forms.Button actionButton;
         private System.Windows.Forms.TabControl tabControl;
         private System.Windows.Forms.TabPage Available;
         private System.Windows.Forms.TabPage Updates;
@@ -362,15 +358,15 @@
         private System.Windows.Forms.Label progressLabel;
         private System.Windows.Forms.ProgressBar progressBar;
         private System.Windows.Forms.DataGridView availableChecksGrid;
-        private System.Windows.Forms.DataGridViewTextBoxColumn availableCheckNameDataGridViewTextBoxColumn;
-        private System.Windows.Forms.DataGridViewTextBoxColumn availableCheckVersionDataGridViewTextBoxColumn;
         private System.Windows.Forms.TabPage Installed;
         private System.Windows.Forms.DataGridView outdatedChecksGrid;
-        private System.Windows.Forms.DataGridViewTextBoxColumn outdatedCheckNameDataGridViewTextBoxColumn;
-        private System.Windows.Forms.DataGridViewTextBoxColumn outdatedCheckInstalledVersionDataGridViewTextBoxColumn;
-        private System.Windows.Forms.DataGridViewTextBoxColumn outdatedCheckAvailableVersionDataGridViewTextBoxColumn;
         private System.Windows.Forms.DataGridView installedChecksGrid;
-        private System.Windows.Forms.DataGridViewTextBoxColumn installedCheckNameDataGridViewTextBoxColumn;
-        private System.Windows.Forms.DataGridViewTextBoxColumn installedCheckVersionDataGridViewTextBoxColumn;
+        private System.Windows.Forms.DataGridViewTextBoxColumn OutdatedCheckName;
+        private System.Windows.Forms.DataGridViewTextBoxColumn OutdatedCheckInstalledVersion;
+        private System.Windows.Forms.DataGridViewTextBoxColumn OutdatedCheckAvailableVersion;
+        private System.Windows.Forms.DataGridViewTextBoxColumn InstalledCheckName;
+        private System.Windows.Forms.DataGridViewTextBoxColumn InstalledCheckVersion;
+        private System.Windows.Forms.DataGridViewTextBoxColumn AvailableCheckName;
+        private System.Windows.Forms.DataGridViewTextBoxColumn AvailableCheckVersion;
     }
 }

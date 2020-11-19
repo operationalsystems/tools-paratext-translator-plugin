@@ -1,11 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
-using System.Drawing;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using TvpMain.CheckManagement;
 
@@ -26,8 +21,18 @@ namespace TvpMain.Forms
 
         private void RefreshBindings()
         {
-            availableChecksGrid.DataSource = CheckManager.GetAvailableCheckAndFixItems();
-            installedChecksGrid.DataSource = CheckManager.GetInstalledCheckAndFixItems();
+            var availableChecks = from check in CheckManager.GetAvailableCheckAndFixItems()
+                                  select new
+                                  {
+                                      check.Name,
+                                      check.Version
+                                  };
+            var installedChecks = from check in CheckManager.GetInstalledCheckAndFixItems()
+                                  select new
+                                  {
+                                      check.Name,
+                                      check.Version
+                                  };
 
             var outdatedChecks = from checkKVP in CheckManager.GetOutdatedCheckAndFixItems()
                                  select new
@@ -37,7 +42,33 @@ namespace TvpMain.Forms
                                      AvailableVersion = checkKVP.Value.Version
                                  };
 
+            availableChecksGrid.DataSource = availableChecks.ToList();
+            installedChecksGrid.DataSource = installedChecks.ToList();
             outdatedChecksGrid.DataSource = outdatedChecks.ToList();
+        }
+
+        private void tabControl_TabIndexChanged(object sender, EventArgs e)
+        {
+            TabControl tabControl = (TabControl)sender;
+
+            switch (tabControl.SelectedTab.Name)
+            {
+                case "Available":
+                    {
+                        actionButton.Text = "Install";
+                        break;
+                    }
+                case "Updates":
+                    {
+                        actionButton.Text = "Update";
+                        break;
+                    }
+                case "Installed":
+                    {
+                        actionButton.Text = "Uninstall";
+                        break;
+                    }
+            }
         }
     }
 }
