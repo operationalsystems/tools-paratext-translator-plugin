@@ -47,7 +47,26 @@ namespace TvpMain.CheckManagement
 
         public List<string> ListAllFiles()
         {
-            return ListAllFilesAsync().Result;
+            List<string> checkFileNames = new List<string>();
+            ListObjectsV2Request request = new ListObjectsV2Request
+            {
+                BucketName = GetBucketName(),
+                MaxKeys = 10
+            };
+            ListObjectsV2Response response;
+            do
+            {
+                response = GetS3Client().ListObjectsV2(request);
+
+                // Process the response.
+                foreach (S3Object entry in response.S3Objects)
+                {
+                    checkFileNames.Add(entry.Key);
+                }
+                request.ContinuationToken = response.NextContinuationToken;
+            } while (response.IsTruncated);
+
+            return checkFileNames;
         }
 
         public async Task<List<string>> ListAllFilesAsync()
@@ -76,7 +95,15 @@ namespace TvpMain.CheckManagement
 
         public Stream GetFileStream(string file)
         {
-            return GetFileStreamAsync(file).Result;
+            GetObjectRequest getObjectRequest = new GetObjectRequest
+            {
+                BucketName = GetBucketName(),
+                Key = file
+            };
+
+            GetObjectResponse getObjectResponse = GetS3Client().GetObject(getObjectRequest);
+
+            return getObjectResponse.ResponseStream;
         }
 
         public async Task<Stream> GetFileStreamAsync(string file)
@@ -94,7 +121,16 @@ namespace TvpMain.CheckManagement
 
         public HttpStatusCode PutFileStream(string filename, Stream file)
         {
-            return PutFileStreamAsync(filename, file).Result;
+            PutObjectRequest putObjectRequest = new PutObjectRequest
+            {
+                BucketName = GetBucketName(),
+                Key = filename,
+                InputStream = file
+            };
+
+            PutObjectResponse putObjectResponse = GetS3Client().PutObject(putObjectRequest);
+
+            return putObjectResponse.HttpStatusCode;
         }
 
         public async Task<HttpStatusCode> PutFileStreamAsync(string filename, Stream file)
