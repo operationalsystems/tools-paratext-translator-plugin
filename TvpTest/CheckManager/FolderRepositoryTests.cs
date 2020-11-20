@@ -9,10 +9,14 @@ using TvpMain.CheckManagement;
 
 namespace TvpTest
 {
-    public class TestFolderRepository : FolderRepository
+    public class TestFolderRepository : LocalRepository
     {
         public const string folderName = "checks";
-        public override string FolderPath => Path.Combine(Directory.GetCurrentDirectory(), folderName);
+
+        public override string GetFolderPath()
+        {
+            return Path.Combine(Directory.GetCurrentDirectory(), folderName);
+        }
     }
 
     [TestClass()]
@@ -52,8 +56,8 @@ namespace TvpTest
         [TestCleanup()]
         public void TestCleanup()
         {
-            File.Delete(Path.Combine(testFolderRepository.FolderPath, filename));
-            Directory.Delete(testFolderRepository.FolderPath);
+            File.Delete(Path.Combine(testFolderRepository.GetFolderPath(), filename));
+            Directory.Delete(testFolderRepository.GetFolderPath());
         }
     }
 }

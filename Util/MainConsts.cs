@@ -123,7 +123,12 @@ namespace TvpMain.Util
         /// <summary>
         /// The folder name where checks should be installed. Assumes that the plugin shortname is "TVP".
         /// </summary>
-        public const string CHECK_FOLDER_NAME = @"plugins\TVP\checks";
+        public const string INSTALLED_CHECK_FOLDER_NAME = @"plugins\TVP\installed-checks";
+
+        /// <summary>
+        /// The folder name where checks should be installed. Assumes that the plugin shortname is "TVP".
+        /// </summary>
+        public const string LOCAL_CHECK_FOLDER_NAME = @"plugins\TVP\local-checks";
 
         /// <summary>
         /// The file extension used by checks.

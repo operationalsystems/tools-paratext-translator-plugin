@@ -2,8 +2,10 @@
 using Moq;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using TvpMain.Check;
 using TvpMain.CheckManagement;
+using TvpMain.Util;
 
 namespace TvpTest
 {
@@ -172,6 +174,53 @@ namespace TvpTest
             Assert.IsFalse(checkManager.Object.IsNewVersion(check, differentCheck));
             Assert.IsFalse(checkManager.Object.IsNewVersion(check, oldVersion));
             Assert.IsTrue(checkManager.Object.IsNewVersion(check, newVersion));
+        }
+
+        [TestMethod()]
+        public void It_Can_Manage_Both_Installed_and_LocallyDeveloped_Checks()
+        {
+            CheckAndFixItem remoteCheck = new CheckAndFixItem
+            {
+                Name = "Remote Check",
+                Version = "1.0.0.0",
+                Description = "A check that has been installed from a remote source."
+            };
+            CheckAndFixItem locallyDevelopedCheck = new CheckAndFixItem
+            {
+                Name = "Local Check",
+                Version = "1.0.0.0",
+                Description = "A check that was developed locally."
+            };
+
+            // Expose the methods under test.
+            checkManager.Setup(cm => cm.InstallCheckAndFixItem(It.IsAny<CheckAndFixItem>())).CallBase();
+            checkManager.Setup(cm => cm.SaveCheckAndFixItem(It.IsAny<CheckAndFixItem>())).CallBase();
+            checkManager.Setup(cm => cm.GetInstalledCheckAndFixItems()).CallBase();
+            checkManager.Setup(cm => cm.GetSavedCheckAndFixItems()).CallBase();
+
+            // Add the checks to the repo using their respective methods.
+            checkManager.Object.InstallCheckAndFixItem(remoteCheck);
+            checkManager.Object.SaveCheckAndFixItem(locallyDevelopedCheck);
+
+            // Fetch the checks using their respective methods.
+            List<CheckAndFixItem> installedChecks = checkManager.Object.GetInstalledCheckAndFixItems();
+            List<CheckAndFixItem> locallyDevelopedChecks = checkManager.Object.GetSavedCheckAndFixItems();
+            
+            // Ensure that there is no cross-pollution between the tests.
+            Assert.IsTrue(installedChecks.Contains(remoteCheck));
+            Assert.IsFalse(installedChecks.Contains(locallyDevelopedCheck));
+            Assert.IsTrue(locallyDevelopedChecks.Contains(locallyDevelopedCheck));
+            Assert.IsFalse(locallyDevelopedChecks.Contains(remoteCheck));
+        }
+
+        [TestCleanup()]
+        public void Clean_Up_Check_Installation()
+        {
+            string installedCheckRoot = Path.Combine(Directory.GetCurrentDirectory(), MainConsts.INSTALLED_CHECK_FOLDER_NAME.Split('\\')[0]);
+            if (Directory.Exists(installedCheckRoot)) Directory.Delete(installedCheckRoot, true);
+
+            string localCheckRoot = Path.Combine(Directory.GetCurrentDirectory(), MainConsts.INSTALLED_CHECK_FOLDER_NAME.Split('\\')[0]);
+            if (Directory.Exists(localCheckRoot)) Directory.Delete(localCheckRoot, true);
         }
     }
 }

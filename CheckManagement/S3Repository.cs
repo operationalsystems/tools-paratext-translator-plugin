@@ -72,15 +72,19 @@ namespace TvpMain.CheckManagement
         private CheckAndFixItem ReadCheckAndFixItemFromStream(Stream stream)
         {
             CheckAndFixItem checkAndFixItem = null;
-            try
-            {
-                checkAndFixItem = CheckAndFixItem.LoadFromXmlContent(stream);
-            }
-            catch (Exception)
-            {
-                //TODO: log the error but continue
-            }
+            checkAndFixItem = CheckAndFixItem.LoadFromXmlContent(stream);
+            
             return checkAndFixItem;
+        }
+
+        public void RemoveCheckAndFixItem(string filename)
+        {
+            GetService().DeleteFile(filename);
+        }
+
+        public Task RemoveCheckAndFixItemAsync(string filename)
+        {
+            return GetService().DeleteFileAsync(filename);
         }
     }
 }

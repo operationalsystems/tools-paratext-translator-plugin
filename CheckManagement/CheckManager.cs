@@ -9,19 +9,16 @@ namespace TvpMain.CheckManagement
 {
     public class CheckManager : ICheckManager
     {
-        private readonly FolderRepository folderRepository;
+        private readonly LocalRepository installedChecksRepository;
+        private readonly LocalRepository locallyDevelopedChecksRepository;
 
         private readonly S3Repository s3Repository;
 
         public CheckManager()
         {
-            folderRepository = new FolderRepository();
+            installedChecksRepository = new InstalledChecksRepository();
+            locallyDevelopedChecksRepository = new LocallyDevelopedChecksRepository();
             s3Repository = new S3Repository();
-        }
-
-        public List<CheckAndFixItem> GetLocalCheckAndFixItems()
-        {
-            return folderRepository.GetCheckAndFixItems();
         }
 
         public List<CheckAndFixItem> GetRemoteCheckAndFixItems()
@@ -29,16 +26,39 @@ namespace TvpMain.CheckManagement
             return s3Repository.GetCheckAndFixItems();
         }
 
-        public void InstallCheckAndFixItem(CheckAndFixItem item)
+        public virtual void InstallCheckAndFixItem(CheckAndFixItem item)
         {
             string filename = GetCheckAndFixItemFilename(item);
-            folderRepository.AddCheckAndFixItem(filename, item);
+            installedChecksRepository.AddCheckAndFixItem(filename, item);
         }
 
         public Task InstallCheckAndFixItemAsync(CheckAndFixItem item)
         {
             string filename = GetCheckAndFixItemFilename(item);
-            return folderRepository.AddCheckAndFixItemAsync(filename, item);
+            return installedChecksRepository.AddCheckAndFixItemAsync(filename, item);
+        }
+        
+        public virtual void SaveCheckAndFixItem(CheckAndFixItem item)
+        {
+            string filename = GetCheckAndFixItemFilename(item);
+            locallyDevelopedChecksRepository.AddCheckAndFixItem(filename, item);
+        }
+
+        public Task SaveCheckAndFixItemAsync(CheckAndFixItem item)
+        {
+            string filename = GetCheckAndFixItemFilename(item);
+            return locallyDevelopedChecksRepository.AddCheckAndFixItemAsync(filename, item);
+        }
+
+        public virtual void UninstallCheckAndFixItem(CheckAndFixItem item)
+        {
+            string filename = GetCheckAndFixItemFilename(item);
+            installedChecksRepository.RemoveCheckAndFixItem(filename);
+        }
+        public virtual void DeleteCheckAndFixItem(CheckAndFixItem item)
+        {
+            string filename = GetCheckAndFixItemFilename(item);
+            locallyDevelopedChecksRepository.RemoveCheckAndFixItem(filename);
         }
 
         public void PublishCheckAndFixItem(CheckAndFixItem item)
@@ -55,11 +75,16 @@ namespace TvpMain.CheckManagement
 
         public virtual List<CheckAndFixItem> GetAvailableCheckAndFixItems()
         {
-            return GetRemoteCheckAndFixItems();
+            return s3Repository.GetCheckAndFixItems();
         }
         public virtual List<CheckAndFixItem> GetInstalledCheckAndFixItems()
         {
-            return GetLocalCheckAndFixItems();
+            return installedChecksRepository.GetCheckAndFixItems();
+        }
+        
+        public virtual List<CheckAndFixItem> GetSavedCheckAndFixItems()
+        {
+            return locallyDevelopedChecksRepository.GetCheckAndFixItems();
         }
 
         public virtual Dictionary<CheckAndFixItem, CheckAndFixItem> GetOutdatedCheckAndFixItems()

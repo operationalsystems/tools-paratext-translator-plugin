@@ -146,5 +146,31 @@ namespace TvpMain.CheckManagement
 
             return putObjectResponse.HttpStatusCode;
         }
+
+        public HttpStatusCode DeleteFile(string filename)
+        {
+            DeleteObjectRequest deleteObjectRequest = new DeleteObjectRequest
+            {
+                BucketName = GetBucketName(),
+                Key = filename
+            };
+
+            DeleteObjectResponse deleteObjectResponse = GetS3Client().DeleteObject(deleteObjectRequest);
+
+            return deleteObjectResponse.HttpStatusCode;
+        }
+
+        public async Task<HttpStatusCode> DeleteFileAsync(string filename)
+        {
+            DeleteObjectRequest deleteObjectRequest = new DeleteObjectRequest
+            {
+                BucketName = GetBucketName(),
+                Key = filename
+            };
+
+            DeleteObjectResponse delectObjectResponse = await GetS3Client().DeleteObjectAsync(deleteObjectRequest);
+
+            return delectObjectResponse.HttpStatusCode;
+        }
     }
 }

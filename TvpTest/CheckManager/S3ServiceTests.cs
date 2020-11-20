@@ -27,16 +27,6 @@ namespace TvpTest
         {
             return s3Client;
         }
-
-        public void DeleteFile(string file)
-        {
-            DeleteObjectRequest deleteObjectRequest = new DeleteObjectRequest
-            {
-                BucketName = GetBucketName(),
-                Key = file
-            };
-            s3Client.DeleteObject(deleteObjectRequest);
-        }
     }
     [TestCategory("IgnoreOnBuild")]
     [TestClass()]

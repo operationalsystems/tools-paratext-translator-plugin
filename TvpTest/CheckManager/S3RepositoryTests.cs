@@ -46,7 +46,6 @@ namespace TvpTest
             List<CheckAndFixItem> checkAndFixItems = s3Repository.GetCheckAndFixItems();
 
             Assert.IsTrue(checkAndFixItems.Contains(check));
-            Assert.IsTrue(checkAndFixItems[0].Version == "1.0.1");
         }
 
         [TestMethod()]

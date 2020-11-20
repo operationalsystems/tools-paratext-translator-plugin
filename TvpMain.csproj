@@ -231,10 +231,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CheckManagement\CheckManager.cs" />
+    <Compile Include="CheckManagement\InstalledChecksRepository.cs" />
     <Compile Include="CheckManagement\ICheckManager.cs" />
     <Compile Include="CheckManagement\IRemoteService.cs" />
     <Compile Include="CheckManagement\IRepository.cs" />
-    <Compile Include="CheckManagement\FolderRepository.cs" />
+    <Compile Include="CheckManagement\LocallyDevelopedChecksRepository.cs" />
+    <Compile Include="CheckManagement\LocalRepository.cs" />
     <Compile Include="CheckManagement\S3Service.cs" />
     <Compile Include="CheckManagement\S3Repository.cs" />
     <Compile Include="Check\CheckAndFixItem.cs" />

@@ -25,16 +25,16 @@ namespace TvpMain.CheckManagement
         public List<CheckAndFixItem> GetInstalledCheckAndFixItems();
 
         /// <summary>
+        /// This method returns a list of locally-developed and saved <c>CheckAndFixItem</c>s.
+        /// </summary>
+        /// <returns>A list of saved <c>CheckAndFixItem</c>s.</returns>
+        public List<CheckAndFixItem> GetSavedCheckAndFixItems();
+
+        /// <summary>
         /// This method gets check and fix items from a remote repository.
         /// </summary>
         /// <returns>A list of check and fix items that are available in a remote repository.</returns>
         public List<CheckAndFixItem> GetRemoteCheckAndFixItems();
-
-        /// <summary>
-        /// This method gets check and fix items that are locally installed.
-        /// </summary>
-        /// <returns>A list of check and fix items that are locally installed.</returns>
-        public List<CheckAndFixItem> GetLocalCheckAndFixItems();
 
         /// <summary>
         /// This method publishes a check and fix item to a remote repository.
