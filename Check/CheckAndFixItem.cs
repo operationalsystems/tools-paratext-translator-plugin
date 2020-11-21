@@ -157,10 +157,8 @@ namespace TvpMain.Check
 
             XmlSerializer writer = new XmlSerializer(this.GetType());
 
-            FileStream file = File.Create(xmlFilePath);
-
-            writer.Serialize(file, this);
-            file.Close();
+            using FileStream file = File.Create(xmlFilePath);
+                        writer.Serialize(file, this);
         }
 
         /// <summary>

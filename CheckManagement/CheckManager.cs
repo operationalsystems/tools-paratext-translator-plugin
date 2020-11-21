@@ -1,6 +1,7 @@
 ﻿using PtxUtils;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using TvpMain.Check;
 using TvpMain.Util;
@@ -11,7 +12,6 @@ namespace TvpMain.CheckManagement
     {
         private readonly LocalRepository installedChecksRepository;
         private readonly LocalRepository locallyDevelopedChecksRepository;
-
         private readonly S3Repository s3Repository;
 
         public CheckManager()
@@ -21,6 +21,49 @@ namespace TvpMain.CheckManagement
             s3Repository = new S3Repository();
         }
 
+        public virtual List<CheckAndFixItem> GetNewAndUpdatedCheckAndFixItems()
+        {
+            var installedChecks = from installed in GetInstalledCheckAndFixItems()
+                                  select new
+                                  {
+                                      installed.Name,
+                                      installed.Version
+                                  };
+            List<CheckAndFixItem> remoteChecks = GetAvailableCheckAndFixItems();
+            List<CheckAndFixItem> newAndUpdated = remoteChecks.Where(check => {
+                var remote = new { check.Name, check.Version };
+                return !installedChecks.Contains(remote);
+            }).ToList();
+            return newAndUpdated;
+        }
+
+        public virtual List<CheckAndFixItem> GetDeprecatedCheckAndFixItems()
+        {
+            List<CheckAndFixItem> installedChecks = GetInstalledCheckAndFixItems();
+            var remoteChecks = from remote in GetAvailableCheckAndFixItems()
+                               select new
+                               {
+                                   remote.Name,
+                               };
+            List<CheckAndFixItem> deprecated = installedChecks.Where(check => {
+                var installed = new { check.Name };
+                return !remoteChecks.Contains(installed);
+            }).ToList();
+            return deprecated;
+        }
+
+        public virtual void InstallNewAndUpdatedCheckAndFixItems()
+        {
+            foreach (CheckAndFixItem check in GetNewAndUpdatedCheckAndFixItems())
+                InstallCheckAndFixItem(check);
+        }
+
+        public virtual void UninstallDeprecatedCheckAndFixItems()
+        {
+            foreach (CheckAndFixItem check in GetDeprecatedCheckAndFixItems())
+                UninstallCheckAndFixItem(check);
+        }
+        
         public List<CheckAndFixItem> GetRemoteCheckAndFixItems()
         {
             return s3Repository.GetCheckAndFixItems();
