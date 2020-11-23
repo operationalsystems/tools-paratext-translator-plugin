@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.ClearScript.V8;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,8 +9,14 @@ namespace TvpMain.Check
 {
     class CheckAndFixRunner : ICheckAndFixRunner
     {
+        
+
         public List<CheckResultItem> ExecCheckAndFix(string text, CheckAndFixItem checkAndFixItem)
         {
+            using (var engine = new V8ScriptEngine())
+            {
+
+            }
             return new List<CheckResultItem>();
         }
     }
