@@ -7,22 +7,24 @@ namespace TvpMain.CheckManagement
     interface ICheckManager
     {
         /// <summary>
-        /// This method returns a list of <c>CheckAndFixItem</c>s that can be installed to the local system.
+        /// This method synchronizes the locally-installed <c>CheckAndFixItem</c> repository with the remote repository by installing/updating/removing <c>CheckAndFixItem</c>s.
         /// </summary>
-        /// <returns>A list of <c>CheckAndFixItem</c>s that can be installed to the local system.</returns>
-        public List<CheckAndFixItem> GetAvailableCheckAndFixItems();
+        /// <param name="dryRun">(optional) If true, returns the checks that would be installed/updated/removed, without affecting the local repository.</param>
+        /// <returns></returns>
+        public Dictionary<string, List<CheckAndFixItem>> SynchronizeInstalledChecks(bool dryRun = false);
 
         /// <summary>
-        /// This method returns a list of installed <c>CheckAndFixItem</c>s that have updates available.
+        /// This method publishes a <c>CheckAndFixItem</c> to a remote repository.
         /// </summary>
-        /// <returns>A key-value pair of installed and available check versions.</returns>
-        public Dictionary<CheckAndFixItem, CheckAndFixItem> GetOutdatedCheckAndFixItems();
+        /// <param name="item">The <c>CheckAndFixItem</c> to publish to the remote repository.</param>
+        public void PublishCheckAndFixItem(CheckAndFixItem item);
 
         /// <summary>
-        /// This method returns a list of installed <c>CheckAndFixItem</c>s.
+        /// This method asynchronously publishes a <c>CheckAndFixItem</c> to a remote repository.
         /// </summary>
-        /// <returns>A list of installed <c>CheckAndFixItem</c>s.</returns>
-        public List<CheckAndFixItem> GetInstalledCheckAndFixItems();
+        /// <param name="item">The <c>CheckAndFixItem</c> to publish to the remote repository.</param>
+        /// <returns>A task representing the result of the operation.</returns>
+        public Task PublishCheckAndFixItemAsync(CheckAndFixItem item);
 
         /// <summary>
         /// This method returns a list of locally-developed and saved <c>CheckAndFixItem</c>s.
@@ -31,35 +33,29 @@ namespace TvpMain.CheckManagement
         public List<CheckAndFixItem> GetSavedCheckAndFixItems();
 
         /// <summary>
-        /// This method gets check and fix items from a remote repository.
+        /// This method saves a new or modified local <c>CheckAndFixItem</c>.
         /// </summary>
-        /// <returns>A list of check and fix items that are available in a remote repository.</returns>
-        public List<CheckAndFixItem> GetRemoteCheckAndFixItems();
+        /// <param name="item">The <c>CheckAndFixItem</c> to save locally.</param>
+        public void SaveCheckAndFixItem(CheckAndFixItem item);
 
         /// <summary>
-        /// This method publishes a check and fix item to a remote repository.
+        /// This method asynchronously saves a new or modified local <c>CheckAndFixItem</c>.
         /// </summary>
-        /// <param name="item">The check and fix item to publish to the remote repository.</param>
-        public void PublishCheckAndFixItem(CheckAndFixItem item);
-
-        /// <summary>
-        /// This method asynchronously publishes a check and fix item to a remote repository.
-        /// </summary>
-        /// <param name="item">The check and fix item to publish to the remote repository.</param>
+        /// <param name="item">The <c>CheckAndFixItem</c> to save locally.</param>
         /// <returns>A task representing the result of the operation.</returns>
-        public Task PublishCheckAndFixItemAsync(CheckAndFixItem item);
+        public Task SaveCheckAndFixItemAsync(CheckAndFixItem item);
 
         /// <summary>
-        /// This method asynchronously installs a check and fix item from a remote repository.
+        /// This method deletes a local <c>CheckAndFixItem</c>.
         /// </summary>
-        /// <param name="item">The check and fix item to install from the remote repository.</param>
-        public void InstallCheckAndFixItem(CheckAndFixItem item);
-
-        /// <summary>
-        /// This method asynchronously installs a check and fix item from a remote repository.
-        /// </summary>
-        /// <param name="item">The check and fix item to install from the remote repository.</param>
+        /// <param name="item">The <c>CheckAndFixItem</c> to delete locally.</param>
         /// <returns>A task representing the result of the operation.</returns>
-        public Task InstallCheckAndFixItemAsync(CheckAndFixItem item);
+        public void DeleteCheckAndFixItem(CheckAndFixItem item);
+        
+        /// <summary>
+        /// This method returns a list of <c>CheckAndFixItem</c>s that have been installed from a remote repository.
+        /// </summary>
+        /// <returns>A list of saved <c>CheckAndFixItem</c>s.</returns>
+        List<CheckAndFixItem> GetInstalledCheckAndFixItems();
     }
 }

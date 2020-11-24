@@ -22,6 +22,26 @@ namespace TvpMain.CheckManagement
             s3Repository = new S3Repository();
         }
 
+        public Dictionary<string, List<CheckAndFixItem>> SynchronizeInstalledChecks(bool dryRun = false)
+        {
+            List<CheckAndFixItem> newAndUpdatedCheckAndFixItems = GetNewAndUpdatedCheckAndFixItems();
+            List<CheckAndFixItem> deprecatedCheckAndFixItems = GetDeprecatedCheckAndFixItems();
+
+            if (!dryRun)
+            {
+                foreach (CheckAndFixItem check in newAndUpdatedCheckAndFixItems)
+                    InstallCheckAndFixItem(check);
+                foreach (CheckAndFixItem check in deprecatedCheckAndFixItems)
+                    UninstallCheckAndFixItem(check);
+            }
+
+            return new Dictionary<string, List<CheckAndFixItem>>
+            {
+                ["newAndUpdated"] = newAndUpdatedCheckAndFixItems,
+                ["deprecated"] = deprecatedCheckAndFixItems
+            };
+        }
+
         public virtual List<CheckAndFixItem> GetNewAndUpdatedCheckAndFixItems()
         {
             var installedChecks = from installed in GetInstalledCheckAndFixItems()
@@ -31,7 +51,8 @@ namespace TvpMain.CheckManagement
                                       installed.Version
                                   };
             List<CheckAndFixItem> remoteChecks = GetAvailableCheckAndFixItems();
-            List<CheckAndFixItem> newAndUpdated = remoteChecks.Where(check => {
+            List<CheckAndFixItem> newAndUpdated = remoteChecks.Where(check =>
+            {
                 var remote = new { check.Name, check.Version };
                 return !installedChecks.Contains(remote);
             }).ToList();
@@ -46,25 +67,14 @@ namespace TvpMain.CheckManagement
                                {
                                    remote.Name,
                                };
-            List<CheckAndFixItem> deprecated = installedChecks.Where(check => {
+            List<CheckAndFixItem> deprecated = installedChecks.Where(check =>
+            {
                 var installed = new { check.Name };
                 return !remoteChecks.Contains(installed);
             }).ToList();
             return deprecated;
         }
 
-        public virtual void InstallNewAndUpdatedCheckAndFixItems()
-        {
-            foreach (CheckAndFixItem check in GetNewAndUpdatedCheckAndFixItems())
-                InstallCheckAndFixItem(check);
-        }
-
-        public virtual void UninstallDeprecatedCheckAndFixItems()
-        {
-            foreach (CheckAndFixItem check in GetDeprecatedCheckAndFixItems())
-                UninstallCheckAndFixItem(check);
-        }
-        
         public List<CheckAndFixItem> GetRemoteCheckAndFixItems()
         {
             return s3Repository.GetCheckAndFixItems();
@@ -81,7 +91,7 @@ namespace TvpMain.CheckManagement
             string filename = GetCheckAndFixItemFilename(item);
             return installedChecksRepository.AddCheckAndFixItemAsync(filename, item);
         }
-        
+
         public virtual void SaveCheckAndFixItem(CheckAndFixItem item)
         {
             string filename = GetCheckAndFixItemFilename(item);
@@ -125,7 +135,7 @@ namespace TvpMain.CheckManagement
         {
             return installedChecksRepository.GetCheckAndFixItems();
         }
-        
+
         public virtual List<CheckAndFixItem> GetSavedCheckAndFixItems()
         {
             return locallyDevelopedChecksRepository.GetCheckAndFixItems();
