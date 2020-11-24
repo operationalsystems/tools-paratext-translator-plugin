@@ -12,20 +12,15 @@ namespace TvpTest
     public class TestS3Service : S3Service
     {
         // Read-only PPM repository and CLI AWS configuration parameters.
-        const string accessKey = TestAWSCredentials.AWS_TVP_TEST_ACCESS_KEY_ID;
-        const string secretKey = TestAWSCredentials.AWS_TVP_TEST_ACCESS_KEY_SECRET;
-        private string BucketName = TestAWSCredentials.AWS_TVP_TEST_BUCKET_NAME;
+        string accessKey = TestAWSCredentials.AWS_TVP_TEST_ACCESS_KEY_ID;
+        string secretKey = TestAWSCredentials.AWS_TVP_TEST_ACCESS_KEY_SECRET;
+        RegionEndpoint region = RegionEndpoint.GetBySystemName(TestAWSCredentials.AWS_TVP_TEST_REGION) ?? RegionEndpoint.USEast1;
+        public override string BucketName { get; set; } = TestAWSCredentials.AWS_TVP_TEST_BUCKET_NAME;
 
-        public override string GetBucketName()
+        public override AmazonS3Client S3Client {get; set;}
+        public TestS3Service()
         {
-            return BucketName;
-        }
-
-        private readonly AmazonS3Client s3Client = new AmazonS3Client(accessKey, secretKey, RegionEndpoint.USEast1);
-
-        public override AmazonS3Client GetS3Client()
-        {
-            return s3Client;
+            S3Client = new AmazonS3Client(accessKey, secretKey, region);
         }
     }
     [TestCategory("IgnoreOnBuild")]

@@ -264,6 +264,8 @@ echo         ///^&lt;summary^&gt;The AWS Access Key Secret. Provided by an envir
 echo         public const string AWS_TVP_TEST_ACCESS_KEY_SECRET = "$(AWS_TVP_TEST_ACCESS_KEY_SECRET)"; &gt;&gt; "$(ProjectDir)TestAWSCredentials.cs"
 echo         ///^&lt;summary^&gt;The AWS Bucket Name. Provided by an environment eariable of the same name.^&lt;/summary^&gt; &gt;&gt; "$(ProjectDir)TestAWSCredentials.cs"
 echo         public const string AWS_TVP_TEST_BUCKET_NAME = "$(AWS_TVP_TEST_BUCKET_NAME)"; &gt;&gt; "$(ProjectDir)TestAWSCredentials.cs"
+echo         ///^&lt;summary^&gt;The AWS Region. Provided by an environment eariable of the same name.^&lt;/summary^&gt; &gt;&gt; "$(ProjectDir)TestAWSCredentials.cs"
+echo         public const string AWS_TVP_TEST_REGION = "$(AWS_TVP_TEST_REGION)"; &gt;&gt; "$(ProjectDir)TestAWSCredentials.cs"
 echo     } &gt;&gt; "$(ProjectDir)TestAWSCredentials.cs"
 echo } &gt;&gt; "$(ProjectDir)TestAWSCredentials.cs"</PreBuildEvent>
   </PropertyGroup>
