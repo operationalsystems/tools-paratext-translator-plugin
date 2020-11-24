@@ -22,14 +22,19 @@ namespace TvpMain.CheckManagement
             s3Repository = new S3Repository();
         }
 
-        public Dictionary<string, List<CheckAndFixItem>> SynchronizeInstalledChecks(bool dryRun = false)
+        public virtual Dictionary<string, List<CheckAndFixItem>> SynchronizeInstalledChecks(bool dryRun = false)
         {
-            List<CheckAndFixItem> newAndUpdatedCheckAndFixItems = GetNewAndUpdatedCheckAndFixItems();
+            List<CheckAndFixItem> newCheckAndFixItems = GetNewCheckAndFixItems();
+            Dictionary<CheckAndFixItem, CheckAndFixItem> outdatedCheckAndFixItems = GetOutdatedCheckAndFixItems();
             List<CheckAndFixItem> deprecatedCheckAndFixItems = GetDeprecatedCheckAndFixItems();
 
             if (!dryRun)
             {
-                foreach (CheckAndFixItem check in newAndUpdatedCheckAndFixItems)
+                foreach (CheckAndFixItem check in newCheckAndFixItems)
+                    InstallCheckAndFixItem(check);
+                foreach (CheckAndFixItem check in outdatedCheckAndFixItems.Keys)
+                    UninstallCheckAndFixItem(check);
+                foreach (CheckAndFixItem check in outdatedCheckAndFixItems.Values)
                     InstallCheckAndFixItem(check);
                 foreach (CheckAndFixItem check in deprecatedCheckAndFixItems)
                     UninstallCheckAndFixItem(check);
@@ -37,26 +42,27 @@ namespace TvpMain.CheckManagement
 
             return new Dictionary<string, List<CheckAndFixItem>>
             {
-                ["newAndUpdated"] = newAndUpdatedCheckAndFixItems,
+                ["new"] = newCheckAndFixItems,
+                ["outdated"] = outdatedCheckAndFixItems.Keys.ToList(),
+                ["updated"] = outdatedCheckAndFixItems.Values.ToList(),
                 ["deprecated"] = deprecatedCheckAndFixItems
             };
         }
 
-        public virtual List<CheckAndFixItem> GetNewAndUpdatedCheckAndFixItems()
+        public virtual List<CheckAndFixItem> GetNewCheckAndFixItems()
         {
-            var installedChecks = from installed in GetInstalledCheckAndFixItems()
-                                  select new
-                                  {
-                                      installed.Name,
-                                      installed.Version
-                                  };
-            List<CheckAndFixItem> remoteChecks = GetAvailableCheckAndFixItems();
-            List<CheckAndFixItem> newAndUpdated = remoteChecks.Where(check =>
+            List<CheckAndFixItem> availableChecks = GetAvailableCheckAndFixItems();
+            var localChecks = from local in GetInstalledCheckAndFixItems()
+                               select new
+                               {
+                                   local.Name,
+                               };
+            List<CheckAndFixItem> newChecks = availableChecks.Where(check =>
             {
-                var remote = new { check.Name, check.Version };
-                return !installedChecks.Contains(remote);
+                var installed = new { check.Name };
+                return !localChecks.Contains(installed);
             }).ToList();
-            return newAndUpdated;
+            return newChecks;
         }
 
         public virtual List<CheckAndFixItem> GetDeprecatedCheckAndFixItems()

@@ -223,38 +223,49 @@ namespace TvpTest
         }
 
         [TestMethod()]
-        public void GetNewAndUpdatedCheckAndFixItems()
+        public void It_can_synchronize_the_installed_checks_with_a_remote_repository()
         {
+            // This check is identical and nothing will change.
             CheckAndFixItem remoteCheckAlpha = new CheckAndFixItem
             {
                 Name = "Alpha",
                 Version = "1.0.0.0",
                 Description = "Remote Alpha"
             };
+
+            // This check is new and will be installed.
             CheckAndFixItem remoteCheckBeta = new CheckAndFixItem
             {
                 Name = "Beta",
                 Version = "1.0.0.0",
                 Description = "Remote Beta"
             };
+
+            // This check is an update and will be installed.
             CheckAndFixItem remoteCheckGamma = new CheckAndFixItem
             {
                 Name = "Gamma",
                 Version = "1.0.0.1",
                 Description = "Remote Gamma"
             };
+
+            // This check is identical and nothing will change.
             CheckAndFixItem localCheckAlpha = new CheckAndFixItem
             {
                 Name = "Alpha",
                 Version = "1.0.0.0",
                 Description = "Local Alpha"
             };
+
+            // This check is outdated and will be uninstalled.
             CheckAndFixItem localCheckGamma = new CheckAndFixItem
             {
                 Name = "Gamma",
                 Version = "1.0.0.0",
                 Description = "Local Gamma"
             };
+
+            // This check is deprecated (no longer exists upstream) and will be uninstalled.
             CheckAndFixItem localCheckDelta = new CheckAndFixItem
             {
                 Name = "Delta",
@@ -262,74 +273,48 @@ namespace TvpTest
                 Description = "Local Delta"
             };
 
-            checkManager.Setup(cm => cm.GetAvailableCheckAndFixItems()).Returns(new List<CheckAndFixItem> { remoteCheckAlpha, remoteCheckBeta, remoteCheckGamma });
-            checkManager.Setup(cm => cm.GetInstalledCheckAndFixItems()).Returns(new List<CheckAndFixItem> { localCheckAlpha, localCheckGamma, localCheckDelta });
-            checkManager.Setup(cm => cm.GetNewAndUpdatedCheckAndFixItems()).CallBase();
-
-            List<CheckAndFixItem> newAndUpdated = checkManager.Object.GetNewAndUpdatedCheckAndFixItems();
-
-            // Ensure that the list contains only the remote items which are unique or updates, and none of the local checks.
-            Assert.IsFalse(newAndUpdated.Contains(remoteCheckAlpha));
-            Assert.IsTrue(newAndUpdated.Contains(remoteCheckBeta));
-            Assert.IsTrue(newAndUpdated.Contains(remoteCheckGamma));
-            Assert.IsFalse(newAndUpdated.Contains(localCheckAlpha));
-            Assert.IsFalse(newAndUpdated.Contains(localCheckGamma));
-            Assert.IsFalse(newAndUpdated.Contains(localCheckDelta));
-        }
-
-        [TestMethod()]
-        public void GetDeprecatedCheckAndFixItems()
-        {
-            CheckAndFixItem remoteCheckAlpha = new CheckAndFixItem
+            checkManager.Setup(cm => cm.SynchronizeInstalledChecks(false)).CallBase();
+            checkManager.Setup(cm => cm.GetInstalledCheckAndFixItems()).CallBase();
+            checkManager.Setup(cm => cm.InstallCheckAndFixItem(It.IsAny<CheckAndFixItem>())).CallBase();
+            checkManager.Setup(cm => cm.UninstallCheckAndFixItem(It.IsAny<CheckAndFixItem>())).CallBase();
+            checkManager.Setup(cm => cm.GetNewCheckAndFixItems()).Returns(() => new List<CheckAndFixItem>
             {
-                Name = "Alpha",
-                Version = "1.0.0.0",
-                Description = "Remote Alpha"
-            };
-            CheckAndFixItem remoteCheckBeta = new CheckAndFixItem
+                remoteCheckBeta
+            });
+            checkManager.Setup(cm => cm.GetDeprecatedCheckAndFixItems()).Returns(() => new List<CheckAndFixItem>
             {
-                Name = "Beta",
-                Version = "1.0.0.0",
-                Description = "Remote Beta"
-            };
-            CheckAndFixItem remoteCheckGamma = new CheckAndFixItem
+                localCheckDelta
+            });
+            checkManager.Setup(cm => cm.GetOutdatedCheckAndFixItems()).Returns(() => new Dictionary<CheckAndFixItem, CheckAndFixItem>
             {
-                Name = "Gamma",
-                Version = "1.0.0.1",
-                Description = "Remote Gamma"
-            };
-            CheckAndFixItem localCheckAlpha = new CheckAndFixItem
-            {
-                Name = "Alpha",
-                Version = "1.0.0.0",
-                Description = "Local Alpha"
-            };
-            CheckAndFixItem localCheckGamma = new CheckAndFixItem
-            {
-                Name = "Gamma",
-                Version = "1.0.0.0",
-                Description = "Local Gamma"
-            };
-            CheckAndFixItem localCheckDelta = new CheckAndFixItem
-            {
-                Name = "Delta",
-                Version = "1.0.0.0",
-                Description = "Local Delta"
-            };
+                [localCheckGamma] = remoteCheckGamma
+            });
 
-            checkManager.Setup(cm => cm.GetAvailableCheckAndFixItems()).Returns(new List<CheckAndFixItem> { remoteCheckAlpha, remoteCheckBeta, remoteCheckGamma });
-            checkManager.Setup(cm => cm.GetInstalledCheckAndFixItems()).Returns(new List<CheckAndFixItem> { localCheckAlpha, localCheckGamma, localCheckDelta });
-            checkManager.Setup(cm => cm.GetDeprecatedCheckAndFixItems()).CallBase();
+            // Install the checks that exist at the beginning of the test.
+            checkManager.Object.InstallCheckAndFixItem(localCheckAlpha);
+            checkManager.Object.InstallCheckAndFixItem(localCheckGamma);
+            checkManager.Object.InstallCheckAndFixItem(localCheckDelta);
 
-            List<CheckAndFixItem> deprecated = checkManager.Object.GetDeprecatedCheckAndFixItems();
+            // Inspect the repository.
+            List<CheckAndFixItem> installedChecks = checkManager.Object.GetInstalledCheckAndFixItems();
 
-            // Ensure that the list contains only installed items which do not exist remotely.
-            Assert.IsFalse(deprecated.Contains(remoteCheckAlpha));
-            Assert.IsFalse(deprecated.Contains(remoteCheckBeta));
-            Assert.IsFalse(deprecated.Contains(remoteCheckGamma));
-            Assert.IsFalse(deprecated.Contains(localCheckAlpha));
-            Assert.IsFalse(deprecated.Contains(localCheckGamma));
-            Assert.IsTrue(deprecated.Contains(localCheckDelta));
+            // Ensure that all checks are installed as expected.
+            Assert.IsTrue(installedChecks.Count == 3);
+            Assert.IsTrue(installedChecks.Contains(localCheckAlpha));
+            Assert.IsTrue(installedChecks.Contains(localCheckGamma));
+            Assert.IsTrue(installedChecks.Contains(localCheckDelta));
+
+            //Synchronize the repository.
+            checkManager.Object.SynchronizeInstalledChecks();
+
+            // Re-inspect the repository.
+            installedChecks = checkManager.Object.GetInstalledCheckAndFixItems();
+
+            // Ensure that checks have been updated and uninstalled as expected.
+            Assert.IsTrue(installedChecks.Count == 3);
+            Assert.IsTrue(installedChecks.Contains(localCheckAlpha));
+            Assert.IsTrue(installedChecks.Contains(remoteCheckBeta));
+            Assert.IsTrue(installedChecks.Contains(remoteCheckGamma));
         }
 
         [TestCleanup()]
