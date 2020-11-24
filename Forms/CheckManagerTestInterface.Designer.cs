@@ -140,7 +140,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(3, 65);
+            this.label2.Location = new System.Drawing.Point(3, 67);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(60, 13);
             this.label2.TabIndex = 6;
@@ -157,7 +157,7 @@
             // 
             // Description
             // 
-            this.Description.Location = new System.Drawing.Point(6, 81);
+            this.Description.Location = new System.Drawing.Point(6, 85);
             this.Description.Multiline = true;
             this.Description.Name = "Description";
             this.Description.Size = new System.Drawing.Size(561, 73);
@@ -165,14 +165,14 @@
             // 
             // CheckName
             // 
-            this.CheckName.Location = new System.Drawing.Point(6, 40);
+            this.CheckName.Location = new System.Drawing.Point(6, 42);
             this.CheckName.Name = "CheckName";
             this.CheckName.Size = new System.Drawing.Size(288, 20);
             this.CheckName.TabIndex = 5;
             // 
             // Version
             // 
-            this.Version.Location = new System.Drawing.Point(300, 40);
+            this.Version.Location = new System.Drawing.Point(300, 42);
             this.Version.Name = "Version";
             this.Version.Size = new System.Drawing.Size(267, 20);
             this.Version.TabIndex = 5;
