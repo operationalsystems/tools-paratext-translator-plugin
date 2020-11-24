@@ -9,17 +9,7 @@ namespace TvpTest
 {
     public class TestS3Repository : S3Repository
     {
-        private TestS3Service service = new TestS3Service();
-
-        public override S3Service GetService()
-        {
-            return service;
-        }
-
-        public void DeleteFile(string file)
-        {
-            service.DeleteFile(file);
-        }
+        public override IRemoteService Service { get; set; } = new TestS3Service();
     }
 
     [TestCategory("IgnoreOnBuild")]
@@ -69,8 +59,8 @@ namespace TvpTest
         [TestCleanup()]
         public void TestCleanup()
         {
-            s3Repository.DeleteFile(filename1);
-            s3Repository.DeleteFile(filename2);
+            s3Repository.RemoveCheckAndFixItem(filename1);
+            s3Repository.RemoveCheckAndFixItem(filename2);
         }
     }
 }

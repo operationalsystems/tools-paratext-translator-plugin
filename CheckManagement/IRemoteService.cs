@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace TvpMain.CheckManagement
 {
-    interface IRemoteService
+    public interface IRemoteService
     {
         /// <summary>
         /// This method retrieves a file as a <c>Stream</c>.

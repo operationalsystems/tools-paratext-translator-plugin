@@ -4,7 +4,7 @@ using TvpMain.Check;
 
 namespace TvpMain.CheckManagement
 {
-    interface IRepository
+    public interface IRepository
     {
         /// <summary>
         /// This method gets <c>CheckAndFixItem</c>s from a repository.

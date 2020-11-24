@@ -11,9 +11,9 @@ namespace TvpMain.CheckManagement
 {
     public class CheckManager : ICheckManager
     {
-        private readonly LocalRepository installedChecksRepository;
-        private readonly LocalRepository locallyDevelopedChecksRepository;
-        private readonly S3Repository s3Repository;
+        private readonly IRepository installedChecksRepository;
+        private readonly IRepository locallyDevelopedChecksRepository;
+        private readonly IRepository s3Repository;
 
         public CheckManager()
         {
@@ -49,6 +49,10 @@ namespace TvpMain.CheckManagement
             };
         }
 
+        /// <summary>
+        /// This method retrieves any checks which exist in the remote repository, but for which no version has been installed.
+        /// </summary>
+        /// <returns>A list of new <c>CheckAndFixItem</c>s which can be installed.</returns>
         public virtual List<CheckAndFixItem> GetNewCheckAndFixItems()
         {
             List<CheckAndFixItem> availableChecks = GetAvailableCheckAndFixItems();
@@ -65,6 +69,10 @@ namespace TvpMain.CheckManagement
             return newChecks;
         }
 
+        /// <summary>
+        /// This method determines which <c>CheckAndFixItem</c>s have been installed, but are no longer available in the remote repository.
+        /// </summary>
+        /// <returns>A list of deprecated <c>CheckAndFixItem</c>s.</returns>
         public virtual List<CheckAndFixItem> GetDeprecatedCheckAndFixItems()
         {
             List<CheckAndFixItem> installedChecks = GetInstalledCheckAndFixItems();
@@ -81,17 +89,21 @@ namespace TvpMain.CheckManagement
             return deprecated;
         }
 
-        public List<CheckAndFixItem> GetRemoteCheckAndFixItems()
-        {
-            return s3Repository.GetCheckAndFixItems();
-        }
-
+        /// <summary>
+        /// This method installs a <c>CheckAndFixItem</c>.
+        /// </summary>
+        /// <param name="item">The <c>CheckAndFixItem</c> to be installed.</param>
         public virtual void InstallCheckAndFixItem(CheckAndFixItem item)
         {
             string filename = GetCheckAndFixItemFilename(item);
             installedChecksRepository.AddCheckAndFixItem(filename, item);
         }
 
+        /// <summary>
+        /// This method asynchronously installs a <c>CheckAndFixItem</c>.
+        /// </summary>
+        /// <param name="item">The <c>CheckAndFixItem</c> to be installed.</param>>
+        /// <returns>A task representing the result of the operation.</returns>
         public Task InstallCheckAndFixItemAsync(CheckAndFixItem item)
         {
             string filename = GetCheckAndFixItemFilename(item);
@@ -110,11 +122,16 @@ namespace TvpMain.CheckManagement
             return locallyDevelopedChecksRepository.AddCheckAndFixItemAsync(filename, item);
         }
 
+        /// <summary>
+        /// This method uninstalls a <c>CheckAndFixItem</c>.
+        /// </summary>
+        /// <param name="item">The <c>CheckAndFixItem</c> to uninstall.</param>
         public virtual void UninstallCheckAndFixItem(CheckAndFixItem item)
         {
             string filename = GetCheckAndFixItemFilename(item);
             installedChecksRepository.RemoveCheckAndFixItem(filename);
         }
+
         public virtual void DeleteCheckAndFixItem(CheckAndFixItem item)
         {
             string filename = GetCheckAndFixItemFilename(item);
@@ -133,10 +150,15 @@ namespace TvpMain.CheckManagement
             return s3Repository.AddCheckAndFixItemAsync(filename, item);
         }
 
+        /// <summary>
+        /// This method gets the <c>CheckAndFixItem</c>s available in the remote repository.
+        /// </summary>
+        /// <returns>The <c>CheckAndFixItem</c>s which are available in the remote repository.</returns>
         public virtual List<CheckAndFixItem> GetAvailableCheckAndFixItems()
         {
             return s3Repository.GetCheckAndFixItems();
         }
+
         public virtual List<CheckAndFixItem> GetInstalledCheckAndFixItems()
         {
             return installedChecksRepository.GetCheckAndFixItems();
@@ -147,6 +169,10 @@ namespace TvpMain.CheckManagement
             return locallyDevelopedChecksRepository.GetCheckAndFixItems();
         }
 
+        /// <summary>
+        /// This method find the <c>CheckAndFixItem</c>s that have an updated version available in the remote repository.
+        /// </summary>
+        /// <returns>A dictionary comprising of {KEY: the current <c>CheckAndFixItem</c>} and {VALUE: the updated <c>CheckAndFixItem</c> available in the remote repository}.</returns>
         public virtual Dictionary<CheckAndFixItem, CheckAndFixItem> GetOutdatedCheckAndFixItems()
         {
             List<CheckAndFixItem> availableCheckAndFixItems = GetAvailableCheckAndFixItems();

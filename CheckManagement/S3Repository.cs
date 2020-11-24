@@ -8,40 +8,30 @@ namespace TvpMain.CheckManagement
 {
     public class S3Repository : IRepository
     {
-        private S3Service service = new S3Service();
-
-        public virtual S3Service GetService()
-        {
-            return service;
-        }
-
-        private void SetService(S3Service value)
-        {
-            service = value;
-        }
+        public virtual IRemoteService Service { get; set; } = new S3Service();
 
         public void AddCheckAndFixItem(string filename, CheckAndFixItem item)
         {
             if (String.IsNullOrEmpty(filename)) new ArgumentNullException(nameof(filename));
 
-            GetService().PutFileStream(filename, item.WriteToXmlStream());
+            Service.PutFileStream(filename, item.WriteToXmlStream());
         }
 
         public async Task AddCheckAndFixItemAsync(string filename, CheckAndFixItem item)
         {
             if (String.IsNullOrEmpty(filename)) new ArgumentNullException(nameof(filename));
 
-            await GetService().PutFileStreamAsync(filename, item.WriteToXmlStream());
+            await Service.PutFileStreamAsync(filename, item.WriteToXmlStream());
         }
 
         public List<CheckAndFixItem> GetCheckAndFixItems()
         {
             List<CheckAndFixItem> checkAndFixItems = new List<CheckAndFixItem>();
 
-            List<String> filenames = GetService().ListAllFiles();
+            List<String> filenames = Service.ListAllFiles();
             foreach (string file in filenames)
             {
-                using Stream fileStream = GetService().GetFileStream(file);
+                using Stream fileStream = Service.GetFileStream(file);
                 CheckAndFixItem checkAndFixItem = ReadCheckAndFixItemFromStream(fileStream);
                 if (checkAndFixItem != null) checkAndFixItems.Add(checkAndFixItem);
             }
@@ -53,10 +43,10 @@ namespace TvpMain.CheckManagement
         {
             List<CheckAndFixItem> checkAndFixItems = new List<CheckAndFixItem>();
 
-            List<String> filenames = await GetService().ListAllFilesAsync();
+            List<String> filenames = await Service.ListAllFilesAsync();
             foreach (string file in filenames)
             {
-                using Stream fileStream = await GetService().GetFileStreamAsync(file);
+                using Stream fileStream = await Service.GetFileStreamAsync(file);
                 CheckAndFixItem checkAndFixItem = ReadCheckAndFixItemFromStream(fileStream);
                 if (checkAndFixItem != null) checkAndFixItems.Add(checkAndFixItem);
             }
@@ -79,12 +69,12 @@ namespace TvpMain.CheckManagement
 
         public void RemoveCheckAndFixItem(string filename)
         {
-            GetService().DeleteFile(filename);
+            Service.DeleteFile(filename);
         }
 
         public Task RemoveCheckAndFixItemAsync(string filename)
         {
-            return GetService().DeleteFileAsync(filename);
+            return Service.DeleteFileAsync(filename);
         }
     }
 }

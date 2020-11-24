@@ -7,6 +7,12 @@ namespace TvpMain.CheckManagement
     interface ICheckManager
     {
         /// <summary>
+        /// This method returns a list of <c>CheckAndFixItem</c>s that have been installed from a remote repository.
+        /// </summary>
+        /// <returns>A list of saved <c>CheckAndFixItem</c>s.</returns>
+        public List<CheckAndFixItem> GetInstalledCheckAndFixItems();
+
+        /// <summary>
         /// This method synchronizes the locally-installed <c>CheckAndFixItem</c> repository with the remote repository by installing/updating/removing <c>CheckAndFixItem</c>s.
         /// </summary>
         /// <param name="dryRun">(optional) If true, returns the checks that would be installed/updated/removed, without affecting the local repository.</param>
@@ -51,11 +57,6 @@ namespace TvpMain.CheckManagement
         /// <param name="item">The <c>CheckAndFixItem</c> to delete locally.</param>
         /// <returns>A task representing the result of the operation.</returns>
         public void DeleteCheckAndFixItem(CheckAndFixItem item);
-        
-        /// <summary>
-        /// This method returns a list of <c>CheckAndFixItem</c>s that have been installed from a remote repository.
-        /// </summary>
-        /// <returns>A list of saved <c>CheckAndFixItem</c>s.</returns>
-        List<CheckAndFixItem> GetInstalledCheckAndFixItems();
+       
     }
 }
