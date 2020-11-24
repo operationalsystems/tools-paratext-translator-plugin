@@ -1076,5 +1076,11 @@ namespace TvpMain.Forms
             eulaForm.OnDismiss = () => eulaForm.Close();
             eulaForm.Show();
         }
+
+        private void checkManagerTestToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            CheckManagerTestInterface checkManagerTestInterface = new CheckManagerTestInterface();
+            checkManagerTestInterface.Show();
+        }
     }
 }

@@ -87,6 +87,7 @@
             this.runnerSetupWorker = new System.ComponentModel.BackgroundWorker();
             this.splitContainerMain = new System.Windows.Forms.SplitContainer();
             this.Copyright = new System.Windows.Forms.Label();
+            this.checkManagerTestToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.dgvCheckResults)).BeginInit();
             this.contextMenu.SuspendLayout();
             this.mainMenu.SuspendLayout();
@@ -245,7 +246,8 @@
             this.toolsToolStripMenuItem,
             this.searchMenuTextBox,
             this.searchLabelMenu,
-            this.helpToolStripMenuItem});
+            this.helpToolStripMenuItem,
+            this.checkManagerTestToolStripMenuItem});
             this.mainMenu.Location = new System.Drawing.Point(10, 10);
             this.mainMenu.Name = "mainMenu";
             this.mainMenu.Size = new System.Drawing.Size(836, 27);
@@ -490,7 +492,7 @@
             // licenseToolStripMenuItem
             // 
             this.licenseToolStripMenuItem.Name = "licenseToolStripMenuItem";
-            this.licenseToolStripMenuItem.Size = new System.Drawing.Size(113, 22);
+            this.licenseToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.licenseToolStripMenuItem.Text = "License";
             this.licenseToolStripMenuItem.Click += new System.EventHandler(this.licenseToolStripMenuItem_Click);
             // 
@@ -571,6 +573,13 @@
             this.Copyright.Size = new System.Drawing.Size(101, 13);
             this.Copyright.TabIndex = 9;
             this.Copyright.Text = "© 2020 Biblica, Inc.";
+            // 
+            // checkManagerTestToolStripMenuItem
+            // 
+            this.checkManagerTestToolStripMenuItem.Name = "checkManagerTestToolStripMenuItem";
+            this.checkManagerTestToolStripMenuItem.Size = new System.Drawing.Size(119, 23);
+            this.checkManagerTestToolStripMenuItem.Text = "CheckManagerTest";
+            this.checkManagerTestToolStripMenuItem.Click += new System.EventHandler(this.checkManagerTestToolStripMenuItem_Click);
             // 
             // MainForm
             // 
@@ -665,5 +674,6 @@
         private System.Windows.Forms.ToolStripMenuItem helpToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem licenseToolStripMenuItem;
         private System.Windows.Forms.Label Copyright;
+        private System.Windows.Forms.ToolStripMenuItem checkManagerTestToolStripMenuItem;
     }
 }
