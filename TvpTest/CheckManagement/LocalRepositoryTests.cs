@@ -9,25 +9,22 @@ using TvpMain.CheckManagement;
 
 namespace TvpTest
 {
-    public class TestFolderRepository : LocalRepository
-    {
-        public const string folderName = "checks";
-
-        public override string GetFolderPath()
-        {
-            return Path.Combine(Directory.GetCurrentDirectory(), folderName);
-        }
-    }
-
     [TestClass()]
-    public class FolderRepositoryTests
+    public class LocalRepositoryTests
     {
         const string filename = "test.xml";
+        private readonly string folderPath = Path.Combine(Path.GetTempPath(), "checks");
 
-        private readonly TestFolderRepository testFolderRepository = new TestFolderRepository();
+        private LocalRepository LocalRepository { get; set; }
+
+        [TestInitialize()]
+        public void TestSetup()
+        {
+            LocalRepository = new LocalRepository(folderPath);
+        }
 
         [TestMethod()]
-        public void AddCheckAndFixItemsTest()
+        public void It_can_add_and_remove_checks()
         {
             CheckAndFixItem checkAndFixItem = new CheckAndFixItem
             {
@@ -35,7 +32,7 @@ namespace TvpTest
             };
 
             //Throws an exception if Name is null.
-            Assert.ThrowsException<ArgumentNullException>(() => testFolderRepository.AddCheckAndFixItem(null, checkAndFixItem));
+            Assert.ThrowsException<ArgumentNullException>(() => LocalRepository.AddCheckAndFixItem(null, checkAndFixItem));
 
             CheckAndFixItem checkAndFixItem2 = new CheckAndFixItem
             {
@@ -46,18 +43,19 @@ namespace TvpTest
                 CheckScript = "return null;"
             };
 
-            testFolderRepository.AddCheckAndFixItem(filename, checkAndFixItem2);
+            LocalRepository.AddCheckAndFixItem(filename, checkAndFixItem2);
 
-            List<CheckAndFixItem> checkAndFixItems = testFolderRepository.GetCheckAndFixItems();
+            List<CheckAndFixItem> checkAndFixItems = LocalRepository.GetCheckAndFixItems();
             Assert.IsTrue(checkAndFixItems.Count == 1);
             Assert.IsTrue(checkAndFixItems[0].Version == "1.2.3.4");
+            LocalRepository.RemoveCheckAndFixItem(filename);
+            Assert.IsTrue(LocalRepository.GetCheckAndFixItems().Count == 0);
         }
 
         [TestCleanup()]
         public void TestCleanup()
         {
-            File.Delete(Path.Combine(testFolderRepository.GetFolderPath(), filename));
-            Directory.Delete(testFolderRepository.GetFolderPath());
+            Directory.Delete(folderPath);
         }
     }
 }

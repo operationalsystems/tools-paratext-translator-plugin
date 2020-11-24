@@ -13,22 +13,11 @@ namespace TvpMain.CheckManagement
     /// </summary>
     public class LocalRepository : IRepository
     {
-        private string folderPath = Path.Combine(Directory.GetCurrentDirectory());
+        private string FolderPath { get; set; } = Directory.GetCurrentDirectory();
 
-        /// <summary>
-        /// The filesystem path where checks are located.
-        /// </summary>
-        public virtual string GetFolderPath()
+        public LocalRepository(string folderPath)
         {
-            return folderPath;
-        }
-
-        /// <summary>
-        /// The filesystem path where checks are located.
-        /// </summary>
-        private void SetFolderPath(string value)
-        {
-            folderPath = value;
+            FolderPath = folderPath;
         }
 
         public void AddCheckAndFixItem(string filename, CheckAndFixItem item)
@@ -36,7 +25,7 @@ namespace TvpMain.CheckManagement
             if (String.IsNullOrEmpty(filename)) throw new ArgumentNullException(nameof(filename));
 
             VerifyFolderPath();
-            string filePath = Path.Combine(GetFolderPath(), filename);
+            string filePath = Path.Combine(FolderPath, filename); ;
 
             try
             {
@@ -55,10 +44,10 @@ namespace TvpMain.CheckManagement
 
         public void RemoveCheckAndFixItem(string filename)
         {
-            string filePath = Path.Combine(GetFolderPath(), filename);
+            string filePath = Path.Combine(FolderPath, filename);
             if (!File.Exists(filePath)) return;
-
-            File.Delete(filename);
+            
+            File.Delete(filePath);
         }
 
         public Task RemoveCheckAndFixItemAsync(string filename)
@@ -71,7 +60,7 @@ namespace TvpMain.CheckManagement
             List<CheckAndFixItem> checkAndFixItems = new List<CheckAndFixItem>();
 
             VerifyFolderPath();
-            string[] checkFiles = Directory.GetFiles(GetFolderPath(), "*.xml");
+            string[] checkFiles = Directory.GetFiles(FolderPath, "*.xml");
             foreach (string checkFilePath in checkFiles)
             {
                 try
@@ -98,7 +87,7 @@ namespace TvpMain.CheckManagement
         /// </summary>
         private void VerifyFolderPath()
         {
-            Directory.CreateDirectory(GetFolderPath());
+            Directory.CreateDirectory(FolderPath);
         }
     }
 }

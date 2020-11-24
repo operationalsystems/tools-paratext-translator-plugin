@@ -156,11 +156,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AbstractCheckTests.cs" />
-    <Compile Include="CheckManager\CheckManagerTests.cs" />
-    <Compile Include="CheckManager\FolderRepositoryTests.cs" />
-    <Compile Include="CheckManager\S3RepositoryTests.cs" />
-    <Compile Include="CheckManager\S3ServiceTests.cs" />
     <Compile Include="Check\CheckAndFixRunnerTests.cs" />
+    <Compile Include="CheckManagement\CheckManagerTests.cs" />
+    <Compile Include="CheckManagement\LocalRepositoryTests.cs" />
+    <Compile Include="CheckManagement\S3RepositoryTests.cs" />
+    <Compile Include="CheckManagement\S3ServiceTests.cs" />
     <Compile Include="ImportManagerTests.cs" />
     <Compile Include="LocalCheckAndFixManagerTests.cs" />
     <Compile Include="CheckAndFixTests.cs" />

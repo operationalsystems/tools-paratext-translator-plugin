@@ -1,6 +1,7 @@
 ﻿using PtxUtils;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using TvpMain.Check;
@@ -16,8 +17,8 @@ namespace TvpMain.CheckManagement
 
         public CheckManager()
         {
-            installedChecksRepository = new InstalledChecksRepository();
-            locallyDevelopedChecksRepository = new LocallyDevelopedChecksRepository();
+            installedChecksRepository = new LocalRepository(Path.Combine(Directory.GetCurrentDirectory(), MainConsts.INSTALLED_CHECK_FOLDER_NAME));
+            locallyDevelopedChecksRepository = new LocalRepository(Path.Combine(Directory.GetCurrentDirectory(), MainConsts.LOCAL_CHECK_FOLDER_NAME));
             s3Repository = new S3Repository();
         }
 
