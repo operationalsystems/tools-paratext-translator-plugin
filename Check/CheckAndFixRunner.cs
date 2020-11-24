@@ -1,5 +1,9 @@
-﻿using Microsoft.ClearScript.V8;
+﻿using Microsoft.ClearScript;
+using Microsoft.ClearScript.JavaScript;
+using Microsoft.ClearScript.V8;
+using Newtonsoft.Json;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,16 +13,30 @@ using TvpMain.Reference;
 
 namespace TvpMain.Check
 {
+    /// <summary>
+    /// This is the main check/fix runner
+    /// Given the text to check, and the check/fix model, it'll run the check/fix against the text,
+    /// returning the result set.
+    /// </summary>
     public class CheckAndFixRunner : ICheckAndFixRunner
     {
+        /// <summary>
+        /// Executes the check/fix against the given text
+        /// </summary>
+        /// <param name="text">The text (BCV) to be checked.</param>
+        /// <param name="checkAndFixItem">The model that describes the check/fix</param>
+        /// <returns></returns>
         public List<CheckResultItem> ExecCheckAndFix(string text, CheckAndFixItem checkAndFixItem)
         {
-            Regex checkRegex = new Regex( checkAndFixItem.CheckRegex);
+            // First, run the check regex, looking for matches
+            Regex checkRegex = new Regex( @checkAndFixItem.CheckRegex);
             MatchCollection matches = checkRegex.Matches(text);
             List<CheckResultItem> checkResultItems = new List<CheckResultItem>();
 
+            // Now, loop through the matches
             foreach ( Match match in matches)
             {
+                // Create a result item
                 CheckResultItem checkResultItem = new CheckResultItem(checkAndFixItem.Description, 
                     match.Value,
                     match.Index, 
@@ -26,6 +44,7 @@ namespace TvpMain.Check
                     (int) ScriptureReferenceErrorType.LooseFormatting
                     );
 
+                // If there is a replacement regex, apply that to the result
                 if (!String.IsNullOrEmpty(checkAndFixItem.FixRegex))
                 {
                     checkResultItem.FixText = match.Result(checkAndFixItem.FixRegex);
@@ -33,15 +52,35 @@ namespace TvpMain.Check
                 checkResultItems.Add(checkResultItem);
             }
 
-            using (var engine = new V8ScriptEngine())
+            // if we have a script to run, run it
+            if (!String.IsNullOrEmpty(checkAndFixItem.CheckScript))
             {
-                engine.AddHostObject("checkResultItems", checkResultItems);
-                engine.Execute(checkAndFixItem.CheckScript);
-                checkResultItems = engine.Script.checkResultItems;
+                // start up the V8 engine to run the script
+                // can set various flags
+                // See [V8ScriptEngineFlags] The most interesting are
+                // V8ScriptEngineFlags.EnableRemoteDebugging - for remote debugging using something like VS Code
+                // V8ScriptEngineFlags.EnableDebugging - again, enable debugging
+                // V8ScriptEngineFlags.AwaitDebuggerAndPauseOnStart - used to allow the debugger to attach as soon 
+                // as the engine is set for the script
+                using (var engine = new V8ScriptEngine())
+                {
+                    // passing data into and out of the script is done by JSON to limit issues with conversions
+                    var resultsString = JsonConvert.SerializeObject(checkResultItems);
+
+                    // Here we can add a bunch of different data and bind context variables
+                    // For example, this is where we'd bind project settings
+                    // Right now, just the console
+                    engine.AddHostType("Console", typeof(Console));
+                    // execute the script
+                    engine.Execute(@checkAndFixItem.CheckScript);
+                    // convert the response to json
+                    var outResultItems = engine.Script.checkAndFix(resultsString);
+                    checkResultItems = JsonConvert.DeserializeObject<List<CheckResultItem>>(outResultItems);
+                }
             }
 
+            // return the results
             return checkResultItems;
-            //return new List<CheckResultItem>(); 
         }
     }
 }

@@ -63,8 +63,30 @@ namespace TvpMain.Check.Tests
             Assert.AreEqual(1, results.Count);
 
             // Check the found value and the replacement suggestion
-            Assert.AreEqual("“I am the voice of one calling in the wilderness, ‘Make straight the way for the Lord.’”", results[0].MatchText);
-            Assert.AreEqual("“I am the voice of one calling in the wilderness, ‘Make straight the way for the Lord.’ ”", results[0].FixText);
+            Assert.AreEqual("’”", results[0].MatchText);
+            Assert.AreEqual("’"+ '\u2006' + "”", results[0].FixText);
+        }
+
+        /// <summary>
+        /// Test to replace the non-space b/t a single and double curly brace with 1/6 space
+        /// </summary>
+        [TestCategory("IgnoreOnBuild")]
+        [TestMethod()]
+        public void TestBasicLoremIpsum()
+        {
+            string testText = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut " +
+                "labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut " +
+                "aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore " +
+                "eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.";
+
+            List<CheckResultItem> results = checkAndFixRunner.ExecCheckAndFix(testText, CheckAndFixItem.LoadFromXmlFile(@"Resources/checkFixes/checkFixExample.xml"));
+
+            // Should have one result
+            Assert.AreEqual(10, results.Count);
+
+            // Check the found value and the replacement suggestion
+            Assert.AreEqual("Lorem", results[0].MatchText);
+            Assert.AreEqual("LOREM", results[0].FixText);
         }
     }
 }

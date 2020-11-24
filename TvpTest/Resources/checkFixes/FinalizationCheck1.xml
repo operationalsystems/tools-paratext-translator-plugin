@@ -8,24 +8,17 @@
   <Version>1.0.0</Version>
   <Scope>CHAPTER</Scope>
   <DefaultItemDescription>Value Found</DefaultItemDescription>
-  <CheckRegex>
-    ([“‘])[~\s-[\u2006]]?((\+?\w+ )?[“‘])|(’”?)[~\s-[\u2006]]?([’”])
-  </CheckRegex>
-  <FixRegex>
-    \1\4\u2006\2\7
-  </FixRegex>
+  <CheckRegex>([“‘])[~\s-[\u2006]]?((\+?\w+ )?[“‘])|(’”?)[~\s-[\u2006]]?([’”])</CheckRegex>
+  <FixRegex></FixRegex>
   <CheckScript>
-    // The check javascript
-    function checkAndFix( items) {
-      // A simple example that could probably be done with just regex, but...
-      return items.filter(i => i[0].length === 5).map(i => ({
-        MatchText: i[0].Value,
-        MatchStart: i.Index,
-        MatchLength: i[0].Length,
-        CheckType: 'Value Found',
-        FixText: i[0].Replacement,
-        ResultState: 'Found'
-      }))
+    function checkAndFix(jsonCheckResultItems) {
+    let checkResultItems = JSON.parse(jsonCheckResultItems)
+
+    checkResultItems.forEach(i =>
+      i.FixText = '’' + '\u2006' + '”'
+    )
+
+    return JSON.stringify(checkResultItems)
     }
   </CheckScript>
 </CheckAndFixItem>
