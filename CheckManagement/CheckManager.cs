@@ -30,14 +30,18 @@ namespace TvpMain.CheckManagement
 
             if (!dryRun)
             {
+                foreach (CheckAndFixItem check in deprecatedCheckAndFixItems)
+                    UninstallCheckAndFixItem(check);
+
+                // Handle any situation where a newer check was removed from remote, but an older version still exists.
+                newCheckAndFixItems = GetNewCheckAndFixItems();
+                
                 foreach (CheckAndFixItem check in newCheckAndFixItems)
                     InstallCheckAndFixItem(check);
                 foreach (CheckAndFixItem check in outdatedCheckAndFixItems.Keys)
                     UninstallCheckAndFixItem(check);
                 foreach (CheckAndFixItem check in outdatedCheckAndFixItems.Values)
                     InstallCheckAndFixItem(check);
-                foreach (CheckAndFixItem check in deprecatedCheckAndFixItems)
-                    UninstallCheckAndFixItem(check);
             }
 
             return new Dictionary<string, List<CheckAndFixItem>>
@@ -57,10 +61,10 @@ namespace TvpMain.CheckManagement
         {
             List<CheckAndFixItem> availableChecks = GetAvailableCheckAndFixItems();
             var localChecks = from local in GetInstalledCheckAndFixItems()
-                               select new
-                               {
-                                   local.Name,
-                               };
+                              select new
+                              {
+                                  local.Name,
+                              };
             List<CheckAndFixItem> newChecks = availableChecks.Where(check =>
             {
                 var installed = new { check.Name };
@@ -113,6 +117,8 @@ namespace TvpMain.CheckManagement
         public virtual void SaveCheckAndFixItem(CheckAndFixItem item)
         {
             string filename = GetCheckAndFixItemFilename(item);
+            foreach (CheckAndFixItem check in GetSavedCheckAndFixItems().Where(check => check.Name == item.Name).ToList())
+                DeleteCheckAndFixItem(check);
             locallyDevelopedChecksRepository.AddCheckAndFixItem(filename, item);
         }
 

@@ -216,7 +216,7 @@ namespace TvpTest
             // Remove the checks from their respective repos.
             checkManager.Object.UninstallCheckAndFixItem(remoteCheck);
             checkManager.Object.DeleteCheckAndFixItem(locallyDevelopedCheck);
-            
+
             // Fetch the checks using their respective methods.
             Assert.IsTrue(checkManager.Object.GetInstalledCheckAndFixItems().Count == 0);
             Assert.IsTrue(checkManager.Object.GetSavedCheckAndFixItems().Count == 0);
@@ -315,6 +315,50 @@ namespace TvpTest
             Assert.IsTrue(installedChecks.Contains(localCheckAlpha));
             Assert.IsTrue(installedChecks.Contains(remoteCheckBeta));
             Assert.IsTrue(installedChecks.Contains(remoteCheckGamma));
+        }
+
+        [TestMethod()]
+        public void Saving_a_check_replaces_the_existing_version()
+        {
+            CheckAndFixItem firstVersion = new CheckAndFixItem
+            {
+                Name = "Sample Test",
+                Version = "1.0.0.0",
+                Description = "An original description"
+            };
+            // Has an updated description.
+            CheckAndFixItem secondVersion = new CheckAndFixItem
+            {
+                Name = firstVersion.Name,
+                Version = "1.0.0.0",
+                Description = "A new description"
+            };
+            // Has an updated version number.
+            CheckAndFixItem thirdVersion = new CheckAndFixItem
+            {
+                Name = firstVersion.Name,
+                Version = "1.0.0.3",
+                Description = "A new description"
+            };
+
+            checkManager.Setup(cm => cm.SaveCheckAndFixItem(It.IsAny<CheckAndFixItem>())).CallBase();
+            checkManager.Setup(cm => cm.GetSavedCheckAndFixItems()).CallBase();
+            checkManager.Setup(cm => cm.DeleteCheckAndFixItem(It.IsAny<CheckAndFixItem>())).CallBase();
+
+            checkManager.Object.SaveCheckAndFixItem(firstVersion);
+            List<CheckAndFixItem> savedChecks = checkManager.Object.GetSavedCheckAndFixItems();
+            Assert.IsTrue(savedChecks.Count == 1);
+            Assert.IsTrue(savedChecks.Contains(firstVersion));
+
+            checkManager.Object.SaveCheckAndFixItem(secondVersion);
+            savedChecks = checkManager.Object.GetSavedCheckAndFixItems();
+            Assert.IsTrue(savedChecks.Count == 1);
+            Assert.IsTrue(savedChecks.Contains(secondVersion));
+
+            checkManager.Object.SaveCheckAndFixItem(thirdVersion);
+            savedChecks = checkManager.Object.GetSavedCheckAndFixItems();
+            Assert.IsTrue(savedChecks.Count == 1);
+            Assert.IsTrue(savedChecks.Contains(thirdVersion));
         }
 
         [TestCleanup()]

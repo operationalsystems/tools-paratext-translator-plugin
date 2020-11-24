@@ -169,6 +169,7 @@
             this.CheckName.Name = "CheckName";
             this.CheckName.Size = new System.Drawing.Size(288, 20);
             this.CheckName.TabIndex = 5;
+            this.CheckName.Text = "test";
             // 
             // Version
             // 
