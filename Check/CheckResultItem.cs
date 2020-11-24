@@ -46,7 +46,7 @@ namespace TvpMain.Check
         /// Suggested replacement text (may be null).
         /// </summary>
         [JsonProperty]
-        public string FixText { get; private set; }
+        public string FixText { get; set; }
 
         /// <summary>
         /// Check type (i.e., source).
@@ -66,6 +66,23 @@ namespace TvpMain.Check
         /// </summary>
         [JsonProperty]
         public ResultState ResultState { get; set; }
+
+        /// <summary>
+        /// Basic ctor.
+        /// </summary>
+        /// <param name="description">Description text (required).</param>
+        /// <param name="matchText">Match text (required).</param>
+        /// <param name="matchStart">Start of match text, relative to verse start (0-based).</param>
+        /// <param name="checkType">Check type (i.e., source).</param>
+        /// <param name="resultTypeCode">Result type code (i.e., a discrete error sub-type).</param>
+        public CheckResultItem(string description,
+            string matchText, int matchStart, CheckType checkType,
+            int resultTypeCode)
+        : this(description,
+            matchText, matchStart,
+            "", checkType,
+            resultTypeCode, ResultState.Found)
+        { }
 
         /// <summary>
         /// Basic ctor.

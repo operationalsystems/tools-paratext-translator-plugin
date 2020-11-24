@@ -11,21 +11,13 @@
   <CheckRegex>
     ([“‘])[~\s-[\u2006]]?((\+?\w+ )?[“‘])|(’”?)[~\s-[\u2006]]?([’”])
   </CheckRegex>
-  <FixRegex>
-    \1\4\u2006\2\7
-  </FixRegex>
+  <FixRegex></FixRegex>
   <CheckScript>
-    // The check javascript
-    function checkAndFix( items) {
-      // A simple example that could probably be done with just regex, but...
-      return items.filter(i => i[0].length === 5).map(i => ({
-        MatchText: i[0].Value,
-        MatchStart: i.Index,
-        MatchLength: i[0].Length,
-        CheckType: 'Value Found',
-        FixText: i[0].Replacement,
-        ResultState: 'Found'
-      }))
+    function checkAndFix(checkResultItems) {
+      checkResultItems.forEach(i =>
+        i.FixText = '’' + '\u2006' + '”'
+      )
+      return checkResultItems
     }
   </CheckScript>
 </CheckAndFixItem>
