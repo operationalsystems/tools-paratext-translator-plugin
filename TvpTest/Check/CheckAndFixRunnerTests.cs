@@ -30,7 +30,6 @@ namespace TvpMain.Check.Tests
         /// <summary>
         /// Test to find the text in a footnote
         /// </summary>
-        [TestCategory("IgnoreOnBuild")]
         [TestMethod()]
         public void TestInFootnotes()
         {
@@ -50,7 +49,6 @@ namespace TvpMain.Check.Tests
         /// <summary>
         /// Test to replace the non-space b/t a single and double curly brace with 1/6 space
         /// </summary>
-        [TestCategory("IgnoreOnBuild")]
         [TestMethod()]
         public void TestFinalizationCheck1()
         {
@@ -70,7 +68,6 @@ namespace TvpMain.Check.Tests
         /// <summary>
         /// Test to replace the non-space b/t a single and double curly brace with 1/6 space
         /// </summary>
-        [TestCategory("IgnoreOnBuild")]
         [TestMethod()]
         public void TestBasicLoremIpsum()
         {

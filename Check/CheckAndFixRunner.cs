@@ -25,11 +25,11 @@ namespace TvpMain.Check
         /// </summary>
         /// <param name="text">The text (BCV) to be checked.</param>
         /// <param name="checkAndFixItem">The model that describes the check/fix</param>
-        /// <returns></returns>
+        /// <returns>The list of check result items. This includes the suggested fixes if they are available.</returns>
         public List<CheckResultItem> ExecCheckAndFix(string text, CheckAndFixItem checkAndFixItem)
         {
             // First, run the check regex, looking for matches
-            Regex checkRegex = new Regex( @checkAndFixItem.CheckRegex);
+            Regex checkRegex = new Regex( @checkAndFixItem.CheckRegex.Trim());
             MatchCollection matches = checkRegex.Matches(text);
             List<CheckResultItem> checkResultItems = new List<CheckResultItem>();
 
@@ -47,7 +47,7 @@ namespace TvpMain.Check
                 // If there is a replacement regex, apply that to the result
                 if (!String.IsNullOrEmpty(checkAndFixItem.FixRegex))
                 {
-                    checkResultItem.FixText = match.Result(checkAndFixItem.FixRegex);
+                    checkResultItem.FixText = match.Result(checkAndFixItem.FixRegex.Trim());
                 }
                 checkResultItems.Add(checkResultItem);
             }
