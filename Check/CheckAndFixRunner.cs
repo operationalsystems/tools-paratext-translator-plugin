@@ -67,14 +67,23 @@ namespace TvpMain.Check
                     // passing data into and out of the script is done by JSON to limit issues with conversions
                     var resultsString = JsonConvert.SerializeObject(checkResultItems);
 
+                    // This entry script demarshals the input and marshals the response
+                    // The script in the check/fix need only have the 'checkAndFix' function defined
+                    var entryScript = @"
+                        function entry(jsonCheckResultItems) {
+                            let checkResultItems = JSON.parse(jsonCheckResultItems)
+                            return JSON.stringify(checkAndFix(checkResultItems))
+                        }
+                    ";
+
                     // Here we can add a bunch of different data and bind context variables
                     // For example, this is where we'd bind project settings
                     // Right now, just the console
                     engine.AddHostType("Console", typeof(Console));
                     // execute the script
-                    engine.Execute(@checkAndFixItem.CheckScript);
+                    engine.Execute(@checkAndFixItem.CheckScript + entryScript);
                     // convert the response to json
-                    var outResultItems = engine.Script.checkAndFix(resultsString);
+                    var outResultItems = engine.Script.entry(resultsString);
                     checkResultItems = JsonConvert.DeserializeObject<List<CheckResultItem>>(outResultItems);
                 }
             }

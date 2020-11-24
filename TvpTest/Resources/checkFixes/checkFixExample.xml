@@ -9,15 +9,12 @@
   <CheckRegex>\w+</CheckRegex>
   <FixRegex></FixRegex>
   <CheckScript>
-    function checkAndFix(jsonCheckResultItems) {
-      let checkResultItems = JSON.parse(jsonCheckResultItems)
-
+    function checkAndFix(checkResultItems) {
       checkResultItems = checkResultItems.filter(i => i.MatchText.length === 5)
       checkResultItems.forEach(i =>
         i.FixText = i.MatchText.toUpperCase()
       )
-
-      return JSON.stringify(checkResultItems)
+      return checkResultItems
     }
   </CheckScript>
 </CheckAndFixItem>

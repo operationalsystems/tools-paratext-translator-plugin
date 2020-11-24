@@ -11,14 +11,11 @@
   <CheckRegex>([“‘])[~\s-[\u2006]]?((\+?\w+ )?[“‘])|(’”?)[~\s-[\u2006]]?([’”])</CheckRegex>
   <FixRegex></FixRegex>
   <CheckScript>
-    function checkAndFix(jsonCheckResultItems) {
-    let checkResultItems = JSON.parse(jsonCheckResultItems)
-
-    checkResultItems.forEach(i =>
-      i.FixText = '’' + '\u2006' + '”'
-    )
-
-    return JSON.stringify(checkResultItems)
+    function checkAndFix(checkResultItems) {
+      checkResultItems.forEach(i =>
+        i.FixText = '’' + '\u2006' + '”'
+      )
+      return checkResultItems
     }
   </CheckScript>
 </CheckAndFixItem>
