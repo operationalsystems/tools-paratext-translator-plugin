@@ -1,7 +1,6 @@
-﻿using System;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
 using System.IO;
-using System.Security.Cryptography;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using TvpMain.Check;
 
 namespace TvpTest
@@ -71,7 +70,8 @@ namespace TvpTest
             try
             {
                 localManager.Get(testCafItem.Name, testCafItem.Version);
-            } catch
+            }
+            catch
             {
                 failedAsExpected = true;
             }

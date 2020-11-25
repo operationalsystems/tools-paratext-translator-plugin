@@ -1,7 +1,6 @@
 ﻿using Amazon;
 using Amazon.S3;
 using Amazon.S3.Model;
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
@@ -20,7 +19,7 @@ namespace TvpMain.CheckManagement
         string secretKey = AWSCredentials.AWS_TVP_ACCESS_KEY_SECRET;
         RegionEndpoint region = RegionEndpoint.GetBySystemName(AWSCredentials.AWS_TVP_REGION) ?? RegionEndpoint.USEast1;
         public virtual string BucketName { get; set; } = AWSCredentials.AWS_TVP_BUCKET_NAME;
-        
+
         /// <summary>
         /// The client used to communicate with S3.
         /// </summary>

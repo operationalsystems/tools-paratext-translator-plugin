@@ -69,7 +69,7 @@ namespace TvpMain.CheckManagement
         {
             CheckAndFixItem checkAndFixItem = null;
             checkAndFixItem = CheckAndFixItem.LoadFromXmlContent(stream);
-            
+
             return checkAndFixItem;
         }
 

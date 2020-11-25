@@ -1,6 +1,5 @@
 ﻿using Amazon;
 using Amazon.S3;
-using Amazon.S3.Model;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.IO;
 using TvpMain.Check;
@@ -17,7 +16,7 @@ namespace TvpTest
         RegionEndpoint region = RegionEndpoint.GetBySystemName(TestAWSCredentials.AWS_TVP_TEST_REGION) ?? RegionEndpoint.USEast1;
         public override string BucketName { get; set; } = TestAWSCredentials.AWS_TVP_TEST_BUCKET_NAME;
 
-        public override AmazonS3Client S3Client {get; set;}
+        public override AmazonS3Client S3Client { get; set; }
         public TestS3Service()
         {
             S3Client = new AmazonS3Client(accessKey, secretKey, region);

@@ -1,10 +1,5 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using TvpMain.Check;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.IO;
 
 namespace TvpMain.Check.Tests
@@ -62,7 +57,7 @@ namespace TvpMain.Check.Tests
 
             // Check the found value and the replacement suggestion
             Assert.AreEqual("’”", results[0].MatchText);
-            Assert.AreEqual("’"+ '\u2006' + "”", results[0].FixText);
+            Assert.AreEqual("’" + '\u2006' + "”", results[0].FixText);
         }
 
         /// <summary>

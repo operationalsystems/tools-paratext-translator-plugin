@@ -3,7 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
 using TvpMain.Check;
 using TvpMain.Util;
 
@@ -117,7 +116,7 @@ namespace TvpMain.CheckManagement
         public virtual void SaveCheckAndFixItem(CheckAndFixItem item)
         {
             string filename = GetCheckAndFixItemFilename(item);
-            
+
             // Remove previous versions of the item before saving a new one.
             foreach (CheckAndFixItem check in GetSavedCheckAndFixItems().Where(check => check.Name == item.Name).ToList())
                 DeleteCheckAndFixItem(check);

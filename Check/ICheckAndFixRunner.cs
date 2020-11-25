@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace TvpMain.Check
 {
     interface ICheckAndFixRunner
     {
-        public List<CheckResultItem> ExecCheckAndFix(string text, CheckAndFixItem checkAndFixItem );
+        public List<CheckResultItem> ExecCheckAndFix(string text, CheckAndFixItem checkAndFixItem);
     }
 }
