@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using TvpMain.Check;
-using TvpMain.Util;
 
 namespace TvpMain.CheckManagement
 {
@@ -13,6 +12,9 @@ namespace TvpMain.CheckManagement
     /// </summary>
     public class LocalRepository : IRepository
     {
+        /// <summary>
+        /// The path where checks should be persisted.
+        /// </summary>
         private string FolderPath { get; set; } = Directory.GetCurrentDirectory();
 
         public LocalRepository(string folderPath)
@@ -25,7 +27,7 @@ namespace TvpMain.CheckManagement
             if (String.IsNullOrEmpty(filename)) throw new ArgumentNullException(nameof(filename));
 
             VerifyFolderPath();
-            string filePath = Path.Combine(FolderPath, filename); ;
+            string filePath = Path.Combine(FolderPath, filename);
 
             try
             {
@@ -46,7 +48,7 @@ namespace TvpMain.CheckManagement
         {
             string filePath = Path.Combine(FolderPath, filename);
             if (!File.Exists(filePath)) return;
-            
+
             File.Delete(filePath);
         }
 

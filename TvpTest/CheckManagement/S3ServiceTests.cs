@@ -44,6 +44,9 @@ namespace TvpTest
             Service.PutFileStream(filename, checkAndFix.WriteToXmlStream());
         }
 
+        /// <summary>
+        /// This test verifies that the <c>S3Service</c> class can add <c>CheckAndFixItem</c>s to an S3 bucket.
+        /// </summary>
         [TestMethod()]
         public void PutFileStream()
         {
@@ -60,6 +63,9 @@ namespace TvpTest
             Assert.IsTrue(files.Contains(filename));
         }
 
+        /// <summary>
+        /// This test verifies that the <c>S3Service</c> class read a list of files from an S3 bucket.
+        /// </summary>
         [TestMethod()]
         public void ListFilesTest()
         {
@@ -67,6 +73,9 @@ namespace TvpTest
             Assert.IsTrue(files.Contains(filename));
         }
 
+        /// <summary>
+        /// This test verifies that the <c>S3Service</c> class can get a <c>CheckAndFixItem</c>s from an S3 bucket.
+        /// </summary>
         [TestMethod()]
         public void GetFileTest()
         {

@@ -13,6 +13,9 @@ namespace TvpTest
     {
         Mock<CheckManager> checkManager = new Mock<CheckManager>();
 
+        /// <summary>
+        /// This test verifies that <c>GetOutdatedCheckAndFixItems</c> correctly matches checks that were locally installed with their remote counterparts, and returns them if there is an updated version available.
+        /// </summary>
         [TestMethod()]
         public void GetOutdatedCheckAndFixItems_returns_a_dictionary_with_any_checks_that_match()
         {
@@ -48,6 +51,9 @@ namespace TvpTest
             Assert.IsTrue(outdatedItems[installedItem].Equals(availableItem));
         }
 
+        /// <summary>
+        /// This test verifies that <c>GetOutdatedCheckAndFixItems</c> does not return <c>CheckAndFixItem</c> that do not have an upstream match.
+        /// </summary>
         [TestMethod()]
         public void GetOutdatedCheckAndFixItems_returns_a_dictionary_excluding_checks_that_do_not_have_a_match()
         {
@@ -93,6 +99,9 @@ namespace TvpTest
             Assert.IsTrue(outdatedItems[installedCheckB].Equals(availableCheckB));
         }
 
+        /// <summary>
+        /// This test verifies that <c>GetOutdatedCheckAndFixItems</c> handles duplicate <c>CheckAndFixItem</c>s and only returns the latest version.
+        /// </summary>
         [TestMethod()]
         public void GetOutdatedCheckAndFixItems_handles_duplicates()
         {
@@ -134,6 +143,9 @@ namespace TvpTest
             Assert.IsTrue(outdatedItems[installedCheckA].Equals(availableCheckA_New));
         }
 
+        /// <summary>
+        /// The test verifies that <c>IsNewVersionTest</c> correctly identifes when two <c>CheckAndFixItem</c>s are the same check, with one being a newer version.
+        /// </summary>
         [TestMethod()]
         public void IsNewVersionTest()
         {
@@ -175,6 +187,9 @@ namespace TvpTest
             Assert.IsTrue(checkManager.Object.IsNewVersion(check, newVersion));
         }
 
+        /// <summary>
+        /// The test verifies that the <c>CheckManager</c> class can manage both installed (from remote) and saved (locally-developed) <c>CheckAndFixItem</c>s.
+        /// </summary>
         [TestMethod()]
         public void It_can_manage_both_installed_and_locally_developed_checks()
         {
@@ -222,6 +237,9 @@ namespace TvpTest
             Assert.IsTrue(checkManager.Object.GetSavedCheckAndFixItems().Count == 0);
         }
 
+        /// <summary>
+        /// This test verifies that the <c>CheckManager</c> class can synchronize the installed <c>CheckAndFixItem</c>s with a remote repository.
+        /// </summary>
         [TestMethod()]
         public void It_can_synchronize_the_installed_checks_with_a_remote_repository()
         {
@@ -317,6 +335,9 @@ namespace TvpTest
             Assert.IsTrue(installedChecks.Contains(remoteCheckGamma));
         }
 
+        /// <summary>
+        /// This test verifies that when the <c>CheckManager</c> class saves a locally-developed <c>CheckAndFixItem</c>, it does not leave old versions on the filesystem.
+        /// </summary>
         [TestMethod()]
         public void Saving_a_check_replaces_the_existing_version()
         {
@@ -361,6 +382,9 @@ namespace TvpTest
             Assert.IsTrue(savedChecks.Contains(thirdVersion));
         }
 
+        /// <summary>
+        /// Remove any <c>CheckAndFixItem</c> directories that may have been created as a part of this test.
+        /// </summary>
         [TestCleanup()]
         public void TestCleanup()
         {

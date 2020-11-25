@@ -20,6 +20,9 @@ namespace TvpTest
         const string filename1 = "samplecheck-1.0.0.xml";
         const string filename2 = "sampleasynccheck-1.0.0.xml";
 
+        /// <summary>
+        /// This test verifies that the <c>S3Repository</c> class can add <c>CheckAndFixItem</c>s to an S3 bucket.
+        /// </summary>
         [TestMethod()]
         public void AddCheckAndFixItem()
         {
@@ -38,6 +41,9 @@ namespace TvpTest
             Assert.IsTrue(checkAndFixItems.Contains(check));
         }
 
+        /// <summary>
+        /// This test verifies that the <c>S3Repository</c> class can asynchronously add <c>CheckAndFixItem</c>s to an S3-based repository.
+        /// </summary>
         [TestMethod()]
         public void AddCheckAndFixItemAsync()
         {

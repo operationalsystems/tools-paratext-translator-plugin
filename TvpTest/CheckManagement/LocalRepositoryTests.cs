@@ -23,6 +23,9 @@ namespace TvpTest
             LocalRepository = new LocalRepository(folderPath);
         }
 
+        /// <summary>
+        /// This test verifies that the <c>LocalRepository</c> class can both add and remove checks from a local repository.
+        /// </summary>
         [TestMethod()]
         public void It_can_add_and_remove_checks()
         {
