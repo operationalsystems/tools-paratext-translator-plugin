@@ -4,6 +4,9 @@ using TvpMain.Check;
 
 namespace TvpMain.CheckManagement
 {
+    /// <summary>
+    /// This interface defines a class that manages a repository of checks.
+    /// </summary>
     public interface IRepository
     {
         /// <summary>

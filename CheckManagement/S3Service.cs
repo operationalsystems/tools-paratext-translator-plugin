@@ -10,13 +10,20 @@ using TVPMain.Util;
 
 namespace TvpMain.CheckManagement
 {
+    /// <summary>
+    /// This class communicates with an S3-based remote repository.
+    /// </summary>
     public class S3Service : IRemoteService
     {
-        // Read-only PPM repository and CLI AWS configuration parameters.
+        // AWS configuration parameters.
         string accessKey = AWSCredentials.AWS_TVP_ACCESS_KEY_ID;
         string secretKey = AWSCredentials.AWS_TVP_ACCESS_KEY_SECRET;
         RegionEndpoint region = RegionEndpoint.GetBySystemName(AWSCredentials.AWS_TVP_REGION) ?? RegionEndpoint.USEast1;
         public virtual string BucketName { get; set; } = AWSCredentials.AWS_TVP_BUCKET_NAME;
+        
+        /// <summary>
+        /// The client used to communicate with S3.
+        /// </summary>
         public virtual AmazonS3Client S3Client { get; set; }
 
         public S3Service()

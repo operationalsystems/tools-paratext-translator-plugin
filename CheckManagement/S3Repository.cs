@@ -6,8 +6,14 @@ using TvpMain.Check;
 
 namespace TvpMain.CheckManagement
 {
+    /// <summary>
+    /// This class works with a remote, S3-based repository for checks and fixes.
+    /// </summary>
     public class S3Repository : IRepository
     {
+        /// <summary>
+        /// The service which interacts with S3.
+        /// </summary>
         public virtual IRemoteService Service { get; set; } = new S3Service();
 
         public void AddCheckAndFixItem(string filename, CheckAndFixItem item)

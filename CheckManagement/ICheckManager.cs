@@ -4,6 +4,9 @@ using TvpMain.Check;
 
 namespace TvpMain.CheckManagement
 {
+    /// <summary>
+    /// This interface defines a class that saves, deletes, publishes, and synchronizes checks.
+    /// </summary>
     interface ICheckManager
     {
         /// <summary>

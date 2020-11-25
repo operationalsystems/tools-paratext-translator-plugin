@@ -5,6 +5,9 @@ using System.Threading.Tasks;
 
 namespace TvpMain.CheckManagement
 {
+    /// <summary>
+    /// This interface defines a class that communicates with a remote repository.
+    /// </summary>
     public interface IRemoteService
     {
         /// <summary>

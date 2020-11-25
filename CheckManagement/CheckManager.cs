@@ -9,6 +9,9 @@ using TvpMain.Util;
 
 namespace TvpMain.CheckManagement
 {
+    /// <summary>
+    /// This class saves, deletes, publishes, and synchronizes checks.
+    /// </summary>
     public class CheckManager : ICheckManager
     {
         private readonly IRepository installedChecksRepository;
