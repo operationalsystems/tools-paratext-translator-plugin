@@ -1,14 +1,8 @@
-﻿using Microsoft.ClearScript;
-using Microsoft.ClearScript.JavaScript;
-using Microsoft.ClearScript.V8;
+﻿using Microsoft.ClearScript.V8;
 using Newtonsoft.Json;
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using TvpMain.Reference;
 
 namespace TvpMain.Check
@@ -29,19 +23,19 @@ namespace TvpMain.Check
         public List<CheckResultItem> ExecCheckAndFix(string text, CheckAndFixItem checkAndFixItem)
         {
             // First, run the check regex, looking for matches
-            Regex checkRegex = new Regex( @checkAndFixItem.CheckRegex.Trim());
+            Regex checkRegex = new Regex(@checkAndFixItem.CheckRegex.Trim());
             MatchCollection matches = checkRegex.Matches(text);
             List<CheckResultItem> checkResultItems = new List<CheckResultItem>();
 
             // Now, loop through the matches
-            foreach ( Match match in matches)
+            foreach (Match match in matches)
             {
                 // Create a result item
-                CheckResultItem checkResultItem = new CheckResultItem(checkAndFixItem.Description, 
+                CheckResultItem checkResultItem = new CheckResultItem(checkAndFixItem.Description,
                     match.Value,
-                    match.Index, 
+                    match.Index,
                     CheckType.MissingSentencePunctuation,
-                    (int) ScriptureReferenceErrorType.LooseFormatting
+                    (int)ScriptureReferenceErrorType.LooseFormatting
                     );
 
                 // If there is a replacement regex, apply that to the result

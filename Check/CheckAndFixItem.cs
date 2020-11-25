@@ -63,7 +63,8 @@ namespace TvpMain.Check
         /// <summary>
         /// Enumeration for the scope of the check
         /// </summary>
-        public enum CheckScope : int {
+        public enum CheckScope : int
+        {
             PROJECT,
             BOOK,
             CHAPTER,
@@ -89,7 +90,7 @@ namespace TvpMain.Check
         /// The Check's javascript script content.
         /// </summary>
         public String CheckScript { get; set; }
-        
+
         //////////////// Serialization and Deserialization functions ///////////////////////
 
         /// <summary>
@@ -157,10 +158,8 @@ namespace TvpMain.Check
 
             XmlSerializer writer = new XmlSerializer(this.GetType());
 
-            FileStream file = File.Create(xmlFilePath);
-
+            using FileStream file = File.Create(xmlFilePath);
             writer.Serialize(file, this);
-            file.Close();
         }
 
         /// <summary>

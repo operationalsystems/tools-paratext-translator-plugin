@@ -1,25 +1,13 @@
-﻿using Amazon.S3;
-using Amazon.S3.Model;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Collections.Generic;
 using TvpMain.Check;
-using TvpMain.CheckManager;
+using TvpMain.CheckManagement;
 
 namespace TvpTest
 {
     public class TestS3Repository : S3Repository
     {
-        private TestS3Service service = new TestS3Service();
-
-        public override S3Service GetService()
-        {
-            return service;
-        }
-
-        public void DeleteFile(string file)
-        {
-            service.DeleteFile(file);
-        }
+        public override IRemoteService Service { get; set; } = new TestS3Service();
     }
 
     [TestCategory("IgnoreOnBuild")]
@@ -30,6 +18,9 @@ namespace TvpTest
         const string filename1 = "samplecheck-1.0.0.xml";
         const string filename2 = "sampleasynccheck-1.0.0.xml";
 
+        /// <summary>
+        /// This test verifies that the <c>S3Repository</c> class can add <c>CheckAndFixItem</c>s to an S3 bucket.
+        /// </summary>
         [TestMethod()]
         public void AddCheckAndFixItem()
         {
@@ -46,9 +37,11 @@ namespace TvpTest
             List<CheckAndFixItem> checkAndFixItems = s3Repository.GetCheckAndFixItems();
 
             Assert.IsTrue(checkAndFixItems.Contains(check));
-            Assert.IsTrue(checkAndFixItems[0].Version == "1.0.1");
         }
 
+        /// <summary>
+        /// This test verifies that the <c>S3Repository</c> class can asynchronously add <c>CheckAndFixItem</c>s to an S3-based repository.
+        /// </summary>
         [TestMethod()]
         public void AddCheckAndFixItemAsync()
         {
@@ -70,8 +63,8 @@ namespace TvpTest
         [TestCleanup()]
         public void TestCleanup()
         {
-            s3Repository.DeleteFile(filename1);
-            s3Repository.DeleteFile(filename2);
+            s3Repository.RemoveCheckAndFixItem(filename1);
+            s3Repository.RemoveCheckAndFixItem(filename2);
         }
     }
 }

@@ -1,10 +1,9 @@
 ﻿using Amazon;
 using Amazon.S3;
-using Amazon.S3.Model;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.IO;
 using TvpMain.Check;
-using TvpMain.CheckManager;
+using TvpMain.CheckManagement;
 using TVPTest;
 
 namespace TvpTest
@@ -12,30 +11,15 @@ namespace TvpTest
     public class TestS3Service : S3Service
     {
         // Read-only PPM repository and CLI AWS configuration parameters.
-        const string accessKey = TestAWSCredentials.AWS_TVP_TEST_ACCESS_KEY_ID;
-        const string secretKey = TestAWSCredentials.AWS_TVP_TEST_ACCESS_KEY_SECRET;
-        private string BucketName = TestAWSCredentials.AWS_TVP_TEST_BUCKET_NAME;
+        string accessKey = TestAWSCredentials.AWS_TVP_TEST_ACCESS_KEY_ID;
+        string secretKey = TestAWSCredentials.AWS_TVP_TEST_ACCESS_KEY_SECRET;
+        RegionEndpoint region = RegionEndpoint.GetBySystemName(TestAWSCredentials.AWS_TVP_TEST_REGION) ?? RegionEndpoint.USEast1;
+        public override string BucketName { get; set; } = TestAWSCredentials.AWS_TVP_TEST_BUCKET_NAME;
 
-        public override string GetBucketName()
+        public override AmazonS3Client S3Client { get; set; }
+        public TestS3Service()
         {
-            return BucketName;
-        }
-
-        private readonly AmazonS3Client s3Client = new AmazonS3Client(accessKey, secretKey, RegionEndpoint.USEast1);
-
-        public override AmazonS3Client GetS3Client()
-        {
-            return s3Client;
-        }
-
-        public void DeleteFile(string file)
-        {
-            DeleteObjectRequest deleteObjectRequest = new DeleteObjectRequest
-            {
-                BucketName = GetBucketName(),
-                Key = file
-            };
-            s3Client.DeleteObject(deleteObjectRequest);
+            S3Client = new AmazonS3Client(accessKey, secretKey, region);
         }
     }
     [TestCategory("IgnoreOnBuild")]
@@ -59,6 +43,9 @@ namespace TvpTest
             Service.PutFileStream(filename, checkAndFix.WriteToXmlStream());
         }
 
+        /// <summary>
+        /// This test verifies that the <c>S3Service</c> class can add <c>CheckAndFixItem</c>s to an S3 bucket.
+        /// </summary>
         [TestMethod()]
         public void PutFileStream()
         {
@@ -75,6 +62,9 @@ namespace TvpTest
             Assert.IsTrue(files.Contains(filename));
         }
 
+        /// <summary>
+        /// This test verifies that the <c>S3Service</c> class read a list of files from an S3 bucket.
+        /// </summary>
         [TestMethod()]
         public void ListFilesTest()
         {
@@ -82,6 +72,9 @@ namespace TvpTest
             Assert.IsTrue(files.Contains(filename));
         }
 
+        /// <summary>
+        /// This test verifies that the <c>S3Service</c> class can get a <c>CheckAndFixItem</c>s from an S3 bucket.
+        /// </summary>
         [TestMethod()]
         public void GetFileTest()
         {

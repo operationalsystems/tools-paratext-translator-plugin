@@ -4,19 +4,23 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using TvpMain.Check;
-using TvpMain.Util;
 
-namespace TvpMain.CheckManager
+namespace TvpMain.CheckManagement
 {
     /// <summary>
     /// This class works with a local, file-based repository for checks and fixes.
     /// </summary>
-    public class FolderRepository : IRepository
+    public class LocalRepository : IRepository
     {
         /// <summary>
-        /// The filesystem path where checks are located.
+        /// The path where checks should be persisted.
         /// </summary>
-        public virtual string FolderPath { get; private set; } = Path.Combine(Directory.GetCurrentDirectory(), MainConsts.CHECK_FOLDER_NAME);
+        private string FolderPath { get; set; } = Directory.GetCurrentDirectory();
+
+        public LocalRepository(string folderPath)
+        {
+            FolderPath = folderPath;
+        }
 
         public void AddCheckAndFixItem(string filename, CheckAndFixItem item)
         {
@@ -38,6 +42,19 @@ namespace TvpMain.CheckManager
         public Task AddCheckAndFixItemAsync(string filename, CheckAndFixItem item)
         {
             return Task.Run(() => AddCheckAndFixItem(filename, item));
+        }
+
+        public void RemoveCheckAndFixItem(string filename)
+        {
+            string filePath = Path.Combine(FolderPath, filename);
+            if (!File.Exists(filePath)) return;
+
+            File.Delete(filePath);
+        }
+
+        public Task RemoveCheckAndFixItemAsync(string filename)
+        {
+            return Task.Run(() => RemoveCheckAndFixItem(filename));
         }
 
         public List<CheckAndFixItem> GetCheckAndFixItems()

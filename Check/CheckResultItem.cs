@@ -1,5 +1,5 @@
-﻿using System;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
+using System;
 using TvpMain.Result;
 using TvpMain.Util;
 
@@ -159,7 +159,7 @@ namespace TvpMain.Check
         {
             unchecked
             {
-                var hashCode = ( MainConsts.HASH_PRIME) ^ (Description != null ? Description.GetHashCode() : 0);
+                var hashCode = (MainConsts.HASH_PRIME) ^ (Description != null ? Description.GetHashCode() : 0);
                 hashCode = (hashCode * MainConsts.HASH_PRIME) ^ (MatchText != null ? MatchText.GetHashCode() : 0);
                 hashCode = (hashCode * MainConsts.HASH_PRIME) ^ MatchStart;
                 hashCode = (hashCode * MainConsts.HASH_PRIME) ^ (FixText != null ? FixText.GetHashCode() : 0);

@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
 using System.Windows.Forms;
-using TvpMain.Form;
+using TvpMain.Forms;
 using TvpMain.Util;
 
 /*

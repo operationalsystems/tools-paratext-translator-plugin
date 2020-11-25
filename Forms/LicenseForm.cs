@@ -1,9 +1,10 @@
 ﻿using System;
+using System.Windows.Forms;
 using TvpMain.Util;
 
-namespace TvpMain.Form
+namespace TvpMain.Forms
 {
-    public partial class LicenseForm : System.Windows.Forms.Form
+    public partial class LicenseForm : Form
     {
         private const string DismissButtonText = "Dismiss";
         private const string CancelButtonText = "Cancel";

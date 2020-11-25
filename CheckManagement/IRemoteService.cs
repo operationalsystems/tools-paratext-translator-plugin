@@ -3,9 +3,12 @@ using System.IO;
 using System.Net;
 using System.Threading.Tasks;
 
-namespace TvpMain.CheckManager
+namespace TvpMain.CheckManagement
 {
-    interface IRemoteService
+    /// <summary>
+    /// This interface defines a class that communicates with a remote repository.
+    /// </summary>
+    public interface IRemoteService
     {
         /// <summary>
         /// This method retrieves a file as a <c>Stream</c>.
@@ -48,5 +51,19 @@ namespace TvpMain.CheckManager
         /// <param name="filestream">The file as a <c>Stream</c>.</param>
         /// <returns>An operation that results in the <c>HttpStatusCode</c> returned by the remote repository.</returns>
         Task<HttpStatusCode> PutFileStreamAsync(string filename, Stream filestream);
+
+        /// <summary>
+        /// This method deletes a file.
+        /// </summary>
+        /// <param name="filename">The name of the file to delete from the remote repository.</param>
+        /// <returns>The <c>HttpStatusCode</c> returned by the remote repository.</returns>
+        HttpStatusCode DeleteFile(string filename);
+
+        /// <summary>
+        /// This method asynchronously deletes a file.
+        /// </summary>
+        /// <param name="filename">The name of the file to delete from the remote repository.</param>
+        /// <returns>An operation that results in the <c>HttpStatusCode</c> returned by the remote repository.</returns>
+        Task<HttpStatusCode> DeleteFileAsync(string filename);
     }
 }
