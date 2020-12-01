@@ -58,5 +58,11 @@ namespace TvpMain.Forms
             checkManager.SynchronizeInstalledChecks();
             refresh();
         }
+
+        private void checkResultsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Form checkResults = new CheckResultsForm();
+            checkResults.ShowDialog();
+        }
     }
 }
