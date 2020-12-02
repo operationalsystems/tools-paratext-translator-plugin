@@ -59,6 +59,8 @@ namespace TvpMain.Util
         /// </summary>
         public const string RESULT_ITEMS_DATA_ID_FORMAT = "ResultItems-{0}.json";
 
+        public const string CHECK_SETTINGS_DATA_ID = "CheckSettings.xml";
+
         /// <summary>
         /// Update rate for progress form and similar loops.
         /// </summary>
