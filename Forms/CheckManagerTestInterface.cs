@@ -11,9 +11,11 @@ namespace TvpMain.Forms
         readonly ICheckManager checkManager = new CheckManager();
         private List<CheckAndFixItem> installed = new List<CheckAndFixItem>();
         private List<CheckAndFixItem> saved = new List<CheckAndFixItem>();
-        public CheckManagerTestInterface()
+        private string _activeProjectName { get; set; }
+        public CheckManagerTestInterface(string projectName)
         {
             InitializeComponent();
+            _activeProjectName = projectName;
             refresh();
         }
         private void button2_Click(object sender, EventArgs e)
@@ -57,6 +59,12 @@ namespace TvpMain.Forms
         {
             checkManager.SynchronizeInstalledChecks();
             refresh();
+        }
+
+        private void projectSettingsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Form settingsForm = new ProjectCheckSettingsTestForm(_activeProjectName);
+            settingsForm.ShowDialog();
         }
     }
 }
