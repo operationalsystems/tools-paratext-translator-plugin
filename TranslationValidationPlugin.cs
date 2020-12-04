@@ -100,9 +100,21 @@ namespace TvpMain
             // ignore, for now
         }
 
+        public Dictionary<string, IPluginDataFileMergeInfo> _dataFileKeySpecifications = new Dictionary<string, IPluginDataFileMergeInfo>
+        {
+            [MainConsts.CHECK_SETTINGS_DATA_ID] = new PluginDataFileMergeInfo(
+                new MergeLevel("DefaultCheckIds", ".")
+            )
+        };
+
         /// <summary>
-        /// Data file key spec accessor (no-op, not used by this plugin).
+        /// Data file key spec accessor.
         /// </summary>
-        public Dictionary<string, IPluginDataFileMergeInfo> DataFileKeySpecifications => null;
+        public Dictionary<string, IPluginDataFileMergeInfo> DataFileKeySpecifications { 
+            get
+            {
+                return _dataFileKeySpecifications; 
+            } 
+        }
     }
 }
