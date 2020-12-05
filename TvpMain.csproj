@@ -256,6 +256,12 @@
       <DependentUpon>LicenseForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Forms\RichTextBoxPrinter.cs" />
+    <Compile Include="Forms\RunChecks.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\RunChecks.Designer.cs">
+      <DependentUpon>RunChecks.cs</DependentUpon>
+    </Compile>
     <Compile Include="Import\ImportManager.cs" />
     <Compile Include="Project\BookNameItem.cs" />
     <Compile Include="Project\FileManager.cs" />
@@ -328,6 +334,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\LicenseForm.resx">
       <DependentUpon>LicenseForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\RunChecks.resx">
+      <DependentUpon>RunChecks.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
