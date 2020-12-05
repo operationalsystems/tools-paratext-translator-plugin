@@ -89,7 +89,17 @@ namespace TvpMain.Check
         /// <summary>
         /// The Check's javascript script content.
         /// </summary>
+        /// 
         public String CheckScript { get; set; }
+        /// <summary>
+        /// Set of Lanaguages this check/fix applies to. Empty = All
+        /// </summary>
+        public String[] Languages { get; set; }
+        /// <summary>
+        /// Set of Tags that define the limitations or project matching for this check/fix.
+        /// Examples: RTL, LTR, 
+        /// </summary>
+        public String[] Tags { get; set; }
 
         //////////////// Serialization and Deserialization functions ///////////////////////
 
@@ -204,7 +214,9 @@ namespace TvpMain.Check
                    DefaultItemDescription == item.DefaultItemDescription &&
                    CheckRegex == item.CheckRegex &&
                    FixRegex == item.FixRegex &&
-                   CheckScript == item.CheckScript;
+                   CheckScript == item.CheckScript &&
+                   Tags == item.Tags &&
+                   Languages == item.Languages;
         }
 
         /// <summary>
@@ -228,6 +240,8 @@ namespace TvpMain.Check
                 hashCode = (hashCode * MainConsts.HASH_PRIME) ^ (Description != null ? Description.GetHashCode() : 0);
                 hashCode = (hashCode * MainConsts.HASH_PRIME) ^ (Version != null ? Version.GetHashCode() : 0);
                 hashCode = (hashCode * MainConsts.HASH_PRIME) ^ Scope.GetHashCode();
+                hashCode = (hashCode * MainConsts.HASH_PRIME) ^ (Tags != null ? Tags.GetHashCode() : 0);
+                hashCode = (hashCode * MainConsts.HASH_PRIME) ^ (Languages != null ? Languages.GetHashCode() : 0);
                 hashCode = (hashCode * MainConsts.HASH_PRIME) ^ (DefaultItemDescription != null ? DefaultItemDescription.GetHashCode() : 0);
                 hashCode = (hashCode * MainConsts.HASH_PRIME) ^ (CheckRegex != null ? CheckRegex.GetHashCode() : 0);
                 hashCode = (hashCode * MainConsts.HASH_PRIME) ^ (FixRegex != null ? FixRegex.GetHashCode() : 0);

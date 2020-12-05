@@ -177,6 +177,18 @@
     <Content Include="Resources\checkFixes\checkFixExample.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="Resources\checkFixes\EmbeddedFootnoteMarker.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\checkFixes\FinalizationCheck3.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\checkFixes\PoetryQuoteCheck.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\checkFixes\RTLAddMissingSpacesAfterFootnotes.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Resources\checkFixPrototype.js" />
     <Content Include="Resources\checkFixes\FinalizationCheck1.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -190,6 +202,18 @@
     <Content Include="Resources\test-usfm-1.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <None Include="Resources\testReferences\Dan6_PoetryQuoteMatch.sfm">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Resources\testReferences\Dan6_PoetryNoQuoteMatch.sfm">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Resources\testReferences\Gen16.sfm">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Resources\testReferences\Gen19.sfm">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="Resources\testReferences\Jer1_Intro.sfm">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

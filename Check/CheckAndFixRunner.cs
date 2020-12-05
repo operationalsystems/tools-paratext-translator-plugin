@@ -23,7 +23,8 @@ namespace TvpMain.Check
         public List<CheckResultItem> ExecCheckAndFix(string text, CheckAndFixItem checkAndFixItem)
         {
             // First, run the check regex, looking for matches
-            Regex checkRegex = new Regex(@checkAndFixItem.CheckRegex.Trim());
+            Regex checkRegex = new Regex(@checkAndFixItem.CheckRegex.Trim(), RegexOptions.Multiline | RegexOptions.ECMAScript);
+            
             MatchCollection matches = checkRegex.Matches(text);
             List<CheckResultItem> checkResultItems = new List<CheckResultItem>();
 
@@ -41,7 +42,7 @@ namespace TvpMain.Check
                 // If there is a replacement regex, apply that to the result
                 if (!String.IsNullOrEmpty(checkAndFixItem.FixRegex))
                 {
-                    checkResultItem.FixText = match.Result(checkAndFixItem.FixRegex.Trim());
+                    checkResultItem.FixText = match.Result(@checkAndFixItem.FixRegex.Trim());
                 }
                 checkResultItems.Add(checkResultItem);
             }

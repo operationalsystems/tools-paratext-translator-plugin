@@ -1,0 +1,23 @@
+﻿<?xml version="1.0"?>
+<CheckAndFixItem xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <Id>1f60fb3e-23d7-11eb-adc1-0242ac120402</Id>
+  <Name>RTL Add Missing Space After Footnote</Name>
+  <Description>
+    There should be a space after the footnote marker \f*
+  </Description>
+  <Version>1.0.0</Version>
+  <Scope>CHAPTER</Scope>
+  <DefaultItemDescription>Value Found</DefaultItemDescription>
+  <CheckRegex>
+    (\\f\*)(?=\S)
+  </CheckRegex>
+  <FixRegex></FixRegex>
+  <CheckScript>
+    function checkAndFix(checkResultItems) {
+      checkResultItems.forEach(i =>
+        i.FixText = i.MatchText + '\u0020'
+      )
+      return checkResultItems
+    }
+  </CheckScript>
+</CheckAndFixItem>
