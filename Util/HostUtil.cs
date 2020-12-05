@@ -8,6 +8,7 @@ using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Windows.Forms;
+using TvpMain.Project;
 using TvpMain.Result;
 using TvpMain.Text;
 
@@ -285,6 +286,53 @@ namespace TvpMain.Util
             _host.PutPlugInData(_translationValidationPlugin, projectName,
                 string.Format(MainConsts.RESULT_ITEMS_DATA_ID_FORMAT, bookId),
                 JsonConvert.SerializeObject(outputItems));
+        }
+
+        /// <summary>
+        /// Loads the <c>ProjectCheckSettings</c> for the specified project.
+        /// </summary>
+        /// <param name="projectName">The project name.</param>
+        /// <returns>The <c>ProjectCheckSettings</c>, or empty settings if none could be loaded.</returns>
+        public ProjectCheckSettings GetProjectCheckSettings(string projectName)
+        {
+            ProjectCheckSettings settings = new ProjectCheckSettings();
+
+            if (projectName == null || projectName.Length < 1)
+            {
+                throw new ArgumentNullException(nameof(projectName));
+            }
+
+            var inputData =
+               _host.GetPlugInData(_translationValidationPlugin, projectName,
+                   MainConsts.CHECK_SETTINGS_DATA_ID);
+            if (inputData != null)
+            {
+                settings = ProjectCheckSettings.LoadFromXmlContent(inputData);
+            }
+
+            return settings;
+        }
+
+        /// <summary>
+        /// Loads the <c>ProjectCheckSettings</c> for the specified project.
+        /// </summary>
+        /// <param name="projectName">The project name.</param>
+        /// <returns>The <c>ProjectCheckSettings</c>, or empty settings if none could be loaded.</returns>
+        public void PutProjectCheckSettings(string projectName, ProjectCheckSettings settings)
+        {
+            if (projectName == null || projectName.Length < 1)
+            {
+                throw new ArgumentNullException(nameof(projectName));
+            }
+
+            if (settings == null)
+            {
+                throw new ArgumentNullException(nameof(settings));
+            }
+
+            _host.PutPlugInData(_translationValidationPlugin, projectName,
+                            MainConsts.CHECK_SETTINGS_DATA_ID,
+                            settings.WriteToXmlString());
         }
 
         /// <summary>

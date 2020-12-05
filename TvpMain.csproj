@@ -249,6 +249,12 @@
     <Compile Include="Forms\CheckManagerTestInterface.Designer.cs">
       <DependentUpon>CheckManagerTestInterface.cs</DependentUpon>
     </Compile>
+    <Compile Include="Forms\ProjectCheckSettingsTestForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\ProjectCheckSettingsTestForm.Designer.cs">
+      <DependentUpon>ProjectCheckSettingsTestForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\LicenseForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -265,6 +271,7 @@
     <Compile Include="Import\ImportManager.cs" />
     <Compile Include="Project\BookNameItem.cs" />
     <Compile Include="Project\FileManager.cs" />
+    <Compile Include="Project\ProjectCheckSettings.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -334,6 +341,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\LicenseForm.resx">
       <DependentUpon>LicenseForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\ProjectCheckSettingsTestForm.resx">
+      <DependentUpon>ProjectCheckSettingsTestForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\RunChecks.resx">
       <DependentUpon>RunChecks.cs</DependentUpon>

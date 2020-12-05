@@ -1079,7 +1079,7 @@ namespace TvpMain.Forms
 
         private void checkManagerTestToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            CheckManagerTestInterface checkManagerTestInterface = new CheckManagerTestInterface();
+            CheckManagerTestInterface checkManagerTestInterface = new CheckManagerTestInterface(_activeProjectName);
             checkManagerTestInterface.Show();
         }
     }
