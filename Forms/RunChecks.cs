@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Text;
@@ -149,7 +150,24 @@ namespace TvpMain.Forms
                 // in case the user is off-line
                 MessageBox.Show("Could not synchronize with check/fix repo. You may only run checks with locally available set.", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+        }
 
+        /// <summary>
+        /// Close the progress form when complete
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void loadingWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            checksList.Invoke(new MethodInvoker(delegate { this.updateChecksList(); }));
+            _progressForm.Close();
+        }
+
+        /// <summary>
+        /// After doing async download of latest checks, update the list (must be run in main thread)
+        /// </summary>
+        private void updateChecksList()
+        {
             try
             {
                 // load all the checks into the list
@@ -202,17 +220,6 @@ namespace TvpMain.Forms
 
             // set the default checks for the project
             resetToProjectDefaults();
-
-        }
-
-        /// <summary>
-        /// Close the progress form when complete
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void loadingWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
-        {
-            _progressForm.Close();
         }
 
         /// <summary>
@@ -497,7 +504,7 @@ namespace TvpMain.Forms
         private Boolean isCheckAvailableForProject(CheckAndFixItem item)
         {
             var languageId = _host.GetProjectLanguageId(_activeProjectName, "translation validation");
-            var rtl = _host.GetProjectRtoL(_activeProjectName);
+            var projectRTL = _host.GetProjectRtoL(_activeProjectName);
 
             // filter based on language
             var languageEnabled = item.Languages == null
@@ -507,8 +514,14 @@ namespace TvpMain.Forms
             // filter based on Tags
 
             // RTL Tag support
-            var rtlEnabled = (rtl && (item.Tags != null && item.Tags.Contains("RTL")))
-                    || (!rtl && (item.Tags == null || (item.Tags != null && !item.Tags.Contains("RTL"))));
+            var itemRTL = item.Tags != null && item.Tags.Contains("RTL");
+
+            var rtlEnabled = (!projectRTL && !itemRTL)
+                || (projectRTL && itemRTL);
+
+            Debug.WriteLine("Project Language: " + languageId);
+            Debug.WriteLine("Project RTL: " + projectRTL);
+            Debug.WriteLine("Item RTL: " + rtlEnabled);
 
             return languageEnabled && rtlEnabled;
         }
