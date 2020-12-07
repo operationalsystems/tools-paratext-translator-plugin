@@ -243,11 +243,23 @@
     <Compile Include="Check\CheckResultItem.cs" />
     <Compile Include="Check\ICheckAndFixRunner.cs" />
     <Compile Include="Check\LocalCheckAndFixManager.cs" />
+    <Compile Include="Forms\BookSelection.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\BookSelection.Designer.cs">
+      <DependentUpon>BookSelection.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\CheckManagerTestInterface.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Forms\CheckManagerTestInterface.Designer.cs">
       <DependentUpon>CheckManagerTestInterface.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\GenericProgressForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\GenericProgressForm.Designer.cs">
+      <DependentUpon>GenericProgressForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Forms\ProjectCheckSettingsTestForm.cs">
       <SubType>Form</SubType>
@@ -272,6 +284,7 @@
     <Compile Include="Project\BookNameItem.cs" />
     <Compile Include="Project\FileManager.cs" />
     <Compile Include="Project\ProjectCheckSettings.cs" />
+    <Compile Include="Project\ProjectUserAccess.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -336,8 +349,14 @@
   <ItemGroup>
     <None Include="App.config" />
     <None Include="packages.config" />
+    <EmbeddedResource Include="Forms\BookSelection.resx">
+      <DependentUpon>BookSelection.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Forms\CheckManagerTestInterface.resx">
       <DependentUpon>CheckManagerTestInterface.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\GenericProgressForm.resx">
+      <DependentUpon>GenericProgressForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\LicenseForm.resx">
       <DependentUpon>LicenseForm.cs</DependentUpon>

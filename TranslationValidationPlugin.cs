@@ -57,7 +57,8 @@ namespace TvpMain
                         try
                         {
                             Application.EnableVisualStyles();
-                            Application.Run(new MainForm(host, activeProjectName));
+                            //Application.Run(new MainForm(host, activeProjectName));
+                            Application.Run(new RunChecks(host, activeProjectName));
                         }
                         catch (Exception ex)
                         {

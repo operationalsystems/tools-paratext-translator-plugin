@@ -94,11 +94,15 @@ namespace TvpMain.Check
         /// <summary>
         /// Set of Lanaguages this check/fix applies to. Empty = All
         /// </summary>
+        [XmlArrayItem("Language", Type = typeof(string), IsNullable = false)]
+        [XmlArray("Languages")]
         public String[] Languages { get; set; }
         /// <summary>
         /// Set of Tags that define the limitations or project matching for this check/fix.
         /// Examples: RTL, LTR, 
         /// </summary>
+        [XmlArrayItem("Tag", Type = typeof(string), IsNullable = false)]
+        [XmlArray("Tags")]
         public String[] Tags { get; set; }
 
         //////////////// Serialization and Deserialization functions ///////////////////////

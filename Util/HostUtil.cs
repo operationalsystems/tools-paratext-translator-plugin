@@ -1,6 +1,7 @@
 ﻿using AddInSideViews;
 using Newtonsoft.Json;
 using Paratext.Data;
+using Paratext.Data.Users;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -23,6 +24,8 @@ namespace TvpMain.Util
         /// Thread-safe singleton accessor.
         /// </summary>
         public static HostUtil Instance { get; } = new HostUtil();
+
+        private const string ADMIN_ROLE = "Administrator";
 
         /// <summary>
         /// Indicates whether ParatextData has been initialized.
@@ -333,6 +336,34 @@ namespace TvpMain.Util
             _host.PutPlugInData(_translationValidationPlugin, projectName,
                             MainConsts.CHECK_SETTINGS_DATA_ID,
                             settings.WriteToXmlString());
+        }
+
+        /// <summary>
+        /// Method to determine if the current user is an administrator or not. This loads the ProjectUserAccess.xml file from 
+        /// the project and compares the users there against the current user name from IHost.
+        /// </summary>
+        /// <param name="projectName"></param>
+        /// <returns></returns>
+        public bool isCurrentUserAdmin(string projectName)
+        {
+            if (projectName == null || projectName.Length < 1)
+            {
+                throw new ArgumentNullException(nameof(projectName));
+            }
+
+            FileManager fileManager = new FileManager(_host, projectName);
+
+            using Stream reader = new FileStream(Path.Combine(fileManager.ProjectDir.FullName, "ProjectUserAccess.xml"), FileMode.Open);
+            ProjectUserAccess projectUserAccess = ProjectUserAccess.LoadFromXML(reader);
+
+            foreach( User user in projectUserAccess.Users) { 
+                if( user.UserName.Equals(_host.UserName) && user.Role.Equals(ADMIN_ROLE))
+                {
+                    // Bail as soon as we find a match
+                    return true;
+                }
+            }
+            return false;
         }
 
         /// <summary>
