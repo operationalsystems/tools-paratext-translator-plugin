@@ -164,6 +164,7 @@ namespace TvpMain.Forms
                     var rowIndex = checksList.Rows.Add(
                         false,
                         item.Name,
+                        item.Version,
                         item.Languages != null ? String.Join(", ", item.Languages) : "All",
                         item.Tags != null ? String.Join(", ", item.Tags) : "",
                         item.Id
@@ -182,7 +183,8 @@ namespace TvpMain.Forms
                 {
                     var rowIndex = checksList.Rows.Add(
                         false,
-                        item.Name,
+                        "(Local) " + item.Name,
+                        item.Version,
                         item.Languages != null ? String.Join(", ", item.Languages) : "All",
                         item.Tags != null ? String.Join(", ", item.Tags) : "",
                         item.Id
@@ -268,7 +270,9 @@ namespace TvpMain.Forms
         /// <param name="e"></param>
         private void editorToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            // TODO: Start editor
+            CheckEditor checkEditor = new CheckEditor();
+            checkEditor.Show(this);
+
         }
 
         /// <summary>

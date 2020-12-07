@@ -57,5 +57,11 @@ namespace TvpMain.CheckManagement
         /// </summary>
         /// <param name="item">The <c>CheckAndFixItem</c> to delete locally.</param>
         public void DeleteCheckAndFixItem(CheckAndFixItem item);
+
+        /// <summary>
+        /// Returns the local check folder path as a string for the editor to open files there.
+        /// </summary>
+        /// <returns></returns>
+        public string GetLocalRepoDirectory();
     }
 }

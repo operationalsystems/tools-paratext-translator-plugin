@@ -55,7 +55,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
+    <OutputPath>D:\Program Files %28x86%29\Paratext 9\plugins\tvp\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -65,7 +65,7 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
+    <OutputPath>D:\Program Files %28x86%29\Paratext 9\plugins\tvp\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -249,6 +249,12 @@
     <Compile Include="Forms\BookSelection.Designer.cs">
       <DependentUpon>BookSelection.cs</DependentUpon>
     </Compile>
+    <Compile Include="Forms\CheckEditor.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\CheckEditor.Designer.cs">
+      <DependentUpon>CheckEditor.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\CheckManagerTestInterface.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -351,6 +357,9 @@
     <None Include="packages.config" />
     <EmbeddedResource Include="Forms\BookSelection.resx">
       <DependentUpon>BookSelection.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\CheckEditor.resx">
+      <DependentUpon>CheckEditor.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\CheckManagerTestInterface.resx">
       <DependentUpon>CheckManagerTestInterface.cs</DependentUpon>
