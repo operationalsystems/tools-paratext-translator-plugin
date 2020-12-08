@@ -8,9 +8,7 @@
   <Version>1.0.0</Version>
   <Scope>CHAPTER</Scope>
   <DefaultItemDescription>Value Found</DefaultItemDescription>
-  <CheckRegex>
-    ((?:\\(?:wj)\S?\s).*?)(\\(w)\S?\s)(.*?)(\\(w)\S?\*)(.*?(?:\\(?:wj)\S?\*))
-  </CheckRegex>
+  <CheckRegex>((?:\\(?:wj)\S?\s).*?)(\\(w)\S?\s)(.*?)(\\(w)\S?\*)(.*?(?:\\(?:wj)\S?\*))</CheckRegex>
   <FixRegex>$1\+$3 $4 \+$6*$7</FixRegex>
   <CheckScript>
     function checkAndFix(checkResultItems) {

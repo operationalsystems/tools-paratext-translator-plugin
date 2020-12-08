@@ -213,12 +213,6 @@
     <None Include="Resources\testReferences\Dan6_PoetryNoQuoteMatch.sfm">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="Resources\testReferences\Gen16.sfm">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Resources\testReferences\Gen19.sfm">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
     <None Include="Resources\testReferences\Jer1_Intro.sfm">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
