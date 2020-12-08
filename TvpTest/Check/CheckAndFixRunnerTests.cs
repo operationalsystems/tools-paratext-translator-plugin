@@ -99,31 +99,13 @@ namespace TvpMain.Check.Tests
             // Should have one result
             Assert.AreEqual(1, results.Count);
 
-            string expectedMatch = @"For he is the living God
-\qm2 and he endures forever;
-\qm1 his kingdom will not be destroyed,
-\qm2 his dominion will never end.
-\qm1
-\v 27 He rescues and he saves;
-\qm2 he performs signs and wonders
-\qm2 in the heavens and on the earth.
-\qm1 He has rescued Daniel
-\qm2 from the power of the lions." + "\r";
+            string expectedMatch = "For he is the living God\r\n\\qm2 and he endures forever;\r\n\\qm1 his kingdom will not be destroyed,\r\n\\qm2 his dominion will never end.\r\n\\qm1\r\n\\v 27 He rescues and he saves;\r\n\\qm2 he performs signs and wonders\r\n\\qm2 in the heavens and on the earth.\r\n\\qm1 He has rescued Daniel\r\n\\qm2 from the power of the lions.";
 
-            string expectedFix = @"“For he is the living God
-\qm2 and he endures forever;
-\qm1 his kingdom will not be destroyed,
-\qm2 his dominion will never end.
-\qm1
-\v 27 He rescues and he saves;
-\qm2 he performs signs and wonders
-\qm2 in the heavens and on the earth.
-\qm1 He has rescued Daniel
-\qm2 from the power of the lions." + "\r" + "”";
+            string expectedFix = "“For he is the living God\r\n\\qm2 and he endures forever;\r\n\\qm1 his kingdom will not be destroyed,\r\n\\qm2 his dominion will never end.\r\n\\qm1\r\n\\v 27 He rescues and he saves;\r\n\\qm2 he performs signs and wonders\r\n\\qm2 in the heavens and on the earth.\r\n\\qm1 He has rescued Daniel\r\n\\qm2 from the power of the lions.”";
 
             // Check the found value and the replacement suggestion
-            Assert.AreEqual(expectedMatch, results[0].MatchText);
-            Assert.AreEqual(expectedFix, results[0].FixText);
+            Assert.AreEqual(expectedMatch, results[0].MatchText, "MatchText does not match");
+            Assert.AreEqual(expectedFix, results[0].FixText, "FixText does not match");
         }
 
         /// <summary>

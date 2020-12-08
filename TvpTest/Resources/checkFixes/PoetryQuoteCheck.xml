@@ -8,10 +8,8 @@
   <Version>1.0.0</Version>
   <Scope>CHAPTER</Scope>
   <DefaultItemDescription>Value Found</DefaultItemDescription>
-  <CheckRegex>
-    (?&lt;=\\qm\d\s)([\S\s]*?)(?=[\S\s]^\\p)
-  </CheckRegex>
-  <FixRegex>“$1”</FixRegex>
+  <CheckRegex>(?&lt;=\\qm\d\s)([\S\s]*?)([\s]*?)(?=\r\n^\\p)</CheckRegex>
+  <FixRegex>“$1”$2</FixRegex>
   <CheckScript>
     function checkAndFix(checkResultItems) {
       checkResultItems = checkResultItems.filter(i => !i.MatchText.includes("“"))
