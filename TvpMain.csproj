@@ -255,6 +255,12 @@
     <Compile Include="Forms\CheckManagerTestInterface.Designer.cs">
       <DependentUpon>CheckManagerTestInterface.cs</DependentUpon>
     </Compile>
+    <Compile Include="Forms\CheckResultsForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\CheckResultsForm.Designer.cs">
+      <DependentUpon>CheckResultsForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\GenericProgressForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -357,6 +363,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\GenericProgressForm.resx">
       <DependentUpon>GenericProgressForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\CheckResultsForm.resx">
+      <DependentUpon>CheckResultsForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\LicenseForm.resx">
       <DependentUpon>LicenseForm.cs</DependentUpon>
