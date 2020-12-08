@@ -15,8 +15,6 @@ namespace TvpMain.Check.Tests
         private string Jhn1;
         private string Dan6_Quotes;
         private string Dan6_NoQuotes;
-        private string Gen16;
-        private string Gen19;
 
         CheckAndFixRunner checkAndFixRunner = new CheckAndFixRunner();
 
@@ -26,8 +24,6 @@ namespace TvpMain.Check.Tests
             Jhn1 = File.ReadAllText(@"Resources/testReferences/Jhn1_Intro.sfm");
             Dan6_Quotes = File.ReadAllText(@"Resources/testReferences/Dan6_PoetryQuoteMatch.sfm");
             Dan6_NoQuotes = File.ReadAllText(@"Resources/testReferences/Dan6_PoetryNoQuoteMatch.sfm");
-            Gen16 = File.ReadAllText(@"Resources/testReferences/Gen16.sfm");
-            Gen19 = File.ReadAllText(@"Resources/testReferences/Gen19.sfm");
         }
 
         /// <summary>

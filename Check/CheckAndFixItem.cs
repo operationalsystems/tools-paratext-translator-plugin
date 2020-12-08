@@ -93,11 +93,12 @@ namespace TvpMain.Check
         public String CheckScript { get; set; }
         /// <summary>
         /// Set of Lanaguages this check/fix applies to. Empty = All
+        /// Use standard ISO language  codes ( https://www.andiamo.co.uk/resources/iso-language-codes/)
         /// </summary>
         public String[] Languages { get; set; }
         /// <summary>
         /// Set of Tags that define the limitations or project matching for this check/fix.
-        /// Examples: RTL, LTR, 
+        /// Examples: RTL, LTR
         /// </summary>
         public String[] Tags { get; set; }
 
