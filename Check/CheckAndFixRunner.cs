@@ -42,7 +42,7 @@ namespace TvpMain.Check
                 // If there is a replacement regex, apply that to the result
                 if (!String.IsNullOrEmpty(checkAndFixItem.FixRegex))
                 {
-                    checkResultItem.FixText = match.Result(@checkAndFixItem.FixRegex.Trim());
+                    checkResultItem.FixText = match.Result(@checkAndFixItem.FixRegex);
                 }
                 checkResultItems.Add(checkResultItem);
             }
