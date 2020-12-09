@@ -95,11 +95,15 @@ namespace TvpMain.Check
         /// Set of Lanaguages this check/fix applies to. Empty = All
         /// Use standard ISO language  codes ( https://www.andiamo.co.uk/resources/iso-language-codes/)
         /// </summary>
+        [XmlArrayItem("Language", Type = typeof(string), IsNullable = false)]
+        [XmlArray("Languages")]
         public String[] Languages { get; set; }
         /// <summary>
         /// Set of Tags that define the limitations or project matching for this check/fix.
         /// Examples: RTL, LTR
         /// </summary>
+        [XmlArrayItem("Tag", Type = typeof(string), IsNullable = false)]
+        [XmlArray("Tags")]
         public String[] Tags { get; set; }
 
         //////////////// Serialization and Deserialization functions ///////////////////////

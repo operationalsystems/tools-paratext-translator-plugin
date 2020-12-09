@@ -167,6 +167,7 @@
     <Compile Include="ImportManagerTests.cs" />
     <Compile Include="LocalCheckAndFixManagerTests.cs" />
     <Compile Include="CheckAndFixTests.cs" />
+    <Compile Include="Project\ProjectCheckSettingsTests.cs" />
     <Compile Include="TestAWSCredentials.cs" />
     <Compile Include="TextCheckRunnerTests.cs" />
     <Compile Include="FilterTests.cs" />
@@ -239,6 +240,9 @@
     <Content Include="Resources\scripture-test-1.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Analyzer Include="..\packages\AWSSDK.S3.3.5.3.10\analyzers\dotnet\cs\AWSSDK.S3.CodeAnalysis.dll" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\TvpMain.csproj">

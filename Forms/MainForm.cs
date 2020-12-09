@@ -1079,7 +1079,7 @@ namespace TvpMain.Forms
 
         private void checkManagerTestInterfaceToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            CheckManagerTestInterface checkManagerTestInterface = new CheckManagerTestInterface();
+            CheckManagerTestInterface checkManagerTestInterface = new CheckManagerTestInterface(_activeProjectName);
             checkManagerTestInterface.Show();
         }
 
@@ -1087,6 +1087,12 @@ namespace TvpMain.Forms
         {
             Form checkResults = new CheckResultsForm();
             checkResults.ShowDialog();
+        }
+
+        private void projectCheckSettingsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Form settingsForm = new ProjectCheckSettingsTestForm(_activeProjectName);
+            settingsForm.ShowDialog();
         }
     }
 }

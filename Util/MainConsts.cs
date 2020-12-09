@@ -60,6 +60,11 @@ namespace TvpMain.Util
         public const string RESULT_ITEMS_DATA_ID_FORMAT = "ResultItems-{0}.json";
 
         /// <summary>
+        /// The settings file for each project's default checks
+        /// </summary>
+        public const string CHECK_SETTINGS_DATA_ID = "CheckSettings.xml";
+
+        /// <summary>
         /// Update rate for progress form and similar loops.
         /// </summary>
         public const int CHECK_EVENTS_UPDATE_RATE_IN_FPS = 10;
@@ -134,5 +139,10 @@ namespace TvpMain.Util
         /// The file extension used by checks.
         /// </summary>
         public const string CHECK_FILE_EXTENSION = "xml";
+
+        /// <summary>
+        /// The max size for displaying book names
+        /// </summary>
+        public const int MAX_BOOK_NAME_DISPLAY_LENGTH = 20;
     }
 }

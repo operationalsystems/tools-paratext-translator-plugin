@@ -245,6 +245,18 @@
     <Compile Include="Check\CheckResultItem.cs" />
     <Compile Include="Check\ICheckAndFixRunner.cs" />
     <Compile Include="Check\LocalCheckAndFixManager.cs" />
+    <Compile Include="Forms\BookSelection.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\BookSelection.Designer.cs">
+      <DependentUpon>BookSelection.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\CheckEditor.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\CheckEditor.Designer.cs">
+      <DependentUpon>CheckEditor.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\CheckManagerTestInterface.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -257,6 +269,18 @@
     <Compile Include="Forms\CheckResultsForm.Designer.cs">
       <DependentUpon>CheckResultsForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="Forms\GenericProgressForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\GenericProgressForm.Designer.cs">
+      <DependentUpon>GenericProgressForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\ProjectCheckSettingsTestForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\ProjectCheckSettingsTestForm.Designer.cs">
+      <DependentUpon>ProjectCheckSettingsTestForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\LicenseForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -264,9 +288,17 @@
       <DependentUpon>LicenseForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Forms\RichTextBoxPrinter.cs" />
+    <Compile Include="Forms\RunChecks.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\RunChecks.Designer.cs">
+      <DependentUpon>RunChecks.cs</DependentUpon>
+    </Compile>
     <Compile Include="Import\ImportManager.cs" />
     <Compile Include="Project\BookNameItem.cs" />
     <Compile Include="Project\FileManager.cs" />
+    <Compile Include="Project\ProjectCheckSettings.cs" />
+    <Compile Include="Project\ProjectUserAccess.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -331,14 +363,29 @@
   <ItemGroup>
     <None Include="App.config" />
     <None Include="packages.config" />
+    <EmbeddedResource Include="Forms\BookSelection.resx">
+      <DependentUpon>BookSelection.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\CheckEditor.resx">
+      <DependentUpon>CheckEditor.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Forms\CheckManagerTestInterface.resx">
       <DependentUpon>CheckManagerTestInterface.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\GenericProgressForm.resx">
+      <DependentUpon>GenericProgressForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\CheckResultsForm.resx">
       <DependentUpon>CheckResultsForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\LicenseForm.resx">
       <DependentUpon>LicenseForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\ProjectCheckSettingsTestForm.resx">
+      <DependentUpon>ProjectCheckSettingsTestForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\RunChecks.resx">
+      <DependentUpon>RunChecks.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
@@ -384,7 +431,7 @@
   </Target>
   <Target Name="ArchiveBuild" AfterTargets="Build" Condition="$(Configuration) == 'Release'">
     <ItemGroup>
-      <ZipFiles Include="$(OutputPath)*.dll" Exclude="$(OutputPath)CC32.dll;$(OutputPath)libgcc_s_sjlj-1.dll;$(OutputPath)libstdc++-6.dll;$(OutputPath)TECkit_Compiler_x86.dll;$(OutputPath)TECkit_x86.dll" />
+      <ZipFiles Include="$(OutputPath)*.dll" Exclude="$(OutputPath)CC32.dll;$(OutputPath)libgcc_s_sjlj-1.dll;$(OutputPath)libstdc++-6.dll;$(OutputPath)TECkit_Compiler_x86.dll;$(OutputPath)TECkit_x86.dll;$(OutputPath)ClearScriptV8.win-x64.dll;$(OutputPath)ClearScriptV8.win-x86.dll" />
       <ZipFiles Include="$(OutputPath)*.pdb" />
       <ZipFiles Include="$(OutputPath)*.config" />
       <ZipFiles Include="$(OutputPath)*.xml" />

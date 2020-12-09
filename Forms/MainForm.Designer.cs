@@ -78,6 +78,8 @@
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.licenseToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.checkManagerTestToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.checkManagerTestInterfaceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.checkResultsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.btnShowIgnoreList = new System.Windows.Forms.Button();
             this.btnClose = new System.Windows.Forms.Button();
             this.filterSetupWorker = new System.ComponentModel.BackgroundWorker();
@@ -88,8 +90,7 @@
             this.runnerSetupWorker = new System.ComponentModel.BackgroundWorker();
             this.splitContainerMain = new System.Windows.Forms.SplitContainer();
             this.Copyright = new System.Windows.Forms.Label();
-            this.checkManagerTestInterfaceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.checkResultsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.projectCheckSettingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.dgvCheckResults)).BeginInit();
             this.contextMenu.SuspendLayout();
             this.mainMenu.SuspendLayout();
@@ -502,10 +503,25 @@
             // 
             this.checkManagerTestToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.checkManagerTestInterfaceToolStripMenuItem,
-            this.checkResultsToolStripMenuItem});
+            this.checkResultsToolStripMenuItem,
+            this.projectCheckSettingsToolStripMenuItem});
             this.checkManagerTestToolStripMenuItem.Name = "checkManagerTestToolStripMenuItem";
             this.checkManagerTestToolStripMenuItem.Size = new System.Drawing.Size(75, 23);
             this.checkManagerTestToolStripMenuItem.Text = "Test Forms";
+            // 
+            // checkManagerTestInterfaceToolStripMenuItem
+            // 
+            this.checkManagerTestInterfaceToolStripMenuItem.Name = "checkManagerTestInterfaceToolStripMenuItem";
+            this.checkManagerTestInterfaceToolStripMenuItem.Size = new System.Drawing.Size(220, 22);
+            this.checkManagerTestInterfaceToolStripMenuItem.Text = "CheckManagerTestInterface";
+            this.checkManagerTestInterfaceToolStripMenuItem.Click += new System.EventHandler(this.checkManagerTestInterfaceToolStripMenuItem_Click);
+            // 
+            // checkResultsToolStripMenuItem
+            // 
+            this.checkResultsToolStripMenuItem.Name = "checkResultsToolStripMenuItem";
+            this.checkResultsToolStripMenuItem.Size = new System.Drawing.Size(220, 22);
+            this.checkResultsToolStripMenuItem.Text = "Check Results Form";
+            this.checkResultsToolStripMenuItem.Click += new System.EventHandler(this.checkResultsToolStripMenuItem_Click);
             // 
             // btnShowIgnoreList
             // 
@@ -585,19 +601,12 @@
             this.Copyright.TabIndex = 9;
             this.Copyright.Text = "© 2020 Biblica, Inc.";
             // 
-            // checkManagerTestInterfaceToolStripMenuItem
+            // projectCheckSettingsToolStripMenuItem
             // 
-            this.checkManagerTestInterfaceToolStripMenuItem.Name = "checkManagerTestInterfaceToolStripMenuItem";
-            this.checkManagerTestInterfaceToolStripMenuItem.Size = new System.Drawing.Size(220, 22);
-            this.checkManagerTestInterfaceToolStripMenuItem.Text = "CheckManagerTestInterface";
-            this.checkManagerTestInterfaceToolStripMenuItem.Click += new System.EventHandler(this.checkManagerTestInterfaceToolStripMenuItem_Click);
-            // 
-            // checkResultsToolStripMenuItem
-            // 
-            this.checkResultsToolStripMenuItem.Name = "checkResultsToolStripMenuItem";
-            this.checkResultsToolStripMenuItem.Size = new System.Drawing.Size(220, 22);
-            this.checkResultsToolStripMenuItem.Text = "Check Results Form";
-            this.checkResultsToolStripMenuItem.Click += new System.EventHandler(this.checkResultsToolStripMenuItem_Click);
+            this.projectCheckSettingsToolStripMenuItem.Name = "projectCheckSettingsToolStripMenuItem";
+            this.projectCheckSettingsToolStripMenuItem.Size = new System.Drawing.Size(220, 22);
+            this.projectCheckSettingsToolStripMenuItem.Text = "Project Check Settings";
+            this.projectCheckSettingsToolStripMenuItem.Click += new System.EventHandler(this.projectCheckSettingsToolStripMenuItem_Click);
             // 
             // MainForm
             // 
@@ -695,5 +704,6 @@
         private System.Windows.Forms.ToolStripMenuItem checkManagerTestToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem checkManagerTestInterfaceToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem checkResultsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem projectCheckSettingsToolStripMenuItem;
     }
 }
