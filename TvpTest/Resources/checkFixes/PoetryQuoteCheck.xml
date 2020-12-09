@@ -1,20 +1,18 @@
 ﻿<?xml version="1.0"?>
 <CheckAndFixItem xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <Id>1f60fb2e-23d7-11eb-adc1-0242ac120002</Id>
-  <Name>Put 6/em space between curly quotes</Name>
+  <Name>Find poetry</Name>
   <Description>
-    Find instances of double and single “curly quotes” and add 1/6th space between them
+    Look for poetry sections that may need quotes around it. Offer that as a suggestion.
   </Description>
   <Version>1.0.0</Version>
   <Scope>CHAPTER</Scope>
   <DefaultItemDescription>Value Found</DefaultItemDescription>
-  <CheckRegex>([“‘])[~\s-[\u2006]]?((\+?\w+ )?[“‘])|(’”?)[~\s-[\u2006]]?([’”])</CheckRegex>
-  <FixRegex></FixRegex>
+  <CheckRegex>(?&lt;=\\qm\d\s)([\S\s]*?)([\s]*?)(?=\r\n^\\p)</CheckRegex>
+  <FixRegex>“$1”$2</FixRegex>
   <CheckScript>
     function checkAndFix(checkResultItems) {
-      checkResultItems.forEach(i =>
-        i.FixText = '’' + '\u2006' + '”'
-      )
+      checkResultItems = checkResultItems.filter(i => !i.MatchText.includes("“"))
       return checkResultItems
     }
   </CheckScript>

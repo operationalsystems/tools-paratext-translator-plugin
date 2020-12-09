@@ -7,7 +7,7 @@
   <Scope>VERSE</Scope>
   <DefaultItemDescription>Missing capitalization</DefaultItemDescription>
   <CheckRegex>\w+</CheckRegex>
-  <FixRegex></FixRegex>
+  <FixRegex>“$1”</FixRegex>
   <CheckScript>
     function checkAndFix(checkResultItems) {
       checkResultItems = checkResultItems.filter(i => i.MatchText.length === 5)
