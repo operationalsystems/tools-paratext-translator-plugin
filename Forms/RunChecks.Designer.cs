@@ -40,6 +40,12 @@ namespace TvpMain.Forms
             this.setDefaultsToSelected = new System.Windows.Forms.Button();
             this.resetToProjectDefaultsButton = new System.Windows.Forms.Button();
             this.checksList = new System.Windows.Forms.DataGridView();
+            this.CFSelected = new System.Windows.Forms.DataGridViewCheckBoxColumn();
+            this.CFName = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Version = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.CFLanguages = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.CFTags = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Id = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.contextGroupBox = new System.Windows.Forms.GroupBox();
             this.toChapterLabel = new System.Windows.Forms.Label();
             this.chapterLabel = new System.Windows.Forms.Label();
@@ -56,12 +62,6 @@ namespace TvpMain.Forms
             this.helpTextBox = new System.Windows.Forms.TextBox();
             this.projectNameText = new System.Windows.Forms.Label();
             this.loadingWorker = new System.ComponentModel.BackgroundWorker();
-            this.CFSelected = new System.Windows.Forms.DataGridViewCheckBoxColumn();
-            this.CFName = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Version = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.CFLanguages = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.CFTags = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Id = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.runChecksMenu.SuspendLayout();
             this.checksGroupBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.checksList)).BeginInit();
@@ -140,7 +140,7 @@ namespace TvpMain.Forms
             this.setDefaultsToSelected.Name = "setDefaultsToSelected";
             this.setDefaultsToSelected.Size = new System.Drawing.Size(229, 23);
             this.setDefaultsToSelected.TabIndex = 2;
-            this.setDefaultsToSelected.Text = "Set Selected Checks to the Project Defaults";
+            this.setDefaultsToSelected.Text = "Set Selected Checks as the Project Defaults";
             this.setDefaultsToSelected.UseVisualStyleBackColor = true;
             this.setDefaultsToSelected.Click += new System.EventHandler(this.setDefaultsToSelected_Click);
             this.setDefaultsToSelected.MouseEnter += new System.EventHandler(this.setDefaultsToSelected_MouseEnter);
@@ -193,6 +193,64 @@ namespace TvpMain.Forms
             this.checksList.TabIndex = 0;
             this.checksList.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.checksList_CellClick);
             this.checksList.CellMouseEnter += new System.Windows.Forms.DataGridViewCellEventHandler(this.checksList_CellMouseEnter);
+            // 
+            // CFSelected
+            // 
+            this.CFSelected.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
+            this.CFSelected.FalseValue = "false";
+            this.CFSelected.FillWeight = 20F;
+            this.CFSelected.HeaderText = "Selected";
+            this.CFSelected.Name = "CFSelected";
+            this.CFSelected.ReadOnly = true;
+            this.CFSelected.TrueValue = "true";
+            this.CFSelected.Width = 63;
+            // 
+            // CFName
+            // 
+            this.CFName.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.CFName.HeaderText = "Name";
+            this.CFName.Name = "CFName";
+            this.CFName.ReadOnly = true;
+            // 
+            // Version
+            // 
+            this.Version.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
+            this.Version.FillWeight = 80F;
+            this.Version.HeaderText = "Version";
+            this.Version.Name = "Version";
+            this.Version.ReadOnly = true;
+            this.Version.Width = 74;
+            // 
+            // CFLanguages
+            // 
+            this.CFLanguages.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
+            this.CFLanguages.FillWeight = 80F;
+            this.CFLanguages.HeaderText = "Languages";
+            this.CFLanguages.MinimumWidth = 70;
+            this.CFLanguages.Name = "CFLanguages";
+            this.CFLanguages.ReadOnly = true;
+            this.CFLanguages.Resizable = System.Windows.Forms.DataGridViewTriState.True;
+            this.CFLanguages.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            this.CFLanguages.Width = 75;
+            // 
+            // CFTags
+            // 
+            this.CFTags.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
+            this.CFTags.FillWeight = 80F;
+            this.CFTags.HeaderText = "Tags";
+            this.CFTags.MinimumWidth = 70;
+            this.CFTags.Name = "CFTags";
+            this.CFTags.ReadOnly = true;
+            this.CFTags.Resizable = System.Windows.Forms.DataGridViewTriState.True;
+            this.CFTags.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            this.CFTags.Width = 70;
+            // 
+            // Id
+            // 
+            this.Id.HeaderText = "Id";
+            this.Id.Name = "Id";
+            this.Id.ReadOnly = true;
+            this.Id.Visible = false;
             // 
             // contextGroupBox
             // 
@@ -380,64 +438,6 @@ namespace TvpMain.Forms
             this.loadingWorker.WorkerReportsProgress = true;
             this.loadingWorker.DoWork += new System.ComponentModel.DoWorkEventHandler(this.loadingWorker_DoWork);
             this.loadingWorker.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.loadingWorker_RunWorkerCompleted);
-            // 
-            // CFSelected
-            // 
-            this.CFSelected.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
-            this.CFSelected.FalseValue = "false";
-            this.CFSelected.FillWeight = 20F;
-            this.CFSelected.HeaderText = "Selected";
-            this.CFSelected.Name = "CFSelected";
-            this.CFSelected.ReadOnly = true;
-            this.CFSelected.TrueValue = "true";
-            this.CFSelected.Width = 63;
-            // 
-            // CFName
-            // 
-            this.CFName.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.CFName.HeaderText = "Name";
-            this.CFName.Name = "CFName";
-            this.CFName.ReadOnly = true;
-            // 
-            // Version
-            // 
-            this.Version.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
-            this.Version.FillWeight = 80F;
-            this.Version.HeaderText = "Version";
-            this.Version.Name = "Version";
-            this.Version.ReadOnly = true;
-            this.Version.Width = 74;
-            // 
-            // CFLanguages
-            // 
-            this.CFLanguages.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
-            this.CFLanguages.FillWeight = 80F;
-            this.CFLanguages.HeaderText = "Languages";
-            this.CFLanguages.MinimumWidth = 70;
-            this.CFLanguages.Name = "CFLanguages";
-            this.CFLanguages.ReadOnly = true;
-            this.CFLanguages.Resizable = System.Windows.Forms.DataGridViewTriState.True;
-            this.CFLanguages.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
-            this.CFLanguages.Width = 75;
-            // 
-            // CFTags
-            // 
-            this.CFTags.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
-            this.CFTags.FillWeight = 80F;
-            this.CFTags.HeaderText = "Tags";
-            this.CFTags.MinimumWidth = 70;
-            this.CFTags.Name = "CFTags";
-            this.CFTags.ReadOnly = true;
-            this.CFTags.Resizable = System.Windows.Forms.DataGridViewTriState.True;
-            this.CFTags.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
-            this.CFTags.Width = 70;
-            // 
-            // Id
-            // 
-            this.Id.HeaderText = "Id";
-            this.Id.Name = "Id";
-            this.Id.ReadOnly = true;
-            this.Id.Visible = false;
             // 
             // RunChecks
             // 
