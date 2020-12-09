@@ -207,6 +207,13 @@ namespace TvpMain.Forms
                         item.Tags != null ? String.Join(", ", item.Tags) : "",
                         item.Id
                         );
+
+                    if (!isCheckAvailableForProject(item))
+                    {
+                        checksList.Rows[rowIndex].DefaultCellStyle.BackColor = SystemColors.Control;
+                        checksList.Rows[rowIndex].DefaultCellStyle.ForeColor = SystemColors.GrayText;
+                    }
+
                     checksList.Rows[rowIndex].Tag = item;
                 }
             }
@@ -487,14 +494,17 @@ namespace TvpMain.Forms
         /// <param name="e"></param>
         private void checksList_CellClick(object sender, DataGridViewCellEventArgs e)
         {
-            CheckAndFixItem item = (CheckAndFixItem)checksList.Rows[e.RowIndex].Tag;
-
-            if (isCheckAvailableForProject(item))
+            if (e.RowIndex > 0)
             {
-                DataGridViewCheckBoxCell cell = (DataGridViewCheckBoxCell)
-                checksList.Rows[e.RowIndex].Cells[0];
-                cell.Value = !(bool)cell.Value;
-                checksList.Rows[e.RowIndex].Selected = false;
+                CheckAndFixItem item = (CheckAndFixItem)checksList.Rows[e.RowIndex].Tag;
+
+                if (isCheckAvailableForProject(item))
+                {
+                    DataGridViewCheckBoxCell cell = (DataGridViewCheckBoxCell)
+                    checksList.Rows[e.RowIndex].Cells[0];
+                    cell.Value = !(bool)cell.Value;
+                    checksList.Rows[e.RowIndex].Selected = false;
+                }
             }
         }
 
@@ -507,21 +517,21 @@ namespace TvpMain.Forms
         /// <returns></returns>
         private Boolean isCheckAvailableForProject(CheckAndFixItem item)
         {
-            var languageId = _host.GetProjectLanguageId(_activeProjectName, "translation validation");
+            var languageId = _host.GetProjectLanguageId(_activeProjectName, "translation validation").ToUpper();
             var projectRTL = _host.GetProjectRtoL(_activeProjectName);
 
             // filter based on language
             var languageEnabled = item.Languages == null
                        || (item.Languages != null && item.Languages.Length == 0)
-                       || (item.Languages != null && item.Languages.Length > 0 && item.Languages.Contains(languageId));
+                       || (item.Languages != null && item.Languages.Length > 0 && item.Languages.Contains(languageId, StringComparer.OrdinalIgnoreCase));
 
             // filter based on Tags
 
             // RTL Tag support
             var itemRTL = item.Tags != null && item.Tags.Contains("RTL");
 
-            var rtlEnabled = (!projectRTL && !itemRTL)
-                || (projectRTL && itemRTL);
+            var rtlEnabled = (projectRTL && itemRTL)
+                || (!projectRTL && !itemRTL);
 
             Debug.WriteLine("Project Language: " + languageId);
             Debug.WriteLine("Project RTL: " + projectRTL);
