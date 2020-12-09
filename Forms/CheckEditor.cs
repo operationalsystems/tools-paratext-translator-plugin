@@ -15,6 +15,7 @@ namespace TvpMain.Forms
 {
     public partial class CheckEditor : Form
     {
+        // keep track if there were changes made
         private bool _dirty = false;
 
         private ICheckManager _checkManager;
@@ -33,22 +34,50 @@ namespace TvpMain.Forms
             _checkManager = new CheckManager();
         }
 
+        /// <summary>
+        /// On dialog load, set to 'new' state
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void CheckEditor_Load(object sender, EventArgs e)
         {
             newToolStripMenuItem_Click(sender, e);
         }
 
+        /// <summary>
+        /// Set to new state
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void newToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            // allow user to not overwrite changes
+            if(_dirty)
+            {
+                DialogResult dialogResult = MessageBox.Show("Changes are pending?", "Ignore?", MessageBoxButtons.YesNo);
+
+                if (dialogResult == DialogResult.No)
+                {
+                    return;
+                }
+
+            }
+
             _checkAndFixItem = new CheckAndFixItem();
             _checkAndFixItem.Id = Guid.NewGuid().ToString();
 
             checkFixIdLabel.Text = _checkAndFixItem.Id;
 
             scopeCombo.SelectedItem = "CHAPTER";
+            _dirty = false;
 
         }
 
+        /// <summary>
+        /// Open a file for editing
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void openToolStripMenuItem_Click(object sender, EventArgs e)
         {
             using OpenFileDialog openFileDialog = new OpenFileDialog();
@@ -57,11 +86,36 @@ namespace TvpMain.Forms
 
             if (openFileDialog.ShowDialog() == DialogResult.OK)
             {
-                var fileStream = openFileDialog.OpenFile();
+                using var fileStream = openFileDialog.OpenFile();
                 _checkAndFixItem = CheckAndFixItem.LoadFromXmlContent(fileStream);
                 updateUI();
             }
         }
+
+        /// <summary>
+        /// Save the file
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void saveToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (_dirty)
+            {
+                updateCheckAndFix();
+
+                string filename = _checkAndFixItem.Name.Replace(" ", "") + '-' + _checkAndFixItem.Version + ".xml";
+                string filePath = Path.Combine(_checkManager.GetLocalRepoDirectory(), filename);
+
+                _checkAndFixItem.SaveToXmlFile(filePath);
+                _dirty = false;
+            }
+        }
+
+        /// <summary>
+        /// Exit this dialog
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void exitToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (_dirty)
@@ -72,20 +126,76 @@ namespace TvpMain.Forms
                 {
                     this.Close();
                 }
+            } else
+            {
+                this.Close();
             }
         }
 
+        /// <summary>
+        /// Save and Publish
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void publishToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            DialogResult dialogResult = MessageBox.Show("Are you sure you wish to publish this check/fix?", "Exit?", MessageBoxButtons.YesNo);
+            DialogResult dialogResult = MessageBox.Show("Are you sure you wish to save and publish this check/fix?", "Save and Publish?", MessageBoxButtons.YesNo);
 
             if (dialogResult == DialogResult.Yes)
             {
-                updateCheckAndFix();
+                saveToolStripMenuItem_Click(sender, e);
+
+                _progressForm = new GenericProgressForm("Publishing check/fix item...");
+                _progressForm.Show(this);
+
+                publishWorker.RunWorkerAsync();
+            }
+        }
+
+        /// <summary>
+        /// Worker for doing publish updates
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void publishWorker_DoWork(object sender, DoWorkEventArgs e)
+        {
+            _checkManager.SynchronizeInstalledChecks();
+            List<CheckAndFixItem> remoteChecks = _checkManager.GetInstalledCheckAndFixItems();
+
+            var found = false;
+
+            foreach (CheckAndFixItem checkAndFixItem in remoteChecks)
+            {
+                if (checkAndFixItem.Name.Equals(_checkAndFixItem.Name) && checkAndFixItem.Version.Equals(_checkAndFixItem.Version))
+                {
+                    found = true;
+                }
+            }
+
+            if (found)
+            {
+                MessageBox.Show("This version of the Check/Fix already exists in the repository, you should increment the version before trying to publish.",
+                    "Warning", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            else
+            {
                 _checkManager.PublishCheckAndFixItem(_checkAndFixItem);
             }
         }
 
+        /// <summary>
+        /// For when the worker is complete
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void publishWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            _progressForm.Close();
+        }
+
+        /// <summary>
+        /// Update the UI when a CFitem is loaded
+        /// </summary>
         private void updateUI()
         {
             checkFixIdLabel.Text = _checkAndFixItem.Id;
@@ -102,6 +212,9 @@ namespace TvpMain.Forms
             scriptTextBox.Text = _checkAndFixItem.CheckScript.Replace("\n", Environment.NewLine);
         }
 
+        /// <summary>
+        /// Update the CFitem from the UI before saves
+        /// </summary>
         private void updateCheckAndFix()
         {
             _checkAndFixItem.Name = checkFixNameTextBox.Text;
@@ -122,28 +235,43 @@ namespace TvpMain.Forms
             _checkAndFixItem.CheckScript = scriptTextBox.Text;
         }
 
-        private void saveToolStripMenuItem_Click(object sender, EventArgs e)
+        /// <summary>
+        /// Keep track of changes and mark the CFitem dirty
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void content_TextChanged(object sender, EventArgs e)
         {
-            updateCheckAndFix();
-
-            string filename = _checkAndFixItem.Name.Replace(" ", "") + '-' + _checkAndFixItem.Version + ".xml";
-            string filePath = Path.Combine(_checkManager.GetLocalRepoDirectory(), filename);
-
-            _checkAndFixItem.SaveToXmlFile(filePath);
+            _dirty = true;
         }
 
+        /// <summary>
+        /// Update the help text
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void checkFindRegExTextBox_MouseEnter(object sender, EventArgs e)
         {
             helpTextBox.Clear();
             helpTextBox.AppendText("The regular expression to find issues. This value may be empty if it relies on the Javascript to perform its modifications.");
         }
 
+        /// <summary>
+        /// Update the help text
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void FixRegExTextBox_MouseEnter(object sender, EventArgs e)
         {
             helpTextBox.Clear();
             helpTextBox.AppendText("The regular expression replacement pattern, using $1 type replacement values from the groupings found in the check find regex.");
         }
 
+        /// <summary>
+        /// Update the help text
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void scriptTextBox_MouseEnter(object sender, EventArgs e)
         {
             helpTextBox.Clear();
@@ -152,24 +280,44 @@ namespace TvpMain.Forms
                 " found in the regular expression pass.");
         }
 
+        /// <summary>
+        /// Update the help text
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void checkFixIdLabel_MouseEnter(object sender, EventArgs e)
         {
             helpTextBox.Clear();
             helpTextBox.AppendText("The automatically assigned unique identifier.");
         }
 
+        /// <summary>
+        /// Update the help text
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void checkFixNameTextBox_MouseEnter(object sender, EventArgs e)
         {
             helpTextBox.Clear();
             helpTextBox.AppendText("The name of your check/fix.");
         }
 
+        /// <summary>
+        /// Update the help text
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void versionTextBox_MouseEnter(object sender, EventArgs e)
         {
             helpTextBox.Clear();
             helpTextBox.AppendText("The version of the check/fix. Increment each time you publish an update. Use semantic versioning scheme: https://semver.org/");
         }
 
+        /// <summary>
+        /// Update the help text
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void scopeCombo_MouseEnter(object sender, EventArgs e)
         {
             helpTextBox.Clear();
@@ -177,12 +325,22 @@ namespace TvpMain.Forms
             helpTextBox.AppendText("Leave defaulted to CHAPTER if unsure.");
         }
 
+        /// <summary>
+        /// Update the help text
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void defaultDescTextBox_MouseEnter(object sender, EventArgs e)
         {
             helpTextBox.Clear();
             helpTextBox.AppendText("This is the default description associated with matched results.");
         }
 
+        /// <summary>
+        /// Update the help text
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void languagesTextBox_MouseEnter(object sender, EventArgs e)
         {
             helpTextBox.Clear();
@@ -190,6 +348,11 @@ namespace TvpMain.Forms
             helpTextBox.AppendText("Use language codes found in projects like eng-US, zh, ja, etc.");
         }
 
+        /// <summary>
+        /// Update the help text
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void tagsTextBox_MouseEnter(object sender, EventArgs e)
         {
             helpTextBox.Clear();
@@ -197,11 +360,15 @@ namespace TvpMain.Forms
             helpTextBox.AppendText("Currently supported tags: RTL = right to left only languages.");
         }
 
+        /// <summary>
+        /// Update the help text
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void descriptionTextBox_MouseEnter(object sender, EventArgs e)
         {
             helpTextBox.Clear();
             helpTextBox.Text = "Enter the full description for this check/fix.";
         }
-
     }
 }

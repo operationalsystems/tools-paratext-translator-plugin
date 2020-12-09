@@ -121,6 +121,7 @@ namespace TvpMain.Forms
             if(!HostUtil.Instance.isCurrentUserAdmin(_activeProjectName))
             {
                 setDefaultsToSelected.Hide();
+                refreshButton.Hide();
             }
 
             // sets the chapter lengths and such for the current book
@@ -647,6 +648,14 @@ namespace TvpMain.Forms
         {
             helpTextBox.Text = "Saves the currently selected checks/fixes as the default set " +
                 "for this project. This may only be performed by accounts with the sufficient privileges.";
+        }
+
+        private void refreshButton_Click(object sender, EventArgs e)
+        {
+            // start the sync for the check/fixes
+            _progressForm = new GenericProgressForm("Synchronizing Check/Fixes");
+            _progressForm.Show(this);
+            loadingWorker.RunWorkerAsync();
         }
     }
 }

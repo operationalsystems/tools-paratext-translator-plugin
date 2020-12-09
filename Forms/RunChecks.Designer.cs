@@ -29,7 +29,7 @@ namespace TvpMain.Forms
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
             this.runChecksMenu = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -40,6 +40,12 @@ namespace TvpMain.Forms
             this.setDefaultsToSelected = new System.Windows.Forms.Button();
             this.resetToProjectDefaultsButton = new System.Windows.Forms.Button();
             this.checksList = new System.Windows.Forms.DataGridView();
+            this.CFSelected = new System.Windows.Forms.DataGridViewCheckBoxColumn();
+            this.CFName = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Version = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.CFLanguages = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.CFTags = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Id = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.contextGroupBox = new System.Windows.Forms.GroupBox();
             this.toChapterLabel = new System.Windows.Forms.Label();
             this.chapterLabel = new System.Windows.Forms.Label();
@@ -56,12 +62,7 @@ namespace TvpMain.Forms
             this.helpTextBox = new System.Windows.Forms.TextBox();
             this.projectNameText = new System.Windows.Forms.Label();
             this.loadingWorker = new System.ComponentModel.BackgroundWorker();
-            this.CFSelected = new System.Windows.Forms.DataGridViewCheckBoxColumn();
-            this.CFName = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Version = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.CFLanguages = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.CFTags = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Id = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.refreshButton = new System.Windows.Forms.Button();
             this.runChecksMenu.SuspendLayout();
             this.checksGroupBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.checksList)).BeginInit();
@@ -123,6 +124,7 @@ namespace TvpMain.Forms
             this.checksGroupBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.checksGroupBox.Controls.Add(this.refreshButton);
             this.checksGroupBox.Controls.Add(this.setDefaultsToSelected);
             this.checksGroupBox.Controls.Add(this.resetToProjectDefaultsButton);
             this.checksGroupBox.Controls.Add(this.checksList);
@@ -166,14 +168,14 @@ namespace TvpMain.Forms
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.checksList.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
-            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle1.BackColor = System.Drawing.SystemColors.Control;
-            dataGridViewCellStyle1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle1.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.checksList.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
+            dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle3.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle3.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle3.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle3.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle3.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle3.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.checksList.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle3;
             this.checksList.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.checksList.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.CFSelected,
@@ -193,6 +195,63 @@ namespace TvpMain.Forms
             this.checksList.TabIndex = 0;
             this.checksList.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.checksList_CellClick);
             this.checksList.CellMouseEnter += new System.Windows.Forms.DataGridViewCellEventHandler(this.checksList_CellMouseEnter);
+            // 
+            // CFSelected
+            // 
+            this.CFSelected.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
+            this.CFSelected.FalseValue = "false";
+            this.CFSelected.FillWeight = 20F;
+            this.CFSelected.HeaderText = "Selected";
+            this.CFSelected.Name = "CFSelected";
+            this.CFSelected.ReadOnly = true;
+            this.CFSelected.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Automatic;
+            this.CFSelected.TrueValue = "true";
+            this.CFSelected.Width = 82;
+            // 
+            // CFName
+            // 
+            this.CFName.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.CFName.HeaderText = "Name";
+            this.CFName.Name = "CFName";
+            this.CFName.ReadOnly = true;
+            // 
+            // Version
+            // 
+            this.Version.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
+            this.Version.FillWeight = 80F;
+            this.Version.HeaderText = "Version";
+            this.Version.Name = "Version";
+            this.Version.ReadOnly = true;
+            this.Version.Width = 74;
+            // 
+            // CFLanguages
+            // 
+            this.CFLanguages.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
+            this.CFLanguages.FillWeight = 80F;
+            this.CFLanguages.HeaderText = "Languages";
+            this.CFLanguages.MinimumWidth = 70;
+            this.CFLanguages.Name = "CFLanguages";
+            this.CFLanguages.ReadOnly = true;
+            this.CFLanguages.Resizable = System.Windows.Forms.DataGridViewTriState.True;
+            this.CFLanguages.Width = 94;
+            // 
+            // CFTags
+            // 
+            this.CFTags.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
+            this.CFTags.FillWeight = 80F;
+            this.CFTags.HeaderText = "Tags";
+            this.CFTags.MinimumWidth = 70;
+            this.CFTags.Name = "CFTags";
+            this.CFTags.ReadOnly = true;
+            this.CFTags.Resizable = System.Windows.Forms.DataGridViewTriState.True;
+            this.CFTags.Width = 70;
+            // 
+            // Id
+            // 
+            this.Id.HeaderText = "Id";
+            this.Id.Name = "Id";
+            this.Id.ReadOnly = true;
+            this.Id.Visible = false;
             // 
             // contextGroupBox
             // 
@@ -381,62 +440,15 @@ namespace TvpMain.Forms
             this.loadingWorker.DoWork += new System.ComponentModel.DoWorkEventHandler(this.loadingWorker_DoWork);
             this.loadingWorker.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.loadingWorker_RunWorkerCompleted);
             // 
-            // CFSelected
+            // refreshButton
             // 
-            this.CFSelected.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
-            this.CFSelected.FalseValue = "false";
-            this.CFSelected.FillWeight = 20F;
-            this.CFSelected.HeaderText = "Selected";
-            this.CFSelected.Name = "CFSelected";
-            this.CFSelected.ReadOnly = true;
-            this.CFSelected.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Automatic;
-            this.CFSelected.TrueValue = "true";
-            this.CFSelected.Width = 82;
-            // 
-            // CFName
-            // 
-            this.CFName.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.CFName.HeaderText = "Name";
-            this.CFName.Name = "CFName";
-            this.CFName.ReadOnly = true;
-            // 
-            // Version
-            // 
-            this.Version.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
-            this.Version.FillWeight = 80F;
-            this.Version.HeaderText = "Version";
-            this.Version.Name = "Version";
-            this.Version.ReadOnly = true;
-            this.Version.Width = 74;
-            // 
-            // CFLanguages
-            // 
-            this.CFLanguages.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
-            this.CFLanguages.FillWeight = 80F;
-            this.CFLanguages.HeaderText = "Languages";
-            this.CFLanguages.MinimumWidth = 70;
-            this.CFLanguages.Name = "CFLanguages";
-            this.CFLanguages.ReadOnly = true;
-            this.CFLanguages.Resizable = System.Windows.Forms.DataGridViewTriState.True;
-            this.CFLanguages.Width = 94;
-            // 
-            // CFTags
-            // 
-            this.CFTags.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
-            this.CFTags.FillWeight = 80F;
-            this.CFTags.HeaderText = "Tags";
-            this.CFTags.MinimumWidth = 70;
-            this.CFTags.Name = "CFTags";
-            this.CFTags.ReadOnly = true;
-            this.CFTags.Resizable = System.Windows.Forms.DataGridViewTriState.True;
-            this.CFTags.Width = 70;
-            // 
-            // Id
-            // 
-            this.Id.HeaderText = "Id";
-            this.Id.Name = "Id";
-            this.Id.ReadOnly = true;
-            this.Id.Visible = false;
+            this.refreshButton.Location = new System.Drawing.Point(242, 351);
+            this.refreshButton.Name = "refreshButton";
+            this.refreshButton.Size = new System.Drawing.Size(75, 23);
+            this.refreshButton.TabIndex = 3;
+            this.refreshButton.Text = "Refresh";
+            this.refreshButton.UseVisualStyleBackColor = true;
+            this.refreshButton.Click += new System.EventHandler(this.refreshButton_Click);
             // 
             // RunChecks
             // 
@@ -459,7 +471,6 @@ namespace TvpMain.Forms
             this.Name = "RunChecks";
             this.Padding = new System.Windows.Forms.Padding(10, 10, 10, 25);
             this.ShowIcon = false;
-            this.ShowInTaskbar = false;
             this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Show;
             this.Text = "Run Checks";
             this.Load += new System.EventHandler(this.RunChecks_Load);
@@ -508,5 +519,6 @@ namespace TvpMain.Forms
         private System.Windows.Forms.DataGridViewTextBoxColumn CFLanguages;
         private System.Windows.Forms.DataGridViewTextBoxColumn CFTags;
         private System.Windows.Forms.DataGridViewTextBoxColumn Id;
+        private System.Windows.Forms.Button refreshButton;
     }
 }
