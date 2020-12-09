@@ -54,7 +54,7 @@ namespace TvpMain.Forms
             // allow user to not overwrite changes
             if(_dirty)
             {
-                DialogResult dialogResult = MessageBox.Show("Changes are pending?", "Ignore?", MessageBoxButtons.YesNo);
+                DialogResult dialogResult = MessageBox.Show("Do not save changes?", "Verify", MessageBoxButtons.YesNo);
 
                 if (dialogResult == DialogResult.No)
                 {
@@ -65,6 +65,7 @@ namespace TvpMain.Forms
 
             _checkAndFixItem = new CheckAndFixItem();
             _checkAndFixItem.Id = Guid.NewGuid().ToString();
+            updateUI();
 
             checkFixIdLabel.Text = _checkAndFixItem.Id;
 
@@ -210,18 +211,18 @@ namespace TvpMain.Forms
         /// </summary>
         private void updateUI()
         {
-            checkFixIdLabel.Text = _checkAndFixItem.Id;
-            checkFixNameTextBox.Text = _checkAndFixItem.Name;
-            versionTextBox.Text = _checkAndFixItem.Version;
+            checkFixIdLabel.Text = _checkAndFixItem.Id == null ? "" : _checkAndFixItem.Id;
+            checkFixNameTextBox.Text = _checkAndFixItem.Name == null ? "" : _checkAndFixItem.Name;
+            versionTextBox.Text = _checkAndFixItem.Version == null ? "" : _checkAndFixItem.Version;
             scopeCombo.SelectedItem = _checkAndFixItem.Scope.ToString();
-            defaultDescTextBox.Text = _checkAndFixItem.DefaultItemDescription;
-            languagesTextBox.Text = string.Join(", ", _checkAndFixItem.Languages);
-            tagsTextBox.Text = string.Join(", ", _checkAndFixItem.Tags);
+            defaultDescTextBox.Text = _checkAndFixItem.DefaultItemDescription == null ? "" : _checkAndFixItem.DefaultItemDescription;
+            languagesTextBox.Text = _checkAndFixItem.Languages == null ? "" : string.Join(", ", _checkAndFixItem.Languages);
+            tagsTextBox.Text = _checkAndFixItem.Tags == null ? "" :string.Join(", ", _checkAndFixItem.Tags);
             descriptionTextBox.Text = _checkAndFixItem.Description;
 
-            checkFindRegExTextBox.Text = _checkAndFixItem.CheckRegex;
-            fixRegExTextBox.Text = _checkAndFixItem.FixRegex;
-            scriptTextBox.Text = _checkAndFixItem.CheckScript.Replace("\n", Environment.NewLine);
+            checkFindRegExTextBox.Text = _checkAndFixItem.CheckRegex == null ? "" : _checkAndFixItem.CheckRegex;
+            fixRegExTextBox.Text = _checkAndFixItem.FixRegex == null ? "" : _checkAndFixItem.FixRegex;
+            scriptTextBox.Text = _checkAndFixItem.CheckScript == null ? "" : _checkAndFixItem.CheckScript.Replace("\n", Environment.NewLine);
         }
 
         /// <summary>
