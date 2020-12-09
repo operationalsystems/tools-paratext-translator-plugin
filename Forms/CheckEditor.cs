@@ -103,6 +103,18 @@ namespace TvpMain.Forms
             {
                 updateCheckAndFix();
 
+                if(String.IsNullOrEmpty(_checkAndFixItem.Name.Trim()) ||
+                    String.IsNullOrEmpty(_checkAndFixItem.Version.Trim()) ||
+                    String.IsNullOrEmpty(_checkAndFixItem.DefaultItemDescription.Trim()) ||
+                    (String.IsNullOrEmpty(_checkAndFixItem.CheckRegex.Trim()) && String.IsNullOrEmpty(_checkAndFixItem.CheckScript.Trim()))
+                    )
+                {
+                    MessageBox.Show("Name, Version, Default Description, and either the Check Regex or the Check Script, must be entered.",
+                        "Warning", MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                    return;
+                }
+
                 string filename = _checkAndFixItem.Name.Replace(" ", "") + '-' + _checkAndFixItem.Version + ".xml";
                 string filePath = Path.Combine(_checkManager.GetLocalRepoDirectory(), filename);
 
@@ -217,22 +229,30 @@ namespace TvpMain.Forms
         /// </summary>
         private void updateCheckAndFix()
         {
-            _checkAndFixItem.Name = checkFixNameTextBox.Text;
-            _checkAndFixItem.Version = versionTextBox.Text;
-            _checkAndFixItem.Scope = (CheckAndFixItem.CheckScope)scopeCombo.SelectedIndex;
-            _checkAndFixItem.DefaultItemDescription = defaultDescTextBox.Text;
-            _checkAndFixItem.Languages = languagesTextBox.Text.Split(',')
-                .Select(x => x.Trim())
-                .Where(x => !string.IsNullOrWhiteSpace(x))
-                .ToArray();
-            _checkAndFixItem.Tags = tagsTextBox.Text.Split(',').Select(x => x.Trim())
-                .Where(x => !string.IsNullOrWhiteSpace(x))
-                .ToArray();
-            _checkAndFixItem.Description = descriptionTextBox.Text;
+            try
+            {
+                _checkAndFixItem.Name = checkFixNameTextBox.Text;
+                _checkAndFixItem.Version = versionTextBox.Text;
+                _checkAndFixItem.Scope = (CheckAndFixItem.CheckScope)scopeCombo.SelectedIndex;
+                _checkAndFixItem.DefaultItemDescription = defaultDescTextBox.Text;
+                _checkAndFixItem.Languages = languagesTextBox.Text.Trim().Split(',')
+                    .Select(x => x.Trim())
+                    .Where(x => !string.IsNullOrWhiteSpace(x))
+                    .ToArray();
+                _checkAndFixItem.Tags = tagsTextBox.Text.Trim().Split(',').Select(x => x.Trim())
+                    .Where(x => !string.IsNullOrWhiteSpace(x))
+                    .ToArray();
+                _checkAndFixItem.Description = descriptionTextBox.Text;
 
-            _checkAndFixItem.CheckRegex = checkFindRegExTextBox.Text;
-            _checkAndFixItem.FixRegex = fixRegExTextBox.Text;
-            _checkAndFixItem.CheckScript = scriptTextBox.Text;
+                _checkAndFixItem.CheckRegex = checkFindRegExTextBox.Text;
+                _checkAndFixItem.FixRegex = fixRegExTextBox.Text;
+                _checkAndFixItem.CheckScript = scriptTextBox.Text;
+            } catch
+            {
+                MessageBox.Show("Name, Version, Default Description, and either the Check Regex or the Check Script, must be entered.",
+                        "Warning", MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+            }
         }
 
         /// <summary>

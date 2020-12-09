@@ -184,7 +184,7 @@ namespace TvpMain.Forms
                         false,
                         item.Name,
                         item.Version,
-                        item.Languages != null ? String.Join(", ", item.Languages) : "All",
+                        item.Languages != null ? item.Languages.Length > 0 ? String.Join(", ", item.Languages): "All" : "All",
                         item.Tags != null ? String.Join(", ", item.Tags) : "",
                         item.Id
                         );

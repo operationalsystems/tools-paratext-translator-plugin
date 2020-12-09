@@ -98,6 +98,7 @@ namespace TvpMain.Forms
             // 
             // checkFixNameTextBox
             // 
+            this.checkFixNameTextBox.BackColor = System.Drawing.Color.LightYellow;
             this.checkFixNameTextBox.Location = new System.Drawing.Point(145, 40);
             this.checkFixNameTextBox.Name = "checkFixNameTextBox";
             this.checkFixNameTextBox.Size = new System.Drawing.Size(294, 20);
@@ -240,6 +241,7 @@ namespace TvpMain.Forms
             // 
             // versionTextBox
             // 
+            this.versionTextBox.BackColor = System.Drawing.Color.LightYellow;
             this.versionTextBox.Location = new System.Drawing.Point(145, 66);
             this.versionTextBox.Mask = "0.0.0.0";
             this.versionTextBox.Name = "versionTextBox";
@@ -311,6 +313,7 @@ namespace TvpMain.Forms
             // 
             // defaultDescTextBox
             // 
+            this.defaultDescTextBox.BackColor = System.Drawing.Color.LightYellow;
             this.defaultDescTextBox.Location = new System.Drawing.Point(145, 119);
             this.defaultDescTextBox.Name = "defaultDescTextBox";
             this.defaultDescTextBox.Size = new System.Drawing.Size(294, 20);
