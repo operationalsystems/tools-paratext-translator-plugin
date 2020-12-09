@@ -338,7 +338,7 @@ namespace TvpMain.Forms
         }
 
         /// <summary>
-        /// Used to display the list of books selected. If there are more than 3 then truncate in the middle.
+        /// Used to display the list of books selected. If there are more than 4 then truncate in the middle.
         /// </summary>
         /// <param name="selectedBooks"></param>
         /// <returns></returns>
@@ -393,7 +393,9 @@ namespace TvpMain.Forms
             setCurrentBook();
         }
 
-        // Update the UI
+        /// <summary>
+        /// Update the UI
+        /// </summary>
         private void setChooseBooks()
         {
             currentBookRadioButton.Checked = false;
@@ -402,7 +404,9 @@ namespace TvpMain.Forms
             toChapterDropDown.Enabled = false;
         }
 
-        // Update the UI, and reset selected books list
+        /// <summary>
+        /// Update the UI, and reset selected books list
+        /// </summary>
         private void setCurrentBook()
         {
             currentBookRadioButton.Checked = true;
@@ -469,7 +473,7 @@ namespace TvpMain.Forms
         {
             foreach (DataGridViewRow row in checksList.Rows)
             {
-                CheckAndFixItem item = (CheckAndFixItem)checksList.Rows[row.Index].Tag;
+                CheckAndFixItem item = (CheckAndFixItem) row.Tag;
                 var isDefault = _projectCheckSettings.DefaultCheckIds.Contains(item.Id);
 
                 row.Cells[0].Value = isDefault;

@@ -60,11 +60,5 @@ namespace TvpMain.Forms
             checkManager.SynchronizeInstalledChecks();
             refresh();
         }
-
-        private void projectSettingsToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            Form settingsForm = new ProjectCheckSettingsTestForm(_activeProjectName);
-            settingsForm.ShowDialog();
-        }
     }
 }

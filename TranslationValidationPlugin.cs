@@ -57,7 +57,6 @@ namespace TvpMain
                         try
                         {
                             Application.EnableVisualStyles();
-                            //Application.Run(new MainForm(host, activeProjectName));
                             Application.Run(new RunChecks(host, activeProjectName));
                         }
                         catch (Exception ex)
@@ -101,6 +100,9 @@ namespace TvpMain
             // ignore, for now
         }
 
+        /// <summary>
+        /// Get the default data key file specs
+        /// </summary>
         public Dictionary<string, IPluginDataFileMergeInfo> _dataFileKeySpecifications = new Dictionary<string, IPluginDataFileMergeInfo>
         {
             [MainConsts.CHECK_SETTINGS_DATA_ID] = new PluginDataFileMergeInfo(

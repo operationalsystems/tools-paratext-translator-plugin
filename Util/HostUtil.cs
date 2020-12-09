@@ -317,10 +317,10 @@ namespace TvpMain.Util
         }
 
         /// <summary>
-        /// Loads the <c>ProjectCheckSettings</c> for the specified project.
+        /// Saves the project check settings for the given project
         /// </summary>
-        /// <param name="projectName">The project name.</param>
-        /// <returns>The <c>ProjectCheckSettings</c>, or empty settings if none could be loaded.</returns>
+        /// <param name="projectName"></param>
+        /// <param name="settings"></param>
         public void PutProjectCheckSettings(string projectName, ProjectCheckSettings settings)
         {
             if (projectName == null || projectName.Length < 1)
@@ -343,7 +343,7 @@ namespace TvpMain.Util
         /// the project and compares the users there against the current user name from IHost.
         /// </summary>
         /// <param name="projectName"></param>
-        /// <returns></returns>
+        /// <returns>True, if the current user is an Admin for the given project</returns>
         public bool isCurrentUserAdmin(string projectName)
         {
             if (projectName == null || projectName.Length < 1)
