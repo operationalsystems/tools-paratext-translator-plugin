@@ -54,7 +54,7 @@ namespace TvpMain.Check
         /// </summary>
         public String Version
         {
-            get { return _version == null ? "" : _version.ToString(); }
+            get { return _version == null ? "0.0.0.0" : _version.ToString(); }
             set
             {
                 _version = new Version(value);

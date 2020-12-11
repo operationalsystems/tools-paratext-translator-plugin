@@ -204,7 +204,7 @@ namespace TvpMain.Forms
                         false,
                         "(Local) " + item.Name,
                         item.Version,
-                        item.Languages != null ? String.Join(", ", item.Languages) : "All",
+                        item.Languages != null ? item.Languages.Length > 0 ? String.Join(", ", item.Languages) : "All" : "All",
                         item.Tags != null ? String.Join(", ", item.Tags) : "",
                         item.Id
                         );
@@ -215,6 +215,7 @@ namespace TvpMain.Forms
                         checksList.Rows[rowIndex].DefaultCellStyle.ForeColor = SystemColors.GrayText;
                     }
 
+                    // store the item in the list so the reference is passed around and easily retrieved
                     checksList.Rows[rowIndex].Tag = item;
                 }
             }
@@ -650,6 +651,11 @@ namespace TvpMain.Forms
                 "for this project. This may only be performed by accounts with the sufficient privileges.";
         }
 
+        /// <summary>
+        /// Refresh the check/item list.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void refreshButton_Click(object sender, EventArgs e)
         {
             // start the sync for the check/fixes

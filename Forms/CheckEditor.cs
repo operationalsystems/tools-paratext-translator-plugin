@@ -45,16 +45,16 @@ namespace TvpMain.Forms
         }
 
         /// <summary>
-        /// Set to new state
+        /// Set to "new" state, a brand new check/fix item to edit
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
         private void newToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            // allow user to not overwrite changes
+            // prevent overwriting changes unless explict
             if(_dirty)
             {
-                DialogResult dialogResult = MessageBox.Show("Do not save changes?", "Verify", MessageBoxButtons.YesNo);
+                DialogResult dialogResult = MessageBox.Show("You have unsaved changes, are you sure you wish to proceed?", "Verify", MessageBoxButtons.YesNo);
 
                 if (dialogResult == DialogResult.No)
                 {
@@ -116,10 +116,8 @@ namespace TvpMain.Forms
                     return;
                 }
 
-                string filename = _checkAndFixItem.Name.Replace(" ", "") + '-' + _checkAndFixItem.Version + ".xml";
-                string filePath = Path.Combine(_checkManager.GetLocalRepoDirectory(), filename);
+                _checkManager.SaveCheckAndFixItem(_checkAndFixItem);
 
-                _checkAndFixItem.SaveToXmlFile(filePath);
                 _dirty = false;
             }
         }
@@ -187,7 +185,7 @@ namespace TvpMain.Forms
 
             if (found)
             {
-                MessageBox.Show("This version of the Check/Fix already exists in the repository, you should increment the version before trying to publish.",
+                MessageBox.Show("This version of the Check/Fix already exists in the repository, you must increment the version before trying to publish.",
                     "Warning", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
             else
@@ -211,17 +209,17 @@ namespace TvpMain.Forms
         /// </summary>
         private void updateUI()
         {
-            checkFixIdLabel.Text = _checkAndFixItem.Id == null ? "" : _checkAndFixItem.Id;
-            checkFixNameTextBox.Text = _checkAndFixItem.Name == null ? "" : _checkAndFixItem.Name;
-            versionTextBox.Text = _checkAndFixItem.Version == null ? "" : _checkAndFixItem.Version;
+            checkFixIdLabel.Text = _checkAndFixItem.Id ?? "";
+            checkFixNameTextBox.Text = _checkAndFixItem.Name ?? "";
+            versionTextBox.Text = _checkAndFixItem.Version ?? "";
             scopeCombo.SelectedItem = _checkAndFixItem.Scope.ToString();
-            defaultDescTextBox.Text = _checkAndFixItem.DefaultItemDescription == null ? "" : _checkAndFixItem.DefaultItemDescription;
+            defaultDescTextBox.Text = _checkAndFixItem.DefaultItemDescription ?? "";
             languagesTextBox.Text = _checkAndFixItem.Languages == null ? "" : string.Join(", ", _checkAndFixItem.Languages);
             tagsTextBox.Text = _checkAndFixItem.Tags == null ? "" :string.Join(", ", _checkAndFixItem.Tags);
             descriptionTextBox.Text = _checkAndFixItem.Description;
 
-            checkFindRegExTextBox.Text = _checkAndFixItem.CheckRegex == null ? "" : _checkAndFixItem.CheckRegex;
-            fixRegExTextBox.Text = _checkAndFixItem.FixRegex == null ? "" : _checkAndFixItem.FixRegex;
+            checkFindRegExTextBox.Text = _checkAndFixItem.CheckRegex ?? "";
+            fixRegExTextBox.Text = _checkAndFixItem.FixRegex ?? "";
             scriptTextBox.Text = _checkAndFixItem.CheckScript == null ? "" : _checkAndFixItem.CheckScript.Replace("\n", Environment.NewLine);
         }
 
