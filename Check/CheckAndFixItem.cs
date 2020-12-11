@@ -89,7 +89,6 @@ namespace TvpMain.Check
         /// <summary>
         /// The Check's javascript script content.
         /// </summary>
-        /// 
         public String CheckScript { get; set; }
         /// <summary>
         /// Set of Lanaguages this check/fix applies to. Empty = All

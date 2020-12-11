@@ -51,7 +51,7 @@ namespace TvpMain.Forms
         /// <param name="e"></param>
         private void newToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            // prevent overwriting changes unless explict
+            // prevent overwriting changes unless explicit
             if(_dirty)
             {
                 DialogResult dialogResult = MessageBox.Show("You have unsaved changes, are you sure you wish to proceed?", "Verify", MessageBoxButtons.YesNo);
