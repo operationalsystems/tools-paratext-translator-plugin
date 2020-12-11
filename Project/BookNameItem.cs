@@ -118,7 +118,7 @@ namespace TvpMain.Project
         /// <summary>
         /// Override of the default so that we can display the name
         /// </summary>
-        /// <returns></returns>
+        /// <returns>The best name to display for the book in the list.</returns>
         public override string ToString()
         {
             string displayName = GetAvailableName(BookNameType.LongName, BookNameType.ShortName, BookNameType.Abbreviation);
@@ -126,11 +126,11 @@ namespace TvpMain.Project
         }
 
         /// <summary>
-        /// In some cases the default length is very-very long, need to truncate for display purposes
+        /// In some cases the default length is very-very long, need to truncate for display purposes.
         /// </summary>
         /// <param name="value"></param>
         /// <param name="maxLength"></param>
-        /// <returns></returns>
+        /// <returns>A shorter, truncated version of a long name.</returns>
         private string truncate(string value, int maxLength)
         {
             if (string.IsNullOrEmpty(value)) return value;

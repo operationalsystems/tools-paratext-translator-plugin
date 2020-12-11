@@ -200,7 +200,7 @@ namespace TvpMain.CheckManagement
         /// </summary>
         /// <param name="original"></param>
         /// <param name="candidate"></param>
-        /// <returns></returns>
+        /// <returns>return true if this candidate is greater than the original</returns>
         internal virtual Boolean IsNewVersion(CheckAndFixItem original, CheckAndFixItem candidate)
         {
             return String.Equals(candidate.Name, original.Name) &&
@@ -208,9 +208,9 @@ namespace TvpMain.CheckManagement
         }
 
         /// <summary>
-        /// Returns the local check folder path as a string for the editor to open files there.
+        /// Get the local check folder path as a string for the editor to open files there.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>Returns the local check folder path as a string for the editor to open files there.</returns>
         public string GetLocalRepoDirectory()
         {
             return Path.Combine(Directory.GetCurrentDirectory(), MainConsts.LOCAL_CHECK_FOLDER_NAME);

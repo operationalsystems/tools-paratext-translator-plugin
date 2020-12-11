@@ -184,7 +184,7 @@ namespace TvpMain.Forms
                         false,
                         item.Name,
                         item.Version,
-                        item.Languages != null ? item.Languages.Length > 0 ? String.Join(", ", item.Languages): "All" : "All",
+                        item.Languages != null && item.Languages.Length > 0 ? String.Join(", ", item.Languages) : "All",
                         item.Tags != null ? String.Join(", ", item.Tags) : "",
                         item.Id
                         );
@@ -204,7 +204,7 @@ namespace TvpMain.Forms
                         false,
                         "(Local) " + item.Name,
                         item.Version,
-                        item.Languages != null ? item.Languages.Length > 0 ? String.Join(", ", item.Languages) : "All" : "All",
+                        item.Languages != null && item.Languages.Length > 0 ? String.Join(", ", item.Languages) : "All",
                         item.Tags != null ? String.Join(", ", item.Tags) : "",
                         item.Id
                         );
@@ -350,7 +350,7 @@ namespace TvpMain.Forms
         /// Used to display the list of books selected. If there are more than 4 then truncate in the middle.
         /// </summary>
         /// <param name="selectedBooks"></param>
-        /// <returns></returns>
+        /// <returns>A string created by the list of <see cref="BookNameItem"/>s, if greater than 4, ellipsized.</returns>
         private string stringFromSelectedBooks(BookNameItem[] selectedBooks)
         {
             string names = "";
@@ -516,7 +516,7 @@ namespace TvpMain.Forms
         ///  Will filter out based on Tags, add additional tag support here.
         /// </summary>
         /// <param name="item"></param>
-        /// <returns></returns>
+        /// <returns>If the given CFitem is available to be used with the project.</returns>
         private Boolean isCheckAvailableForProject(CheckAndFixItem item)
         {
             var languageId = _host.GetProjectLanguageId(_activeProjectName, "translation validation").ToUpper();

@@ -13,9 +13,12 @@ using TvpMain.CheckManagement;
 
 namespace TvpMain.Forms
 {
+    /// <summary>
+    /// Allows for editing of CFitems
+    /// </summary>
     public partial class CheckEditor : Form
     {
-        // keep track if there were changes made
+        // Keep track when changes are made in the UI.
         private bool _dirty = false;
 
         private ICheckManager _checkManager;
@@ -255,7 +258,7 @@ namespace TvpMain.Forms
         }
 
         /// <summary>
-        /// Keep track of changes and mark the CFitem dirty
+        /// Keep track of changes and mark the form dirty
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>

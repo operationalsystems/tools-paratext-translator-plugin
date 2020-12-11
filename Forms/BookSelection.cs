@@ -56,7 +56,7 @@ namespace TvpMain.Forms
         /// <summary>
         /// Get the list of the selected books
         /// </summary>
-        /// <returns></returns>
+        /// <returns>The list of selected books by <see cref="BookNameItem"/></returns>
         public BookNameItem[] GetSelected() {
             
             return bookList.SelectedItems.Cast<BookNameItem>().ToArray();
