@@ -30,6 +30,8 @@ bld/
 [Oo]bj/
 [Ll]og/
 [Ll]ogs/
+AWSCredentials.cs
+TestAWSCredentials.cs
 
 # Visual Studio 2015/2017 cache/options directory
 .vs/
@@ -351,6 +353,9 @@ MigrationBackup/
 
 # Ionide (cross platform F# VS Code tools) working folder
 .ionide/
-*.dll
-*.cache
-obj/Debug/translation_validation_framework.csproj.FileListAbsolute.txt
+
+# IntelliJ
+.idea
+*.iml
+/TvpTest/TestAWSCredentials.cs
+/Util/AWSCredentials.cs
