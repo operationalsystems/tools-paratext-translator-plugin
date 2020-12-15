@@ -311,13 +311,78 @@ namespace TvpMain.Forms
         }
 
         /// <summary>
-        /// TODO: Start check processing here, and open Check Results
+        /// This function is to handle when the "Run Checks" button is clicked. We pass the checks and notion of what to check to the CheckResultsForm to process.
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
         private void runChecksButton_Click(object sender, EventArgs e)
         {
-            var checkResultsForm = new CheckResultsForm(new List<CheckAndFixItem>());
+            // grab the selected checks
+            var selectedChecks = GetSelectedChecks();
+
+            // grab the check run context
+            var checkContext = GetCheckRunContext();
+
+            // pass the checks and specification of what to check to the CheckResultsForm to perform the necessary search with.
+            var checkResultsForm = new CheckResultsForm(selectedChecks, checkContext);
+            checkResultsForm.Show();
+        }
+
+        /// <summary>
+        /// This function will return the <c>CheckAndFixItem</c>s that are selected in the Run Checks list.
+        /// </summary>
+        /// <returns>The selected <c>CheckAndFixItem</c>s</returns>
+        private List<CheckAndFixItem> GetSelectedChecks()
+        {
+            var selectedChecks = new List<CheckAndFixItem>();
+
+            // grab the selected checks
+            foreach (DataGridViewRow row in checksList.Rows)
+            {
+                CheckAndFixItem item = (CheckAndFixItem) row.Tag;
+                if ((bool)row.Cells[0].Value)
+                {
+                    selectedChecks.Add(item);
+                }
+            }
+
+            return selectedChecks;
+        }
+
+        private CheckRunContext GetCheckRunContext()
+        {
+            var checkRunContext = new CheckRunContext()
+            {
+                Project = _activeProjectName,
+            };
+
+            if (currentBookRadioButton.Checked)
+            {
+                checkRunContext.CheckScope = CheckAndFixItem.CheckScope.CHAPTER;
+                checkRunContext.Chapters = new HashSet<int>();
+
+                var chapterStart = int.Parse(fromChapterDropDown.Text);
+                var chapterEnd = int.Parse(toChapterDropDown.Text);
+
+                // flip the values, if the end is larger than the start
+                if (chapterStart > chapterEnd)
+                {
+                    var temp = chapterStart;
+                    chapterStart = chapterEnd;
+                    chapterEnd = temp;
+                }
+
+                for (int i = chapterStart; i <= chapterEnd; i++)
+                {
+                    checkRunContext.Chapters.Add(i);
+                }
+            }
+            else
+            {
+                checkRunContext.CheckScope = CheckAndFixItem.CheckScope.BOOK;
+            }
+
+            return checkRunContext;
         }
 
         /// <summary>

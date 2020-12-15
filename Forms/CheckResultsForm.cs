@@ -23,20 +23,32 @@ namespace TvpMain.Forms
         private List<CheckAndFixItem> ChecksToRun { get; set; }
 
         /// <summary>
+        /// The context of what we're checking against.
+        /// </summary>
+        private CheckRunContext CheckRunContext { get; set; }
+
+        /// <summary>
         /// The collection of <c>CheckResultItem</c>s mapped by the associated <c>CheckAndFixItem</c>.
         /// </summary>
         Dictionary<CheckAndFixItem, List<CheckResultItem>> CheckResults { get; set; }
 
-        public CheckResultsForm(List<CheckAndFixItem> checksToRun)
+        public CheckResultsForm(List<CheckAndFixItem> checksToRun, CheckRunContext checkRunContext)
         {
             // validate inputs
             ChecksToRun = checksToRun ?? throw new ArgumentNullException(nameof(checksToRun));
+            CheckRunContext = checkRunContext ?? throw new ArgumentNullException(nameof(checkRunContext));
+            CheckRunContext.Validate();
 
             // initialize the components
             InitializeComponent();
 
             // run the provided tests
+            PopulateChecksDataGridView();
+        }
 
+        protected void PopulateChecksDataGridView()
+        {
+            checksDataGridView.Rows.Add(new object []{ false, "test", "test", 5 });
         }
 
         /// <summary>

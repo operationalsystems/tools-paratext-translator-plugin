@@ -35,7 +35,7 @@
             this.editToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.licenseToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.topPanel = new System.Windows.Forms.Panel();
-            this.dataGridView1 = new System.Windows.Forms.DataGridView();
+            this.checksDataGridView = new System.Windows.Forms.DataGridView();
             this.SelectedColumn = new System.Windows.Forms.DataGridViewCheckBoxColumn();
             this.CategoryColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.DescriptionColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -43,7 +43,7 @@
             this.ActionsColumn = new System.Windows.Forms.DataGridViewButtonColumn();
             this.menuStrip.SuspendLayout();
             this.topPanel.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.checksDataGridView)).BeginInit();
             this.SuspendLayout();
             // 
             // cancel
@@ -88,33 +88,33 @@
             // 
             // topPanel
             // 
-            this.topPanel.Controls.Add(this.dataGridView1);
+            this.topPanel.Controls.Add(this.checksDataGridView);
             this.topPanel.Location = new System.Drawing.Point(0, 27);
             this.topPanel.Name = "topPanel";
             this.topPanel.Size = new System.Drawing.Size(868, 251);
             this.topPanel.TabIndex = 2;
             // 
-            // dataGridView1
+            // checksDataGridView
             // 
-            this.dataGridView1.AllowUserToAddRows = false;
-            this.dataGridView1.AllowUserToDeleteRows = false;
-            this.dataGridView1.AllowUserToResizeRows = false;
-            this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dataGridView1.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.checksDataGridView.AllowUserToAddRows = false;
+            this.checksDataGridView.AllowUserToDeleteRows = false;
+            this.checksDataGridView.AllowUserToResizeRows = false;
+            this.checksDataGridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.checksDataGridView.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.SelectedColumn,
             this.CategoryColumn,
             this.DescriptionColumn,
             this.CountColumn,
             this.ActionsColumn});
-            this.dataGridView1.Location = new System.Drawing.Point(0, 0);
-            this.dataGridView1.MultiSelect = false;
-            this.dataGridView1.Name = "dataGridView1";
-            this.dataGridView1.ReadOnly = true;
-            this.dataGridView1.RowHeadersVisible = false;
-            this.dataGridView1.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.AutoSizeToDisplayedHeaders;
-            this.dataGridView1.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.dataGridView1.Size = new System.Drawing.Size(679, 251);
-            this.dataGridView1.TabIndex = 0;
+            this.checksDataGridView.Location = new System.Drawing.Point(0, 0);
+            this.checksDataGridView.MultiSelect = false;
+            this.checksDataGridView.Name = "checksDataGridView";
+            this.checksDataGridView.ReadOnly = true;
+            this.checksDataGridView.RowHeadersVisible = false;
+            this.checksDataGridView.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.AutoSizeToDisplayedHeaders;
+            this.checksDataGridView.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
+            this.checksDataGridView.Size = new System.Drawing.Size(679, 251);
+            this.checksDataGridView.TabIndex = 0;
             // 
             // SelectedColumn
             // 
@@ -178,7 +178,7 @@
             this.menuStrip.ResumeLayout(false);
             this.menuStrip.PerformLayout();
             this.topPanel.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.checksDataGridView)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -192,7 +192,7 @@
         private System.Windows.Forms.ToolStripMenuItem editToolStripMenuItem;
         private System.Windows.Forms.Panel topPanel;
         private System.Windows.Forms.ToolStripMenuItem licenseToolStripMenuItem;
-        private System.Windows.Forms.DataGridView dataGridView1;
+        private System.Windows.Forms.DataGridView checksDataGridView;
         private System.Windows.Forms.DataGridViewCheckBoxColumn SelectedColumn;
         private System.Windows.Forms.DataGridViewTextBoxColumn CategoryColumn;
         private System.Windows.Forms.DataGridViewTextBoxColumn DescriptionColumn;

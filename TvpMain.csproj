@@ -243,6 +243,7 @@
     <Compile Include="Check\CheckAndFixRunner.cs" />
     <Compile Include="Check\CheckArea.cs" />
     <Compile Include="Check\CheckResultItem.cs" />
+    <Compile Include="Check\CheckRunContext.cs" />
     <Compile Include="Check\ICheckAndFixRunner.cs" />
     <Compile Include="Check\LocalCheckAndFixManager.cs" />
     <Compile Include="Forms\BookSelection.cs">
