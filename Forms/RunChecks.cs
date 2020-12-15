@@ -300,10 +300,12 @@ namespace TvpMain.Forms
             string pluginName = System.Reflection.Assembly.GetExecutingAssembly().GetName().Name;
             string formTitle = $"{pluginName} - End User License Agreement";
 
-            LicenseForm eulaForm = new LicenseForm();
-            eulaForm.FormType = LicenseForm.FormTypes.Info;
-            eulaForm.FormTitle = formTitle;
-            eulaForm.LicenseText = Resources.TVP_EULA;
+            LicenseForm eulaForm = new LicenseForm
+            {
+                FormType = LicenseForm.FormTypes.Info,
+                FormTitle = formTitle,
+                LicenseText = Resources.TVP_EULA
+            };
             eulaForm.OnDismiss = () => eulaForm.Close();
             eulaForm.Show();
         }
@@ -315,7 +317,7 @@ namespace TvpMain.Forms
         /// <param name="e"></param>
         private void runChecksButton_Click(object sender, EventArgs e)
         {
-
+            var checkResultsForm = new CheckResultsForm(new List<CheckAndFixItem>());
         }
 
         /// <summary>
