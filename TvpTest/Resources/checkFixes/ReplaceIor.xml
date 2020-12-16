@@ -1,0 +1,20 @@
+﻿<?xml version="1.0"?>
+<CheckAndFixItem xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <Id>230de98f-d595-4f10-9b07-3de1c50e0e90</Id>
+  <Name>Replace \ior Tag</Name>
+  <Description>In a given project find instances of \io tags and replace them with \ior.</Description>
+  <Version>1.0.0</Version>
+  <Scope>BOOK</Scope>
+  <DefaultItemDescription>Value Found</DefaultItemDescription>
+  <CheckRegex>\\io\d? .*\r:::(?&lt;=\s)[(]?(\\ior )?((\d+[.:]\d+([-&#8211;]\d+([.:]\d+)?)*)|\d+-\d+)(\\ior\*)?[)]?(?=\s)</CheckRegex>
+  <FixRegex>“(\\ior $\2\\ior*)”</FixRegex>
+  <CheckScript>
+    function checkAndFix(checkResultItems) {
+      checkResultItems = checkResultItems.filter(i => i.MatchText.length === 5)
+      checkResultItems.forEach(i =>
+        i.FixText = i.MatchText.toUpperCase()
+      )
+      return checkResultItems
+    }
+  </CheckScript>
+</CheckAndFixItem>

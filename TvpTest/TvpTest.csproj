@@ -176,6 +176,15 @@
     <Compile Include="ScriptureReferenceParserTests.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Resources\checkFixes\AddIETag.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\checkFixes\ReplaceIor.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\checkFixes\InText.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="x86\CC32.dll" />
     <Content Include="x86\libgcc_s_sjlj-1.dll" />
     <Content Include="x86\libstdc++-6.dll" />
