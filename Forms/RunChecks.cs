@@ -324,7 +324,7 @@ namespace TvpMain.Forms
             var checkContext = GetCheckRunContext();
 
             // pass the checks and specification of what to check to the CheckResultsForm to perform the necessary search with.
-            var checkResultsForm = new CheckResultsForm(selectedChecks, checkContext);
+            var checkResultsForm = new CheckResultsForm(null, selectedChecks, checkContext);
             checkResultsForm.Show();
         }
 
