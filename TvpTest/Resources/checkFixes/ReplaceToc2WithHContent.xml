@@ -1,0 +1,12 @@
+﻿<?xml version="1.0"?>
+<CheckAndFixItem xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <Id>230de98f-d595-4f10-9b07-3de1c50e0e90</Id>
+  <Name>Replace Toc2 with H content</Name>
+  <Description>Replace content in Toc2 tag with the content in the Header tag.</Description>
+  <Version>1.0.0</Version>
+  <Scope>BOOK</Scope>
+  <DefaultItemDescription>Value Found</DefaultItemDescription>
+  <CheckRegex>(?&lt;=\\h\s+([^\\\r\n]+?)\s*\\([^\\]|\\(?!c))*?\\toc2\s)([^\\\r\n]*)(?=\s*\\)</CheckRegex>
+  <FixRegex>$1</FixRegex>
+  <CheckScript></CheckScript>
+</CheckAndFixItem>

@@ -206,5 +206,14 @@ namespace TvpMain.CheckManagement
             return String.Equals(candidate.Name, original.Name) &&
                     Version.Parse(candidate.Version) > Version.Parse(original.Version);
         }
+
+        /// <summary>
+        /// Returns the local check folder path as a string for the editor to open files there.
+        /// </summary>
+        /// <returns></returns>
+        public string GetLocalRepoDirectory()
+        {
+            return Path.Combine(Directory.GetCurrentDirectory(), MainConsts.LOCAL_CHECK_FOLDER_NAME);
+        }
     }
 }

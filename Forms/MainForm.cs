@@ -1077,10 +1077,22 @@ namespace TvpMain.Forms
             eulaForm.Show();
         }
 
-        private void checkManagerTestToolStripMenuItem_Click(object sender, EventArgs e)
+        private void checkManagerTestInterfaceToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            CheckManagerTestInterface checkManagerTestInterface = new CheckManagerTestInterface();
+            CheckManagerTestInterface checkManagerTestInterface = new CheckManagerTestInterface(_activeProjectName);
             checkManagerTestInterface.Show();
+        }
+
+        private void checkResultsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Form checkResults = new CheckResultsForm();
+            checkResults.ShowDialog();
+        }
+
+        private void projectCheckSettingsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Form settingsForm = new ProjectCheckSettingsTestForm(_activeProjectName);
+            settingsForm.ShowDialog();
         }
     }
 }

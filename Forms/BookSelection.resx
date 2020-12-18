@@ -117,7 +117,7 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <metadata name="$this.TrayHeight" type="System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>95</value>
-  </metadata>
+  <data name="textBox1.Text" xml:space="preserve">
+    <value>Choose the books which will be checked. Click a book name to select just that book. Hold down the CTRL key and click a book to select additional books. Click a book and hold down the SHIFT key while clicking a second book to select all the books from the first book clicked to the second book clicked. Use the buttons on the left to select blocks of books.</value>
+  </data>
 </root>

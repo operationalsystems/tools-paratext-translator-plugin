@@ -23,7 +23,7 @@ namespace TvpMain.Check
         public List<CheckResultItem> ExecCheckAndFix(string text, CheckAndFixItem checkAndFixItem)
         {
             // First, run the check regex, looking for matches
-            Regex checkRegex = new Regex(@checkAndFixItem.CheckRegex.Trim(), RegexOptions.Multiline | RegexOptions.ECMAScript);
+            Regex checkRegex = new Regex(@checkAndFixItem.CheckRegex, RegexOptions.Multiline | RegexOptions.ECMAScript);
             
             MatchCollection matches = checkRegex.Matches(text);
             List<CheckResultItem> checkResultItems = new List<CheckResultItem>();
