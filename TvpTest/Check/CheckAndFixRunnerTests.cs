@@ -226,7 +226,7 @@ namespace TvpMain.Check.Tests
 \b
 \q1
 ";
-            var expectedMatchText = "\n\\b";
+            var expectedMatchText = "\r\n\\b";
             var expectedFixText = @" ";
 
             // Perform the check and fix assessment
@@ -253,7 +253,7 @@ namespace TvpMain.Check.Tests
 ";
             var expectedMatchText = @"- Persian Contemporary Bible‎
 \rem Copyright © 1995‎, 2005, 2018  by Biblica‎, Inc‎.‎®‎‎";
-            var expectedFixText = "- <Name>\n\\rem Copyright © <Year> by Biblica, Inc.‎ ";
+            var expectedFixText = "- <Name>\r\n\\rem Copyright © <Year> by Biblica, Inc.‎ ";
 
             // Perform the check and fix assessment
             var checkAndFix = CheckAndFixItem.LoadFromXmlFile(@"Resources/checkFixes/RTLReplaceIdCheck2.xml");
@@ -289,7 +289,7 @@ namespace TvpMain.Check.Tests
 
             // Check the found value and the replacement suggestion
             Assert.AreEqual(expectedMatchText, results[0].MatchText);
-            Assert.AreEqual(31, results[0].MatchStart);
+            Assert.AreEqual(33, results[0].MatchStart);
             Assert.AreEqual(expectedFixText, results[0].FixText);
 
         }
