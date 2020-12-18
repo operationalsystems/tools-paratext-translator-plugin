@@ -192,6 +192,80 @@ namespace TvpMain.Check.Tests
         }
 
         /// <summary>
+        /// Find instances of footnotes and add a word break.
+        /// </summary>
+        [TestMethod()]
+        public void TestThaoAddWordBreaksAfterFootnotes()
+        {
+            // From thNCVw1 - GEN 8:21
+            var inputText = @"\v 21 \nd องค์พระผู้เป็นเจ้า\nd*/ทรงได้/กลิ่น/อัน/เป็น/ที่/พอพระทัย/และ/ทรง/ดำริ/ว่า “เรา/จะ/ไม่/สาปแช่ง/แผ่นดิน/เพราะ/มนุษย์/อีก/ต่อไป ถึงแม้ว่า\f + \fr 8:21 \ft หรือ/\fqa เพราะว่า\f*จิตใจ/ของ/มนุษย์/จะ/โน้มเอียง/ไป/ใน/ทาง/ชั่ว/ตั้งแต่/วัยเด็ก แต่/เรา/จะ/ไม่/ทำลาย/ล้าง/สิ่งมีชีวิต/ทั้งปวง/อย่างที่/เรา/ได้/ทำ/ใน/คราวนี้/อีก";
+            var expectedMatchText = @"\f + \fr 8:21 \ft หรือ/\fqa เพราะว่า\f*";
+            var expectedFixText = @"\f + \fr 8:21 \ft หรือ/\fqa เพราะว่า\f*/";
+
+            // Perform the check and fix assessment
+            var checkAndFix = CheckAndFixItem.LoadFromXmlFile(@"Resources/checkFixes/ThaiBurmeseLaoFinalizationCheck1.xml");
+
+            List<CheckResultItem> results = checkAndFixRunner.ExecCheckAndFix(inputText, checkAndFix);
+
+            // Should have one result
+            Assert.AreEqual(1, results.Count);
+            Assert.AreEqual(expectedMatchText, results[0].MatchText);
+            Assert.AreEqual(expectedFixText, results[0].FixText);
+        }
+
+        /// <summary>
+        /// Test that we can find instances of blank lines between non-poetry and poetry and that they're removed.
+        /// </summary>
+        [TestMethod()]
+        public void TestRemovalOfBlanksBetweenPoetryAndNonPoetry()
+        {
+            // From usNIV11 - MIC 1:1
+            var inputText = @"\p
+\v 1 The word of the \nd Lord\nd* that came to Micah of Moresheth during the reigns of Jotham, Ahaz and Hezekiah, kings of Judah—the vision he saw concerning Samaria and Jerusalem.
+\b
+\b
+\q1
+";
+            var expectedMatchText = "\r\n\\b";
+            var expectedFixText = @" ";
+
+            // Perform the check and fix assessment
+            var checkAndFix = CheckAndFixItem.LoadFromXmlFile(@"Resources/checkFixes/BlankLineCleanupCheck1.xml");
+
+            List<CheckResultItem> results = checkAndFixRunner.ExecCheckAndFix(inputText, checkAndFix);
+
+            // Should have one result
+            Assert.AreEqual(1, results.Count);
+            Assert.AreEqual(expectedMatchText, results[0].MatchText);
+            Assert.AreEqual(expectedFixText, results[0].FixText);
+        }
+
+        /// <summary>
+        /// Test finding \id in a given RtL project and replace it with the desired text.
+        /// </summary>
+        [TestMethod()]
+        public void TestRightToLeftIdReplace()
+        {
+            // From faPCB18 - GEN 1:0 (preliminary tags)
+            var inputText = @"\id GEN - Persian Contemporary Bible‎
+\rem Copyright © 1995‎, 2005, 2018  by Biblica‎, Inc‎.‎®‎‎
+\h پيدايش
+";
+            var expectedMatchText = @"- Persian Contemporary Bible‎
+\rem Copyright © 1995‎, 2005, 2018  by Biblica‎, Inc‎.‎®‎‎";
+            var expectedFixText = "- <Name>\r\n\\rem Copyright © <Year> by Biblica, Inc.‎ ";
+
+            // Perform the check and fix assessment
+            var checkAndFix = CheckAndFixItem.LoadFromXmlFile(@"Resources/checkFixes/RTLReplaceIdCheck2.xml");
+
+            List<CheckResultItem> results = checkAndFixRunner.ExecCheckAndFix(inputText, checkAndFix);
+
+            // Should have one result
+            Assert.AreEqual(1, results.Count);
+            Assert.AreEqual(expectedMatchText, results[0].MatchText.Trim());
+            Assert.AreEqual(expectedFixText, results[0].FixText);
+        }
+        /// <summary>
         /// Replace content in Toc2 tag with the content in the Header tag.
         /// </summary>
         [TestMethod]
