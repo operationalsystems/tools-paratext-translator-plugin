@@ -349,17 +349,28 @@ namespace TvpMain.Forms
             return selectedChecks;
         }
 
+        /// <summary>
+        /// This function create and return the <c>CheckRunContext</c> of what's being checked against.
+        /// </summary>
+        /// <returns>The <c>CheckRunContext</c> of what's being checked against.</returns>
         private CheckRunContext GetCheckRunContext()
         {
+            // initialize the context with the project name.
             var checkRunContext = new CheckRunContext()
             {
                 Project = _activeProjectName,
+
             };
+
+            // track the selected books
+            checkRunContext.Books = (BookNameItem[])_selectedBooks.Clone();
 
             if (currentBookRadioButton.Checked)
             {
                 checkRunContext.CheckScope = CheckAndFixItem.CheckScope.CHAPTER;
-                checkRunContext.Chapters = new HashSet<int>();
+
+                // track the specified chapters
+                checkRunContext.Chapters = new List<int>();
 
                 var chapterStart = int.Parse(fromChapterDropDown.Text);
                 var chapterEnd = int.Parse(toChapterDropDown.Text);
@@ -372,6 +383,7 @@ namespace TvpMain.Forms
                     chapterEnd = temp;
                 }
 
+                // add the chapters to check
                 for (int i = chapterStart; i <= chapterEnd; i++)
                 {
                     checkRunContext.Chapters.Add(i);

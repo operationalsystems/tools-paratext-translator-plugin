@@ -141,6 +141,12 @@ namespace TvpMain.Util
         public const string CHECK_FILE_EXTENSION = "xml";
 
         /// <summary>
+        /// Paratext project settings filename.
+        /// </summary>
+        public const string SETTINGS_FILE_PATH = "Settings.xml";
+
+
+        /// <summary>
         /// The max size for displaying book names
         /// </summary>
         public const int MAX_BOOK_NAME_DISPLAY_LENGTH = 20;

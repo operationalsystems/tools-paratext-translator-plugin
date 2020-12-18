@@ -359,6 +359,7 @@
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Util\ObjectUtil.cs" />
+    <Compile Include="Util\ParatextProjectHelper.cs" />
     <Compile Include="Util\TextUtil.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -425,14 +426,14 @@
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
     <Error Condition="!Exists('packages\ParatextData.9.0.3\build\ParatextData.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\ParatextData.9.0.3\build\ParatextData.targets'))" />
-    <Error Condition="!Exists('packages\Microsoft.ClearScript.V8.Native.win-x64.7.0.0\build\Microsoft.ClearScript.V8.Native.win-x64.props')" Text="$([System.String]::Format('$(ErrorText)', 'packages\Microsoft.ClearScript.V8.Native.win-x64.7.0.0\build\Microsoft.ClearScript.V8.Native.win-x64.props'))" />
-    <Error Condition="!Exists('packages\Microsoft.ClearScript.V8.Native.win-x86.7.0.0\build\Microsoft.ClearScript.V8.Native.win-x86.props')" Text="$([System.String]::Format('$(ErrorText)', 'packages\Microsoft.ClearScript.V8.Native.win-x86.7.0.0\build\Microsoft.ClearScript.V8.Native.win-x86.props'))" />
     <Error Condition="!Exists('packages\System.Resources.Extensions.5.0.0\build\net461\System.Resources.Extensions.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\System.Resources.Extensions.5.0.0\build\net461\System.Resources.Extensions.targets'))" />
     <Error Condition="!Exists('packages\SIL.Lib.6.0.12\build\SIL.Lib.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\SIL.Lib.6.0.12\build\SIL.Lib.targets'))" />
+    <Error Condition="!Exists('packages\Microsoft.ClearScript.V8.Native.win-x64.7.0.0\build\Microsoft.ClearScript.V8.Native.win-x64.props')" Text="$([System.String]::Format('$(ErrorText)', 'packages\Microsoft.ClearScript.V8.Native.win-x64.7.0.0\build\Microsoft.ClearScript.V8.Native.win-x64.props'))" />
+    <Error Condition="!Exists('packages\Microsoft.ClearScript.V8.Native.win-x86.7.0.0\build\Microsoft.ClearScript.V8.Native.win-x86.props')" Text="$([System.String]::Format('$(ErrorText)', 'packages\Microsoft.ClearScript.V8.Native.win-x86.7.0.0\build\Microsoft.ClearScript.V8.Native.win-x86.props'))" />
   </Target>
-  <Target Name="ArchiveBuild" AfterTargets="Build" Condition="$(Configuration) == 'Release'">
+  <Target Name="ArchiveBuild" AfterTargets="Build" Condition="$(Configuration) == 'Release' Or $(Configuration) == 'Debug'">
     <ItemGroup>
-      <ZipFiles Include="$(OutputPath)*.dll" Exclude="$(OutputPath)CC32.dll;$(OutputPath)libgcc_s_sjlj-1.dll;$(OutputPath)libstdc++-6.dll;$(OutputPath)TECkit_Compiler_x86.dll;$(OutputPath)TECkit_x86.dll;$(OutputPath)ClearScriptV8.win-x64.dll;$(OutputPath)ClearScriptV8.win-x86.dll" />
+      <ZipFiles Include="$(OutputPath)*.dll" Exclude="$(OutputPath)CC32.dll;$(OutputPath)libgcc_s_sjlj-1.dll;$(OutputPath)libstdc++-6.dll;$(OutputPath)TECkit_Compiler_x86.dll;$(OutputPath)TECkit_x86.dll;$(OutputPath)ClearScriptV8.win-x64.dll;" />
       <ZipFiles Include="$(OutputPath)*.pdb" />
       <ZipFiles Include="$(OutputPath)*.config" />
       <ZipFiles Include="$(OutputPath)*.xml" />

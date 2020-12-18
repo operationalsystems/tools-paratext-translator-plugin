@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TvpMain.Project;
 using static TvpMain.Check.CheckAndFixItem;
 
 namespace TvpMain.Check
@@ -25,7 +26,7 @@ namespace TvpMain.Check
         /// <summary>
         /// The list of books to check.
         /// </summary>
-        public List<int> Books { get; set; } = null;
+        public BookNameItem[] Books { get; set; } = null;
 
         /// <summary>
         /// The list of chapters to check.

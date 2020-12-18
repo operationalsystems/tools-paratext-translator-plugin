@@ -1,8 +1,10 @@
-﻿using System;
+﻿using AddInSideViews;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -18,6 +20,11 @@ namespace TvpMain.Forms
     public partial class CheckResultsForm : Form
     {
         /// <summary>
+        /// The Paratext plugin host.
+        /// </summary>
+        private IHost Host { get; set; }
+
+        /// <summary>
         /// A collection of the <c>CheckAndFixItem</c>s to run against the content.
         /// </summary>
         private List<CheckAndFixItem> ChecksToRun { get; set; }
@@ -27,14 +34,18 @@ namespace TvpMain.Forms
         /// </summary>
         private CheckRunContext CheckRunContext { get; set; }
 
+        // TODO possibly make this a constructor argument.
+        private readonly CheckAndFixRunner checkRunner = new CheckAndFixRunner();
+
         /// <summary>
         /// The collection of <c>CheckResultItem</c>s mapped by the associated <c>CheckAndFixItem</c>.
         /// </summary>
-        Dictionary<CheckAndFixItem, List<CheckResultItem>> CheckResults { get; set; }
+        Dictionary <CheckAndFixItem, List<CheckResultItem>> CheckResults { get; set; } = new Dictionary<CheckAndFixItem, List<CheckResultItem>>();
 
-        public CheckResultsForm(List<CheckAndFixItem> checksToRun, CheckRunContext checkRunContext)
+        public CheckResultsForm(IHost host, List<CheckAndFixItem> checksToRun, CheckRunContext checkRunContext)
         {
             // validate inputs
+            Host = host ?? throw new ArgumentNullException(nameof(host));
             ChecksToRun = checksToRun ?? throw new ArgumentNullException(nameof(checksToRun));
             CheckRunContext = checkRunContext ?? throw new ArgumentNullException(nameof(checkRunContext));
             CheckRunContext.Validate();
@@ -43,12 +54,56 @@ namespace TvpMain.Forms
             InitializeComponent();
 
             // run the provided tests
+            RunChecks();
+        }
+
+        protected void RunChecks()
+        {
+            // clear the previous results
+            CheckResults.Clear();
+
+            // TODO get the Paratext Settings to determine the root location of the paratext projects
+            var paratextProjectsRootFolder = @"C:\Paratext 8 Projects";
+            var specifiedProjectFolder = Path.Combine(paratextProjectsRootFolder, CheckRunContext.Project);
+
+            // TODO Grab the prefix and postfix from settings. Or get filename from Paratext utility
+
+            // run each of the specified checks
+            ChecksToRun.ForEach(caf =>
+            {
+                // 01GENusNIV11.SFM
+                // TODO convert the book number into hex. This was done somewhere in TPT
+
+
+
+                // TODO loop through the specified books
+                string contents = File.ReadAllText(Path.Combine(specifiedProjectFolder, "01GENusNIV11.SFM"));
+                //foreach (var book in CheckRunContext.Books)
+                //{
+                //    // TODO get the appropriate book name based on the index
+                CheckResults.Add(caf, checkRunner.ExecCheckAndFix(contents, caf));
+                //}
+
+                // TODO filter the specified chapters
+            });
+
+            // populate the checks results table
             PopulateChecksDataGridView();
         }
 
+
         protected void PopulateChecksDataGridView()
         {
-            checksDataGridView.Rows.Add(new object []{ false, "test", "test", 5 });
+            foreach (KeyValuePair<CheckAndFixItem, List<CheckResultItem>> result in CheckResults)
+            {
+                checksDataGridView.Rows.Add(new object[] { 
+                    false,                              // selected
+                    result.Key.DefaultItemDescription,  // category
+                    result.Key.Description,             // description
+                    result.Value.Count                  // count
+                });
+            }
+
         }
 
         /// <summary>
