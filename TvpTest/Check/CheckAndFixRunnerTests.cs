@@ -192,28 +192,38 @@ namespace TvpMain.Check.Tests
         }
 
         /// <summary>
-        /// Check for text in a project while ignoring markers and headings
+        /// Replace content in Toc2 tag with the content in the Header tag.
         /// </summary>
-        [TestMethod()]
-        public void TestInText()
+        [TestMethod]
+        public void TestReplaceToc2WithHContent()
         {
-            // From spaNBV08 - GEN 1:1
-            var testText = @"\mt1 Génesis";
-            var expectedMatchText = @"Génesis";
+            var inputText = @"\h GENESIS
+\toc1 Genesis
+\toc2 Genesis
+\toc3 Gen.
+";
+            var expectedMatchText = @"Genesis";
+            var expectedFixText = @"GENESIS";
 
             // Perform the check and fix assessment
-            List<CheckResultItem> results = checkAndFixRunner.ExecCheckAndFix(testText, CheckAndFixItem.LoadFromXmlFile(@"Resources/checkFixes/InText.xml"));
+            var checkAndFix = CheckAndFixItem.LoadFromXmlFile(@"Resources/checkFixes/ReplaceToc2WithHContent.xml");
+
+            List<CheckResultItem> results = checkAndFixRunner.ExecCheckAndFix(inputText, checkAndFix);
 
             // Should have one result
             Assert.AreEqual(1, results.Count);
+
+            // Check the found value and the replacement suggestion
             Assert.AreEqual(expectedMatchText, results[0].MatchText);
+            Assert.AreEqual(expectedFixText, results[0].FixText);
+
         }
 
         /// <summary>
-        /// Check for a missing IE tag and add it
+        /// Check for a missing \ie tag following a \mt1 tag and add it.
         /// </summary>
         [TestMethod()]
-        public void TextAddTagIE()
+        public void TestAddIETag()
         {
             var testText = @"\toc3 Éx
 \mt1 Éxodo\c 1
@@ -234,7 +244,7 @@ namespace TvpMain.Check.Tests
         }
 
         /// <summary>
-        /// Check for a missing IE tag and add it
+        /// Wrap an \ior...ior* tag in paranthesis.
         /// </summary>
         [TestMethod()]
         public void TestReplaceIorTag()
@@ -244,7 +254,7 @@ namespace TvpMain.Check.Tests
             var expectedFixText = @"(\ior 1.1–2.3\ior*)";
 
             // Perform the check and fix assessment
-            var checkAndFix = CheckAndFixItem.LoadFromXmlFile(@"Resources/checkFixes/ReplaceIor.xml");
+            var checkAndFix = CheckAndFixItem.LoadFromXmlFile(@"Resources/checkFixes/ReplaceIorTag.xml");
 
             List<CheckResultItem> results = checkAndFixRunner.ExecCheckAndFix(inputText, checkAndFix);
 

@@ -179,10 +179,10 @@
     <Content Include="Resources\checkFixes\AddIETag.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Resources\checkFixes\ReplaceIor.xml">
+    <Content Include="Resources\checkFixes\ReplaceIorTag.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Resources\checkFixes\InText.xml">
+    <Content Include="Resources\checkFixes\ReplaceToc2WithHContent.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="x86\CC32.dll" />
