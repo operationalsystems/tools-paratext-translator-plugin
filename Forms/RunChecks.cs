@@ -18,6 +18,7 @@ using TvpMain.Util;
 
 namespace TvpMain.Forms
 {
+
     public partial class RunChecks : Form
     {
         /// <summary>
@@ -70,6 +71,8 @@ namespace TvpMain.Forms
         /// </summary>
         GenericProgressForm _progressForm;
 
+        List<DisplayItem> _displayItems;
+
         /// <summary>
         /// Standard constructor for kicking off main plugin dialog
         /// </summary>
@@ -99,7 +102,6 @@ namespace TvpMain.Forms
             _projectManager = new ProjectManager(_host, _activeProjectName);
             _projectCheckSettings = HostUtil.Instance.GetProjectCheckSettings(_activeProjectName);
 
-            resetToProjectDefaults();
             setCurrentBookDefaults();
             checksList.ClearSelection();
         }
@@ -118,7 +120,7 @@ namespace TvpMain.Forms
             setCurrentBook();
 
             // disable the ability to save the project check defaults if not an admin
-            if(!HostUtil.Instance.isCurrentUserAdmin(_activeProjectName))
+            if (!HostUtil.Instance.isCurrentUserAdmin(_activeProjectName))
             {
                 setDefaultsToSelected.Hide();
                 refreshButton.Hide();
@@ -146,7 +148,8 @@ namespace TvpMain.Forms
             {
                 // sync with repo
                 _checkManager.SynchronizeInstalledChecks();
-            } catch
+            }
+            catch
             {
                 // in case the user is off-line
                 MessageBox.Show("Could not synchronize with check/fix repo. You may only run checks with locally available set.", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -160,14 +163,17 @@ namespace TvpMain.Forms
         /// <param name="e"></param>
         private void loadingWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
-            checksList.Invoke(new MethodInvoker(delegate { this.updateChecksList(); }));
+            checksList.Invoke(new MethodInvoker(delegate { 
+                this.updateDisplayItems();
+                this.updateDisplayGrid();
+            }));
             _progressForm.Close();
         }
 
         /// <summary>
         /// After doing async download of latest checks, update the list (must be run in main thread)
         /// </summary>
-        private void updateChecksList()
+        private void updateDisplayItems()
         {
             try
             {
@@ -175,60 +181,80 @@ namespace TvpMain.Forms
                 _remoteChecks = _checkManager.GetInstalledCheckAndFixItems();
                 _localChecks = _checkManager.GetSavedCheckAndFixItems();
 
-                checksList.Enabled = false;
-                checksList.Rows.Clear();
+                _displayItems = new List<DisplayItem>();
 
                 foreach (var item in _remoteChecks)
                 {
-                    var rowIndex = checksList.Rows.Add(
-                        false,
+                    _displayItems.Add(new DisplayItem(
+                        isCheckDefaultForProject(item),
                         item.Name,
+                        item.Description,
                         item.Version,
                         item.Languages != null && item.Languages.Length > 0 ? String.Join(", ", item.Languages) : "All",
                         item.Tags != null ? String.Join(", ", item.Tags) : "",
-                        item.Id
-                        );
-
-                    if (!isCheckAvailableForProject(item))
-                    {
-                        checksList.Rows[rowIndex].DefaultCellStyle.BackColor = SystemColors.Control;
-                        checksList.Rows[rowIndex].DefaultCellStyle.ForeColor = SystemColors.GrayText;
-                    }
-
-                    checksList.Rows[rowIndex].Tag = item;
+                        item.Id,
+                        isCheckAvailableForProject(item),
+                        item
+                        ));
                 }
 
                 foreach (var item in _localChecks)
                 {
-                    var rowIndex = checksList.Rows.Add(
+                    _displayItems.Add(new DisplayItem(
                         false,
                         "(Local) " + item.Name,
+                        item.Description,
                         item.Version,
                         item.Languages != null && item.Languages.Length > 0 ? String.Join(", ", item.Languages) : "All",
                         item.Tags != null ? String.Join(", ", item.Tags) : "",
-                        item.Id
-                        );
-
-                    if (!isCheckAvailableForProject(item))
-                    {
-                        checksList.Rows[rowIndex].DefaultCellStyle.BackColor = SystemColors.Control;
-                        checksList.Rows[rowIndex].DefaultCellStyle.ForeColor = SystemColors.GrayText;
-                    }
-
-                    // store the item in the list so the reference is passed around and easily retrieved
-                    checksList.Rows[rowIndex].Tag = item;
+                        item.Id,
+                        isCheckAvailableForProject(item),
+                        item
+                        ));
                 }
+
             }
             finally
             {
                 checksList.Enabled = true;
             }
+        }
+
+        /// <summary>
+        /// Update what is shown on the form, in the list of checks, filtering for the search if applicable.
+        /// </summary>
+        private void updateDisplayGrid()
+        {
+            checksList.Enabled = false;
+            checksList.Rows.Clear();
+
+            foreach (DisplayItem displayItem in _displayItems)
+            {
+                if (filterTextBox.Text.Length < 3 || displayItem.Name.IndexOf(filterTextBox.Text, StringComparison.OrdinalIgnoreCase) >= 0)
+                {
+                    var rowIndex = checksList.Rows.Add(
+                        displayItem.Selected,
+                        displayItem.Name,
+                        displayItem.Version,
+                        displayItem.Languages,
+                        displayItem.Tags,
+                        displayItem.Id
+                        );
+
+                    checksList.Rows[rowIndex].Tag = displayItem;
+
+                    // disable row if it can't be used on 
+                    if (!displayItem.Active)
+                    {
+                        checksList.Rows[rowIndex].DefaultCellStyle.BackColor = SystemColors.Control;
+                        checksList.Rows[rowIndex].DefaultCellStyle.ForeColor = SystemColors.GrayText;
+                    }
+                }
+            }
 
             // deselect the first row
             checksList.ClearSelection();
-
-            // set the default checks for the project
-            resetToProjectDefaults();
+            checksList.Enabled = true;
         }
 
         /// <summary>
@@ -439,13 +465,14 @@ namespace TvpMain.Forms
             {
                 foreach (DataGridViewRow row in checksList.Rows)
                 {
-                    CheckAndFixItem item = (CheckAndFixItem)checksList.Rows[row.Index].Tag;
+                    DisplayItem item = (DisplayItem)checksList.Rows[row.Index].Tag;
+
                     if ((bool)row.Cells[0].Value)
                     {
                         if (!_projectCheckSettings.DefaultCheckIds.Contains(item.Id))
                         {
                             // do not allow local only to be in the defaults list
-                            if (!_localChecks.Contains(item))
+                            if (!_localChecks.Contains(item.Item))
                             {
                                 _projectCheckSettings.DefaultCheckIds.Add(item.Id);
                             }
@@ -472,21 +499,18 @@ namespace TvpMain.Forms
         /// <param name="e"></param>
         private void resetToProjectDefaults_Click(object sender, EventArgs e)
         {
-            resetToProjectDefaults();
+            updateDisplayItems();
+            updateDisplayGrid();
         }
 
         /// <summary>
-        ///  Actually does the work. In separate method in case there are other reasons to call this (there are).
+        /// Determines if the given check/fix item is a default on the project
         /// </summary>
-        private void resetToProjectDefaults()
+        /// <param name="item"></param>
+        /// <returns>if the given check/fix item is a default on the project</returns>
+        private bool isCheckDefaultForProject(CheckAndFixItem item)
         {
-            foreach (DataGridViewRow row in checksList.Rows)
-            {
-                CheckAndFixItem item = (CheckAndFixItem) row.Tag;
-                var isDefault = _projectCheckSettings.DefaultCheckIds.Contains(item.Id);
-
-                row.Cells[0].Value = isDefault;
-            }
+            return _projectCheckSettings.DefaultCheckIds.Contains(item.Id);
         }
 
         /// <summary>
@@ -496,16 +520,14 @@ namespace TvpMain.Forms
         /// <param name="e"></param>
         private void checksList_CellClick(object sender, DataGridViewCellEventArgs e)
         {
-            if (e.RowIndex > 0)
+            if (e.RowIndex >= 0)
             {
-                CheckAndFixItem item = (CheckAndFixItem)checksList.Rows[e.RowIndex].Tag;
-
-                if (isCheckAvailableForProject(item))
+                DisplayItem item = (DisplayItem)checksList.Rows[e.RowIndex].Tag;
+                if (item.Active)
                 {
-                    DataGridViewCheckBoxCell cell = (DataGridViewCheckBoxCell)
-                    checksList.Rows[e.RowIndex].Cells[0];
+                    DataGridViewCheckBoxCell cell = (DataGridViewCheckBoxCell) checksList.Rows[e.RowIndex].Cells[0];
                     cell.Value = !(bool)cell.Value;
-                    checksList.Rows[e.RowIndex].Selected = false;
+                    item.Selected = !item.Selected;
                 }
             }
         }
@@ -557,11 +579,11 @@ namespace TvpMain.Forms
         {
             if (e.RowIndex > -1)
             {
-                CheckAndFixItem item = (CheckAndFixItem)checksList.Rows[e.RowIndex].Tag;
+                DisplayItem item = (DisplayItem)checksList.Rows[e.RowIndex].Tag;
 
                 helpTextBox.Clear();
 
-                if (!isCheckAvailableForProject(item))
+                if (!isCheckAvailableForProject(item.Item))
                 {
                     helpTextBox.AppendText("NOTE: This check/fix is not selectedable for this project" + Environment.NewLine + Environment.NewLine);
                 }
@@ -663,5 +685,47 @@ namespace TvpMain.Forms
             _progressForm.Show(this);
             loadingWorker.RunWorkerAsync();
         }
+
+        /// <summary>
+        /// Filter the available checks based on the entry here
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void filterTextBox_TextChanged(object sender, EventArgs e)
+        {
+            updateDisplayGrid();
+        }
     }
+
+    /// <summary>
+    /// Used for displaying the check/fix items
+    /// This is used so that we can remember if the item is
+    /// selected or not during search/filtering
+    /// </summary>
+    public class DisplayItem
+    {
+        public bool Selected { get; set; }
+        public string Name { get; set; }
+        public string Description { get; set; }
+        public string Version { get; set; }
+        public string Languages { get; set; }
+        public string Tags { get; set; }
+        public string Id { get; set; }
+        public bool Active { get; set; }
+        public CheckAndFixItem Item { get; set; }
+
+        public DisplayItem(bool selected, string name, string description, string version, string languages, string tags, string id, bool active, CheckAndFixItem item)
+        {
+            Selected = selected;
+            Name = name;
+            Description = description;
+            Version = version;
+            Languages = languages;
+            Tags = tags;
+            Id = id;
+            Active = active;
+            Item = item;
+        }
+    }
+
 }
