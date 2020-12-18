@@ -128,9 +128,9 @@ namespace TvpMain.Forms
             this.label5.AutoSize = true;
             this.label5.Location = new System.Drawing.Point(6, 69);
             this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(55, 13);
+            this.label5.Size = new System.Drawing.Size(57, 13);
             this.label5.TabIndex = 5;
-            this.label5.Text = "Javascript";
+            this.label5.Text = "JavaScript";
             // 
             // scriptTextBox
             // 
