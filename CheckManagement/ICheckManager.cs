@@ -61,7 +61,7 @@ namespace TvpMain.CheckManagement
         /// <summary>
         /// Get the local check folder path as a string for the editor to open files there.
         /// </summary>
-        /// <returns>Returns the local check folder path as a string for the editor to open files there.</returns>
+        /// <returns>The local check folder path as a string for the editor to open files there</returns>
         public string GetLocalRepoDirectory();
     }
 }

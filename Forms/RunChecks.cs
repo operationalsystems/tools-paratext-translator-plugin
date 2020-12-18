@@ -22,6 +22,11 @@ namespace TvpMain.Forms
     public partial class RunChecks : Form
     {
         /// <summary>
+        /// The minimum number of characters required to perform a search.
+        /// </summary>
+        private const int MIN_SEARCH_CHARACTERS = 3;
+
+        /// <summary>
         /// Paratext host interface.
         /// </summary>
         private readonly IHost _host;
@@ -230,7 +235,7 @@ namespace TvpMain.Forms
 
             foreach (DisplayItem displayItem in _displayItems)
             {
-                if (filterTextBox.Text.Length < 3 || displayItem.Name.IndexOf(filterTextBox.Text, StringComparison.OrdinalIgnoreCase) >= 0)
+                if (filterTextBox.Text.Length < MIN_SEARCH_CHARACTERS || displayItem.Name.IndexOf(filterTextBox.Text, StringComparison.OrdinalIgnoreCase) >= 0)
                 {
                     var rowIndex = checksList.Rows.Add(
                         displayItem.Selected,
@@ -670,7 +675,8 @@ namespace TvpMain.Forms
         private void setDefaultsToSelected_MouseEnter(object sender, EventArgs e)
         {
             helpTextBox.Text = "Saves the currently selected checks/fixes as the default set " +
-                "for this project. This may only be performed by accounts with the sufficient privileges.";
+                "for this project. This does not include local checks/fixes as they can not be " +
+                "set as defaults. This may only be performed by accounts with the sufficient privileges.";
         }
 
         /// <summary>
