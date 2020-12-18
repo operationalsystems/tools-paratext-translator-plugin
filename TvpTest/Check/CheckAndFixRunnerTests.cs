@@ -215,6 +215,7 @@ namespace TvpMain.Check.Tests
 
             // Check the found value and the replacement suggestion
             Assert.AreEqual(expectedMatchText, results[0].MatchText);
+            Assert.AreEqual(33, results[0].MatchStart);
             Assert.AreEqual(expectedFixText, results[0].FixText);
 
         }
