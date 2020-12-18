@@ -191,5 +191,82 @@ namespace TvpMain.Check.Tests
             Assert.AreEqual(0, results.Count);
         }
 
+        /// <summary>
+        /// Replace content in Toc2 tag with the content in the Header tag.
+        /// </summary>
+        [TestMethod]
+        public void TestReplaceToc2WithHContent()
+        {
+            var inputText = @"\h GENESIS
+\toc1 Genesis
+\toc2 Genesis
+\toc3 Gen.
+";
+            var expectedMatchText = @"Genesis";
+            var expectedFixText = @"GENESIS";
+
+            // Perform the check and fix assessment
+            var checkAndFix = CheckAndFixItem.LoadFromXmlFile(@"Resources/checkFixes/ReplaceToc2WithHContent.xml");
+
+            List<CheckResultItem> results = checkAndFixRunner.ExecCheckAndFix(inputText, checkAndFix);
+
+            // Should have one result
+            Assert.AreEqual(1, results.Count);
+
+            // Check the found value and the replacement suggestion
+            Assert.AreEqual(expectedMatchText, results[0].MatchText);
+            Assert.AreEqual(33, results[0].MatchStart);
+            Assert.AreEqual(expectedFixText, results[0].FixText);
+
+        }
+
+        /// <summary>
+        /// Check for a missing \ie tag following a \mt1 tag and add it.
+        /// </summary>
+        [TestMethod()]
+        public void TestAddIETag()
+        {
+            var testText = @"\toc3 Éx
+\mt1 Éxodo\c 1
+\s1 Los egipcios oprimen a los israelitas";
+            var expectedMatchText = @"Éxodo";
+            var expectedFixText = @"Éxodo
+\\ie
+";
+
+            // Perform the check and fix assessment
+            List<CheckResultItem> results = checkAndFixRunner.ExecCheckAndFix(testText, CheckAndFixItem.LoadFromXmlFile(@"Resources/checkFixes/AddIETag.xml"));
+
+            // Should have one result
+            Assert.AreEqual(1, results.Count);
+            Assert.AreEqual(expectedMatchText, results[0].MatchText);
+            Assert.AreEqual(expectedFixText, results[0].FixText);
+
+        }
+
+        /// <summary>
+        /// Wrap an \ior...ior* tag in paranthesis.
+        /// </summary>
+        [TestMethod()]
+        public void TestReplaceIorTag()
+        {
+            var inputText = @"\io1 Ìṣẹ̀dá ayé \ior 1.1–2.3\ior*. ";
+            var expectedMatchText = @"\ior 1.1–2.3\ior*";
+            var expectedFixText = @"(\ior 1.1–2.3\ior*)";
+
+            // Perform the check and fix assessment
+            var checkAndFix = CheckAndFixItem.LoadFromXmlFile(@"Resources/checkFixes/ReplaceIorTag.xml");
+
+            List<CheckResultItem> results = checkAndFixRunner.ExecCheckAndFix(inputText, checkAndFix);
+
+            // Should have one result
+            Assert.AreEqual(1, results.Count);
+
+            // Check the found value and the replacement suggestion
+            Assert.AreEqual(expectedMatchText, results[0].MatchText);
+            Assert.AreEqual(expectedFixText, results[0].FixText);
+
+        }
+
     }
 }
