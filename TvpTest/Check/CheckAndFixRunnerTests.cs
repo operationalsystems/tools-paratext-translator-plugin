@@ -198,8 +198,8 @@ namespace TvpMain.Check.Tests
         public void TestInText()
         {
             // From spaNBV08 - GEN 1:1
-            var testText = @"\mt1 \nGénesis\c \n1\s1 La creación\p\n\v 1 En el principio creó Dios los cielos y la tierra.\n\v 2 La tierra estaba desordenada y no tenía forma. La oscuridad cubría el profundo abismo, mientras que el Espíritu de Dios se movía sobre las aguas.";
-            var expectedMatchText = @"Génesis \nLa creación \nEn el principio creó Dios los cielos y la tierra. \nLa tierra estaba desordenada y no tenía forma. \nLa oscuridad cubría el profundo abismo, mientras que el Espíritu de Dios se movía sobre las aguas.";
+            var testText = @"\mt1 Génesis";
+            var expectedMatchText = @"Génesis";
 
             // Perform the check and fix assessment
             List<CheckResultItem> results = checkAndFixRunner.ExecCheckAndFix(testText, CheckAndFixItem.LoadFromXmlFile(@"Resources/checkFixes/InText.xml"));
@@ -215,8 +215,13 @@ namespace TvpMain.Check.Tests
         [TestMethod()]
         public void TextAddTagIE()
         {
-            var testText = @"\toc3\n Éx\mt1\n Éxodo\c\n 1\s1\n Los egipcios oprimen a los israelitas";;
-            var expectedMatchText = @"\mt1 Génesis \n\ie \n\c 1 \n\s1 La creación";
+            var testText = @"\toc3 Éx
+\mt1 Éxodo\c 1
+\s1 Los egipcios oprimen a los israelitas";
+            var expectedMatchText = @"Éxodo";
+            var expectedFixText = @"Éxodo
+\\ie
+";
 
             // Perform the check and fix assessment
             List<CheckResultItem> results = checkAndFixRunner.ExecCheckAndFix(testText, CheckAndFixItem.LoadFromXmlFile(@"Resources/checkFixes/AddIETag.xml"));
@@ -224,6 +229,7 @@ namespace TvpMain.Check.Tests
             // Should have one result
             Assert.AreEqual(1, results.Count);
             Assert.AreEqual(expectedMatchText, results[0].MatchText);
+            Assert.AreEqual(expectedFixText, results[0].FixText);
 
         }
 
@@ -233,18 +239,21 @@ namespace TvpMain.Check.Tests
         [TestMethod()]
         public void TestReplaceIorTag()
         {
-            var testText = @"\io Genesis\io*";
-            //var expectedMatchText = @"\io Genesis\io*";
+            var inputText = @"\io1 Ìṣẹ̀dá ayé \ior 1.1–2.3\ior*. ";
+            var expectedMatchText = @"\ior 1.1–2.3\ior*";
+            var expectedFixText = @"(\ior 1.1–2.3\ior*)";
 
             // Perform the check and fix assessment
-            List<CheckResultItem> results = checkAndFixRunner.ExecCheckAndFix(testText, CheckAndFixItem.LoadFromXmlFile(@"Resources/checkFixes/AddIETag.xml"));
+            var checkAndFix = CheckAndFixItem.LoadFromXmlFile(@"Resources/checkFixes/ReplaceIor.xml");
+
+            List<CheckResultItem> results = checkAndFixRunner.ExecCheckAndFix(inputText, checkAndFix);
 
             // Should have one result
             Assert.AreEqual(1, results.Count);
 
             // Check the found value and the replacement suggestion
-            Assert.AreEqual(@"\io Genesis\io*", results[0].MatchText);
-            Assert.AreEqual(@"\ior Genesis\ior*", results[0].FixText);
+            Assert.AreEqual(expectedMatchText, results[0].MatchText);
+            Assert.AreEqual(expectedFixText, results[0].FixText);
 
         }
 

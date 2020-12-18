@@ -6,15 +6,7 @@
   <Version>1.0.0</Version>
   <Scope>BOOK</Scope>
   <DefaultItemDescription>Value Found</DefaultItemDescription>
-  <CheckRegex>\\io\d? .*\r:::(?&lt;=\s)[(]?(\\ior )?((\d+[.:]\d+([-&#8211;]\d+([.:]\d+)?)*)|\d+-\d+)(\\ior\*)?[)]?(?=\s)</CheckRegex>
-  <FixRegex>“(\\ior $\2\\ior*)”</FixRegex>
-  <CheckScript>
-    function checkAndFix(checkResultItems) {
-      checkResultItems = checkResultItems.filter(i => i.MatchText.length === 5)
-      checkResultItems.forEach(i =>
-        i.FixText = i.MatchText.toUpperCase()
-      )
-      return checkResultItems
-    }
-  </CheckScript>
+  <CheckRegex>(?&lt;=\s)[(]?(\\ior )?((\d+[.:]\d+([-&#8211;]\d+([.:]\d+)?)*)|\d+-\d+)(\\ior\*)?[)]?</CheckRegex>
+  <FixRegex>(\ior $2\ior*)</FixRegex>
+  <CheckScript></CheckScript>
 </CheckAndFixItem>
