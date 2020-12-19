@@ -19,6 +19,11 @@ using TvpMain.Util;
 namespace TvpMain.Forms
 {
 
+    /// <summary>
+    /// The new main dialog for TVP. This dialog allows users
+    /// to select which check/fixes to run against the current project
+    /// and which books or portion of books to run against.
+    /// </summary>
     public partial class RunChecks : Form
     {
         /// <summary>
@@ -81,8 +86,8 @@ namespace TvpMain.Forms
         /// <summary>
         /// Standard constructor for kicking off main plugin dialog
         /// </summary>
-        /// <param name="host"></param>
-        /// <param name="activeProjectName"></param>
+        /// <param name="host">This is the iHost instance, the interface class to the Paratext Plugin API</param>
+        /// <param name="activeProjectName">The current project. Right now this is fixed, but maybe in the future this can be dynamically selected.</param>
         public RunChecks(IHost host, string activeProjectName)
         {
             InitializeComponent();
@@ -100,7 +105,7 @@ namespace TvpMain.Forms
         /// Set up to support selecting a different project when we enable that. Right now the Plugin API
         /// does not allow for getting a list of projects.
         /// </summary>
-        /// <param name="activeProjectName"></param>
+        /// <param name="activeProjectName">Allows for setting the current project to work against</param>
         private void setActiveProject(string activeProjectName)
         {
             _activeProjectName = activeProjectName;
@@ -114,8 +119,8 @@ namespace TvpMain.Forms
         /// <summary>
         /// On Load method for the dialog
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
+        /// <param name="sender">The control that sent this event</param>
+        /// <param name="e">The event information that triggered this call</param>
         private void RunChecks_Load(object sender, EventArgs e)
         {
             // the project name text, will eventually be the selected current project from the list of projects
@@ -145,8 +150,8 @@ namespace TvpMain.Forms
         /// <summary>
         /// Async method for synchronizing the check/fixes for the project and selecting the defaults
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
+        /// <param name="sender">The control that sent this event</param>
+        /// <param name="e">The event information that triggered this call</param>
         private void loadingWorker_DoWork(object sender, DoWorkEventArgs e)
         {
             try
@@ -164,8 +169,8 @@ namespace TvpMain.Forms
         /// <summary>
         /// Close the progress form when complete
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
+        /// <param name="sender">The control that sent this event</param>
+        /// <param name="e">The event information that triggered this call</param>
         private void loadingWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
             checksList.Invoke(new MethodInvoker(delegate { 
@@ -226,7 +231,7 @@ namespace TvpMain.Forms
         }
 
         /// <summary>
-        /// Update what is shown on the form, in the list of checks, filtering for the search if applicable.
+        /// Update what is shown on the form, in the list of checks, filtering for the search if applicable
         /// </summary>
         private void updateDisplayGrid()
         {
@@ -303,8 +308,8 @@ namespace TvpMain.Forms
         /// <summary>
         /// Quit the dialog - File -> Exit from menu
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
+        /// <param name="sender">The control that sent this event</param>
+        /// <param name="e">The event information that triggered this call</param>
         private void exitToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Close();
@@ -313,8 +318,8 @@ namespace TvpMain.Forms
         /// <summary>
         /// Start the check/fix editor from the menu
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
+        /// <param name="sender">The control that sent this event</param>
+        /// <param name="e">The event information that triggered this call</param>
         private void editorToolStripMenuItem_Click(object sender, EventArgs e)
         {
             CheckEditor checkEditor = new CheckEditor();
@@ -326,8 +331,8 @@ namespace TvpMain.Forms
         /// Default, show the EULA for the project.
         /// License from menu
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
+        /// <param name="sender">The control that sent this event</param>
+        /// <param name="e">The event information that triggered this call</param>
         private void licenseToolStripMenuItem_Click(object sender, EventArgs e)
         {
             string pluginName = System.Reflection.Assembly.GetExecutingAssembly().GetName().Name;
@@ -344,8 +349,8 @@ namespace TvpMain.Forms
         /// <summary>
         /// TODO: Start check processing here, and open Check Results
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
+        /// <param name="sender">The control that sent this event</param>
+        /// <param name="e">The event information that triggered this call</param>
         private void runChecksButton_Click(object sender, EventArgs e)
         {
 
@@ -354,8 +359,8 @@ namespace TvpMain.Forms
         /// <summary>
         /// Select which books, if not using the default single book, to seach through
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
+        /// <param name="sender">The control that sent this event</param>
+        /// <param name="e">The event information that triggered this call</param>
         private void chooseBooksButton_Click(object sender, EventArgs e)
         {
             // bring up book selection dialog, use current selection to initialize
@@ -380,7 +385,10 @@ namespace TvpMain.Forms
         /// <summary>
         /// Used to display the list of books selected. If there are more than 4 then truncate in the middle.
         /// </summary>
-        /// <param name="selectedBooks"></param>
+        /// <param name="selectedBooks">This allows for passing in the currently selected books, 
+        /// in case this dialog has already been used previously, 
+        /// to prefill the dialog with
+        /// the currently selected items.</param>
         /// <returns>A string created by the list of <see cref="BookNameItem"/>s, if greater than 4, ellipsized.</returns>
         private string stringFromSelectedBooks(BookNameItem[] selectedBooks)
         {
@@ -401,8 +409,8 @@ namespace TvpMain.Forms
         /// <summary>
         /// Quit the dialog
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
+        /// <param name="sender">The control that sent this event</param>
+        /// <param name="e">The event information that triggered this call</param>
         private void cancelButton_Click(object sender, EventArgs e)
         {
             Close();
@@ -411,8 +419,8 @@ namespace TvpMain.Forms
         /// <summary>
         /// Allow for the selection dialog to pop up
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
+        /// <param name="sender">The control that sent this event</param>
+        /// <param name="e">The event information that triggered this call</param>
         private void chooseBooksRadioButton_Click(object sender, EventArgs e)
         {
             setChooseBooks();
@@ -426,8 +434,8 @@ namespace TvpMain.Forms
         /// <summary>
         /// Allow for switching back to just the current book
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
+        /// <param name="sender">The control that sent this event</param>
+        /// <param name="e">The event information that triggered this call</param>
         private void currentBookRadioButton_Click(object sender, EventArgs e)
         {
             setCurrentBook();
@@ -460,8 +468,8 @@ namespace TvpMain.Forms
         /// <summary>
         /// Update the project default check/fixes, saving to project file
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
+        /// <param name="sender">The control that sent this event</param>
+        /// <param name="e">The event information that triggered this call</param>
         private void setDefaultsToSelected_Click(object sender, EventArgs e)
         {
             DialogResult dialogResult = MessageBox.Show("Are you sure you wish to set the default checks/fixes for this project? ", "Verify Change", MessageBoxButtons.YesNo);
@@ -500,8 +508,8 @@ namespace TvpMain.Forms
         /// <summary>
         /// Update the list of selected checks to the project defaults
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
+        /// <param name="sender">The control that sent this event</param>
+        /// <param name="e">The event information that triggered this call</param>
         private void resetToProjectDefaults_Click(object sender, EventArgs e)
         {
             updateDisplayItems();
@@ -521,8 +529,8 @@ namespace TvpMain.Forms
         /// <summary>
         /// Change the selected value for the check, if it's to be in the set
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
+        /// <param name="sender">The control that sent this event</param>
+        /// <param name="e">The event information that triggered this call</param>
         private void checksList_CellClick(object sender, DataGridViewCellEventArgs e)
         {
             if (e.RowIndex >= 0)
@@ -538,11 +546,11 @@ namespace TvpMain.Forms
         }
 
         /// <summary>
-        /// Utility method to determine if the specified check can be run on this project.
-        ///  Will filter out based on language.
-        ///  Will filter out based on Tags, add additional tag support here.
+        /// Utility method to determine if the specified check can be run on this project
+        ///  Will filter out based on language
+        ///  Will filter out based on Tags, add additional tag support here
         /// </summary>
-        /// <param name="item"></param>
+        /// <param name="item">The check/fix item to use to determine if it can be used against the current project</param>
         /// <returns>If the given CFitem is available to be used with the project.</returns>
         private Boolean isCheckAvailableForProject(CheckAndFixItem item)
         {
@@ -578,8 +586,8 @@ namespace TvpMain.Forms
         /// For handling updating the instructions as the mouse moves around the table of available
         /// checks. Will note if a check is disabled.
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
+        /// <param name="sender">The control that sent this event</param>
+        /// <param name="e">The event information that triggered this call</param>
         private void checksList_CellMouseEnter(object sender, DataGridViewCellEventArgs e)
         {
             if (e.RowIndex > -1)
@@ -603,8 +611,8 @@ namespace TvpMain.Forms
         /// <summary>
         /// Update help text for choosing multiple books
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
+        /// <param name="sender">The control that sent this event</param>
+        /// <param name="e">The event information that triggered this call</param>
         private void chooseBooksRadioButton_MouseEnter(object sender, EventArgs e)
         {
             helpTextBox.Text = "Select the set of books to be checked.";
@@ -613,28 +621,28 @@ namespace TvpMain.Forms
         /// <summary>
         /// Update help text for choosing multiple books
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
+        /// <param name="sender">The control that sent this event</param>
+        /// <param name="e">The event information that triggered this call</param>
         private void chooseBooksText_MouseEnter(object sender, EventArgs e)
         {
             helpTextBox.Text = "The set of books chosen to check.";
         }
 
         /// <summary>
-        /// Update help text
+        /// Update help text for the single book selection radio button
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
+        /// <param name="sender">The control that sent this event</param>
+        /// <param name="e">The event information that triggered this call</param>
         private void currentBookRadioButton_MouseEnter(object sender, EventArgs e)
         {
             helpTextBox.Text = "Check the current book";
         }
 
         /// <summary>
-        /// Update help text
+        /// Update help text for the chapter dropdown control
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
+        /// <param name="sender">The control that sent this event</param>
+        /// <param name="e">The event information that triggered this call</param>
         private void fromChapterDropDown_MouseEnter(object sender, EventArgs e)
         {
             if (fromChapterDropDown.Enabled)
@@ -644,10 +652,10 @@ namespace TvpMain.Forms
         }
 
         /// <summary>
-        /// Update help text
+        /// Update help text for the to chapter dropdown control
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
+        /// <param name="sender">The control that sent this event</param>
+        /// <param name="e">The event information that triggered this call</param>
         private void toChapterDropDown_MouseEnter(object sender, EventArgs e)
         {
             if (fromChapterDropDown.Enabled)
@@ -657,10 +665,10 @@ namespace TvpMain.Forms
         }
 
         /// <summary>
-        /// Update help text
+        /// Update help text for setting the whole dialog back to the project default checks
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
+        /// <param name="sender">The control that sent this event</param>
+        /// <param name="e">The event information that triggered this call</param>
         private void resetToProjectDefaults_MouseEnter(object sender, EventArgs e)
         {
             helpTextBox.Text = "Sets the selected checks/fixes back to the project defaults, " +
@@ -668,10 +676,10 @@ namespace TvpMain.Forms
         }
 
         /// <summary>
-        /// Update help text
+        /// Update help text for saving the project defaults
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
+        /// <param name="sender">The control that sent this event</param>
+        /// <param name="e">The event information that triggered this call</param>
         private void setDefaultsToSelected_MouseEnter(object sender, EventArgs e)
         {
             helpTextBox.Text = "Saves the currently selected checks/fixes as the default set " +
@@ -680,10 +688,10 @@ namespace TvpMain.Forms
         }
 
         /// <summary>
-        /// Refresh the check/item list.
+        /// Refresh the check/item list to see if there any new check/fixes available
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
+        /// <param name="sender">The control that sent this event</param>
+        /// <param name="e">The event information that triggered this call</param>
         private void refreshButton_Click(object sender, EventArgs e)
         {
             // start the sync for the check/fixes
@@ -695,8 +703,8 @@ namespace TvpMain.Forms
         /// <summary>
         /// Filter the available checks based on the entry here
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
+        /// <param name="sender">The control that sent this event</param>
+        /// <param name="e">The event information that triggered this call</param>
         private void filterTextBox_TextChanged(object sender, EventArgs e)
         {
             updateDisplayGrid();

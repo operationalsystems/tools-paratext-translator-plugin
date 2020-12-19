@@ -30,6 +30,9 @@ namespace TvpMain.Forms
         /// </summary>
         GenericProgressForm _progressForm;
 
+        /// <summary>
+        /// Default constructor
+        /// </summary>
         public CheckEditor()
         {
             InitializeComponent();
@@ -40,18 +43,18 @@ namespace TvpMain.Forms
         /// <summary>
         /// On dialog load, set to 'new' state
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
+        /// <param name="sender">The control that sent this event</param>
+        /// <param name="e">The event information that triggered this call</param>
         private void CheckEditor_Load(object sender, EventArgs e)
         {
             newToolStripMenuItem_Click(sender, e);
         }
 
         /// <summary>
-        /// Set to "new" state, a brand new check/fix item to edit
+        /// Set the form to a "new" state; a brand new check/fix item to edit
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
+        /// <param name="sender">The control that sent this event</param>
+        /// <param name="e">The event information that triggered this call</param>
         private void newToolStripMenuItem_Click(object sender, EventArgs e)
         {
             // prevent overwriting changes unless explicit
@@ -78,10 +81,10 @@ namespace TvpMain.Forms
         }
 
         /// <summary>
-        /// Open a file for editing
+        /// Open a check/fix file for editing
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
+        /// <param name="sender">The control that sent this event</param>
+        /// <param name="e">The event information that triggered this call</param>
         private void openToolStripMenuItem_Click(object sender, EventArgs e)
         {
             using OpenFileDialog openFileDialog = new OpenFileDialog();
@@ -97,10 +100,10 @@ namespace TvpMain.Forms
         }
 
         /// <summary>
-        /// Save the file
+        /// Save the file that represents the check/fix
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
+        /// <param name="sender">The control that sent this event</param>
+        /// <param name="e">The event information that triggered this call</param>
         private void saveToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (_dirty)
@@ -128,8 +131,8 @@ namespace TvpMain.Forms
         /// <summary>
         /// Exit this dialog
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
+        /// <param name="sender">The control that sent this event</param>
+        /// <param name="e">The event information that triggered this call</param>
         private void exitToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (_dirty)
@@ -147,10 +150,10 @@ namespace TvpMain.Forms
         }
 
         /// <summary>
-        /// Save and Publish
+        /// Save and Publish the check/fix
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
+        /// <param name="sender">The control that sent this event</param>
+        /// <param name="e">The event information that triggered this call</param>
         private void publishToolStripMenuItem_Click(object sender, EventArgs e)
         {
             DialogResult dialogResult = MessageBox.Show("Are you sure you wish to save and publish this check/fix?", "Save and Publish?", MessageBoxButtons.YesNo);
@@ -167,10 +170,10 @@ namespace TvpMain.Forms
         }
 
         /// <summary>
-        /// Worker for doing publish updates
+        /// Worker for doing publish updates asynchronously
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
+        /// <param name="sender">The control that sent this event</param>
+        /// <param name="e">The event information that triggered this call</param>
         private void publishWorker_DoWork(object sender, DoWorkEventArgs e)
         {
             _checkManager.SynchronizeInstalledChecks();
@@ -198,10 +201,10 @@ namespace TvpMain.Forms
         }
 
         /// <summary>
-        /// For when the worker is complete
+        /// Callback for when the async worker is complete
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
+        /// <param name="sender">The control that sent this event</param>
+        /// <param name="e">The event information that triggered this call</param>
         private void publishWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
             _progressForm.Close();
@@ -260,18 +263,18 @@ namespace TvpMain.Forms
         /// <summary>
         /// Keep track of changes and mark the form dirty
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
+        /// <param name="sender">The control that sent this event</param>
+        /// <param name="e">The event information that triggered this call</param>
         private void content_TextChanged(object sender, EventArgs e)
         {
             _dirty = true;
         }
 
         /// <summary>
-        /// Update the help text
+        /// Update the help text for the regex control
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
+        /// <param name="sender">The control that sent this event</param>
+        /// <param name="e">The event information that triggered this call</param>
         private void checkFindRegExTextBox_MouseEnter(object sender, EventArgs e)
         {
             helpTextBox.Clear();
@@ -279,10 +282,10 @@ namespace TvpMain.Forms
         }
 
         /// <summary>
-        /// Update the help text
+        /// Update the help text for the fix regex control
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
+        /// <param name="sender">The control that sent this event</param>
+        /// <param name="e">The event information that triggered this call</param>
         private void FixRegExTextBox_MouseEnter(object sender, EventArgs e)
         {
             helpTextBox.Clear();
@@ -290,10 +293,10 @@ namespace TvpMain.Forms
         }
 
         /// <summary>
-        /// Update the help text
+        /// Update the help text for the javascript control
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
+        /// <param name="sender">The control that sent this event</param>
+        /// <param name="e">The event information that triggered this call</param>
         private void scriptTextBox_MouseEnter(object sender, EventArgs e)
         {
             helpTextBox.Clear();
@@ -303,10 +306,10 @@ namespace TvpMain.Forms
         }
 
         /// <summary>
-        /// Update the help text
+        /// Update the help text for the check/fix id label control
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
+        /// <param name="sender">The control that sent this event</param>
+        /// <param name="e">The event information that triggered this call</param>
         private void checkFixIdLabel_MouseEnter(object sender, EventArgs e)
         {
             helpTextBox.Clear();
@@ -314,10 +317,10 @@ namespace TvpMain.Forms
         }
 
         /// <summary>
-        /// Update the help text
+        /// Update the help text for the check/fix name text box
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
+        /// <param name="sender">The control that sent this event</param>
+        /// <param name="e">The event information that triggered this call</param>
         private void checkFixNameTextBox_MouseEnter(object sender, EventArgs e)
         {
             helpTextBox.Clear();
@@ -325,10 +328,10 @@ namespace TvpMain.Forms
         }
 
         /// <summary>
-        /// Update the help text
+        /// Update the help text for the version text box
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
+        /// <param name="sender">The control that sent this event</param>
+        /// <param name="e">The event information that triggered this call</param>
         private void versionTextBox_MouseEnter(object sender, EventArgs e)
         {
             helpTextBox.Clear();
@@ -336,10 +339,10 @@ namespace TvpMain.Forms
         }
 
         /// <summary>
-        /// Update the help text
+        /// Update the help text for the scope combo box
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
+        /// <param name="sender">The control that sent this event</param>
+        /// <param name="e">The event information that triggered this call</param>
         private void scopeCombo_MouseEnter(object sender, EventArgs e)
         {
             helpTextBox.Clear();
@@ -348,10 +351,10 @@ namespace TvpMain.Forms
         }
 
         /// <summary>
-        /// Update the help text
+        /// Update the help text for the check/fix description text box
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
+        /// <param name="sender">The control that sent this event</param>
+        /// <param name="e">The event information that triggered this call</param>
         private void defaultDescTextBox_MouseEnter(object sender, EventArgs e)
         {
             helpTextBox.Clear();
@@ -359,10 +362,10 @@ namespace TvpMain.Forms
         }
 
         /// <summary>
-        /// Update the help text
+        /// Update the help text for the languages text box
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
+        /// <param name="sender">The control that sent this event</param>
+        /// <param name="e">The event information that triggered this call</param>
         private void languagesTextBox_MouseEnter(object sender, EventArgs e)
         {
             helpTextBox.Clear();
@@ -371,10 +374,10 @@ namespace TvpMain.Forms
         }
 
         /// <summary>
-        /// Update the help text
+        /// Update the help text for the tags text box
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
+        /// <param name="sender">The control that sent this event</param>
+        /// <param name="e">The event information that triggered this call</param>
         private void tagsTextBox_MouseEnter(object sender, EventArgs e)
         {
             helpTextBox.Clear();
@@ -383,10 +386,10 @@ namespace TvpMain.Forms
         }
 
         /// <summary>
-        /// Update the help text
+        /// Update the help text for the description text box
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
+        /// <param name="sender">The control that sent this event</param>
+        /// <param name="e">The event information that triggered this call</param>
         private void descriptionTextBox_MouseEnter(object sender, EventArgs e)
         {
             helpTextBox.Clear();
