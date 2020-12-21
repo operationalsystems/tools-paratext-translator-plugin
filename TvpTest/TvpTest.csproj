@@ -176,6 +176,15 @@
     <Compile Include="ScriptureReferenceParserTests.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Resources\checkFixes\AddIETag.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\checkFixes\ReplaceIorTag.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\checkFixes\ReplaceToc2WithHContent.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="x86\CC32.dll" />
     <Content Include="x86\libgcc_s_sjlj-1.dll" />
     <Content Include="x86\libstdc++-6.dll" />
@@ -184,6 +193,15 @@
     <None Include="app.config" />
     <None Include="packages.config" />
     <Content Include="Resources\checkFixes\checkFixExample.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\checkFixes\RTLReplaceIdCheck2.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\checkFixes\ThaiBurmeseLaoFinalizationCheck1.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\checkFixes\BlankLineCleanupCheck1.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Resources\checkFixes\FinalizationCheck3.xml">
@@ -242,16 +260,10 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <Analyzer Include="..\packages\AWSSDK.S3.3.5.3.10\analyzers\dotnet\cs\AWSSDK.S3.CodeAnalysis.dll" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\TvpMain.csproj">
       <Project>{c803fd57-f7f1-4924-904a-6a242730b898}</Project>
       <Name>TvpMain</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Analyzer Include="..\packages\AWSSDK.S3.3.5.6.3\analyzers\dotnet\cs\AWSSDK.S3.CodeAnalysis.dll" />
   </ItemGroup>
   <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

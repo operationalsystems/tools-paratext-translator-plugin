@@ -1,0 +1,12 @@
+﻿<?xml version="1.0"?>
+<CheckAndFixItem xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <Id>407ac898-9737-4596-89b4-d43a68a48969</Id>
+  <Name>Add word breaks after footnotes</Name>
+  <Description>In a given Thai/Burmese/Lao project find instances of footnotes and add a word break.</Description>
+  <Version>1.0.0</Version>
+  <Scope>CHAPTER</Scope>
+  <DefaultItemDescription>Added missing word break.</DefaultItemDescription>
+  <CheckRegex>(?&lt;!(\\\w+|\\[cv]\s\d+)\s+)((\\f\s([^\\]|\\(?!f\*))*?\\f\*)(\\[^f]\w* )?)(?![/\\\s~,.;:&#187;&#8221;&#8217;&#8221;!?&#8217;&#8991;)&#4962;&#4964;&#4963;&#4966;])</CheckRegex>
+  <FixRegex>$2/</FixRegex>
+  <CheckScript></CheckScript>
+</CheckAndFixItem>
