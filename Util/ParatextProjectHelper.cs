@@ -3,7 +3,7 @@ using System;
 using System.IO;
 using TvpMain.Util;
 
-namespace TvpMain.ParatextProjects
+namespace TvpMain.Util
 {
     /// <summary>
     /// Helper functions related to working with Paratext projects.

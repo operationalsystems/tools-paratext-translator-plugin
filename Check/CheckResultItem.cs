@@ -151,7 +151,7 @@ namespace TvpMain.Check
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
             if (obj.GetType() != this.GetType()) return false;
-            return Equals((ResultItem)obj);
+            return Equals((CheckResultItem)obj);
         }
 
         /// <inheritdoc />

@@ -7,9 +7,12 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using TvpMain.Check;
+using TvpMain.Project;
+using TvpMain.Util;
 
 namespace TvpMain.Forms
 {
@@ -63,28 +66,39 @@ namespace TvpMain.Forms
             CheckResults.Clear();
 
             // TODO get the Paratext Settings to determine the root location of the paratext projects
-            var paratextProjectsRootFolder = @"C:\Paratext 8 Projects";
-            var specifiedProjectFolder = Path.Combine(paratextProjectsRootFolder, CheckRunContext.Project);
-
+            var projectsRootFolder = HostUtil.Instance.GetParatextProjectsDirectory(CheckRunContext.Project);
+            var specifiedProjectFolder = Path.Combine(projectsRootFolder, CheckRunContext.Project);
+            var projectSettings = ParatextProjectHelper.GetProjectSettings(specifiedProjectFolder);
+            var temp2 = projectSettings.BookFileName(CheckRunContext.Books[0].BookNum);
+            
             // TODO Grab the prefix and postfix from settings. Or get filename from Paratext utility
 
             // run each of the specified checks
             ChecksToRun.ForEach(caf =>
             {
-                // 01GENusNIV11.SFM
-                // TODO convert the book number into hex. This was done somewhere in TPT
+                var books = CheckRunContext.Books;
+                switch (CheckRunContext.CheckScope)
+                {
+                    case CheckAndFixItem.CheckScope.BOOK:
+                    case CheckAndFixItem.CheckScope.CHAPTER:
+                        var results = books.Select<BookNameItem, List<CheckResultItem>>((book) =>
+                        {
+                            var bookFilename = projectSettings.BookFileName(CheckRunContext.Books[0].BookNum); 
+                            string contents = File.ReadAllText(Path.Combine(specifiedProjectFolder, bookFilename));
 
+                            // TODO filter content if we're handling chapters
+                            if (CheckRunContext.CheckScope.Equals(CheckAndFixItem.CheckScope.CHAPTER))
+                            {
+                                Regex.Matches(contents, "//", RegexOptions.Multiline & RegexOptions.ECMAScript);
+                            }
 
-
-                // TODO loop through the specified books
-                string contents = File.ReadAllText(Path.Combine(specifiedProjectFolder, "01GENusNIV11.SFM"));
-                //foreach (var book in CheckRunContext.Books)
-                //{
-                //    // TODO get the appropriate book name based on the index
-                CheckResults.Add(caf, checkRunner.ExecCheckAndFix(contents, caf));
-                //}
-
-                // TODO filter the specified chapters
+                            return checkRunner.ExecCheckAndFix(contents, caf);
+                        });
+                        CheckResults.Add(caf, results.SelectMany(l => l).Distinct().ToList());
+                        break;
+                    default:
+                        throw new NotSupportedException();
+                }
             });
 
             // populate the checks results table
@@ -97,10 +111,10 @@ namespace TvpMain.Forms
             foreach (KeyValuePair<CheckAndFixItem, List<CheckResultItem>> result in CheckResults)
             {
                 checksDataGridView.Rows.Add(new object[] { 
-                    false,                              // selected
-                    result.Key.DefaultItemDescription,  // category
-                    result.Key.Description,             // description
-                    result.Value.Count                  // count
+                    false,                                      // selected
+                    result.Key.DefaultItemDescription.Trim(),   // category
+                    result.Key.Description.Trim(),              // description
+                    result.Value.Count                          // count
                 });
             }
 
