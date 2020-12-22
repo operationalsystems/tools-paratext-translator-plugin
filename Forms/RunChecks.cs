@@ -81,6 +81,10 @@ namespace TvpMain.Forms
         /// </summary>
         GenericProgressForm _progressForm;
 
+        /// <summary>
+        /// This is a separate list of items to display within the grid. This allows
+        /// for tracking state during filtering.
+        /// </summary>
         List<DisplayItem> _displayItems;
 
         /// <summary>
@@ -253,7 +257,7 @@ namespace TvpMain.Forms
 
                     checksList.Rows[rowIndex].Tag = displayItem;
 
-                    // disable row if it can't be used on 
+                    // disable row if it can't be used on this project
                     if (!displayItem.Active)
                     {
                         checksList.Rows[rowIndex].DefaultCellStyle.BackColor = SystemColors.Control;
