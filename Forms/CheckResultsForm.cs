@@ -16,6 +16,9 @@ namespace TvpMain.Forms
     /// </summary>
     public partial class CheckResultsForm : Form
     {
+        /// <summary>
+        /// Default contstructor
+        /// </summary>
         public CheckResultsForm()
         {
             InitializeComponent();
@@ -29,6 +32,11 @@ namespace TvpMain.Forms
             this.Close();
         }
 
+        /// <summary>
+        /// Close the dialog
+        /// </summary>
+        /// <param name="sender">The control that sent this event</param>
+        /// <param name="e">The event information that triggered this call</param>
         private void cancel_Click(object sender, EventArgs e)
         {
             OnCancel();

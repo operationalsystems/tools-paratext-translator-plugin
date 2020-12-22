@@ -319,8 +319,8 @@ namespace TvpMain.Util
         /// <summary>
         /// Saves the project check settings for the given project
         /// </summary>
-        /// <param name="projectName"></param>
-        /// <param name="settings"></param>
+        /// <param name="projectName">The name of the project to save the settings to</param>
+        /// <param name="settings">The check/fix settings to save. Right now, the default checks.</param>
         public void PutProjectCheckSettings(string projectName, ProjectCheckSettings settings)
         {
             if (projectName == null || projectName.Length < 1)
