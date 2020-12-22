@@ -56,7 +56,7 @@ namespace TvpMain.Forms
         /// <summary>
         /// Get the list of the selected books
         /// </summary>
-        /// <returns></returns>
+        /// <returns>The list of selected books by <see cref="BookNameItem"/></returns>
         public BookNameItem[] GetSelected() {
             
             return bookList.SelectedItems.Cast<BookNameItem>().ToArray();
@@ -70,6 +70,11 @@ namespace TvpMain.Forms
             InitializeComponent();
         }
 
+        /// <summary>
+        /// Select all the books in the list
+        /// </summary>
+        /// <param name="sender">The control that sent this event</param>
+        /// <param name="e">The event information that triggered this call</param>
         private void allBooksButton_Click(object sender, EventArgs e)
         {
             for( int i = 0; i < bookList.Items.Count; i++)
@@ -81,8 +86,9 @@ namespace TvpMain.Forms
         /// <summary>
         /// Add all OT books to selected set
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
+        /// <param name="sender">The control that sent this event</param>
+        /// <param name="e">The event information that triggered this call</param>
+
         private void otButton_Click(object sender, EventArgs e)
         {
             for (int i = 0; i < OT_COUNT; i++)
@@ -94,8 +100,8 @@ namespace TvpMain.Forms
         /// <summary>
         /// Add all NT books to selected set
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
+        /// <param name="sender">The control that sent this event</param>
+        /// <param name="e">The event information that triggered this call</param>
         private void ntButton_Click(object sender, EventArgs e)
         {
             for (int i = OT_COUNT; i < CANON_BOOK_COUNT; i++)
@@ -107,8 +113,8 @@ namespace TvpMain.Forms
         /// <summary>
         /// Add all extra material to selected  set
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
+        /// <param name="sender">The control that sent this event</param>
+        /// <param name="e">The event information that triggered this call</param>
         private void extraButton_Click(object sender, EventArgs e)
         {
             for (int i = CANON_BOOK_COUNT; i < bookList.Items.Count; i++)
@@ -120,8 +126,8 @@ namespace TvpMain.Forms
         /// <summary>
         /// Deselect all books to start from scratch
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
+        /// <param name="sender">The control that sent this event</param>
+        /// <param name="e">The event information that triggered this call</param>
         private void deselectButton_Click(object sender, EventArgs e)
         {
             for (int i = 0; i < bookList.Items.Count; i++)

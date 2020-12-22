@@ -85,7 +85,7 @@ namespace TvpMain.Check
         /// This function will create a new <c>CheckAndFixItem</c> artifact on disk. The version is defaulted to "1.0.0".
         /// </summary>
         /// <param name="name">The name of the <c>CheckAndFixItem</c> artifact. (required)</param>
-        /// <returns></returns>
+        /// <returns>A new <c>CheckAndFixItem</c> based on the given name</returns>
         public CheckAndFixItem Create(string name)
         {
             // validate input
