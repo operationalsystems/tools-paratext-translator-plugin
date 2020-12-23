@@ -341,6 +341,7 @@
     </Compile>
     <Compile Include="Text\BookUtil.cs" />
     <Compile Include="Util\AWSCredentials.cs" />
+    <Compile Include="Util\FormUtil.cs" />
     <Compile Include="Util\MainConsts.cs" />
     <Compile Include="Util\HostUtil.cs" />
     <Compile Include="Result\CheckResults.cs" />

@@ -33,7 +33,7 @@
             this.menuStrip = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.editToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.licenseToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.LicenseToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.topPanel = new System.Windows.Forms.Panel();
             this.checksDataGridView = new System.Windows.Forms.DataGridView();
             this.SelectedColumn = new System.Windows.Forms.DataGridViewCheckBoxColumn();
@@ -54,14 +54,14 @@
             this.cancel.TabIndex = 0;
             this.cancel.Text = "Cancel";
             this.cancel.UseVisualStyleBackColor = true;
-            this.cancel.Click += new System.EventHandler(this.cancel_Click);
+            this.cancel.Click += new System.EventHandler(this.Cancel_Click);
             // 
             // menuStrip
             // 
             this.menuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.fileToolStripMenuItem,
             this.editToolStripMenuItem,
-            this.licenseToolStripMenuItem});
+            this.LicenseToolStripMenuItem});
             this.menuStrip.Location = new System.Drawing.Point(0, 0);
             this.menuStrip.Name = "menuStrip";
             this.menuStrip.Size = new System.Drawing.Size(868, 24);
@@ -80,11 +80,12 @@
             this.editToolStripMenuItem.Size = new System.Drawing.Size(39, 20);
             this.editToolStripMenuItem.Text = "Edit";
             // 
-            // licenseToolStripMenuItem
+            // LicenseToolStripMenuItem
             // 
-            this.licenseToolStripMenuItem.Name = "licenseToolStripMenuItem";
-            this.licenseToolStripMenuItem.Size = new System.Drawing.Size(58, 20);
-            this.licenseToolStripMenuItem.Text = "License";
+            this.LicenseToolStripMenuItem.Name = "LicenseToolStripMenuItem";
+            this.LicenseToolStripMenuItem.Size = new System.Drawing.Size(58, 20);
+            this.LicenseToolStripMenuItem.Text = "License";
+            this.LicenseToolStripMenuItem.Click += new System.EventHandler(this.LicenseToolStripMenuItem_Click);
             // 
             // topPanel
             // 
@@ -191,7 +192,7 @@
         private System.Windows.Forms.ToolStripMenuItem fileToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem editToolStripMenuItem;
         private System.Windows.Forms.Panel topPanel;
-        private System.Windows.Forms.ToolStripMenuItem licenseToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem LicenseToolStripMenuItem;
         private System.Windows.Forms.DataGridView checksDataGridView;
         private System.Windows.Forms.DataGridViewCheckBoxColumn SelectedColumn;
         private System.Windows.Forms.DataGridViewTextBoxColumn CategoryColumn;

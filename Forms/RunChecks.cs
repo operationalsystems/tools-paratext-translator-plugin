@@ -340,17 +340,7 @@ namespace TvpMain.Forms
         /// <param name="e">The event information that triggered this call</param>
         private void licenseToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            string pluginName = System.Reflection.Assembly.GetExecutingAssembly().GetName().Name;
-            string formTitle = $"{pluginName} - End User License Agreement";
-
-            LicenseForm eulaForm = new LicenseForm
-            {
-                FormType = LicenseForm.FormTypes.Info,
-                FormTitle = formTitle,
-                LicenseText = Resources.TVP_EULA
-            };
-            eulaForm.OnDismiss = () => eulaForm.Close();
-            eulaForm.Show();
+            FormUtil.StartLicenseForm();
         }
 
         /// <summary>
@@ -376,6 +366,7 @@ namespace TvpMain.Forms
                 );
 
             checkResultsForm.Show();
+            checkResultsForm.RunChecks();
         }
 
         /// <summary>
