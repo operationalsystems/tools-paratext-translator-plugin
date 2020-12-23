@@ -399,7 +399,7 @@ namespace TvpMain.Util
         /// <param name="verse">The project's verse 1-based index.</param>
         public void GotoBcvInGui(string projectName, int book, int chapter, int verse)
         {
-            var versificationName = _host.GetProjectVersificationName(projectName); ;
+            var versificationName = _host.GetProjectVersificationName(projectName);
             var bbbcccvvvReference = BookUtil.BcvToRef(book, chapter, verse);
             // Not yet available in latest version
             // _host.GotoReference(bbbcccvvvReference, versificationName, projectName);

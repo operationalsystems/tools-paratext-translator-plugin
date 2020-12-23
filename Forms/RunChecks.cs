@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using TvpMain.Check;
 using TvpMain.CheckManagement;
+using TvpMain.Import;
 using TvpMain.Project;
 using TvpMain.Properties;
 using TvpMain.Text;
@@ -366,7 +367,14 @@ namespace TvpMain.Forms
             var checkContext = GetCheckRunContext();
 
             // pass the checks and specification of what to check to the CheckResultsForm to perform the necessary search with.
-            var checkResultsForm = new CheckResultsForm(_host, selectedChecks, checkContext);
+            var checkResultsForm = new CheckResultsForm(
+                _host, 
+                selectedChecks, 
+                checkContext, 
+                new CheckAndFixRunner(), 
+                new ImportManager(_host, _activeProjectName)
+                );
+
             checkResultsForm.Show();
         }
 
@@ -381,8 +389,8 @@ namespace TvpMain.Forms
             // grab the selected checks
             foreach (DataGridViewRow row in checksList.Rows)
             {
-                CheckAndFixItem item = (CheckAndFixItem) row.Tag;
-                if ((bool)row.Cells[0].Value)
+                CheckAndFixItem item = (CheckAndFixItem) ((DisplayItem) row.Tag).Item;
+                if ((bool) row.Cells[0].Value)
                 {
                     selectedChecks.Add(item);
                 }

@@ -11,8 +11,11 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using TvpMain.Check;
+using TvpMain.Import;
 using TvpMain.Project;
+using TvpMain.Text;
 using TvpMain.Util;
+using static TvpMain.Check.CheckAndFixItem;
 
 namespace TvpMain.Forms
 {
@@ -37,20 +40,34 @@ namespace TvpMain.Forms
         /// </summary>
         private CheckRunContext CheckRunContext { get; set; }
 
-        // TODO possibly make this a constructor argument.
-        private readonly CheckAndFixRunner checkRunner = new CheckAndFixRunner();
+        /// <summary>
+        /// The Check and Fix executor.
+        /// </summary>
+        private CheckAndFixRunner CheckRunner { get; set; }
+
+        /// <summary>
+        /// Project content import manager.
+        /// </summary>
+        private ImportManager ImportManager { get; set; }
 
         /// <summary>
         /// The collection of <c>CheckResultItem</c>s mapped by the associated <c>CheckAndFixItem</c>.
         /// </summary>
-        Dictionary <CheckAndFixItem, List<CheckResultItem>> CheckResults { get; set; } = new Dictionary<CheckAndFixItem, List<CheckResultItem>>();
+        Dictionary<CheckAndFixItem, List<CheckResultItem>> CheckResults { get; set; } = new Dictionary<CheckAndFixItem, List<CheckResultItem>>();
 
-        public CheckResultsForm(IHost host, List<CheckAndFixItem> checksToRun, CheckRunContext checkRunContext)
+        public CheckResultsForm(
+            IHost host, 
+            List<CheckAndFixItem> checksToRun, 
+            CheckRunContext checkRunContext,
+            CheckAndFixRunner checkRunner,
+            ImportManager importManager)
         {
             // validate inputs
             Host = host ?? throw new ArgumentNullException(nameof(host));
             ChecksToRun = checksToRun ?? throw new ArgumentNullException(nameof(checksToRun));
             CheckRunContext = checkRunContext ?? throw new ArgumentNullException(nameof(checkRunContext));
+            CheckRunner = checkRunner ?? throw new ArgumentNullException(nameof(checkRunner));
+            ImportManager = importManager ?? throw new ArgumentNullException(nameof(importManager));
             CheckRunContext.Validate();
 
             // initialize the components
@@ -65,46 +82,149 @@ namespace TvpMain.Forms
             // clear the previous results
             CheckResults.Clear();
 
-            // TODO get the Paratext Settings to determine the root location of the paratext projects
-            var projectsRootFolder = HostUtil.Instance.GetParatextProjectsDirectory(CheckRunContext.Project);
-            var specifiedProjectFolder = Path.Combine(projectsRootFolder, CheckRunContext.Project);
-            var projectSettings = ParatextProjectHelper.GetProjectSettings(specifiedProjectFolder);
-            var temp2 = projectSettings.BookFileName(CheckRunContext.Books[0].BookNum);
-            
-            // TODO Grab the prefix and postfix from settings. Or get filename from Paratext utility
-
-            // run each of the specified checks
-            ChecksToRun.ForEach(caf =>
-            {
-                var books = CheckRunContext.Books;
-                switch (CheckRunContext.CheckScope)
+            // Pre-filter the checks and fixes so we don't have to do it repeatedly later.
+            var checksByScope = new Dictionary<CheckScope, List<CheckAndFixItem>>()
                 {
-                    case CheckAndFixItem.CheckScope.BOOK:
-                    case CheckAndFixItem.CheckScope.CHAPTER:
-                        var results = books.Select<BookNameItem, List<CheckResultItem>>((book) =>
-                        {
-                            var bookFilename = projectSettings.BookFileName(CheckRunContext.Books[0].BookNum); 
-                            string contents = File.ReadAllText(Path.Combine(specifiedProjectFolder, bookFilename));
+                    { CheckScope.PROJECT, new List<CheckAndFixItem>() },
+                    { CheckScope.BOOK, new List<CheckAndFixItem>() },
+                    { CheckScope.CHAPTER, new List<CheckAndFixItem>() },
+                    { CheckScope.VERSE, new List<CheckAndFixItem>() },
+                };
 
-                            // TODO filter content if we're handling chapters
-                            if (CheckRunContext.CheckScope.Equals(CheckAndFixItem.CheckScope.CHAPTER))
+            ChecksToRun.Aggregate(checksByScope, (acc, check) =>
+            {
+                acc[check.Scope].Add(check);
+                return acc;
+            });
+
+            // content builders for performing scoped checks.
+            // TODO remove parallism to support project SB... or... read in differently.
+            var projectSb = new StringBuilder();
+
+            var books = CheckRunContext.Books;
+
+            // iterate books
+            foreach (var book in books)
+            {
+                {
+                    var bookSb = new StringBuilder();
+
+                    // track where we are for error reporting
+                    var currBookNum = book.BookNum;
+                    var currChapterNum = 0;
+                    var currVerseNum = 0;
+
+                    try
+                    {
+                        // get utility items
+                        var versificationName = Host.GetProjectVersificationName(CheckRunContext.Project);
+
+                        // needed to track empty chapters
+                        var emptyVerseCtr = 0;
+
+                        // determine chapter range using check area and user's location in Paratext
+                        var minChapter = (CheckRunContext.CheckScope == CheckScope.CHAPTER)
+                            ? CheckRunContext.Chapters.Min()
+                            : 1;
+                        var maxChapter = (CheckRunContext.CheckScope == CheckScope.CHAPTER)
+                            ? CheckRunContext.Chapters.Max()
+                            : Host.GetLastChapter(currBookNum, versificationName);
+
+                        // iterate chapters
+                        for (var chapterNum = minChapter;
+                            chapterNum <= maxChapter;
+                            chapterNum++)
+                        {
+                            var chapterSb = new StringBuilder();
+                            currChapterNum = chapterNum;
+
+                            // iterate verses
+                            var lastVerseNum = Host.GetLastVerse(currBookNum, chapterNum, versificationName);
+                            for (var verseNum = 0; // verse 0 = intro text
+                                verseNum <= lastVerseNum;
+                                verseNum++)
                             {
-                                Regex.Matches(contents, "//", RegexOptions.Multiline & RegexOptions.ECMAScript);
+                                currVerseNum = verseNum;
+
+                                try
+                                {
+                                    var verseLocation = new VerseLocation(currBookNum, chapterNum, verseNum);
+                                    var verseText = ImportManager.Extract(verseLocation);
+
+                                    // empty text = consecutive check, in case we're looking at an empty chapter
+                                    if (string.IsNullOrWhiteSpace(verseText))
+                                    {
+                                        emptyVerseCtr++;
+                                        if (emptyVerseCtr > MainConsts.MAX_CONSECUTIVE_EMPTY_VERSES)
+                                        {
+                                            break; // no beginning text = empty chapter (skip)
+                                        }
+                                    }
+                                    // else, take apart text
+                                    emptyVerseCtr = 0;
+
+                                    var verseData = new ProjectVerse(verseLocation, verseText);
+
+                                    // build the scoped strings
+                                    projectSb.AppendLine(verseText);
+                                    bookSb.AppendLine(verseText);
+                                    chapterSb.AppendLine(verseText);
+
+                                    // check the verse with verse checks
+                                    RunChecks(verseText, checksByScope[CheckScope.VERSE], "TODO");
+                                }
+                                catch (ArgumentException)
+                                {
+                                    // arg exceptions occur when verses are missing, 
+                                    // which they can be for given translations (ignore and move on)
+                                    // TODO spit out warning
+                                    continue;
+                                }
                             }
 
-                            return checkRunner.ExecCheckAndFix(contents, caf);
-                        });
-                        CheckResults.Add(caf, results.SelectMany(l => l).Distinct().ToList());
-                        break;
-                    default:
-                        throw new NotSupportedException();
+                            // check the chapter with chapter checks
+                            RunChecks(chapterSb.ToString(), checksByScope[CheckScope.CHAPTER], "TODO");
+                        }
+
+                        // check the book with book checks
+                        RunChecks(bookSb.ToString(), checksByScope[CheckScope.BOOK], "TODO");
+                    }
+                    catch (Exception ex)
+                    {
+                        var messageText =
+                            $"Error: Can't check location: {currBookNum}.{currChapterNum}.{currVerseNum} in project: \"{CheckRunContext.Project}\" (error: {ex.Message}).";
+
+                        HostUtil.Instance.ReportError(messageText, ex);
+                    }
                 }
-            });
+
+                // check the book with book checks
+                RunChecks(projectSb.ToString(), checksByScope[CheckScope.PROJECT], "TODO");
+            }
 
             // populate the checks results table
             PopulateChecksDataGridView();
         }
 
+        private void RunChecks(string content, List<CheckAndFixItem> checksToRun, string bcv)
+        {
+            // check the content with every specified check
+            checksToRun.ForEach(check => {
+                var results = CheckRunner.ExecCheckAndFix(content, check);
+
+                // TODO set the BCV for each result
+
+                // add or append results
+                if (CheckResults.ContainsKey(check))
+                {
+                    CheckResults[check].AddRange(results);
+                } 
+                else
+                {
+                    CheckResults.Add(check, results);
+                }
+            });
+        }
 
         protected void PopulateChecksDataGridView()
         {
