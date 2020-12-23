@@ -22,6 +22,8 @@ namespace TvpMain.Forms
     /// </summary>
     public partial class CheckResultsForm : Form
     {
+        public const int SCOPE_NOT_APPLICABLE = -1;
+
         /// <summary>
         /// Lock for updating check results dictionary.
         /// </summary>
@@ -402,12 +404,12 @@ namespace TvpMain.Forms
                         }
 
                         // check the chapter with chapter checks
-                        ExecuteChecksAndStoreResults(chapterSb.ToString(), ChecksByScope[CheckScope.CHAPTER], currBookNum, currChapterNum, -1);
+                        ExecuteChecksAndStoreResults(chapterSb.ToString(), ChecksByScope[CheckScope.CHAPTER], currBookNum, currChapterNum, SCOPE_NOT_APPLICABLE);
                     }
 
                     // check the book with book checks
-                    ExecuteChecksAndStoreResults(bookSb.ToString(), ChecksByScope[CheckScope.BOOK], currBookNum, -1, -1);
-                    ExecuteChecksAndStoreResults(projectSb.ToString(), ChecksByScope[CheckScope.PROJECT], -1, -1, -1);
+                    ExecuteChecksAndStoreResults(bookSb.ToString(), ChecksByScope[CheckScope.BOOK], currBookNum, SCOPE_NOT_APPLICABLE, SCOPE_NOT_APPLICABLE);
+                    ExecuteChecksAndStoreResults(projectSb.ToString(), ChecksByScope[CheckScope.PROJECT], SCOPE_NOT_APPLICABLE, SCOPE_NOT_APPLICABLE, SCOPE_NOT_APPLICABLE);
 
                     OnCheckUpdated(inputBookNum);
                 }
