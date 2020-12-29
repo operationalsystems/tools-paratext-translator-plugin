@@ -29,34 +29,77 @@
         private void InitializeComponent()
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(CheckResultsForm));
-            this.cancel = new System.Windows.Forms.Button();
+            this.CancelButton = new System.Windows.Forms.Button();
+            this.DenyButton = new System.Windows.Forms.Button();
+            this.ShowDeniedCheckbox = new System.Windows.Forms.CheckBox();
+            this.SaveButton = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
-            // cancel
+            // CancelButton
             // 
-            this.cancel.Location = new System.Drawing.Point(781, 498);
-            this.cancel.Name = "cancel";
-            this.cancel.Size = new System.Drawing.Size(75, 23);
-            this.cancel.TabIndex = 0;
-            this.cancel.Text = "Cancel";
-            this.cancel.UseVisualStyleBackColor = true;
-            this.cancel.Click += new System.EventHandler(this.cancel_Click);
+            this.CancelButton.Location = new System.Drawing.Point(1179, 599);
+            this.CancelButton.Name = "CancelButton";
+            this.CancelButton.Size = new System.Drawing.Size(75, 23);
+            this.CancelButton.TabIndex = 0;
+            this.CancelButton.Text = "Cancel";
+            this.CancelButton.UseVisualStyleBackColor = true;
+            this.CancelButton.Click += new System.EventHandler(this.Cancel_Click);
             // 
-            // CheckResults
+            // DenyButton
+            // 
+            this.DenyButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
+            this.DenyButton.Location = new System.Drawing.Point(1098, 496);
+            this.DenyButton.Name = "DenyButton";
+            this.DenyButton.Size = new System.Drawing.Size(156, 50);
+            this.DenyButton.TabIndex = 1;
+            this.DenyButton.Text = "Deny";
+            this.DenyButton.UseVisualStyleBackColor = true;
+            this.DenyButton.Click += new System.EventHandler(this.Deny_Click);
+            // 
+            // ShowDeniedCheckbox
+            // 
+            this.ShowDeniedCheckbox.AutoSize = true;
+            this.ShowDeniedCheckbox.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
+            this.ShowDeniedCheckbox.Location = new System.Drawing.Point(1123, 552);
+            this.ShowDeniedCheckbox.Name = "ShowDeniedCheckbox";
+            this.ShowDeniedCheckbox.Size = new System.Drawing.Size(110, 21);
+            this.ShowDeniedCheckbox.TabIndex = 2;
+            this.ShowDeniedCheckbox.Text = "Show Denied";
+            this.ShowDeniedCheckbox.UseVisualStyleBackColor = true;
+            this.ShowDeniedCheckbox.CheckedChanged += new System.EventHandler(this.ShowDenied_CheckedChanged);
+            // 
+            // SaveButton
+            // 
+            this.SaveButton.Location = new System.Drawing.Point(1098, 599);
+            this.SaveButton.Name = "SaveButton";
+            this.SaveButton.Size = new System.Drawing.Size(75, 23);
+            this.SaveButton.TabIndex = 3;
+            this.SaveButton.Text = "Save";
+            this.SaveButton.UseVisualStyleBackColor = true;
+            this.SaveButton.Click += new System.EventHandler(this.Save_Click);
+            // 
+            // CheckResultsForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(868, 533);
-            this.Controls.Add(this.cancel);
+            this.ClientSize = new System.Drawing.Size(1266, 634);
+            this.Controls.Add(this.SaveButton);
+            this.Controls.Add(this.ShowDeniedCheckbox);
+            this.Controls.Add(this.DenyButton);
+            this.Controls.Add(this.CancelButton);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.Name = "CheckResults";
+            this.Name = "CheckResultsForm";
             this.Text = "Check Results";
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 
         #endregion
 
-        private System.Windows.Forms.Button cancel;
+        private System.Windows.Forms.Button CancelButton;
+        private System.Windows.Forms.Button DenyButton;
+        private System.Windows.Forms.CheckBox ShowDeniedCheckbox;
+        private System.Windows.Forms.Button SaveButton;
     }
 }

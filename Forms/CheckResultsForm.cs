@@ -33,13 +33,45 @@ namespace TvpMain.Forms
         }
 
         /// <summary>
-        /// Close the dialog
+        /// This method handles a click event on the "Save" button.
         /// </summary>
-        /// <param name="sender">The control that sent this event</param>
-        /// <param name="e">The event information that triggered this call</param>
-        private void cancel_Click(object sender, EventArgs e)
+        /// <param name="sender">The "Save" button</param>
+        /// <param name="e">The event information</param>
+        private void Save_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        /// <summary>
+        /// This method handles a click event on the "Cancel" button.
+        /// </summary>
+        /// <param name="sender">The "Cancel" button</param>
+        /// <param name="e">The event information</param>
+        private void Cancel_Click(object sender, EventArgs e)
         {
             OnCancel();
         }
+
+        /// <summary>
+        /// This method handles a click event on the "Deny" button.
+        /// </summary>
+        /// <param name="sender">The "Deny" button</param>
+        /// <param name="e">The event information</param>
+        private void Deny_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        /// <summary>
+        /// This method handles checking/unchecking the "Show Denied" checkbox.
+        /// </summary>
+        /// <param name="sender">The "Show Denied" checkbox</param>
+        /// <param name="e">The event information</param>
+        private void ShowDenied_CheckedChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        
     }
 }
