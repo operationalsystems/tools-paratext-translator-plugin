@@ -19,6 +19,9 @@ namespace TvpMain.Forms
         // Keep track when changes are made in the UI.
         private bool _dirty = false;
 
+        // Whether to show results which have been denied
+        private bool _showDenied = false;
+
         /// <summary>
         /// Default contstructor
         /// </summary>
@@ -35,7 +38,7 @@ namespace TvpMain.Forms
             // If there are pending changes, confirm that the user wants to cancel.
             if (_dirty)
             {
-                DialogResult dialogResult = MessageBox.Show("You have unsaved changes, are you sure you wish to cancel?", "Cancel", MessageBoxButtons.YesNo);
+                DialogResult dialogResult = MessageBox.Show("You have unsaved changes, are you sure you wish to cancel?", "Confirm", MessageBoxButtons.YesNo);
 
                 if (dialogResult == DialogResult.No)
                 {
@@ -73,7 +76,7 @@ namespace TvpMain.Forms
         /// <param name="e">The event information</param>
         private void Deny_Click(object sender, EventArgs e)
         {
-
+            
         }
 
         /// <summary>
@@ -83,7 +86,7 @@ namespace TvpMain.Forms
         /// <param name="e">The event information</param>
         private void ShowDenied_CheckedChanged(object sender, EventArgs e)
         {
-
+            _showDenied = CheckState.Checked.Equals(ShowDenied.CheckState);
         }
     }
 }
