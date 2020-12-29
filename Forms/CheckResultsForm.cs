@@ -16,6 +16,9 @@ namespace TvpMain.Forms
     /// </summary>
     public partial class CheckResultsForm : Form
     {
+        // Keep track when changes are made in the UI.
+        private bool _dirty = false;
+
         /// <summary>
         /// Default contstructor
         /// </summary>
@@ -29,6 +32,17 @@ namespace TvpMain.Forms
         /// </summary>
         public void OnCancel()
         {
+            // If there are pending changes, confirm that the user wants to cancel.
+            if (_dirty)
+            {
+                DialogResult dialogResult = MessageBox.Show("You have unsaved changes, are you sure you wish to cancel?", "Cancel", MessageBoxButtons.YesNo);
+
+                if (dialogResult == DialogResult.No)
+                {
+                    return;
+                }
+
+            }
             this.Close();
         }
 
@@ -71,7 +85,5 @@ namespace TvpMain.Forms
         {
 
         }
-
-        
     }
 }
