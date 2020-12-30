@@ -16,9 +16,6 @@ namespace TvpMain.Forms
     /// </summary>
     public partial class CheckResultsForm : Form
     {
-        // Keep track when changes are made in the UI.
-        private bool _dirty = false;
-
         // Whether to show results which have been denied
         private bool _showDenied = false;
 
@@ -31,42 +28,21 @@ namespace TvpMain.Forms
         }
 
         /// <summary>
-        /// This method is called when the form is cancelled.
+        /// This method is called when the form is closed.
         /// </summary>
-        public void OnCancel()
+        public void OnClose()
         {
-            // If there are pending changes, confirm that the user wants to cancel.
-            if (_dirty)
-            {
-                DialogResult dialogResult = MessageBox.Show("You have unsaved changes, are you sure you wish to cancel?", "Confirm", MessageBoxButtons.YesNo);
-
-                if (dialogResult == DialogResult.No)
-                {
-                    return;
-                }
-
-            }
             this.Close();
         }
 
         /// <summary>
-        /// This method handles a click event on the "Save" button.
+        /// This method handles a click event on the "Close" button.
         /// </summary>
-        /// <param name="sender">The "Save" button</param>
+        /// <param name="sender">The "Close" button</param>
         /// <param name="e">The event information</param>
-        private void Save_Click(object sender, EventArgs e)
+        private void Close_Click(object sender, EventArgs e)
         {
-
-        }
-
-        /// <summary>
-        /// This method handles a click event on the "Cancel" button.
-        /// </summary>
-        /// <param name="sender">The "Cancel" button</param>
-        /// <param name="e">The event information</param>
-        private void Cancel_Click(object sender, EventArgs e)
-        {
-            OnCancel();
+            OnClose();
         }
 
         /// <summary>
