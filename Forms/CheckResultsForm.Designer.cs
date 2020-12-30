@@ -35,6 +35,13 @@
             this.editToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.LicenseToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.topPanel = new System.Windows.Forms.Panel();
+            this.bookFilterLabel = new System.Windows.Forms.Label();
+            this.clearCheckFilterButton = new System.Windows.Forms.Button();
+            this.bookFilterClearButton = new System.Windows.Forms.Button();
+            this.selectBooksButton = new System.Windows.Forms.Button();
+            this.bookFilterTextBox = new System.Windows.Forms.TextBox();
+            this.filterTextBox = new System.Windows.Forms.TextBox();
+            this.checkFilterLabel = new System.Windows.Forms.Label();
             this.checksDataGridView = new System.Windows.Forms.DataGridView();
             this.SelectedColumn = new System.Windows.Forms.DataGridViewCheckBoxColumn();
             this.CategoryColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -48,7 +55,8 @@
             // 
             // cancel
             // 
-            this.cancel.Location = new System.Drawing.Point(781, 498);
+            this.cancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.cancel.Location = new System.Drawing.Point(792, 528);
             this.cancel.Name = "cancel";
             this.cancel.Size = new System.Drawing.Size(75, 23);
             this.cancel.TabIndex = 0;
@@ -64,7 +72,7 @@
             this.LicenseToolStripMenuItem});
             this.menuStrip.Location = new System.Drawing.Point(0, 0);
             this.menuStrip.Name = "menuStrip";
-            this.menuStrip.Size = new System.Drawing.Size(868, 24);
+            this.menuStrip.Size = new System.Drawing.Size(879, 24);
             this.menuStrip.TabIndex = 1;
             this.menuStrip.Text = "menuStrip1";
             // 
@@ -89,17 +97,99 @@
             // 
             // topPanel
             // 
+            this.topPanel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.topPanel.Controls.Add(this.bookFilterLabel);
+            this.topPanel.Controls.Add(this.clearCheckFilterButton);
+            this.topPanel.Controls.Add(this.bookFilterClearButton);
+            this.topPanel.Controls.Add(this.selectBooksButton);
+            this.topPanel.Controls.Add(this.bookFilterTextBox);
+            this.topPanel.Controls.Add(this.filterTextBox);
+            this.topPanel.Controls.Add(this.checkFilterLabel);
             this.topPanel.Controls.Add(this.checksDataGridView);
             this.topPanel.Location = new System.Drawing.Point(0, 27);
             this.topPanel.Name = "topPanel";
-            this.topPanel.Size = new System.Drawing.Size(868, 251);
+            this.topPanel.Size = new System.Drawing.Size(879, 251);
             this.topPanel.TabIndex = 2;
+            // 
+            // bookFilterLabel
+            // 
+            this.bookFilterLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.bookFilterLabel.AutoSize = true;
+            this.bookFilterLabel.Location = new System.Drawing.Point(639, 53);
+            this.bookFilterLabel.Name = "bookFilterLabel";
+            this.bookFilterLabel.Size = new System.Drawing.Size(57, 13);
+            this.bookFilterLabel.TabIndex = 8;
+            this.bookFilterLabel.Text = "Book Filter";
+            // 
+            // clearCheckFilterButton
+            // 
+            this.clearCheckFilterButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.clearCheckFilterButton.Location = new System.Drawing.Point(846, 21);
+            this.clearCheckFilterButton.Name = "clearCheckFilterButton";
+            this.clearCheckFilterButton.Size = new System.Drawing.Size(21, 20);
+            this.clearCheckFilterButton.TabIndex = 7;
+            this.clearCheckFilterButton.Text = "X";
+            this.clearCheckFilterButton.UseVisualStyleBackColor = true;
+            this.clearCheckFilterButton.Click += new System.EventHandler(this.clearCheckFilterButton_Click);
+            // 
+            // bookFilterClearButton
+            // 
+            this.bookFilterClearButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.bookFilterClearButton.Location = new System.Drawing.Point(846, 69);
+            this.bookFilterClearButton.Name = "bookFilterClearButton";
+            this.bookFilterClearButton.Size = new System.Drawing.Size(20, 20);
+            this.bookFilterClearButton.TabIndex = 6;
+            this.bookFilterClearButton.Text = "X";
+            this.bookFilterClearButton.UseVisualStyleBackColor = true;
+            this.bookFilterClearButton.Click += new System.EventHandler(this.bookFilterClearButton_Click);
+            // 
+            // selectBooksButton
+            // 
+            this.selectBooksButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.selectBooksButton.Location = new System.Drawing.Point(777, 95);
+            this.selectBooksButton.Name = "selectBooksButton";
+            this.selectBooksButton.Size = new System.Drawing.Size(89, 23);
+            this.selectBooksButton.TabIndex = 5;
+            this.selectBooksButton.Text = "Select Books";
+            this.selectBooksButton.UseVisualStyleBackColor = true;
+            this.selectBooksButton.Click += new System.EventHandler(this.selectBooksButton_Click);
+            // 
+            // bookFilterTextBox
+            // 
+            this.bookFilterTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.bookFilterTextBox.Location = new System.Drawing.Point(642, 69);
+            this.bookFilterTextBox.Name = "bookFilterTextBox";
+            this.bookFilterTextBox.ReadOnly = true;
+            this.bookFilterTextBox.Size = new System.Drawing.Size(198, 20);
+            this.bookFilterTextBox.TabIndex = 4;
+            // 
+            // filterTextBox
+            // 
+            this.filterTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.filterTextBox.Location = new System.Drawing.Point(642, 21);
+            this.filterTextBox.Name = "filterTextBox";
+            this.filterTextBox.Size = new System.Drawing.Size(198, 20);
+            this.filterTextBox.TabIndex = 2;
+            this.filterTextBox.TextChanged += new System.EventHandler(this.filterTextBox_TextChanged);
+            // 
+            // checkFilterLabel
+            // 
+            this.checkFilterLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.checkFilterLabel.AutoSize = true;
+            this.checkFilterLabel.Location = new System.Drawing.Point(639, 4);
+            this.checkFilterLabel.Name = "checkFilterLabel";
+            this.checkFilterLabel.Size = new System.Drawing.Size(63, 13);
+            this.checkFilterLabel.TabIndex = 1;
+            this.checkFilterLabel.Text = "Check Filter";
             // 
             // checksDataGridView
             // 
             this.checksDataGridView.AllowUserToAddRows = false;
             this.checksDataGridView.AllowUserToDeleteRows = false;
             this.checksDataGridView.AllowUserToResizeRows = false;
+            this.checksDataGridView.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.checksDataGridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.checksDataGridView.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.SelectedColumn,
@@ -114,7 +204,7 @@
             this.checksDataGridView.RowHeadersVisible = false;
             this.checksDataGridView.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.AutoSizeToDisplayedHeaders;
             this.checksDataGridView.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.checksDataGridView.Size = new System.Drawing.Size(679, 251);
+            this.checksDataGridView.Size = new System.Drawing.Size(632, 251);
             this.checksDataGridView.TabIndex = 0;
             // 
             // SelectedColumn
@@ -168,17 +258,19 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(868, 533);
+            this.ClientSize = new System.Drawing.Size(879, 563);
             this.Controls.Add(this.topPanel);
             this.Controls.Add(this.cancel);
             this.Controls.Add(this.menuStrip);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MainMenuStrip = this.menuStrip;
             this.Name = "CheckResultsForm";
+            this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Show;
             this.Text = "Check Results";
             this.menuStrip.ResumeLayout(false);
             this.menuStrip.PerformLayout();
             this.topPanel.ResumeLayout(false);
+            this.topPanel.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.checksDataGridView)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -199,5 +291,12 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn DescriptionColumn;
         private System.Windows.Forms.DataGridViewTextBoxColumn CountColumn;
         private System.Windows.Forms.DataGridViewButtonColumn ActionsColumn;
+        private System.Windows.Forms.Label bookFilterLabel;
+        private System.Windows.Forms.Button clearCheckFilterButton;
+        private System.Windows.Forms.Button bookFilterClearButton;
+        private System.Windows.Forms.Button selectBooksButton;
+        private System.Windows.Forms.TextBox bookFilterTextBox;
+        private System.Windows.Forms.TextBox filterTextBox;
+        private System.Windows.Forms.Label checkFilterLabel;
     }
 }

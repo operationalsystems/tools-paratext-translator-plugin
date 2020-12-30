@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using TvpMain.Check;
 using TvpMain.Import;
+using TvpMain.Project;
 using TvpMain.Text;
 using TvpMain.Util;
 using static TvpMain.Check.CheckAndFixItem;
@@ -21,6 +22,8 @@ namespace TvpMain.Forms
     /// </summary>
     public partial class CheckResultsForm : Form
     {
+        public const int SCOPE_NOT_APPLICABLE = -1;
+
         /// <summary>
         /// Lock for updating check results dictionary.
         /// </summary>
@@ -40,6 +43,16 @@ namespace TvpMain.Forms
         /// The Paratext plugin host.
         /// </summary>
         private IHost Host { get; set; }
+
+        /// <summary>
+        /// Active project name.
+        /// </summary>
+        private string ActiveProjectName { get; set; }
+
+        /// <summary>
+        /// Provides project setting & metadata access.
+        /// </summary>
+        private ProjectManager ProjectManager { get; set; }
 
         /// <summary>
         /// A collection of the <c>CheckAndFixItem</c>s to run against the content.
@@ -87,15 +100,26 @@ namespace TvpMain.Forms
         private readonly ProgressForm ProgressForm;
 
         /// <summary>
+        /// The list of selected books to check
+        /// </summary>
+        private BookNameItem[] SelectedBooks { get; set; }
+
+        /// <summary>
         /// The basic constructor.
         /// </summary>
         /// <param name="host">The Paratext Host object.</param>
+        /// <param name="activeProjectName">The name of the current project</param>
+        /// <param name="projectManager">The project manager, to get to book information</param>
+        /// <param name="selectedBooks">The selected books when the filter was run</param
         /// <param name="checksToRun">The list of checks to run against the content.</param>
         /// <param name="checkRunContext">The context of what Bible content we're checking against.</param>
         /// <param name="checkRunner">The <c>CheckAndFixRunner</c> that will execute the checks against supplied content.</param>
         /// <param name="importManager">The <c>ImportManager</c> used to read in the scripture text.</param>
         public CheckResultsForm(
             IHost host,
+            string activeProjectName,
+            ProjectManager projectManager,
+            BookNameItem[] selectedBooks,
             List<CheckAndFixItem> checksToRun,
             CheckRunContext checkRunContext,
             CheckAndFixRunner checkRunner,
@@ -103,6 +127,8 @@ namespace TvpMain.Forms
         {
             // validate inputs
             Host = host ?? throw new ArgumentNullException(nameof(host));
+            ActiveProjectName = activeProjectName ?? throw new ArgumentNullException(nameof(activeProjectName));
+            ProjectManager = projectManager ?? throw new ArgumentNullException(nameof(projectManager));
             ChecksToRun = checksToRun ?? throw new ArgumentNullException(nameof(checksToRun));
             CheckRunContext = checkRunContext ?? throw new ArgumentNullException(nameof(checkRunContext));
             CheckRunner = checkRunner ?? throw new ArgumentNullException(nameof(checkRunner));
@@ -110,12 +136,18 @@ namespace TvpMain.Forms
             CheckRunContext.Validate();
 
             ProgressForm = new ProgressForm();
+            ProgressForm.StartPosition = FormStartPosition.CenterParent;
             ProgressForm.Cancelled += OnProgressFormCancelled;
 
             CheckUpdated += OnCheckUpdated;
 
             // initialize the components
             InitializeComponent();
+
+            // set the default set of books, all of them
+            SelectedBooks = selectedBooks;
+            string selectedBooksString = BookSelection.stringFromSelectedBooks(SelectedBooks);
+            bookFilterTextBox.Text = selectedBooksString;
 
             // Enable the visibility of this form
             this.Show();
@@ -208,8 +240,8 @@ namespace TvpMain.Forms
                     }
                     catch (OperationCanceledException)
                     {
-                    // Ignore (can occur w/cancel).
-                }
+                        // Ignore (can occur w/cancel).
+                    }
                     catch (Exception ex)
                     {
                         var messageText =
@@ -250,14 +282,20 @@ namespace TvpMain.Forms
         /// <param name="content">The content to check against.</param>
         /// <param name="checksToRun">The list of checks to assess the content.</param>
         /// <param name="bcv">The current Book, Chapter, and Verse location (BCV).</param>
-        private void ExecuteChecksAndStoreResults(string content, List<CheckAndFixItem> checksToRun, string bcv)
+        private void ExecuteChecksAndStoreResults(string content, List<CheckAndFixItem> checksToRun, int book, int chapter, int verse)
         {
             // check the content with every specified check
             checksToRun.ForEach(check =>
             {
-                var results = CheckRunner.ExecCheckAndFix(content, check);
+                List<CheckResultItem> results = CheckRunner.ExecCheckAndFix(content, check);
 
-                // TODO set the BCV for each result
+                foreach(CheckResultItem item in results)
+                {
+
+                    item.Book = book;
+                    item.Chapter = chapter;
+                    item.Verse = verse;
+                }
 
                 lock (CheckResultslock)
                 {
@@ -354,7 +392,7 @@ namespace TvpMain.Forms
                                 chapterSb.AppendLine(verseText);
 
                                 // check the verse with verse checks
-                                ExecuteChecksAndStoreResults(verseText, ChecksByScope[CheckScope.VERSE], "TODO");
+                                ExecuteChecksAndStoreResults(verseText, ChecksByScope[CheckScope.VERSE], currBookNum, currChapterNum, currVerseNum);
                             }
                             catch (ArgumentException)
                             {
@@ -366,12 +404,12 @@ namespace TvpMain.Forms
                         }
 
                         // check the chapter with chapter checks
-                        ExecuteChecksAndStoreResults(chapterSb.ToString(), ChecksByScope[CheckScope.CHAPTER], "TODO");
+                        ExecuteChecksAndStoreResults(chapterSb.ToString(), ChecksByScope[CheckScope.CHAPTER], currBookNum, currChapterNum, SCOPE_NOT_APPLICABLE);
                     }
 
                     // check the book with book checks
-                    ExecuteChecksAndStoreResults(bookSb.ToString(), ChecksByScope[CheckScope.BOOK], "TODO");
-                    ExecuteChecksAndStoreResults(projectSb.ToString(), ChecksByScope[CheckScope.PROJECT], "TODO");
+                    ExecuteChecksAndStoreResults(bookSb.ToString(), ChecksByScope[CheckScope.BOOK], currBookNum, SCOPE_NOT_APPLICABLE, SCOPE_NOT_APPLICABLE);
+                    ExecuteChecksAndStoreResults(projectSb.ToString(), ChecksByScope[CheckScope.PROJECT], SCOPE_NOT_APPLICABLE, SCOPE_NOT_APPLICABLE, SCOPE_NOT_APPLICABLE);
 
                     OnCheckUpdated(inputBookNum);
                 }
@@ -405,16 +443,61 @@ namespace TvpMain.Forms
         /// </summary>
         protected void PopulateChecksDataGridView()
         {
+            checksDataGridView.Rows.Clear();
+
             foreach (KeyValuePair<CheckAndFixItem, List<CheckResultItem>> result in CheckResults)
             {
-                checksDataGridView.Rows.Add(new object[] {
-                    false,                                      // selected
-                    result.Key.Name.Trim(),                     // category
-                    result.Key.Description.Trim(),              // description
-                    result.Value.Count                          // count
-                });
+                if (IfCheckFixItemIsNotFiltered(result.Key))
+                {
+                    List<CheckResultItem> filteredResultItems = FilterResults(result.Value);
+
+                    checksDataGridView.Rows.Add(new object[] {
+                        false,                                      // selected
+                        result.Key.Name.Trim(),                     // category
+                        result.Key.Description.Trim(),              // description
+                        filteredResultItems.Count                   // count
+                    });
+                }
             }
 
+        }
+
+        /// <summary>
+        /// Checks if the text filter matches anything in the name or description of the checkFixItem
+        /// </summary>
+        /// <param name="checkAndFixItem">The item to be checked for matches</param>
+        /// <returns>If the item has a match and is not filtered out</returns>
+        private bool IfCheckFixItemIsNotFiltered(CheckAndFixItem checkAndFixItem)
+        {
+            if(String.IsNullOrEmpty(filterTextBox.Text)) {
+                return true;
+            }
+            return checkAndFixItem.Name.IndexOf(filterTextBox.Text, StringComparison.OrdinalIgnoreCase) >= 0 ||
+                checkAndFixItem.Description.IndexOf(filterTextBox.Text, StringComparison.OrdinalIgnoreCase) >= 0;
+        }
+
+        /// <summary>
+        /// Checks the given result items to see if the result is from one of the selected books
+        /// </summary>
+        /// <param name="results">The results to review</param>
+        /// <returns>A filtered set of results that match for the selected books</returns>
+        protected List<CheckResultItem> FilterResults(List<CheckResultItem> results)
+        {
+            List<CheckResultItem> filteredItems = new List<CheckResultItem>();
+
+            foreach ( CheckResultItem item in results)
+            {
+                foreach(BookNameItem bookNameItem in SelectedBooks)
+                {
+                    if(bookNameItem.BookNum == item.Book)
+                    {
+                        filteredItems.Add(item);
+                        continue;
+                    }
+                }
+            }
+
+            return filteredItems;
         }
 
         /// <summary>
@@ -487,6 +570,66 @@ namespace TvpMain.Forms
         private void LicenseToolStripMenuItem_Click(object sender, EventArgs e)
         {
             FormUtil.StartLicenseForm();
+        }
+
+        /// <summary>
+        /// When we want to clear the check filter
+        /// </summary>
+        /// <param name="sender">The control that sent this event</param>
+        /// <param name="e">The event information that triggered this call</param>
+        private void clearCheckFilterButton_Click(object sender, EventArgs e)
+        {
+            filterTextBox.Text = "";
+            PopulateChecksDataGridView();
+        }
+
+        /// <summary>
+        /// Set the books filter back to ALL
+        /// </summary>
+        /// <param name="sender">The control that sent this event</param>
+        /// <param name="e">The event information that triggered this call</param>
+        private void bookFilterClearButton_Click(object sender, EventArgs e)
+        {
+            // set the default set of books, all of them
+            SelectedBooks = ProjectManager.BookNamesByNum.Values.ToArray();
+            string selectedBooksString = BookSelection.stringFromSelectedBooks(SelectedBooks);
+            bookFilterTextBox.Text = selectedBooksString;
+            PopulateChecksDataGridView();
+        }
+
+        /// <summary>
+        /// Select, for filtering, a set of books
+        /// </summary>
+        /// <param name="sender">The control that sent this event</param>
+        /// <param name="e">The event information that triggered this call</param>
+        private void selectBooksButton_Click(object sender, EventArgs e)
+        {
+            // bring up book selection dialog, use current selection to initialize
+            using (var form = new BookSelection(ProjectManager, SelectedBooks))
+            {
+                form.StartPosition = FormStartPosition.CenterParent;
+
+                var result = form.ShowDialog();
+                if (result == DialogResult.OK)
+                {
+                    // update which books were selected
+                    SelectedBooks = form.GetSelected();
+                    string selectedBooksString = BookSelection.stringFromSelectedBooks(SelectedBooks);
+                    bookFilterTextBox.Text = selectedBooksString;
+
+                    PopulateChecksDataGridView();
+                }
+            }
+        }
+
+        /// <summary>
+        /// When the filter text changes, trigger filtering
+        /// </summary>
+        /// <param name="sender">The control that sent this event</param>
+        /// <param name="e">The event information that triggered this call</param>
+        private void filterTextBox_TextChanged(object sender, EventArgs e)
+        {
+            PopulateChecksDataGridView();
         }
     }
 }

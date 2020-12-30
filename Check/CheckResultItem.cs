@@ -68,6 +68,29 @@ namespace TvpMain.Check
         public ResultState ResultState { get; set; }
 
         /// <summary>
+        /// The project name for where the check result was found.
+        /// </summary>
+        public string ProjectName { get; set; }
+
+        /// <summary>
+        /// The book number, 1-based index where the check result refers.
+        /// For checks that have project scope, this value will be -1.
+        /// </summary>
+        public int Book { get; set; }
+
+        /// <summary>
+        /// The chapter number, 1-based index where the check result refers.
+        /// For checks that have project or book scope, this value will be -1.
+        /// </summary>
+        public int Chapter { get; set; }
+
+        /// <summary>
+        /// The verse number, 1-based index wehere the check result refers.
+        /// For checks that do not have verse scope, this value will be -1.
+        /// </summary>
+        public int Verse { get; set; }
+
+        /// <summary>
         /// Basic ctor.
         /// </summary>
         /// <param name="description">Description text (required).</param>
@@ -125,6 +148,37 @@ namespace TvpMain.Check
             this.CheckType = checkType;
             this.ResultTypeCode = resultTypeCode;
             this.ResultState = resultState;
+        }
+
+        /// <summary>
+        /// Constructor that allows for passing in optional infomartion about where the 
+        /// result was found by projectname, book, chapter, verse
+        /// </summary>
+        /// <param name="description">Description text (required).</param>
+        /// <param name="matchText">Match text (required).</param>
+        /// <param name="matchStart">Start of match text, relative to verse start (0-based).</param>
+        /// <param name="checkType">Check type (i.e., source).</param>
+        /// <param name="resultTypeCode">Result type code (i.e., a discrete error sub-type).</param>
+        /// <param name="projectName">The project name for where the check result was found.</param>
+        /// <param name="book">The project name for where the check result was found.</param>
+        /// <param name="chapter">The project name for where the check result was found.</param>
+        /// <param name="verse">The project name for where the check result was found.</param>
+        public CheckResultItem(string description,
+            string matchText, int matchStart, CheckType checkType,
+            int resultTypeCode,
+            string projectName = "",
+            int book = -1,
+            int chapter = -1,
+            int verse = -1)
+        : this(description,
+            matchText, matchStart,
+            "", checkType,
+            resultTypeCode, ResultState.Found)
+        {
+            ProjectName = projectName;
+            Book = book;
+            Chapter = chapter;
+            Verse = verse;
         }
 
         /// <summary>
