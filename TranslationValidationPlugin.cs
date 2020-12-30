@@ -107,6 +107,9 @@ namespace TvpMain
         {
             [MainConsts.CHECK_SETTINGS_DATA_ID] = new PluginDataFileMergeInfo(
                 new MergeLevel("DefaultCheckIds", ".")
+            ),
+            [MainConsts.DENIED_RESULTS_DATA_ID] = new PluginDataFileMergeInfo(
+                new MergeLevel("ArrayOfInt", ".")
             )
         };
 
