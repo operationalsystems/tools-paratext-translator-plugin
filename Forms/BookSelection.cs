@@ -1,11 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
-using System.Drawing;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using TvpMain.Project;
 
@@ -47,7 +42,8 @@ namespace TvpMain.Forms
 
             bookList.Items.AddRange(projectManager.BookNamesByNum.Values.ToArray());
 
-            foreach( BookNameItem bookNameItem in selectedBooks) {
+            foreach (BookNameItem bookNameItem in selectedBooks)
+            {
                 int idx = bookList.FindString(bookNameItem.ToString());
                 bookList.SetSelected(idx, true);
             }
@@ -57,10 +53,11 @@ namespace TvpMain.Forms
         /// Get the list of the selected books
         /// </summary>
         /// <returns>The list of selected books by <see cref="BookNameItem"/></returns>
-        public BookNameItem[] GetSelected() {
-            
+        public BookNameItem[] GetSelected()
+        {
+
             return bookList.SelectedItems.Cast<BookNameItem>().ToArray();
-        }  
+        }
 
         /// <summary>
         /// Default constructor
@@ -77,7 +74,7 @@ namespace TvpMain.Forms
         /// <param name="e">The event information that triggered this call</param>
         private void allBooksButton_Click(object sender, EventArgs e)
         {
-            for( int i = 0; i < bookList.Items.Count; i++)
+            for (int i = 0; i < bookList.Items.Count; i++)
             {
                 bookList.SetSelected(i, true);
             }

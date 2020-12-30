@@ -1,7 +1,6 @@
 ﻿using AddInSideViews;
 using Newtonsoft.Json;
 using Paratext.Data;
-using Paratext.Data.Users;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -356,8 +355,9 @@ namespace TvpMain.Util
             using Stream reader = new FileStream(Path.Combine(fileManager.ProjectDir.FullName, "ProjectUserAccess.xml"), FileMode.Open);
             ProjectUserAccess projectUserAccess = ProjectUserAccess.LoadFromXML(reader);
 
-            foreach( User user in projectUserAccess.Users) { 
-                if( user.UserName.Equals(_host.UserName) && user.Role.Equals(ADMIN_ROLE))
+            foreach (User user in projectUserAccess.Users)
+            {
+                if (user.UserName.Equals(_host.UserName) && user.Role.Equals(ADMIN_ROLE))
                 {
                     // Bail as soon as we find a match
                     return true;

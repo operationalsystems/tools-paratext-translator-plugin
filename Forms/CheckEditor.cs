@@ -2,11 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
-using System.Drawing;
-using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using TvpMain.Check;
 using TvpMain.CheckManagement;
@@ -58,7 +54,7 @@ namespace TvpMain.Forms
         private void newToolStripMenuItem_Click(object sender, EventArgs e)
         {
             // prevent overwriting changes unless explicit
-            if(_dirty)
+            if (_dirty)
             {
                 DialogResult dialogResult = MessageBox.Show("You have unsaved changes, are you sure you wish to proceed?", "Verify", MessageBoxButtons.YesNo);
 
@@ -110,7 +106,7 @@ namespace TvpMain.Forms
             {
                 updateCheckAndFix();
 
-                if(String.IsNullOrEmpty(_checkAndFixItem.Name.Trim()) ||
+                if (String.IsNullOrEmpty(_checkAndFixItem.Name.Trim()) ||
                     String.IsNullOrEmpty(_checkAndFixItem.Version.Trim()) ||
                     String.IsNullOrEmpty(_checkAndFixItem.DefaultItemDescription.Trim()) ||
                     (String.IsNullOrEmpty(_checkAndFixItem.CheckRegex.Trim()) && String.IsNullOrEmpty(_checkAndFixItem.CheckScript.Trim()))
@@ -143,7 +139,8 @@ namespace TvpMain.Forms
                 {
                     this.Close();
                 }
-            } else
+            }
+            else
             {
                 this.Close();
             }
@@ -221,7 +218,7 @@ namespace TvpMain.Forms
             scopeCombo.SelectedItem = _checkAndFixItem.Scope.ToString();
             defaultDescTextBox.Text = _checkAndFixItem.DefaultItemDescription ?? "";
             languagesTextBox.Text = _checkAndFixItem.Languages == null ? "" : string.Join(", ", _checkAndFixItem.Languages);
-            tagsTextBox.Text = _checkAndFixItem.Tags == null ? "" :string.Join(", ", _checkAndFixItem.Tags);
+            tagsTextBox.Text = _checkAndFixItem.Tags == null ? "" : string.Join(", ", _checkAndFixItem.Tags);
             descriptionTextBox.Text = _checkAndFixItem.Description;
 
             checkFindRegExTextBox.Text = _checkAndFixItem.CheckRegex ?? "";
@@ -252,7 +249,8 @@ namespace TvpMain.Forms
                 _checkAndFixItem.CheckRegex = checkFindRegExTextBox.Text;
                 _checkAndFixItem.FixRegex = fixRegExTextBox.Text;
                 _checkAndFixItem.CheckScript = scriptTextBox.Text;
-            } catch
+            }
+            catch
             {
                 MessageBox.Show("Name, Version, Default Description, and either the Check Regex or the Check Script, must be entered.",
                         "Warning", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -381,7 +379,7 @@ namespace TvpMain.Forms
         private void tagsTextBox_MouseEnter(object sender, EventArgs e)
         {
             helpTextBox.Clear();
-            helpTextBox.AppendText( "Enter Tags associated with this check/fix. Separate tags by comma." + Environment.NewLine);
+            helpTextBox.AppendText("Enter Tags associated with this check/fix. Separate tags by comma." + Environment.NewLine);
             helpTextBox.AppendText("Currently supported tags: RTL = right to left only languages.");
         }
 

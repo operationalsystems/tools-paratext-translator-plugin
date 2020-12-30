@@ -2,12 +2,9 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Data;
 using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using TvpMain.Check;
 using TvpMain.CheckManagement;
@@ -177,7 +174,8 @@ namespace TvpMain.Forms
         /// <param name="e">The event information that triggered this call</param>
         private void loadingWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
-            checksList.Invoke(new MethodInvoker(delegate { 
+            checksList.Invoke(new MethodInvoker(delegate
+            {
                 this.updateDisplayItems();
                 this.updateDisplayGrid();
             }));
@@ -543,7 +541,7 @@ namespace TvpMain.Forms
                 DisplayItem item = (DisplayItem)checksList.Rows[e.RowIndex].Tag;
                 if (item.Active)
                 {
-                    DataGridViewCheckBoxCell cell = (DataGridViewCheckBoxCell) checksList.Rows[e.RowIndex].Cells[0];
+                    DataGridViewCheckBoxCell cell = (DataGridViewCheckBoxCell)checksList.Rows[e.RowIndex].Cells[0];
                     cell.Value = !(bool)cell.Value;
                     item.Selected = !item.Selected;
                 }

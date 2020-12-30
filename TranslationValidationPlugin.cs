@@ -113,11 +113,12 @@ namespace TvpMain
         /// <summary>
         /// Data file key spec accessor.
         /// </summary>
-        public Dictionary<string, IPluginDataFileMergeInfo> DataFileKeySpecifications { 
+        public Dictionary<string, IPluginDataFileMergeInfo> DataFileKeySpecifications
+        {
             get
             {
-                return _dataFileKeySpecifications; 
-            } 
+                return _dataFileKeySpecifications;
+            }
         }
     }
 }
