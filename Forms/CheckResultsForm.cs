@@ -114,7 +114,7 @@ namespace TvpMain.Forms
         }
 
         /// <summary>
-        /// This method handles a click event on the "Deny" button.
+        /// This method handles a click event on the "Deny"/"Un-Deny" button.
         /// </summary>
         /// <param name="sender">The "Deny" button</param>
         /// <param name="e">The event information</param>
