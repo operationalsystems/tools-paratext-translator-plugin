@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Windows.Forms;
+using TvpMain.Check;
 
 namespace TvpMain.Forms
 {
@@ -9,6 +11,13 @@ namespace TvpMain.Forms
     /// </summary>
     public partial class CheckResultsForm : Form
     {
+        // Deny Button Text
+        readonly string DENY_BUTTON = "Deny";
+        readonly string UNDENY_BUTTON = "Un-Deny";
+
+        // A list of <c>CheckResultItem</c>s which have been denied
+        private List<int> _denied { get; set; }
+
         // Whether to show results which have been denied
         private bool _showDenied = false;
 
@@ -18,6 +27,52 @@ namespace TvpMain.Forms
         public CheckResultsForm()
         {
             InitializeComponent();
+
+            LoadDeniedResults();
+            UpdateDenyButton();
+        }
+
+        /// <summary>
+        /// This method updates the text and state of the "Deny" button depending on what (if any) <c>CheckResultItem</c> is selected.
+        /// </summary>
+        private void UpdateDenyButton()
+        {
+            CheckResultItem selectedResult = GetSelectedResult();
+            if (selectedResult != null)
+            {
+                Deny.Text = _denied.Contains(selectedResult.GetHashCode()) ? UNDENY_BUTTON : DENY_BUTTON;
+                Deny.Enabled = true;
+            }
+            else
+            {
+                Deny.Text = DENY_BUTTON;
+                Deny.Enabled = false;
+            }
+        }
+
+        /// <summary>
+        /// This method gets the currently-selected <c>CheckResultItem</c>.
+        /// </summary>
+        /// <returns></returns>
+        private CheckResultItem GetSelectedResult()
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// This method loads the denied <c>CheckResultItem</c>s from the project.
+        /// </summary>
+        private void LoadDeniedResults()
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// This method saves the denied <c>CheckResultItem</c>s to the project.
+        /// </summary>
+        private void SaveDeniedResults()
+        {
+            throw new NotImplementedException();
         }
 
         /// <summary>
@@ -45,7 +100,20 @@ namespace TvpMain.Forms
         /// <param name="e">The event information</param>
         private void Deny_Click(object sender, EventArgs e)
         {
+            CheckResultItem selectedResult = GetSelectedResult();
+            if (selectedResult == null) return;
 
+            int selectedResultHashCode = selectedResult.GetHashCode();
+            if (_denied.Contains(selectedResultHashCode))
+            {
+                _denied.Remove(selectedResultHashCode);
+            }
+            else
+            {
+                _denied.Add(selectedResultHashCode);
+            }
+
+            SaveDeniedResults();
         }
 
         /// <summary>
