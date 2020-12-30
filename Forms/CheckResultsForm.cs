@@ -76,7 +76,8 @@ namespace TvpMain.Forms
         /// <returns></returns>
         private CheckResultItem GetSelectedResult()
         {
-            throw new NotImplementedException();
+            //throw new NotImplementedException();
+            return new CheckResultItem("result", "result", 1, CheckType.ScriptureReference, 0);
         }
 
         /// <summary>
@@ -133,6 +134,7 @@ namespace TvpMain.Forms
                 _denied.Add(selectedResultHashCode);
             }
 
+            UpdateDenyButton();
             SaveDeniedResults();
         }
 
