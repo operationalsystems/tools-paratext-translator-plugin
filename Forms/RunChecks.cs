@@ -355,7 +355,7 @@ namespace TvpMain.Forms
         /// <param name="e">The event information that triggered this call</param>
         private void runChecksButton_Click(object sender, EventArgs e)
         {
-            CheckResultsForm resultsForm = new CheckResultsForm();
+            CheckResultsForm resultsForm = new CheckResultsForm(_host, _activeProjectName);
             resultsForm.Show();
         }
 

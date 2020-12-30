@@ -1,4 +1,5 @@
-﻿using System;
+﻿using AddInSideViews;
+using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
 using TvpMain.Check;
@@ -16,17 +17,36 @@ namespace TvpMain.Forms
         readonly string UNDENY_BUTTON = "Un-Deny";
 
         // A list of <c>CheckResultItem</c>s which have been denied
-        private List<int> _denied { get; set; }
+        private List<int> _denied;
 
         // Whether to show results which have been denied
         private bool _showDenied = false;
 
         /// <summary>
-        /// Default contstructor
+        /// Paratext host interface.
         /// </summary>
-        public CheckResultsForm()
+        private readonly IHost _host;
+
+        /// <summary>
+        /// Active project name.
+        /// </summary>
+        private string _activeProjectName;
+
+        /// <summary>
+        /// This form displays information about the checks which have been run against a project
+        /// as well as options for viewing and fixing any found errors.
+        /// </summary>
+        /// <param name="host">This is the iHost instance, the interface class to the Paratext Plugin API</param>
+        /// <param name="activeProjectName">The current project. Right now this is fixed, but maybe in the future this can be dynamically selected.</param>
+        public CheckResultsForm(IHost host, string activeProjectName)
         {
             InitializeComponent();
+            _host = host ?? throw new ArgumentNullException(nameof(host));
+            if (activeProjectName == null || activeProjectName.Length < 1)
+            {
+                throw new ArgumentNullException(nameof(activeProjectName));
+            }
+            _activeProjectName = activeProjectName;
 
             LoadDeniedResults();
             UpdateDenyButton();
@@ -64,7 +84,7 @@ namespace TvpMain.Forms
         /// </summary>
         private void LoadDeniedResults()
         {
-            throw new NotImplementedException();
+            _denied = Util.HostUtil.Instance.GetProjectDeniedResults(_activeProjectName);
         }
 
         /// <summary>
@@ -72,7 +92,7 @@ namespace TvpMain.Forms
         /// </summary>
         private void SaveDeniedResults()
         {
-            throw new NotImplementedException();
+            Util.HostUtil.Instance.PutProjectDeniedResults(_activeProjectName, _denied);
         }
 
         /// <summary>

@@ -29,21 +29,21 @@
         private void InitializeComponent()
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(CheckResultsForm));
-            this.Close = new System.Windows.Forms.Button();
+            this.CloseButton = new System.Windows.Forms.Button();
             this.Deny = new System.Windows.Forms.Button();
             this.ShowDenied = new System.Windows.Forms.CheckBox();
             this.SuspendLayout();
             // 
-            // Close
+            // CloseButton
             // 
-            this.Close.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.Close.Location = new System.Drawing.Point(1179, 599);
-            this.Close.Name = "Close";
-            this.Close.Size = new System.Drawing.Size(75, 23);
-            this.Close.TabIndex = 0;
-            this.Close.Text = "Close";
-            this.Close.UseVisualStyleBackColor = true;
-            this.Close.Click += new System.EventHandler(this.Close_Click);
+            this.CloseButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
+            this.CloseButton.Location = new System.Drawing.Point(1179, 599);
+            this.CloseButton.Name = "CloseButton";
+            this.CloseButton.Size = new System.Drawing.Size(75, 23);
+            this.CloseButton.TabIndex = 0;
+            this.CloseButton.Text = "Close";
+            this.CloseButton.UseVisualStyleBackColor = true;
+            this.CloseButton.Click += new System.EventHandler(this.Close_Click);
             // 
             // Deny
             // 
@@ -72,11 +72,11 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.CancelButton = this.Close;
+            this.CancelButton = this.CloseButton;
             this.ClientSize = new System.Drawing.Size(1266, 634);
             this.Controls.Add(this.ShowDenied);
             this.Controls.Add(this.Deny);
-            this.Controls.Add(this.Close);
+            this.Controls.Add(this.CloseButton);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "CheckResultsForm";
             this.Text = "Check Results";
@@ -87,7 +87,7 @@
 
         #endregion
 
-        private System.Windows.Forms.Button Close;
+        private System.Windows.Forms.Button CloseButton;
         private System.Windows.Forms.Button Deny;
         private System.Windows.Forms.CheckBox ShowDenied;
     }

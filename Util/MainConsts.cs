@@ -65,6 +65,11 @@ namespace TvpMain.Util
         public const string CHECK_SETTINGS_DATA_ID = "CheckSettings.xml";
 
         /// <summary>
+        /// The settings file for each project's denied results
+        /// </summary>
+        public const string DENIED_RESULTS_DATA_ID = "DeniedResults.xml";
+
+        /// <summary>
         /// Update rate for progress form and similar loops.
         /// </summary>
         public const int CHECK_EVENTS_UPDATE_RATE_IN_FPS = 10;
