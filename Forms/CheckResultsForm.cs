@@ -1,5 +1,6 @@
 ﻿using AddInSideViews;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
@@ -22,6 +23,14 @@ namespace TvpMain.Forms
     /// </summary>
     public partial class CheckResultsForm : Form
     {
+        /// <summary>
+        /// This index indicates to the progress form that the project scope checks are being run.
+        /// </summary>
+        public const int ALL_PROJECTS_INDEX = -1;
+
+        /// <summary>
+        /// This index indicates a scope for BCV is not applicable.
+        /// </summary>
         public const int SCOPE_NOT_APPLICABLE = -1;
 
         /// <summary>
@@ -90,6 +99,11 @@ namespace TvpMain.Forms
         Dictionary<CheckAndFixItem, List<CheckResultItem>> CheckResults { get; set; } = new Dictionary<CheckAndFixItem, List<CheckResultItem>>();
 
         /// <summary>
+        /// The collection for holding project content in the correct book order.
+        /// </summary>
+        ConcurrentDictionary<int, StringBuilder> ProjectSb { get; set; } = new ConcurrentDictionary<int, StringBuilder>();
+
+        /// <summary>
         /// Check updated event handler.
         /// </summary>
         public event EventHandler<CheckUpdatedArgs> CheckUpdated;
@@ -103,6 +117,8 @@ namespace TvpMain.Forms
         /// The list of selected books to check
         /// </summary>
         private BookNameItem[] SelectedBooks { get; set; }
+
+
 
         /// <summary>
         /// The basic constructor.
@@ -169,9 +185,10 @@ namespace TvpMain.Forms
         {
             lock (CheckResultslock)
             {
+                // we increased the max number of books to account for the project. We pass -1 as the book num to represent the project.
                 RunBookCtr++;
                 CheckUpdated?.Invoke(this,
-                    new CheckUpdatedArgs(CheckRunContext.Books.Count(), RunBookCtr, updateBookNum));
+                    new CheckUpdatedArgs(CheckRunContext.Books.Count() + 1, RunBookCtr, updateBookNum));
             }
         }
 
@@ -260,12 +277,25 @@ namespace TvpMain.Forms
                 {
                     Application.DoEvents();
                     Thread.Sleep(MainConsts.CHECK_EVENTS_DELAY_IN_MSEC);
+
+                    if (RunCancellationTokenSource.IsCancellationRequested)
+                    {
+                        return;
+                    }
                 }
 
-                if (RunCancellationTokenSource.IsCancellationRequested)
+                // once all the books are checked, let's check the accumulated project content (ordered by book).
+                var sortedKeys = ProjectSb.Keys.ToList();
+                sortedKeys.Sort();
+
+                var finalSb = new StringBuilder();
+                foreach (var key in sortedKeys)
                 {
-                    return;
+                    finalSb.Append(ProjectSb[key].ToString());
                 }
+
+                ExecuteChecksAndStoreResults(finalSb.ToString(), ChecksByScope[CheckScope.PROJECT], SCOPE_NOT_APPLICABLE, SCOPE_NOT_APPLICABLE, SCOPE_NOT_APPLICABLE);
+                OnCheckUpdated(ALL_PROJECTS_INDEX);
             }
             finally
             {
@@ -281,7 +311,9 @@ namespace TvpMain.Forms
         /// </summary>
         /// <param name="content">The content to check against.</param>
         /// <param name="checksToRun">The list of checks to assess the content.</param>
-        /// <param name="bcv">The current Book, Chapter, and Verse location (BCV).</param>
+        /// <param name="book">The current book (1-based).</param>
+        /// <param name="chapter">The current chapter (1-based).</param>
+        /// <param name="verse">The current verse (1-based).</param>
         private void ExecuteChecksAndStoreResults(string content, List<CheckAndFixItem> checksToRun, int book, int chapter, int verse)
         {
             // check the content with every specified check
@@ -291,7 +323,6 @@ namespace TvpMain.Forms
 
                 foreach(CheckResultItem item in results)
                 {
-
                     item.Book = book;
                     item.Chapter = chapter;
                     item.Verse = verse;
@@ -324,7 +355,10 @@ namespace TvpMain.Forms
                 // wait to get started
                 RunSemaphore.Wait();
 
-                var projectSb = new StringBuilder();
+                if (!ProjectSb.TryAdd(inputBookNum, new StringBuilder()))
+                {
+                    throw new ArgumentException($"There's already an entry for book {inputBookNum} in {nameof(ProjectSb)}");
+                }
                 var bookSb = new StringBuilder();
 
                 // track where we are for error reporting
@@ -387,7 +421,7 @@ namespace TvpMain.Forms
                                 var verseData = new ProjectVerse(verseLocation, verseText);
 
                                 // build the scoped strings
-                                projectSb.AppendLine(verseText);
+                                ProjectSb[inputBookNum].AppendLine(verseText);
                                 bookSb.AppendLine(verseText);
                                 chapterSb.AppendLine(verseText);
 
@@ -409,7 +443,6 @@ namespace TvpMain.Forms
 
                     // check the book with book checks
                     ExecuteChecksAndStoreResults(bookSb.ToString(), ChecksByScope[CheckScope.BOOK], currBookNum, SCOPE_NOT_APPLICABLE, SCOPE_NOT_APPLICABLE);
-                    ExecuteChecksAndStoreResults(projectSb.ToString(), ChecksByScope[CheckScope.PROJECT], SCOPE_NOT_APPLICABLE, SCOPE_NOT_APPLICABLE, SCOPE_NOT_APPLICABLE);
 
                     OnCheckUpdated(inputBookNum);
                 }
