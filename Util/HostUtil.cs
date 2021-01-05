@@ -402,7 +402,7 @@ namespace TvpMain.Util
             var versificationName = _host.GetProjectVersificationName(projectName);
             var bbbcccvvvReference = BookUtil.BcvToRef(book, chapter, verse);
             // Not yet available in latest version
-            // _host.GotoReference(bbbcccvvvReference, versificationName, projectName);
+            _host.GotoReference(bbbcccvvvReference, versificationName, projectName);
         }
     }
 }

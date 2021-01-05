@@ -3,6 +3,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Data;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -118,8 +119,6 @@ namespace TvpMain.Forms
         /// </summary>
         private BookNameItem[] SelectedBooks { get; set; }
 
-
-
         /// <summary>
         /// The basic constructor.
         /// </summary>
@@ -151,22 +150,21 @@ namespace TvpMain.Forms
             ImportManager = importManager ?? throw new ArgumentNullException(nameof(importManager));
             CheckRunContext.Validate();
 
+            // initialize the components
+            InitializeComponent();
+
+            BringToFront();
+
             ProgressForm = new ProgressForm();
             ProgressForm.StartPosition = FormStartPosition.CenterParent;
             ProgressForm.Cancelled += OnProgressFormCancelled;
 
             CheckUpdated += OnCheckUpdated;
 
-            // initialize the components
-            InitializeComponent();
-
             // set the default set of books, all of them
             SelectedBooks = selectedBooks;
             string selectedBooksString = BookSelection.stringFromSelectedBooks(SelectedBooks);
             bookFilterTextBox.Text = selectedBooksString;
-
-            // Enable the visibility of this form
-            this.Show();
         }
 
         /// <summary>
@@ -216,6 +214,9 @@ namespace TvpMain.Forms
                 return;
             }
 
+            // Show the progress bar as we kick off our work.
+            ShowProgress();
+
             // clear the previous results
             CheckResults.Clear();
 
@@ -246,8 +247,6 @@ namespace TvpMain.Forms
 
             try
             {
-                // Show the progress bar as we kick off our work.
-                ShowProgress();
 
                 var workThread = new Thread(() =>
                 {
@@ -326,6 +325,7 @@ namespace TvpMain.Forms
                     item.Book = book;
                     item.Chapter = chapter;
                     item.Verse = verse;
+                    item.Reference = content;
                 }
 
                 lock (CheckResultslock)
@@ -484,15 +484,20 @@ namespace TvpMain.Forms
                 {
                     List<CheckResultItem> filteredResultItems = FilterResults(result.Value);
 
-                    checksDataGridView.Rows.Add(new object[] {
+                    int rowIndex = checksDataGridView.Rows.Add(new object[] {
                         false,                                      // selected
                         result.Key.Name.Trim(),                     // category
                         result.Key.Description.Trim(),              // description
                         filteredResultItems.Count                   // count
                     });
+                    checksDataGridView.Rows[rowIndex].Tag = result;
                 }
             }
-
+            if(checksDataGridView.CurrentRow == null && checksDataGridView.Rows != null && checksDataGridView.Rows.Count > 0 && checksDataGridView.Rows[0] != null)
+            {
+                checksDataGridView.Rows[0].Selected = true;
+            }
+            PopulateIssuesDataGridView();
         }
 
         /// <summary>
@@ -663,6 +668,197 @@ namespace TvpMain.Forms
         private void filterTextBox_TextChanged(object sender, EventArgs e)
         {
             PopulateChecksDataGridView();
+        }
+
+        /// <summary>
+        /// Update the list of issues in the issue list on click of a data grid view cell
+        /// </summary>
+        /// <param name="sender">The control that sent this event</param>
+        /// <param name="e">The event information that triggered this call</param>
+        private void checksDataGridView_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+            PopulateIssuesDataGridView();
+        }
+
+        /// <summary>
+        /// When the selectionon this item changes, update the dependant list
+        /// </summary>
+        /// <param name="sender">The control that sent this event</param>
+        /// <param name="e">The event information that triggered this call</param>
+        private void checksDataGridView_SelectionChanged(object sender, EventArgs e)
+        {
+            PopulateIssuesDataGridView();
+        }
+
+        /// <summary>
+        /// Update the list of issues in the issues list
+        /// </summary>
+        private void PopulateIssuesDataGridView()
+        {
+            // update list of issues
+            if (checksDataGridView.CurrentRow != null && checksDataGridView.CurrentRow.Tag != null)
+            {
+                KeyValuePair<CheckAndFixItem, List<CheckResultItem>> result = (KeyValuePair<CheckAndFixItem, List<CheckResultItem>>)checksDataGridView.CurrentRow.Tag;
+
+                issuesDataGridView.Rows.Clear();
+
+                foreach (CheckResultItem item in result.Value)
+                {
+                    var verseLocation = new VerseLocation(item.Book, item.Chapter, item.Verse);
+
+                    // filter if this should be shown because it's ignored
+                    int rowIndex = issuesDataGridView.Rows.Add(new object[]
+                    {
+                        verseLocation.toString(),
+                        item.MatchText
+                    });
+                    issuesDataGridView.Rows[rowIndex].Tag = item;
+                }
+
+                if (issuesDataGridView.Rows != null && issuesDataGridView.Rows.Count > 0 && issuesDataGridView.Rows[0] != null)
+                {
+                    issuesDataGridView.Rows[0].Selected = true;
+                }
+                PopulateMatchFixTexBoxes();
+            }
+        }
+
+        /// <summary>
+        /// When selection changes, another way to get there
+        /// </summary>
+        /// <param name="sender">The control that sent this event</param>
+        /// <param name="e">The event information that triggered this call</param>
+        private void issuesDataGridView_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+            // update match/fix text boxes
+            PopulateMatchFixTexBoxes();
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender">The control that sent this event</param>
+        /// <param name="e">The event information that triggered this call</param>
+        private void issuesDataGridView_CellContentDoubleClick(object sender, DataGridViewCellEventArgs e)
+        {
+            if (issuesDataGridView.Rows != null && issuesDataGridView.Rows.Count > 0 && issuesDataGridView.CurrentRow != null && issuesDataGridView.CurrentRow.Tag != null)
+            {
+                var item = (CheckResultItem)issuesDataGridView.CurrentRow.Tag;
+
+                // navigate project to BCV
+                HostUtil.Instance.GotoBcvInGui(ActiveProjectName, item.Book, item.Chapter, item.Verse);
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender">The control that sent this event</param>
+        /// <param name="e">The event information that triggered this call</param>
+        private void issuesDataGridView_SelectionChanged(object sender, EventArgs e)
+        {
+            // update match/fix text boxes
+            PopulateMatchFixTexBoxes();
+        }
+
+        /// <summary>
+        /// Fill in the match/fix text boxes based on current selections
+        /// </summary>
+        private void PopulateMatchFixTexBoxes()
+        {
+            if(issuesDataGridView.Rows != null && issuesDataGridView.Rows.Count > 0 && issuesDataGridView.CurrentRow != null && issuesDataGridView.CurrentRow.Tag != null)
+            {
+                var item = (CheckResultItem)issuesDataGridView.CurrentRow.Tag;
+
+                if(item != null)
+                {
+                    // update match text
+                    matchTextBox.Text = item.Reference;
+
+                    matchTextBox.SelectAll();
+                    matchTextBox.SelectionBackColor = Color.White;
+
+                    matchTextBox.SelectionStart = MinusPrecedingChars(
+                       item.Reference,
+                       item.MatchStart,
+                       '\r');
+                    matchTextBox.SelectionLength = item.MatchLength;
+                    matchTextBox.SelectionBackColor = Color.Yellow;
+                    matchTextBox.ScrollToCaret();
+
+                    matchTextBox.Refresh();
+
+                    // update fix text
+                    if (!String.IsNullOrEmpty(item.FixText))
+                    {
+                        StringBuilder stringBuilder = new StringBuilder(item.Reference);
+                        stringBuilder.Remove(item.MatchStart, item.MatchLength);
+                        stringBuilder.Insert(item.MatchStart, item.FixText);
+
+                        var fixReference = stringBuilder.ToString();
+
+                        fixTextBox.Text = fixReference;
+
+                        fixTextBox.SelectAll();
+                        fixTextBox.SelectionBackColor = Color.White;
+
+                        fixTextBox.SelectionStart = MinusPrecedingChars(
+                           fixReference,
+                           item.MatchStart,
+                           '\r');
+                        fixTextBox.SelectionLength = item.MatchLength;
+                        fixTextBox.SelectionBackColor = Color.Green;
+                        fixTextBox.ScrollToCaret();
+
+                        fixTextBox.Refresh();
+                    } else
+                    {
+                        fixTextBox.Text = "";
+                        fixTextBox.Refresh();
+                    }
+                }
+            } else
+            {
+                matchTextBox.Text = "";
+                matchTextBox.Refresh();
+
+                fixTextBox.Text = "";
+                fixTextBox.Refresh();
+            }
+        }
+
+        /// <summary>
+        /// Subtract the occurences of a search char from before an input position.
+        ///
+        /// Used to deal with rich text control's filtering out '\r' from input text.
+        /// </summary>
+        /// <param name="inputText">Text to search (required).</param>
+        /// <param name="inputPosition">Position to search up to (0-based).</param>
+        /// <param name="searchChar">Character to search for.</param>
+        /// <returns>Input position minus occurences of search char before it.</returns>
+        private static int MinusPrecedingChars(string inputText, int inputPosition, char searchChar)
+        {
+            var searchPosition = 0;
+            if (inputText != null && inputText.Length > 0)
+            {
+                searchPosition = inputText.IndexOf(searchChar);
+            }
+
+            var charCtr = 0;
+
+            while (searchPosition >= 0
+                   && searchPosition < inputPosition)
+            {
+                charCtr++;
+                searchPosition = inputText.IndexOf(searchChar, searchPosition + 1);
+            }
+
+            return Math.Max(inputPosition - charCtr, 0);
+        }
+
+        private void CheckResultsForm_Shown(object sender, EventArgs e)
+        {
+            RunChecks();
         }
     }
 }

@@ -70,6 +70,32 @@ namespace TvpMain.Text
         }
 
         /// <summary>
+        /// Similar to VerseCoordinateText, but handles -1 values at book, chapter, or verse
+        /// </summary>
+        /// <returns></returns>
+        public string toString()
+        {
+            if(BookNum == -1)
+            {
+                return "Project";
+            }
+            if(ChapterNum == -1)
+            {
+                return BookUtil.BookIdsByNum.TryGetValue(BookNum, out var bookIdTmp) ? $"{bookIdTmp.BookCode}"
+                : $"{"#" + BookNum}";
+            }
+            if(VerseNum == -1)
+            {
+                return BookUtil.BookIdsByNum.TryGetValue(BookNum, out var bookIdTmp)
+                ? $"{bookIdTmp.BookCode + " " + ChapterNum}"
+                : $"{"#" + BookNum + " " + ChapterNum}";
+            }
+            return BookUtil.BookIdsByNum.TryGetValue(BookNum, out var bookId)
+                ? $"{bookId.BookCode + " " + ChapterNum + ":" + VerseNum}"
+                : $"{"#" + BookNum + " " + ChapterNum + ":" + VerseNum}";
+        }
+
+        /// <summary>
         /// Typed equality method.
         /// </summary>
         /// <param name="other">Other verse location (required).</param>

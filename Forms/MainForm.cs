@@ -1074,7 +1074,7 @@ namespace TvpMain.Forms
             eulaForm.FormTitle = formTitle;
             eulaForm.LicenseText = Resources.TVP_EULA;
             eulaForm.OnDismiss = () => eulaForm.Close();
-            eulaForm.Show();
+            eulaForm.Show(this);
         }
 
         private void checkManagerTestInterfaceToolStripMenuItem_Click(object sender, EventArgs e)

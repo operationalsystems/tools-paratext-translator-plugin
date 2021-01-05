@@ -149,6 +149,8 @@ namespace TvpMain.Forms
 
             // start the sync for the check/fixes
             _progressForm.Show(this);
+
+            this.Enabled = false;
             loadingWorker.RunWorkerAsync();
         }
 
@@ -183,6 +185,7 @@ namespace TvpMain.Forms
                 this.updateDisplayGrid();
             }));
             _progressForm.Close();
+            this.Enabled = true;
         }
 
         /// <summary>
@@ -356,6 +359,8 @@ namespace TvpMain.Forms
             // grab the check run context
             var checkContext = GetCheckRunContext();
 
+            var importManager = new ImportManager(_host, _activeProjectName);
+
             // pass the checks and specification of what to check to the CheckResultsForm to perform the necessary search with.
             var checkResultsForm = new CheckResultsForm(
                 _host,
@@ -364,12 +369,12 @@ namespace TvpMain.Forms
                 _selectedBooks,
                 selectedChecks,
                 checkContext, 
-                new CheckAndFixRunner(), 
-                new ImportManager(_host, _activeProjectName)
+                new CheckAndFixRunner(),
+                importManager
                 );
 
             checkResultsForm.Show();
-            checkResultsForm.RunChecks();
+            checkResultsForm.BringToFront();
         }
 
         /// <summary>

@@ -54,7 +54,7 @@
             this.matchTextBox = new System.Windows.Forms.RichTextBox();
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
-            this.richTextBox1 = new System.Windows.Forms.RichTextBox();
+            this.fixTextBox = new System.Windows.Forms.RichTextBox();
             this.menuStrip.SuspendLayout();
             this.topPanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.checksDataGridView)).BeginInit();
@@ -64,7 +64,7 @@
             // cancel
             // 
             this.cancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.cancel.Location = new System.Drawing.Point(907, 700);
+            this.cancel.Location = new System.Drawing.Point(900, 582);
             this.cancel.Name = "cancel";
             this.cancel.Size = new System.Drawing.Size(75, 23);
             this.cancel.TabIndex = 0;
@@ -80,7 +80,7 @@
             this.LicenseToolStripMenuItem});
             this.menuStrip.Location = new System.Drawing.Point(0, 0);
             this.menuStrip.Name = "menuStrip";
-            this.menuStrip.Size = new System.Drawing.Size(994, 24);
+            this.menuStrip.Size = new System.Drawing.Size(987, 24);
             this.menuStrip.TabIndex = 1;
             this.menuStrip.Text = "menuStrip1";
             // 
@@ -117,14 +117,14 @@
             this.topPanel.Controls.Add(this.checksDataGridView);
             this.topPanel.Location = new System.Drawing.Point(0, 27);
             this.topPanel.Name = "topPanel";
-            this.topPanel.Size = new System.Drawing.Size(994, 251);
+            this.topPanel.Size = new System.Drawing.Size(987, 251);
             this.topPanel.TabIndex = 2;
             // 
             // bookFilterLabel
             // 
             this.bookFilterLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.bookFilterLabel.AutoSize = true;
-            this.bookFilterLabel.Location = new System.Drawing.Point(754, 53);
+            this.bookFilterLabel.Location = new System.Drawing.Point(747, 53);
             this.bookFilterLabel.Name = "bookFilterLabel";
             this.bookFilterLabel.Size = new System.Drawing.Size(57, 13);
             this.bookFilterLabel.TabIndex = 8;
@@ -133,7 +133,7 @@
             // clearCheckFilterButton
             // 
             this.clearCheckFilterButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.clearCheckFilterButton.Location = new System.Drawing.Point(961, 21);
+            this.clearCheckFilterButton.Location = new System.Drawing.Point(954, 21);
             this.clearCheckFilterButton.Name = "clearCheckFilterButton";
             this.clearCheckFilterButton.Size = new System.Drawing.Size(21, 20);
             this.clearCheckFilterButton.TabIndex = 7;
@@ -144,7 +144,7 @@
             // bookFilterClearButton
             // 
             this.bookFilterClearButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.bookFilterClearButton.Location = new System.Drawing.Point(961, 70);
+            this.bookFilterClearButton.Location = new System.Drawing.Point(954, 70);
             this.bookFilterClearButton.Name = "bookFilterClearButton";
             this.bookFilterClearButton.Size = new System.Drawing.Size(20, 20);
             this.bookFilterClearButton.TabIndex = 6;
@@ -155,7 +155,7 @@
             // selectBooksButton
             // 
             this.selectBooksButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.selectBooksButton.Location = new System.Drawing.Point(892, 96);
+            this.selectBooksButton.Location = new System.Drawing.Point(885, 96);
             this.selectBooksButton.Name = "selectBooksButton";
             this.selectBooksButton.Size = new System.Drawing.Size(89, 23);
             this.selectBooksButton.TabIndex = 5;
@@ -166,7 +166,7 @@
             // bookFilterTextBox
             // 
             this.bookFilterTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.bookFilterTextBox.Location = new System.Drawing.Point(757, 70);
+            this.bookFilterTextBox.Location = new System.Drawing.Point(750, 70);
             this.bookFilterTextBox.Name = "bookFilterTextBox";
             this.bookFilterTextBox.ReadOnly = true;
             this.bookFilterTextBox.Size = new System.Drawing.Size(198, 20);
@@ -175,7 +175,7 @@
             // filterTextBox
             // 
             this.filterTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.filterTextBox.Location = new System.Drawing.Point(757, 21);
+            this.filterTextBox.Location = new System.Drawing.Point(750, 21);
             this.filterTextBox.Name = "filterTextBox";
             this.filterTextBox.Size = new System.Drawing.Size(198, 20);
             this.filterTextBox.TabIndex = 2;
@@ -185,7 +185,7 @@
             // 
             this.checkFilterLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.checkFilterLabel.AutoSize = true;
-            this.checkFilterLabel.Location = new System.Drawing.Point(754, 4);
+            this.checkFilterLabel.Location = new System.Drawing.Point(747, 4);
             this.checkFilterLabel.Name = "checkFilterLabel";
             this.checkFilterLabel.Size = new System.Drawing.Size(63, 13);
             this.checkFilterLabel.TabIndex = 1;
@@ -212,8 +212,10 @@
             this.checksDataGridView.RowHeadersVisible = false;
             this.checksDataGridView.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.AutoSizeToDisplayedHeaders;
             this.checksDataGridView.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.checksDataGridView.Size = new System.Drawing.Size(747, 251);
+            this.checksDataGridView.Size = new System.Drawing.Size(740, 251);
             this.checksDataGridView.TabIndex = 0;
+            this.checksDataGridView.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.checksDataGridView_CellContentClick);
+            this.checksDataGridView.SelectionChanged += new System.EventHandler(this.checksDataGridView_SelectionChanged);
             // 
             // SelectedColumn
             // 
@@ -267,6 +269,8 @@
             this.issuesDataGridView.AllowUserToAddRows = false;
             this.issuesDataGridView.AllowUserToDeleteRows = false;
             this.issuesDataGridView.AllowUserToResizeRows = false;
+            this.issuesDataGridView.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left)));
             this.issuesDataGridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.issuesDataGridView.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.ReferenceColumn,
@@ -277,8 +281,12 @@
             this.issuesDataGridView.ReadOnly = true;
             this.issuesDataGridView.RowHeadersVisible = false;
             this.issuesDataGridView.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.issuesDataGridView.Size = new System.Drawing.Size(343, 300);
+            this.issuesDataGridView.Size = new System.Drawing.Size(343, 285);
             this.issuesDataGridView.TabIndex = 3;
+            this.issuesDataGridView.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.issuesDataGridView_CellContentClick);
+            this.issuesDataGridView.CellContentDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.issuesDataGridView_CellContentDoubleClick);
+            this.issuesDataGridView.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.issuesDataGridView_CellContentDoubleClick);
+            this.issuesDataGridView.SelectionChanged += new System.EventHandler(this.issuesDataGridView_SelectionChanged);
             // 
             // ReferenceColumn
             // 
@@ -295,11 +303,13 @@
             // 
             // matchTextBox
             // 
+            this.matchTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.matchTextBox.BackColor = System.Drawing.Color.White;
             this.matchTextBox.Location = new System.Drawing.Point(349, 300);
             this.matchTextBox.Name = "matchTextBox";
             this.matchTextBox.ReadOnly = true;
-            this.matchTextBox.Size = new System.Drawing.Size(398, 124);
+            this.matchTextBox.Size = new System.Drawing.Size(391, 125);
             this.matchTextBox.TabIndex = 4;
             this.matchTextBox.Text = "";
             // 
@@ -308,35 +318,38 @@
             this.label1.AutoSize = true;
             this.label1.Location = new System.Drawing.Point(350, 284);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(37, 13);
+            this.label1.Size = new System.Drawing.Size(87, 13);
             this.label1.TabIndex = 5;
-            this.label1.Text = "Match";
+            this.label1.Text = "Match in Context";
             // 
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(350, 427);
+            this.label2.Location = new System.Drawing.Point(350, 428);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(74, 13);
+            this.label2.Size = new System.Drawing.Size(124, 13);
             this.label2.TabIndex = 6;
-            this.label2.Text = "Suggested Fix";
+            this.label2.Text = "Suggested Fix in Context";
             // 
-            // richTextBox1
+            // fixTextBox
             // 
-            this.richTextBox1.BackColor = System.Drawing.Color.White;
-            this.richTextBox1.Location = new System.Drawing.Point(349, 443);
-            this.richTextBox1.Name = "richTextBox1";
-            this.richTextBox1.ReadOnly = true;
-            this.richTextBox1.Size = new System.Drawing.Size(398, 141);
-            this.richTextBox1.TabIndex = 7;
-            this.richTextBox1.Text = "";
+            this.fixTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.fixTextBox.BackColor = System.Drawing.Color.White;
+            this.fixTextBox.Location = new System.Drawing.Point(349, 444);
+            this.fixTextBox.Name = "fixTextBox";
+            this.fixTextBox.ReadOnly = true;
+            this.fixTextBox.Size = new System.Drawing.Size(391, 125);
+            this.fixTextBox.TabIndex = 7;
+            this.fixTextBox.Text = "";
             // 
             // CheckResultsForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(994, 735);
-            this.Controls.Add(this.richTextBox1);
+            this.ClientSize = new System.Drawing.Size(987, 617);
+            this.Controls.Add(this.fixTextBox);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.matchTextBox);
@@ -349,6 +362,7 @@
             this.Name = "CheckResultsForm";
             this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Show;
             this.Text = "Check Results";
+            this.Shown += new System.EventHandler(this.CheckResultsForm_Shown);
             this.menuStrip.ResumeLayout(false);
             this.menuStrip.PerformLayout();
             this.topPanel.ResumeLayout(false);
@@ -387,6 +401,6 @@
         private System.Windows.Forms.RichTextBox matchTextBox;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.RichTextBox richTextBox1;
+        private System.Windows.Forms.RichTextBox fixTextBox;
     }
 }
