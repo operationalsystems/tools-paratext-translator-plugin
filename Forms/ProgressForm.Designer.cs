@@ -52,9 +52,9 @@
             this.lblTitle.AutoSize = true;
             this.lblTitle.Location = new System.Drawing.Point(12, 9);
             this.lblTitle.Name = "lblTitle";
-            this.lblTitle.Size = new System.Drawing.Size(105, 13);
+            this.lblTitle.Size = new System.Drawing.Size(95, 13);
             this.lblTitle.TabIndex = 1;
-            this.lblTitle.Text = "Running Validation...";
+            this.lblTitle.Text = "Running Checks...";
             // 
             // btnCancel
             // 

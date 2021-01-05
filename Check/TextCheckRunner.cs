@@ -16,6 +16,8 @@ using TvpMain.Util;
 namespace TvpMain.Check
 {
     /// <summary>
+    /// Obsolete, part of TVP 1.0
+    /// 
     /// Parallelizes concrete text checks across one or more books.
     /// 
     /// This is preferable because extracting verses process boundaries and is therefore
