@@ -48,9 +48,17 @@
             this.DescriptionColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.CountColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.ActionsColumn = new System.Windows.Forms.DataGridViewButtonColumn();
+            this.issuesDataGridView = new System.Windows.Forms.DataGridView();
+            this.ReferenceColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.MatchTextColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.matchTextBox = new System.Windows.Forms.RichTextBox();
+            this.label1 = new System.Windows.Forms.Label();
+            this.label2 = new System.Windows.Forms.Label();
+            this.richTextBox1 = new System.Windows.Forms.RichTextBox();
             this.menuStrip.SuspendLayout();
             this.topPanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.checksDataGridView)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.issuesDataGridView)).BeginInit();
             this.SuspendLayout();
             // 
             // cancel
@@ -254,11 +262,85 @@
             this.ActionsColumn.ReadOnly = true;
             this.ActionsColumn.Width = 51;
             // 
+            // issuesDataGridView
+            // 
+            this.issuesDataGridView.AllowUserToAddRows = false;
+            this.issuesDataGridView.AllowUserToDeleteRows = false;
+            this.issuesDataGridView.AllowUserToResizeRows = false;
+            this.issuesDataGridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.issuesDataGridView.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.ReferenceColumn,
+            this.MatchTextColumn});
+            this.issuesDataGridView.Location = new System.Drawing.Point(0, 284);
+            this.issuesDataGridView.MultiSelect = false;
+            this.issuesDataGridView.Name = "issuesDataGridView";
+            this.issuesDataGridView.ReadOnly = true;
+            this.issuesDataGridView.RowHeadersVisible = false;
+            this.issuesDataGridView.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
+            this.issuesDataGridView.Size = new System.Drawing.Size(343, 300);
+            this.issuesDataGridView.TabIndex = 3;
+            // 
+            // ReferenceColumn
+            // 
+            this.ReferenceColumn.HeaderText = "Reference";
+            this.ReferenceColumn.Name = "ReferenceColumn";
+            this.ReferenceColumn.ReadOnly = true;
+            // 
+            // MatchTextColumn
+            // 
+            this.MatchTextColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.MatchTextColumn.HeaderText = "Match Text";
+            this.MatchTextColumn.Name = "MatchTextColumn";
+            this.MatchTextColumn.ReadOnly = true;
+            // 
+            // matchTextBox
+            // 
+            this.matchTextBox.BackColor = System.Drawing.Color.White;
+            this.matchTextBox.Location = new System.Drawing.Point(349, 300);
+            this.matchTextBox.Name = "matchTextBox";
+            this.matchTextBox.ReadOnly = true;
+            this.matchTextBox.Size = new System.Drawing.Size(398, 124);
+            this.matchTextBox.TabIndex = 4;
+            this.matchTextBox.Text = "";
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(350, 284);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(37, 13);
+            this.label1.TabIndex = 5;
+            this.label1.Text = "Match";
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(350, 427);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(74, 13);
+            this.label2.TabIndex = 6;
+            this.label2.Text = "Suggested Fix";
+            // 
+            // richTextBox1
+            // 
+            this.richTextBox1.BackColor = System.Drawing.Color.White;
+            this.richTextBox1.Location = new System.Drawing.Point(349, 443);
+            this.richTextBox1.Name = "richTextBox1";
+            this.richTextBox1.ReadOnly = true;
+            this.richTextBox1.Size = new System.Drawing.Size(398, 141);
+            this.richTextBox1.TabIndex = 7;
+            this.richTextBox1.Text = "";
+            // 
             // CheckResultsForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(994, 735);
+            this.Controls.Add(this.richTextBox1);
+            this.Controls.Add(this.label2);
+            this.Controls.Add(this.label1);
+            this.Controls.Add(this.matchTextBox);
+            this.Controls.Add(this.issuesDataGridView);
             this.Controls.Add(this.topPanel);
             this.Controls.Add(this.cancel);
             this.Controls.Add(this.menuStrip);
@@ -272,6 +354,7 @@
             this.topPanel.ResumeLayout(false);
             this.topPanel.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.checksDataGridView)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.issuesDataGridView)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -298,5 +381,12 @@
         private System.Windows.Forms.TextBox bookFilterTextBox;
         private System.Windows.Forms.TextBox filterTextBox;
         private System.Windows.Forms.Label checkFilterLabel;
+        private System.Windows.Forms.DataGridView issuesDataGridView;
+        private System.Windows.Forms.DataGridViewTextBoxColumn ReferenceColumn;
+        private System.Windows.Forms.DataGridViewTextBoxColumn MatchTextColumn;
+        private System.Windows.Forms.RichTextBox matchTextBox;
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.RichTextBox richTextBox1;
     }
 }
