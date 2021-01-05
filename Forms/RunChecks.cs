@@ -8,6 +8,7 @@ using System.Linq;
 using System.Windows.Forms;
 using TvpMain.Check;
 using TvpMain.CheckManagement;
+using TvpMain.Import;
 using TvpMain.Project;
 using TvpMain.Properties;
 using TvpMain.Text;
@@ -337,26 +338,105 @@ namespace TvpMain.Forms
         /// <param name="e">The event information that triggered this call</param>
         private void licenseToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            string pluginName = System.Reflection.Assembly.GetExecutingAssembly().GetName().Name;
-            string formTitle = $"{pluginName} - End User License Agreement";
-
-            LicenseForm eulaForm = new LicenseForm();
-            eulaForm.FormType = LicenseForm.FormTypes.Info;
-            eulaForm.FormTitle = formTitle;
-            eulaForm.LicenseText = Resources.TVP_EULA;
-            eulaForm.OnDismiss = () => eulaForm.Close();
-            eulaForm.Show();
+            FormUtil.StartLicenseForm();
         }
 
         /// <summary>
-        /// TODO: Start check processing here, and open Check Results
+        /// This function is to handle when the "Run Checks" button is clicked. We pass the checks and notion of what to check to the CheckResultsForm to process.
         /// </summary>
         /// <param name="sender">The control that sent this event</param>
         /// <param name="e">The event information that triggered this call</param>
         private void runChecksButton_Click(object sender, EventArgs e)
         {
-            CheckResultsForm resultsForm = new CheckResultsForm(_host, _activeProjectName);
-            resultsForm.Show();
+            // grab the selected checks
+            var selectedChecks = GetSelectedChecks();
+
+            // grab the check run context
+            var checkContext = GetCheckRunContext();
+
+            // pass the checks and specification of what to check to the CheckResultsForm to perform the necessary search with.
+            var checkResultsForm = new CheckResultsForm(
+                _host,
+                _activeProjectName,
+                _projectManager,
+                _selectedBooks,
+                selectedChecks,
+                checkContext, 
+                new CheckAndFixRunner(), 
+                new ImportManager(_host, _activeProjectName)
+                );
+
+            checkResultsForm.Show();
+            checkResultsForm.RunChecks();
+        }
+
+        /// <summary>
+        /// This function will return the <c>CheckAndFixItem</c>s that are selected in the Run Checks list.
+        /// </summary>
+        /// <returns>The selected <c>CheckAndFixItem</c>s</returns>
+        private List<CheckAndFixItem> GetSelectedChecks()
+        {
+            var selectedChecks = new List<CheckAndFixItem>();
+
+            // grab the selected checks
+            foreach (DataGridViewRow row in checksList.Rows)
+            {
+                CheckAndFixItem item = (CheckAndFixItem) ((DisplayItem) row.Tag).Item;
+                if ((bool) row.Cells[0].Value)
+                {
+                    selectedChecks.Add(item);
+                }
+            }
+
+            return selectedChecks;
+        }
+
+        /// <summary>
+        /// This function create and return the <c>CheckRunContext</c> of what's being checked against.
+        /// </summary>
+        /// <returns>The <c>CheckRunContext</c> of what's being checked against.</returns>
+        private CheckRunContext GetCheckRunContext()
+        {
+            // initialize the context with the project name.
+            var checkRunContext = new CheckRunContext()
+            {
+                Project = _activeProjectName,
+
+            };
+
+            // track the selected books
+            checkRunContext.Books = (BookNameItem[])_selectedBooks.Clone();
+
+            if (currentBookRadioButton.Checked)
+            {
+                checkRunContext.CheckScope = CheckAndFixItem.CheckScope.CHAPTER;
+
+                // track the specified chapters
+                checkRunContext.Chapters = new List<int>();
+
+                var chapterStart = int.Parse(fromChapterDropDown.Text);
+                var chapterEnd = int.Parse(toChapterDropDown.Text);
+
+                // flip the values, if the end is larger than the start
+                if (chapterStart > chapterEnd)
+                {
+                    var temp = chapterStart;
+                    chapterStart = chapterEnd;
+                    chapterEnd = temp;
+                }
+
+                // add the chapters to check
+                for (int i = chapterStart; i <= chapterEnd; i++)
+                {
+                    checkRunContext.Chapters.Add(i);
+                }
+            }
+            else
+            {
+                checkRunContext.CheckScope = CheckAndFixItem.CheckScope.BOOK;
+            }
+
+            return checkRunContext;
         }
 
         /// <summary>
@@ -376,37 +456,13 @@ namespace TvpMain.Forms
                 {
                     // update which books were selected
                     _selectedBooks = form.GetSelected();
-                    string selectedBooksString = stringFromSelectedBooks(_selectedBooks);
+                    string selectedBooksString = BookSelection.stringFromSelectedBooks(_selectedBooks);
                     chooseBooksText.Text = selectedBooksString;
                 }
             }
 
             // set up UI
             setChooseBooks();
-        }
-
-        /// <summary>
-        /// Used to display the list of books selected. If there are more than 4 then truncate in the middle.
-        /// </summary>
-        /// <param name="selectedBooks">This allows for passing in the currently selected books, 
-        /// in case this dialog has already been used previously, 
-        /// to prefill the dialog with
-        /// the currently selected items.</param>
-        /// <returns>A string created by the list of <see cref="BookNameItem"/>s, if greater than 4, ellipsized.</returns>
-        private string stringFromSelectedBooks(BookNameItem[] selectedBooks)
-        {
-            string names = "";
-
-            if (selectedBooks.Length > 4)
-            {
-                names = selectedBooks[0].ToString() + ", " + selectedBooks[1].ToString() + ", ..., " + selectedBooks[selectedBooks.Length - 1].ToString();
-            }
-            else
-            {
-                names = string.Join(", ", Array.ConvertAll<BookNameItem, string>(selectedBooks, bni => bni.ToString()));
-            }
-
-            return names;
         }
 
         /// <summary>

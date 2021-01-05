@@ -132,5 +132,30 @@ namespace TvpMain.Forms
                 bookList.SetSelected(i, false);
             }
         }
+
+        /// <summary>
+        /// Used to display the list of books selected. If there are more than 4 then truncate in the middle.
+        /// </summary>
+        /// <param name="selectedBooks">This allows for passing in the currently selected books, 
+        /// in case this dialog has already been used previously, 
+        /// to prefill the dialog with
+        /// the currently selected items.</param>
+        /// <returns>A string created by the list of <see cref="BookNameItem"/>s, if greater than 4, ellipsized.</returns>
+        public static string stringFromSelectedBooks(BookNameItem[] selectedBooks)
+        {
+            string names = "";
+
+            if (selectedBooks.Length > 4)
+            {
+                names = selectedBooks[0].ToString() + ", " + selectedBooks[1].ToString() + ", ..., " + selectedBooks[selectedBooks.Length - 1].ToString();
+            }
+            else
+            {
+                names = string.Join(", ", Array.ConvertAll<BookNameItem, string>(selectedBooks, bni => bni.ToString()));
+            }
+
+            return names;
+        }
+
     }
 }

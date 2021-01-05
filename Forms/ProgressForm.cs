@@ -67,7 +67,7 @@ namespace TvpMain.Forms
             pbrStatus.Value = pbrStatus.Minimum;
             pbrStatus.Style = ProgressBarStyle.Marquee;
 
-            lblTitle.Text = "Cancelling Validation...";
+            lblTitle.Text = "Cancelling Checks...";
             Cancelled?.Invoke(sender, e);
         }
         /// <summary>
@@ -89,7 +89,7 @@ namespace TvpMain.Forms
             pbrStatus.Value = pbrStatus.Minimum;
             pbrStatus.Style = ProgressBarStyle.Marquee;
 
-            lblTitle.Text = "Running Validation...";
+            lblTitle.Text = "Running Checks...";
         }
 
         /// <summary>

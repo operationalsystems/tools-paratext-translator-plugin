@@ -206,7 +206,7 @@ namespace TvpMain.Util
         {
             if (projectName == null || projectName.Length == 0)
             {
-                Util.HostUtil.Instance.LogLine("Project name is invalid, responding with default empty list", true);
+                LogLine("Project name is invalid, responding with default empty list", true);
                 return Enumerable.Empty<IgnoreListItem>().ToList();
             }
 
@@ -222,6 +222,24 @@ namespace TvpMain.Util
                 IList<IgnoreListItem> ignoreList = JsonConvert.DeserializeObject<List<IgnoreListItem>>(inputData);
                 return ignoreList;
             }
+        }
+
+        /// <summary>
+        /// This function will get a Paratext projects' directory based on a specific project. This is due to the available plugin framework functions.
+        /// </summary>
+        /// <param name="projectName">Project name to get root projects directory.</param>
+        public string GetParatextProjectsDirectory(string projectName)
+        {
+            _ = projectName ?? throw new ArgumentNullException(nameof(projectName));
+
+            var figurePath = _host.GetFigurePath(projectName, false) ?? _host.GetFigurePath(projectName, true);
+            if (figurePath == null)
+            {
+                throw new Exception("Unable to find the root Paratext projects directory.");
+            }
+
+            //
+            return Directory.GetParent(Directory.GetParent(figurePath).FullName).FullName;
         }
 
         /// <summary>
@@ -436,7 +454,7 @@ namespace TvpMain.Util
         /// <param name="verse">The project's verse 1-based index.</param>
         public void GotoBcvInGui(string projectName, int book, int chapter, int verse)
         {
-            var versificationName = _host.GetProjectVersificationName(projectName); ;
+            var versificationName = _host.GetProjectVersificationName(projectName);
             var bbbcccvvvReference = BookUtil.BcvToRef(book, chapter, verse);
             // Not yet available in latest version
             // _host.GotoReference(bbbcccvvvReference, versificationName, projectName);
