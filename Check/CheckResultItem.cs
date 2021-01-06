@@ -224,7 +224,6 @@ namespace TvpMain.Check
                 hashCode = (hashCode * MainConsts.HASH_PRIME) ^ (FixText != null ? FixText.GetHashCode() : 0);
                 hashCode = (hashCode * MainConsts.HASH_PRIME) ^ (int)CheckType;
                 hashCode = (hashCode * MainConsts.HASH_PRIME) ^ ResultTypeCode;
-                hashCode = (hashCode * MainConsts.HASH_PRIME) ^ (int)ResultState;
                 return hashCode;
             }
         }

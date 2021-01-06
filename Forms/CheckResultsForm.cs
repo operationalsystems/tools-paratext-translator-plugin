@@ -820,6 +820,7 @@ namespace TvpMain.Forms
                 }
                 PopulateMatchFixTexBoxes();
             }
+            UpdateDenyButton();
         }
 
         /// <summary>
