@@ -845,7 +845,7 @@ namespace TvpMain.Forms
                 var item = (CheckResultItem)issuesDataGridView.CurrentRow.Tag;
 
                 // navigate project to BCV
-                HostUtil.Instance.GotoBcvInGui(ActiveProjectName, item.Book, item.Chapter, item.Verse);
+                HostUtil.Instance.GotoBcvInGui(ActiveProjectName, item.Book == -1 ? 0 : item.Book, item.Chapter == -1 ? 0 : item.Chapter, item.Verse == -1 ? 0 : item.Verse);
             }
         }
 
