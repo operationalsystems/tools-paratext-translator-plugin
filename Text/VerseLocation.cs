@@ -75,20 +75,21 @@ namespace TvpMain.Text
         /// <returns></returns>
         public string toString()
         {
-            if(BookNum == -1)
+            if (BookNum == -1)
             {
                 return "Project";
             }
-            if(ChapterNum == -1)
+            if (ChapterNum == -1)
             {
-                return BookUtil.BookIdsByNum.TryGetValue(BookNum, out var bookIdTmp) ? $"{bookIdTmp.BookCode}"
-                : $"{"#" + BookNum}";
+                return BookUtil.BookIdsByNum.TryGetValue(BookNum, out var bookIdTmp) 
+                    ? $"{bookIdTmp.BookCode}"
+                    : $"{"#" + BookNum}";
             }
-            if(VerseNum == -1)
+            if (VerseNum == -1)
             {
                 return BookUtil.BookIdsByNum.TryGetValue(BookNum, out var bookIdTmp)
-                ? $"{bookIdTmp.BookCode + " " + ChapterNum}"
-                : $"{"#" + BookNum + " " + ChapterNum}";
+                    ? $"{bookIdTmp.BookCode + " " + ChapterNum}"
+                    : $"{"#" + BookNum + " " + ChapterNum}";
             }
             return BookUtil.BookIdsByNum.TryGetValue(BookNum, out var bookId)
                 ? $"{bookId.BookCode + " " + ChapterNum + ":" + VerseNum}"
