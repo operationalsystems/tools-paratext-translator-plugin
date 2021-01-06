@@ -514,7 +514,7 @@ namespace TvpMain.Forms
         {
             int currentSelectedRowIndex = 0;
 
-            if (checksDataGridView.CurrentRow != null && checksDataGridView.Rows != null && checksDataGridView.Rows.Count > 0)
+            if (checksDataGridView.CurrentRow != null)
             {
                 currentSelectedRowIndex = checksDataGridView.CurrentRow.Index;
             }
@@ -536,7 +536,7 @@ namespace TvpMain.Forms
                     checksDataGridView.Rows[rowIndex].Tag = new KeyValuePair<CheckAndFixItem,List<CheckResultItem>>(result.Key, filteredResultItems);
                 }
             }
-            if(checksDataGridView.CurrentRow == null && checksDataGridView.Rows != null && checksDataGridView.Rows.Count > 0 && checksDataGridView.Rows[0] != null)
+            if(checksDataGridView.Rows != null && checksDataGridView.Rows.Count > 0 && checksDataGridView.Rows[0] != null)
             {
                 checksDataGridView.Rows[currentSelectedRowIndex].Selected = true;
             }
@@ -849,7 +849,7 @@ namespace TvpMain.Forms
         private void issuesDataGridView_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
             // update match/fix text boxes
-            PopulateMatchFixTexBoxes();
+            // PopulateMatchFixTexBoxes();
         }
 
         /// <summary>
