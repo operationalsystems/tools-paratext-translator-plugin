@@ -107,17 +107,21 @@ namespace TvpMain
         {
             [MainConsts.CHECK_SETTINGS_DATA_ID] = new PluginDataFileMergeInfo(
                 new MergeLevel("DefaultCheckIds", ".")
+            ),
+            [MainConsts.DENIED_RESULTS_DATA_ID] = new PluginDataFileMergeInfo(
+                new MergeLevel("ArrayOfInt", ".")
             )
         };
 
         /// <summary>
         /// Data file key spec accessor.
         /// </summary>
-        public Dictionary<string, IPluginDataFileMergeInfo> DataFileKeySpecifications { 
+        public Dictionary<string, IPluginDataFileMergeInfo> DataFileKeySpecifications
+        {
             get
             {
-                return _dataFileKeySpecifications; 
-            } 
+                return _dataFileKeySpecifications;
+            }
         }
     }
 }

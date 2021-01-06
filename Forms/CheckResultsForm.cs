@@ -1,14 +1,14 @@
 ﻿using AddInSideViews;
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Windows.Forms;
+using TvpMain.Check;
+using System.Collections.Concurrent;
 using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows.Forms;
-using TvpMain.Check;
 using TvpMain.Import;
 using TvpMain.Project;
 using TvpMain.Text;
@@ -23,7 +23,16 @@ namespace TvpMain.Forms
     /// </summary>
     public partial class CheckResultsForm : Form
     {
-        /// <summary>
+        // Deny Button Text
+        readonly string DENY_BUTTON = "Deny";
+        readonly string UNDENY_BUTTON = "Un-Deny";
+
+        // A list of <c>CheckResultItem</c>s which have been denied
+        private List<int> _denied;
+
+        // Whether to show results which have been denied
+        private bool _showDenied = false;
+
         /// This index indicates to the progress form that the project scope checks are being run.
         /// </summary>
         public const int ALL_PROJECTS_INDEX = -1;
@@ -118,10 +127,9 @@ namespace TvpMain.Forms
         /// </summary>
         private BookNameItem[] SelectedBooks { get; set; }
 
-
-
         /// <summary>
-        /// The basic constructor.
+        /// This form displays information about the checks which have been run against a project
+        /// as well as options for viewing and fixing any found errors.
         /// </summary>
         /// <param name="host">The Paratext Host object.</param>
         /// <param name="activeProjectName">The name of the current project</param>
@@ -143,7 +151,11 @@ namespace TvpMain.Forms
         {
             // validate inputs
             Host = host ?? throw new ArgumentNullException(nameof(host));
-            ActiveProjectName = activeProjectName ?? throw new ArgumentNullException(nameof(activeProjectName));
+            if (activeProjectName == null || activeProjectName.Length < 1)
+            {
+                throw new ArgumentNullException(nameof(activeProjectName));
+            }
+            ActiveProjectName = activeProjectName;
             ProjectManager = projectManager ?? throw new ArgumentNullException(nameof(projectManager));
             ChecksToRun = checksToRun ?? throw new ArgumentNullException(nameof(checksToRun));
             CheckRunContext = checkRunContext ?? throw new ArgumentNullException(nameof(checkRunContext));
@@ -159,6 +171,8 @@ namespace TvpMain.Forms
 
             // initialize the components
             InitializeComponent();
+            LoadDeniedResults();
+            UpdateDenyButton();
 
             // set the default set of books, all of them
             SelectedBooks = selectedBooks;
@@ -167,6 +181,50 @@ namespace TvpMain.Forms
 
             // Enable the visibility of this form
             this.Show();
+        }
+
+        /// <summary>
+        /// This method updates the text and state of the "Deny" button depending on what (if any) <c>CheckResultItem</c> is selected.
+        /// </summary>
+        private void UpdateDenyButton()
+        {
+            CheckResultItem selectedResult = GetSelectedResult();
+            if (selectedResult != null)
+            {
+                Deny.Text = _denied.Contains(selectedResult.GetHashCode()) ? UNDENY_BUTTON : DENY_BUTTON;
+                Deny.Enabled = true;
+            }
+            else
+            {
+                Deny.Text = DENY_BUTTON;
+                Deny.Enabled = false;
+            }
+        }
+
+        /// <summary>
+        /// This method gets the currently-selected <c>CheckResultItem</c>.
+        /// </summary>
+        /// <returns></returns>
+        private CheckResultItem GetSelectedResult()
+        {
+            //throw new NotImplementedException();
+            return new CheckResultItem("result", "result", 1, CheckType.ScriptureReference, 0);
+        }
+
+        /// <summary>
+        /// This method loads the denied <c>CheckResultItem</c>s from the project.
+        /// </summary>
+        private void LoadDeniedResults()
+        {
+            _denied = Util.HostUtil.Instance.GetProjectDeniedResults(ActiveProjectName);
+        }
+
+        /// <summary>
+        /// This method saves the denied <c>CheckResultItem</c>s to the project.
+        /// </summary>
+        private void SaveDeniedResults()
+        {
+            Util.HostUtil.Instance.PutProjectDeniedResults(ActiveProjectName, _denied);
         }
 
         /// <summary>
@@ -656,6 +714,39 @@ namespace TvpMain.Forms
         }
 
         /// <summary>
+        /// This method handles a click event on the "Deny"/"Un-Deny" button.
+        /// </summary>
+        /// <param name="sender">The "Deny" button</param>
+        /// <param name="e">The event information</param>
+        private void Deny_Click(object sender, EventArgs e)
+        {
+            CheckResultItem selectedResult = GetSelectedResult();
+            if (selectedResult == null) return;
+
+            int selectedResultHashCode = selectedResult.GetHashCode();
+            if (_denied.Contains(selectedResultHashCode))
+            {
+                _denied.Remove(selectedResultHashCode);
+            }
+            else
+            {
+                _denied.Add(selectedResultHashCode);
+            }
+
+            UpdateDenyButton();
+            SaveDeniedResults();
+        }
+
+        /// <summary>
+        /// This method handles checking/unchecking the "Show Denied" checkbox.
+        /// </summary>
+        /// <param name="sender">The "Show Denied" checkbox</param>
+        /// <param name="e">The event information</param>
+        private void ShowDenied_CheckedChanged(object sender, EventArgs e)
+        {
+            _showDenied = CheckState.Checked.Equals(ShowDenied.CheckState);
+        }
+
         /// When the filter text changes, trigger filtering
         /// </summary>
         /// <param name="sender">The control that sent this event</param>

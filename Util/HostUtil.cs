@@ -1,7 +1,6 @@
 ﻿using AddInSideViews;
 using Newtonsoft.Json;
 using Paratext.Data;
-using Paratext.Data.Users;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -9,6 +8,8 @@ using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Windows.Forms;
+using System.Xml.Serialization;
+using TvpMain.Check;
 using TvpMain.Project;
 using TvpMain.Result;
 using TvpMain.Text;
@@ -357,6 +358,59 @@ namespace TvpMain.Util
         }
 
         /// <summary>
+        /// Gets the list of <c>CheckResultItem</c>s that have been denied for the project.
+        /// </summary>
+        /// <param name="projectName">The name of the project to get the list for</param>
+        /// <returns>A list of hashes representing <c>CheckResultItem</c>s that have been denied.</returns>
+        public List<int> GetProjectDeniedResults(string projectName)
+        {
+            List<int> deniedResults = new List<int>();
+            
+            if (projectName == null || projectName.Length < 1)
+            {
+                throw new ArgumentNullException(nameof(projectName));
+            }
+
+            var inputData =
+               _host.GetPlugInData(_translationValidationPlugin, projectName,
+                   MainConsts.DENIED_RESULTS_DATA_ID);
+            if (inputData != null)
+            {
+                var serializer = new XmlSerializer(typeof(List<int>));
+                using TextReader reader = new StringReader(inputData);
+                deniedResults = (List<int>)serializer.Deserialize(reader);
+            }
+
+            return deniedResults;
+        }
+
+        /// <summary>
+        /// Saves a list of hashes representing <c>CheckResultItem</c>s that have been denied for the project.
+        /// </summary>
+        /// <param name="projectName">The name of the project to save the list for</param>
+        /// <param name="deniedResults">A list of hashes representing <c>CheckResultItem</c>s that have been denied.</param>
+        public void PutProjectDeniedResults(string projectName, List<int> deniedResults)
+        {
+            if (projectName == null || projectName.Length < 1)
+            {
+                throw new ArgumentNullException(nameof(projectName));
+            }
+
+            if (deniedResults == null)
+            {
+                throw new ArgumentNullException(nameof(deniedResults));
+            }
+
+            XmlSerializer xmlSerializer = new XmlSerializer(typeof(List<int>));
+            using StringWriter textWriter = new StringWriter();
+            xmlSerializer.Serialize(textWriter, deniedResults);
+            
+            _host.PutPlugInData(_translationValidationPlugin, projectName,
+                            MainConsts.DENIED_RESULTS_DATA_ID,
+                            textWriter.ToString());
+        }
+
+        /// <summary>
         /// Method to determine if the current user is an administrator or not. This loads the ProjectUserAccess.xml file from 
         /// the project and compares the users there against the current user name from IHost.
         /// </summary>
@@ -374,8 +428,9 @@ namespace TvpMain.Util
             using Stream reader = new FileStream(Path.Combine(fileManager.ProjectDir.FullName, "ProjectUserAccess.xml"), FileMode.Open);
             ProjectUserAccess projectUserAccess = ProjectUserAccess.LoadFromXML(reader);
 
-            foreach( User user in projectUserAccess.Users) { 
-                if( user.UserName.Equals(_host.UserName) && user.Role.Equals(ADMIN_ROLE))
+            foreach (User user in projectUserAccess.Users)
+            {
+                if (user.UserName.Equals(_host.UserName) && user.Role.Equals(ADMIN_ROLE))
                 {
                     // Bail as soon as we find a match
                     return true;
