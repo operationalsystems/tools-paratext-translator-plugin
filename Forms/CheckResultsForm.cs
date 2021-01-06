@@ -948,7 +948,7 @@ namespace TvpMain.Forms
                            item.MatchStart,
                            '\r');
                         fixTextBox.SelectionLength = item.MatchLength;
-                        fixTextBox.SelectionBackColor = Color.Green;
+                        fixTextBox.SelectionBackColor = Color.LightGreen;
                         fixTextBox.ScrollToCaret();
 
                         fixTextBox.Refresh();
