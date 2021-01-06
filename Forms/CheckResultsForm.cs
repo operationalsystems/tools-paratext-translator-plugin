@@ -581,10 +581,6 @@ namespace TvpMain.Forms
                             } else
                             {
                                 item.ResultState = Result.ResultState.Found;
-                            }
-
-                            if (item.ResultState != Result.ResultState.Ignored)
-                            {
                                 filteredItems.Add(item);
                             }
                         }
