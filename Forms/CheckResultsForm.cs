@@ -33,9 +33,6 @@ namespace TvpMain.Forms
         // A list of <c>CheckResultItem</c>s which have been denied
         private List<int> _denied;
 
-        // Whether to show results which have been denied
-        private bool _showDenied = false;
-
         /// This index indicates to the progress form that the project scope checks are being run.
         /// </summary>
         public const int ALL_PROJECTS_INDEX = -1;
@@ -755,7 +752,7 @@ namespace TvpMain.Forms
         /// <param name="e">The event information</param>
         private void ShowDenied_CheckedChanged(object sender, EventArgs e)
         {
-            _showDenied = CheckState.Checked.Equals(ShowDeniedCheckbox.CheckState);
+            CheckState.Checked.Equals(ShowDeniedCheckbox.CheckState);
             PopulateChecksDataGridView();
         }
 
