@@ -810,7 +810,7 @@ namespace TvpMain.Forms
                 {
                     issuesDataGridView.Rows[0].Selected = true;
                 }
-                PopulateMatchFixTexBoxes();
+                PopulateMatchFixTextBoxes();
             }
             UpdateDenyButton();
         }
@@ -857,7 +857,7 @@ namespace TvpMain.Forms
         private void issuesDataGridView_SelectionChanged(object sender, EventArgs e)
         {
             // update match/fix text boxes
-            PopulateMatchFixTexBoxes();
+            PopulateMatchFixTextBoxes();
 
             UpdateDenyButton();
         }
@@ -886,59 +886,57 @@ namespace TvpMain.Forms
         /// <summary>
         /// Fill in the match/fix text boxes based on current selections
         /// </summary>
-        private void PopulateMatchFixTexBoxes()
+        private void PopulateMatchFixTextBoxes()
         {
             if(issuesDataGridView.Rows != null && issuesDataGridView.Rows.Count > 0 && issuesDataGridView.CurrentRow != null && issuesDataGridView.CurrentRow.Tag != null)
             {
                 var item = (CheckResultItem)issuesDataGridView.CurrentRow.Tag;
 
-                if(item != null)
+                // update match text
+                matchTextBox.Text = item.Reference;
+
+                matchTextBox.SelectAll();
+                matchTextBox.SelectionBackColor = Color.White;
+
+                matchTextBox.SelectionStart = MinusPrecedingChars(
+                    item.Reference,
+                    item.MatchStart,
+                    '\r');
+                matchTextBox.SelectionLength = item.MatchLength;
+                matchTextBox.SelectionBackColor = Color.Yellow;
+                matchTextBox.ScrollToCaret();
+
+                matchTextBox.Refresh();
+
+                // update fix text
+                if (!String.IsNullOrEmpty(item.FixText))
                 {
-                    // update match text
-                    matchTextBox.Text = item.Reference;
+                    StringBuilder stringBuilder = new StringBuilder(item.Reference);
+                    stringBuilder.Remove(item.MatchStart, item.MatchLength);
+                    stringBuilder.Insert(item.MatchStart, item.FixText);
 
-                    matchTextBox.SelectAll();
-                    matchTextBox.SelectionBackColor = Color.White;
+                    var fixReference = stringBuilder.ToString();
 
-                    matchTextBox.SelectionStart = MinusPrecedingChars(
-                       item.Reference,
-                       item.MatchStart,
-                       '\r');
-                    matchTextBox.SelectionLength = item.MatchLength;
-                    matchTextBox.SelectionBackColor = Color.Yellow;
-                    matchTextBox.ScrollToCaret();
+                    fixTextBox.Text = fixReference;
 
-                    matchTextBox.Refresh();
+                    fixTextBox.SelectAll();
+                    fixTextBox.SelectionBackColor = Color.White;
 
-                    // update fix text
-                    if (!String.IsNullOrEmpty(item.FixText))
-                    {
-                        StringBuilder stringBuilder = new StringBuilder(item.Reference);
-                        stringBuilder.Remove(item.MatchStart, item.MatchLength);
-                        stringBuilder.Insert(item.MatchStart, item.FixText);
+                    fixTextBox.SelectionStart = MinusPrecedingChars(
+                        fixReference,
+                        item.MatchStart,
+                        '\r');
+                    fixTextBox.SelectionLength = item.MatchLength;
+                    fixTextBox.SelectionBackColor = Color.LightGreen;
+                    fixTextBox.ScrollToCaret();
 
-                        var fixReference = stringBuilder.ToString();
-
-                        fixTextBox.Text = fixReference;
-
-                        fixTextBox.SelectAll();
-                        fixTextBox.SelectionBackColor = Color.White;
-
-                        fixTextBox.SelectionStart = MinusPrecedingChars(
-                           fixReference,
-                           item.MatchStart,
-                           '\r');
-                        fixTextBox.SelectionLength = item.MatchLength;
-                        fixTextBox.SelectionBackColor = Color.LightGreen;
-                        fixTextBox.ScrollToCaret();
-
-                        fixTextBox.Refresh();
-                    } else
-                    {
-                        fixTextBox.Text = "";
-                        fixTextBox.Refresh();
-                    }
+                    fixTextBox.Refresh();
+                } else
+                {
+                    fixTextBox.Text = "";
+                    fixTextBox.Refresh();
                 }
+                
             } else
             {
                 matchTextBox.Text = "";
