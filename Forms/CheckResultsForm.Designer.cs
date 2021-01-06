@@ -28,9 +28,10 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(CheckResultsForm));
-            this.Deny = new System.Windows.Forms.Button();
-            this.ShowDenied = new System.Windows.Forms.CheckBox();
+            this.DenyButton = new System.Windows.Forms.Button();
+            this.ShowDeniedCheckbox = new System.Windows.Forms.CheckBox();
             this.cancel = new System.Windows.Forms.Button();
             this.menuStrip = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -51,42 +52,44 @@
             this.CountColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.ActionsColumn = new System.Windows.Forms.DataGridViewButtonColumn();
             this.issuesDataGridView = new System.Windows.Forms.DataGridView();
+            this.statusIconColumn = new System.Windows.Forms.DataGridViewImageColumn();
             this.ReferenceColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.MatchTextColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.matchTextBox = new System.Windows.Forms.RichTextBox();
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.fixTextBox = new System.Windows.Forms.RichTextBox();
+            this.imageList1 = new System.Windows.Forms.ImageList(this.components);
             this.menuStrip.SuspendLayout();
             this.topPanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.checksDataGridView)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.issuesDataGridView)).BeginInit();
             this.SuspendLayout();
             // 
-            // Deny
+            // DenyButton
             // 
-            this.Deny.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.Deny.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
-            this.Deny.Location = new System.Drawing.Point(680, 410);
-            this.Deny.Name = "Deny";
-            this.Deny.Size = new System.Drawing.Size(156, 50);
-            this.Deny.TabIndex = 1;
-            this.Deny.Text = "Deny";
-            this.Deny.UseVisualStyleBackColor = true;
-            this.Deny.Click += new System.EventHandler(this.Deny_Click);
+            this.DenyButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.DenyButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
+            this.DenyButton.Location = new System.Drawing.Point(885, 444);
+            this.DenyButton.Name = "DenyButton";
+            this.DenyButton.Size = new System.Drawing.Size(90, 23);
+            this.DenyButton.TabIndex = 1;
+            this.DenyButton.Text = "Deny";
+            this.DenyButton.UseVisualStyleBackColor = true;
+            this.DenyButton.Click += new System.EventHandler(this.Deny_Click);
             // 
-            // ShowDenied
+            // ShowDeniedCheckbox
             // 
-            this.ShowDenied.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.ShowDenied.AutoSize = true;
-            this.ShowDenied.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
-            this.ShowDenied.Location = new System.Drawing.Point(705, 466);
-            this.ShowDenied.Name = "ShowDenied";
-            this.ShowDenied.Size = new System.Drawing.Size(110, 21);
-            this.ShowDenied.TabIndex = 2;
-            this.ShowDenied.Text = "Show Denied";
-            this.ShowDenied.UseVisualStyleBackColor = true;
-            this.ShowDenied.CheckedChanged += new System.EventHandler(this.ShowDenied_CheckedChanged);
+            this.ShowDeniedCheckbox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.ShowDeniedCheckbox.AutoSize = true;
+            this.ShowDeniedCheckbox.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
+            this.ShowDeniedCheckbox.Location = new System.Drawing.Point(885, 473);
+            this.ShowDeniedCheckbox.Name = "ShowDeniedCheckbox";
+            this.ShowDeniedCheckbox.Size = new System.Drawing.Size(90, 17);
+            this.ShowDeniedCheckbox.TabIndex = 2;
+            this.ShowDeniedCheckbox.Text = "Show Denied";
+            this.ShowDeniedCheckbox.UseVisualStyleBackColor = true;
+            this.ShowDeniedCheckbox.CheckedChanged += new System.EventHandler(this.ShowDenied_CheckedChanged);
             // 
             // cancel
             // 
@@ -300,6 +303,7 @@
             | System.Windows.Forms.AnchorStyles.Left)));
             this.issuesDataGridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.issuesDataGridView.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.statusIconColumn,
             this.ReferenceColumn,
             this.MatchTextColumn});
             this.issuesDataGridView.Location = new System.Drawing.Point(0, 284);
@@ -314,6 +318,15 @@
             this.issuesDataGridView.CellContentDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.issuesDataGridView_CellContentDoubleClick);
             this.issuesDataGridView.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.issuesDataGridView_CellContentDoubleClick);
             this.issuesDataGridView.SelectionChanged += new System.EventHandler(this.issuesDataGridView_SelectionChanged);
+            // 
+            // statusIconColumn
+            // 
+            this.statusIconColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
+            this.statusIconColumn.FillWeight = 60F;
+            this.statusIconColumn.HeaderText = "Status";
+            this.statusIconColumn.Name = "statusIconColumn";
+            this.statusIconColumn.ReadOnly = true;
+            this.statusIconColumn.Width = 43;
             // 
             // ReferenceColumn
             // 
@@ -336,7 +349,7 @@
             this.matchTextBox.Location = new System.Drawing.Point(349, 300);
             this.matchTextBox.Name = "matchTextBox";
             this.matchTextBox.ReadOnly = true;
-            this.matchTextBox.Size = new System.Drawing.Size(391, 125);
+            this.matchTextBox.Size = new System.Drawing.Size(530, 125);
             this.matchTextBox.TabIndex = 4;
             this.matchTextBox.Text = "";
             // 
@@ -367,9 +380,16 @@
             this.fixTextBox.Location = new System.Drawing.Point(349, 444);
             this.fixTextBox.Name = "fixTextBox";
             this.fixTextBox.ReadOnly = true;
-            this.fixTextBox.Size = new System.Drawing.Size(391, 125);
+            this.fixTextBox.Size = new System.Drawing.Size(530, 125);
             this.fixTextBox.TabIndex = 7;
             this.fixTextBox.Text = "";
+            // 
+            // imageList1
+            // 
+            this.imageList1.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("imageList1.ImageStream")));
+            this.imageList1.TransparentColor = System.Drawing.Color.Transparent;
+            this.imageList1.Images.SetKeyName(0, "checkmark-32.ico");
+            this.imageList1.Images.SetKeyName(1, "x-mark-32.ico");
             // 
             // CheckResultsForm
             // 
@@ -381,8 +401,8 @@
             this.Controls.Add(this.label1);
             this.Controls.Add(this.matchTextBox);
             this.Controls.Add(this.issuesDataGridView);
-            this.Controls.Add(this.ShowDenied);
-            this.Controls.Add(this.Deny);
+            this.Controls.Add(this.ShowDeniedCheckbox);
+            this.Controls.Add(this.DenyButton);
             this.Controls.Add(this.topPanel);
             this.Controls.Add(this.cancel);
             this.Controls.Add(this.menuStrip);
@@ -404,8 +424,8 @@
         }
 
         #endregion
-        private System.Windows.Forms.Button Deny;
-        private System.Windows.Forms.CheckBox ShowDenied;
+        private System.Windows.Forms.Button DenyButton;
+        private System.Windows.Forms.CheckBox ShowDeniedCheckbox;
         private System.Windows.Forms.Button cancel;
         private System.Windows.Forms.MenuStrip menuStrip;
         private System.Windows.Forms.ToolStripMenuItem fileToolStripMenuItem;
@@ -426,11 +446,13 @@
         private System.Windows.Forms.TextBox filterTextBox;
         private System.Windows.Forms.Label checkFilterLabel;
         private System.Windows.Forms.DataGridView issuesDataGridView;
-        private System.Windows.Forms.DataGridViewTextBoxColumn ReferenceColumn;
-        private System.Windows.Forms.DataGridViewTextBoxColumn MatchTextColumn;
         private System.Windows.Forms.RichTextBox matchTextBox;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.RichTextBox fixTextBox;
+        private System.Windows.Forms.DataGridViewImageColumn statusIconColumn;
+        private System.Windows.Forms.DataGridViewTextBoxColumn ReferenceColumn;
+        private System.Windows.Forms.DataGridViewTextBoxColumn MatchTextColumn;
+        private System.Windows.Forms.ImageList imageList1;
     }
 }

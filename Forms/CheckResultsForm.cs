@@ -15,6 +15,8 @@ using TvpMain.Project;
 using TvpMain.Text;
 using TvpMain.Util;
 using static TvpMain.Check.CheckAndFixItem;
+using System.IO;
+using System.Reflection;
 
 namespace TvpMain.Forms
 {
@@ -25,8 +27,8 @@ namespace TvpMain.Forms
     public partial class CheckResultsForm : Form
     {
         // Deny Button Text
-        readonly string DENY_BUTTON = "Deny";
-        readonly string UNDENY_BUTTON = "Un-Deny";
+        readonly string DENY_BUTTON_TEXT = "Deny";
+        readonly string UNDENY_BUTTON_TEXT = "Un-Deny";
 
         // A list of <c>CheckResultItem</c>s which have been denied
         private List<int> _denied;
@@ -164,7 +166,6 @@ namespace TvpMain.Forms
             ImportManager = importManager ?? throw new ArgumentNullException(nameof(importManager));
             CheckRunContext.Validate();
 
-            
             ProgressForm = new ProgressForm();
             ProgressForm.StartPosition = FormStartPosition.CenterParent;
             ProgressForm.Cancelled += OnProgressFormCancelled;
@@ -173,42 +174,17 @@ namespace TvpMain.Forms
 
             // initialize the components
             InitializeComponent();
+
+            // set the status column so that empty doesn't show unfound image
+            ((DataGridViewImageColumn)issuesDataGridView.Columns["statusIconColumn"]).DefaultCellStyle.NullValue = null;
+
             LoadDeniedResults();
-            UpdateDenyButton();
             BringToFront();
 
             // set the default set of books, all of them
             SelectedBooks = selectedBooks;
             string selectedBooksString = BookSelection.stringFromSelectedBooks(SelectedBooks);
             bookFilterTextBox.Text = selectedBooksString;
-        }
-
-        /// <summary>
-        /// This method updates the text and state of the "Deny" button depending on what (if any) <c>CheckResultItem</c> is selected.
-        /// </summary>
-        private void UpdateDenyButton()
-        {
-            CheckResultItem selectedResult = GetSelectedResult();
-            if (selectedResult != null)
-            {
-                Deny.Text = _denied.Contains(selectedResult.GetHashCode()) ? UNDENY_BUTTON : DENY_BUTTON;
-                Deny.Enabled = true;
-            }
-            else
-            {
-                Deny.Text = DENY_BUTTON;
-                Deny.Enabled = false;
-            }
-        }
-
-        /// <summary>
-        /// This method gets the currently-selected <c>CheckResultItem</c>.
-        /// </summary>
-        /// <returns></returns>
-        private CheckResultItem GetSelectedResult()
-        {
-            //throw new NotImplementedException();
-            return new CheckResultItem("result", "result", 1, CheckType.ScriptureReference, 0);
         }
 
         /// <summary>
@@ -536,6 +512,13 @@ namespace TvpMain.Forms
         /// </summary>
         protected void PopulateChecksDataGridView()
         {
+            int currentSelectedRowIndex = 0;
+
+            if (checksDataGridView.CurrentRow != null && checksDataGridView.Rows != null && checksDataGridView.Rows.Count > 0)
+            {
+                currentSelectedRowIndex = checksDataGridView.CurrentRow.Index;
+            }
+
             checksDataGridView.Rows.Clear();
 
             foreach (KeyValuePair<CheckAndFixItem, List<CheckResultItem>> result in CheckResults)
@@ -550,13 +533,14 @@ namespace TvpMain.Forms
                         result.Key.Description.Trim(),              // description
                         filteredResultItems.Count                   // count
                     });
-                    checksDataGridView.Rows[rowIndex].Tag = result;
+                    checksDataGridView.Rows[rowIndex].Tag = new KeyValuePair<CheckAndFixItem,List<CheckResultItem>>(result.Key, filteredResultItems);
                 }
             }
             if(checksDataGridView.CurrentRow == null && checksDataGridView.Rows != null && checksDataGridView.Rows.Count > 0 && checksDataGridView.Rows[0] != null)
             {
-                checksDataGridView.Rows[0].Selected = true;
+                checksDataGridView.Rows[currentSelectedRowIndex].Selected = true;
             }
+
             PopulateIssuesDataGridView();
         }
 
@@ -589,7 +573,24 @@ namespace TvpMain.Forms
                 {
                     if(bookNameItem.BookNum == item.Book)
                     {
-                        filteredItems.Add(item);
+                        if (ShowDeniedCheckbox.Checked)
+                        {
+                            filteredItems.Add(item);
+                        } else
+                        {
+                            if( _denied.Contains(item.GetHashCode()))
+                            {
+                                item.ResultState = Result.ResultState.Ignored;
+                            } else
+                            {
+                                item.ResultState = Result.ResultState.Found;
+                            }
+
+                            if (item.ResultState != Result.ResultState.Ignored)
+                            {
+                                filteredItems.Add(item);
+                            }
+                        }
                         continue;
                     }
                 }
@@ -727,21 +728,24 @@ namespace TvpMain.Forms
         /// <param name="e">The event information</param>
         private void Deny_Click(object sender, EventArgs e)
         {
-            CheckResultItem selectedResult = GetSelectedResult();
-            if (selectedResult == null) return;
+            var item = (CheckResultItem)issuesDataGridView.CurrentRow.Tag;
 
-            int selectedResultHashCode = selectedResult.GetHashCode();
-            if (_denied.Contains(selectedResultHashCode))
+            if (item.ResultState == Result.ResultState.Found)
             {
-                _denied.Remove(selectedResultHashCode);
-            }
-            else
+                item.ResultState = Result.ResultState.Ignored;
+                if (!_denied.Contains(item.GetHashCode()))
+                {
+                    _denied.Add(item.GetHashCode());
+                }
+            } else if(item.ResultState == Result.ResultState.Ignored)
             {
-                _denied.Add(selectedResultHashCode);
+                item.ResultState = Result.ResultState.Found;
+                _denied.Remove(item.GetHashCode());
             }
 
-            UpdateDenyButton();
             SaveDeniedResults();
+            PopulateChecksDataGridView();
+            UpdateDenyButton();
         }
 
         /// <summary>
@@ -751,7 +755,8 @@ namespace TvpMain.Forms
         /// <param name="e">The event information</param>
         private void ShowDenied_CheckedChanged(object sender, EventArgs e)
         {
-            _showDenied = CheckState.Checked.Equals(ShowDenied.CheckState);
+            _showDenied = CheckState.Checked.Equals(ShowDeniedCheckbox.CheckState);
+            PopulateChecksDataGridView();
         }
 
         /// When the filter text changes, trigger filtering
@@ -802,6 +807,7 @@ namespace TvpMain.Forms
                     // filter if this should be shown because it's ignored
                     int rowIndex = issuesDataGridView.Rows.Add(new object[]
                     {
+                        getStatusIcon(item.ResultState),
                         verseLocation.toString(),
                         item.MatchText
                     });
@@ -813,6 +819,24 @@ namespace TvpMain.Forms
                     issuesDataGridView.Rows[0].Selected = true;
                 }
                 PopulateMatchFixTexBoxes();
+            }
+        }
+
+        /// <summary>
+        /// Returns the appropriate icon bitmap for the status of the issue
+        /// </summary>
+        /// <param name="resultState">The current issue result state</param>
+        /// <returns>a bitmap to be used in the column</returns>
+        private Icon getStatusIcon(Result.ResultState resultState)
+        {
+            switch(resultState)
+            {
+                case Result.ResultState.Ignored:
+                    return Properties.Resources.x_mark_16;
+                case Result.ResultState.Fixed:
+                    return Properties.Resources.checkmark_16;
+                default:
+                    return null;
             }
         }
 
@@ -852,6 +876,29 @@ namespace TvpMain.Forms
         {
             // update match/fix text boxes
             PopulateMatchFixTexBoxes();
+
+            UpdateDenyButton();
+        }
+        
+        /// <summary>
+        /// Update the text on the deny button based on the currently selected row
+        /// </summary>
+        private void UpdateDenyButton()
+        {
+            if (issuesDataGridView.Rows != null && issuesDataGridView.Rows.Count > 0 && issuesDataGridView.CurrentRow != null && issuesDataGridView.CurrentRow.Tag != null)
+            {
+                var item = (CheckResultItem)issuesDataGridView.CurrentRow.Tag;
+                switch (item.ResultState)
+                {
+                    case Result.ResultState.Ignored:
+                        DenyButton.Text = UNDENY_BUTTON_TEXT;
+                        break;
+                    case Result.ResultState.Found:
+                    default:
+                        DenyButton.Text = DENY_BUTTON_TEXT;
+                        break;
+                }
+            }
         }
 
         /// <summary>
