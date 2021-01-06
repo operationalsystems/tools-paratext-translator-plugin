@@ -772,7 +772,7 @@ namespace TvpMain.Forms
         }
 
         /// <summary>
-        /// When the selectionon this item changes, update the dependant list
+        /// When the selection on this item changes, update the dependant list
         /// </summary>
         /// <param name="sender">The control that sent this event</param>
         /// <param name="e">The event information that triggered this call</param>
@@ -797,7 +797,6 @@ namespace TvpMain.Forms
                 {
                     var verseLocation = new VerseLocation(item.Book, item.Chapter, item.Verse);
 
-                    // filter if this should be shown because it's ignored
                     int rowIndex = issuesDataGridView.Rows.Add(new object[]
                     {
                         getStatusIcon(item.ResultState),
@@ -835,18 +834,7 @@ namespace TvpMain.Forms
         }
 
         /// <summary>
-        /// When selection changes, another way to get there
-        /// </summary>
-        /// <param name="sender">The control that sent this event</param>
-        /// <param name="e">The event information that triggered this call</param>
-        private void issuesDataGridView_CellContentClick(object sender, DataGridViewCellEventArgs e)
-        {
-            // update match/fix text boxes
-            // PopulateMatchFixTexBoxes();
-        }
-
-        /// <summary>
-        /// 
+        /// Navigate the project view to the issue location
         /// </summary>
         /// <param name="sender">The control that sent this event</param>
         /// <param name="e">The event information that triggered this call</param>
@@ -862,7 +850,7 @@ namespace TvpMain.Forms
         }
 
         /// <summary>
-        /// 
+        /// Update the match and fix texts and the deny button based on new selection
         /// </summary>
         /// <param name="sender">The control that sent this event</param>
         /// <param name="e">The event information that triggered this call</param>

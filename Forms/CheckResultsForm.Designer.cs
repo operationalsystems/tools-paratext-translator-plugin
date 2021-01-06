@@ -314,7 +314,6 @@
             this.issuesDataGridView.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.issuesDataGridView.Size = new System.Drawing.Size(343, 285);
             this.issuesDataGridView.TabIndex = 3;
-            this.issuesDataGridView.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.issuesDataGridView_CellContentClick);
             this.issuesDataGridView.CellContentDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.issuesDataGridView_CellContentDoubleClick);
             this.issuesDataGridView.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.issuesDataGridView_CellContentDoubleClick);
             this.issuesDataGridView.SelectionChanged += new System.EventHandler(this.issuesDataGridView_SelectionChanged);
