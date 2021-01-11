@@ -701,7 +701,7 @@ namespace TvpMain.Forms
             {
                 form.StartPosition = FormStartPosition.CenterParent;
 
-                var result = form.ShowDialog();
+                var result = form.ShowDialog(this);
                 if (result == DialogResult.OK)
                 {
                     // update which books were selected

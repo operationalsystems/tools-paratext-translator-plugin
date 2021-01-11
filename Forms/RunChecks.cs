@@ -329,7 +329,7 @@ namespace TvpMain.Forms
         private void editorToolStripMenuItem_Click(object sender, EventArgs e)
         {
             CheckEditor checkEditor = new CheckEditor();
-            checkEditor.Show(this);
+            checkEditor.ShowDialog(this);
 
         }
 
@@ -371,7 +371,7 @@ namespace TvpMain.Forms
                 importManager
                 );
 
-            checkResultsForm.Show();
+            checkResultsForm.ShowDialog(this);
             checkResultsForm.BringToFront();
         }
 
@@ -456,7 +456,7 @@ namespace TvpMain.Forms
             {
                 form.StartPosition = FormStartPosition.CenterParent;
 
-                var result = form.ShowDialog();
+                var result = form.ShowDialog(this);
                 if (result == DialogResult.OK)
                 {
                     // update which books were selected
