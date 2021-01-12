@@ -1085,7 +1085,7 @@ namespace TvpMain.Forms
 
         private void checkResultsToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Form checkResults = new CheckResultsForm(null, null, null, null, new List<CheckAndFixItem>(), null, null, null);
+            Form checkResults = new CheckResultsForm(null, null, null, null, new List<CheckAndFixItem>(), null);
             checkResults.ShowDialog();
         }
 
