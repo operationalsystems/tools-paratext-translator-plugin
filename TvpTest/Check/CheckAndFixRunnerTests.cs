@@ -342,5 +342,28 @@ namespace TvpMain.Check.Tests
 
         }
 
+        /// <summary>
+        /// Add a space between \v tag and number.
+        /// </summary>
+        [TestMethod()]
+        public void AddSpaceBetweenVerseTagAndNumber()
+        {
+            var inputText = @"\v1 Paul, a servant of Christ Jesus, called to be an apostle and set apart for the gospel of God—";
+            var expectedMatchText = @"\v1";
+            var expectedFixText = @"\v 1";
+
+            // Perform the check and fix assessment
+            var checkAndFix = CheckAndFixItem.LoadFromXmlFile(@"Resources/checkFixes/AddSpaceBetweenVerseTagAndNumber.xml");
+            List<CheckResultItem> results = checkAndFixRunner.ExecCheckAndFix(inputText, checkAndFix);
+
+            // Should have one result
+            Assert.AreEqual(1, results.Count);
+
+            // Check the found value and the replacement suggestion
+            Assert.AreEqual(expectedMatchText, results[0].MatchText);
+            Assert.AreEqual(expectedFixText, results[0].FixText);
+
+        }
+
     }
 }

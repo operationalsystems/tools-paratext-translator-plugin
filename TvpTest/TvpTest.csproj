@@ -168,6 +168,9 @@
     <Content Include="Resources\checkFixes\AddIETag.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="Resources\checkFixes\AddSpaceBetweenVerseTagAndNumber.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Resources\checkFixes\ReplaceIorTag.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
