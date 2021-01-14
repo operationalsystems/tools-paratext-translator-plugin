@@ -17,6 +17,7 @@ using TvpMain.Util;
 using static TvpMain.Check.CheckAndFixItem;
 using System.IO;
 using System.Reflection;
+using System.Runtime.Serialization;
 
 namespace TvpMain.Forms
 {
@@ -979,6 +980,31 @@ namespace TvpMain.Forms
         private void CheckResultsForm_Shown(object sender, EventArgs e)
         {
             RunChecks();
+        }
+    }
+
+    /// <summary>
+    /// Basic exception for text check errors.
+    /// </summary>
+    public class TextCheckException : ApplicationException, ISerializable
+    {
+        /// <summary>
+        /// Basic ctor.
+        /// </summary>
+        /// <param name="messageText">Message text (optional, may be null).</param>
+        /// <param name="causeEx">Cause exception (optional, may be null).</param>
+        public TextCheckException(string messageText, Exception causeEx)
+            : base(messageText, causeEx)
+        {
+        }
+
+        /// <summary>
+        /// Basic ctor.
+        /// </summary>
+        /// <param name="messageText">Message text (optional, may be null).</param>
+        public TextCheckException(string messageText)
+            : base(messageText)
+        {
         }
     }
 }

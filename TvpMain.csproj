@@ -255,12 +255,6 @@
     <Compile Include="Forms\CheckEditor.Designer.cs">
       <DependentUpon>CheckEditor.cs</DependentUpon>
     </Compile>
-    <Compile Include="Forms\CheckManagerTestInterface.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\CheckManagerTestInterface.Designer.cs">
-      <DependentUpon>CheckManagerTestInterface.cs</DependentUpon>
-    </Compile>
     <Compile Include="Forms\CheckResultsForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -273,19 +267,12 @@
     <Compile Include="Forms\GenericProgressForm.Designer.cs">
       <DependentUpon>GenericProgressForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="Forms\ProjectCheckSettingsTestForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\ProjectCheckSettingsTestForm.Designer.cs">
-      <DependentUpon>ProjectCheckSettingsTestForm.cs</DependentUpon>
-    </Compile>
     <Compile Include="Forms\LicenseForm.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Forms\LicenseForm.Designer.cs">
       <DependentUpon>LicenseForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="Forms\RichTextBoxPrinter.cs" />
     <Compile Include="Forms\RunChecks.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -302,7 +289,6 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Compile Include="Punctuation\PunctuationErrorType.cs" />
     <Compile Include="Reference\ScriptureReferenceErrorType.cs" />
     <Compile Include="Reference\ScriptureReferenceSeparators.cs" />
     <Compile Include="Reference\ScriptureReferenceBuilder.cs" />
@@ -318,21 +304,10 @@
     <Compile Include="Text\PartContext.cs" />
     <Compile Include="Check\CheckUpdatedArgs.cs" />
     <Compile Include="Check\CheckType.cs" />
-    <Compile Include="Punctuation\MissingSentencePunctuationCheck.cs" />
     <Compile Include="Reference\ScriptureReferenceCheck.cs" />
     <Compile Include="Project\ProjectManager.cs" />
     <Compile Include="Result\ResultState.cs" />
     <Compile Include="Result\IgnoreListItem.cs" />
-    <Compile Include="Filter\AbstractTextFilter.cs" />
-    <Compile Include="Filter\KeyTermsTextFilter.cs" />
-    <Compile Include="Filter\ITextFilter.cs" />
-    <Compile Include="Filter\IgnoreListTextFilter.cs" />
-    <Compile Include="Forms\IgnoreListForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\IgnoreListForm.Designer.cs">
-      <DependentUpon>IgnoreListForm.cs</DependentUpon>
-    </Compile>
     <Compile Include="Forms\ProgressForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -346,15 +321,8 @@
     <Compile Include="Util\HostUtil.cs" />
     <Compile Include="Result\CheckResults.cs" />
     <Compile Include="Check\ITextCheck.cs" />
-    <Compile Include="Check\TextCheckRunner.cs" />
     <Compile Include="Result\ResultItem.cs" />
     <Compile Include="TranslationValidationPlugin.cs" />
-    <Compile Include="Forms\MainForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\MainForm.Designer.cs">
-      <DependentUpon>MainForm.cs</DependentUpon>
-    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Util\ObjectUtil.cs" />
     <Compile Include="Util\ParatextProjectHelper.cs" />
@@ -369,9 +337,6 @@
     <EmbeddedResource Include="Forms\CheckEditor.resx">
       <DependentUpon>CheckEditor.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms\CheckManagerTestInterface.resx">
-      <DependentUpon>CheckManagerTestInterface.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="Forms\GenericProgressForm.resx">
       <DependentUpon>GenericProgressForm.cs</DependentUpon>
     </EmbeddedResource>
@@ -380,9 +345,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\LicenseForm.resx">
       <DependentUpon>LicenseForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\ProjectCheckSettingsTestForm.resx">
-      <DependentUpon>ProjectCheckSettingsTestForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\RunChecks.resx">
       <DependentUpon>RunChecks.cs</DependentUpon>
@@ -396,14 +358,8 @@
     <None Include="Scripts\PublishTvpToPpm.bat" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Forms\IgnoreListForm.resx">
-      <DependentUpon>IgnoreListForm.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="Forms\ProgressForm.resx">
       <DependentUpon>ProgressForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\MainForm.resx">
-      <DependentUpon>MainForm.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

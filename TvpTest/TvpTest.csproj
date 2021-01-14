@@ -158,8 +158,6 @@
     <Compile Include="CheckAndFixTests.cs" />
     <Compile Include="Project\ProjectCheckSettingsTests.cs" />
     <Compile Include="TestAWSCredentials.cs" />
-    <Compile Include="TextCheckRunnerTests.cs" />
-    <Compile Include="FilterTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ScriptureReferenceCheckTests.cs" />
     <Compile Include="ScriptureReferenceParserTests.cs" />
