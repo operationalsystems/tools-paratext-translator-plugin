@@ -153,14 +153,11 @@
     <Compile Include="CheckManagement\LocalRepositoryTests.cs" />
     <Compile Include="CheckManagement\S3RepositoryTests.cs" />
     <Compile Include="CheckManagement\S3ServiceTests.cs" />
-    <Compile Include="ImportManagerTests.cs" />
     <Compile Include="LocalCheckAndFixManagerTests.cs" />
     <Compile Include="CheckAndFixTests.cs" />
     <Compile Include="Project\ProjectCheckSettingsTests.cs" />
     <Compile Include="TestAWSCredentials.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ScriptureReferenceCheckTests.cs" />
-    <Compile Include="ScriptureReferenceParserTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Resources\checkFixes\AddIETag.xml">
@@ -207,12 +204,6 @@
     <Content Include="Resources\checkFixes\InFootnotes.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Resources\reference-results-1.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Resources\test-usfm-1.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
     <None Include="Resources\testReferences\Dan6_PoetryQuoteMatch.sfm">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -233,18 +224,6 @@
     <Content Include="icu64\icudt54.dll" />
     <Content Include="icu64\icuin54.dll" />
     <Content Include="icu64\icuuc54.dll" />
-    <Content Include="Resources\formatter-results-1.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Resources\parser-results-1.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Resources\test-verses-1.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Resources\scripture-test-1.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\TvpMain.csproj">
