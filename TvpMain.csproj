@@ -221,7 +221,6 @@
     <Compile Include="CheckManagement\S3Repository.cs" />
     <Compile Include="Check\CheckAndFixItem.cs" />
     <Compile Include="Check\CheckAndFixRunner.cs" />
-    <Compile Include="Check\CheckArea.cs" />
     <Compile Include="Check\CheckResultItem.cs" />
     <Compile Include="Check\CheckRunContext.cs" />
     <Compile Include="Check\ICheckAndFixRunner.cs" />
@@ -297,7 +296,6 @@
     <Compile Include="Util\MainConsts.cs" />
     <Compile Include="Util\HostUtil.cs" />
     <Compile Include="Result\CheckResults.cs" />
-    <Compile Include="Check\ITextCheck.cs" />
     <Compile Include="Result\ResultItem.cs" />
     <Compile Include="TranslationValidationPlugin.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
