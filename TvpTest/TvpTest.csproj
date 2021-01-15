@@ -147,7 +147,6 @@
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AbstractCheckTests.cs" />
     <Compile Include="Check\CheckAndFixRunnerTests.cs" />
     <Compile Include="CheckManagement\CheckManagerTests.cs" />
     <Compile Include="CheckManagement\LocalRepositoryTests.cs" />

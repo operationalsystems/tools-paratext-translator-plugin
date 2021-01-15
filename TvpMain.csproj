@@ -271,7 +271,6 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Compile Include="Result\ResultManager.cs" />
     <Compile Include="Text\BookIdItem.cs" />
     <Compile Include="Text\PartLocation.cs" />
     <Compile Include="Text\ProjectVerse.cs" />
@@ -283,7 +282,6 @@
     <Compile Include="Check\CheckType.cs" />
     <Compile Include="Project\ProjectManager.cs" />
     <Compile Include="Result\ResultState.cs" />
-    <Compile Include="Result\IgnoreListItem.cs" />
     <Compile Include="Forms\ProgressForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -295,8 +293,6 @@
     <Compile Include="Util\FormUtil.cs" />
     <Compile Include="Util\MainConsts.cs" />
     <Compile Include="Util\HostUtil.cs" />
-    <Compile Include="Result\CheckResults.cs" />
-    <Compile Include="Result\ResultItem.cs" />
     <Compile Include="TranslationValidationPlugin.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Util\ObjectUtil.cs" />
