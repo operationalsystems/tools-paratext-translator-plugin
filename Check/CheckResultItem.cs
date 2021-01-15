@@ -1,6 +1,5 @@
 ﻿using Newtonsoft.Json;
 using System;
-using TvpMain.Result;
 using TvpMain.Util;
 
 namespace TvpMain.Check
@@ -65,7 +64,7 @@ namespace TvpMain.Check
         /// TODO: Update this to account for the new possiblities
         /// </summary>
         [JsonProperty]
-        public ResultState ResultState { get; set; }
+        public CheckResultState ResultState { get; set; }
 
         /// <summary>
         /// The project name for where the check result was found.
@@ -109,7 +108,7 @@ namespace TvpMain.Check
         : this(description,
             matchText, matchStart,
             "", checkType,
-            resultTypeCode, ResultState.Found)
+            resultTypeCode, CheckResultState.Found)
         { }
 
         /// <summary>
@@ -128,7 +127,7 @@ namespace TvpMain.Check
         : this(description,
             matchText, matchStart,
             fixText, checkType,
-            resultTypeCode, ResultState.Found)
+            resultTypeCode, CheckResultState.Found)
         { }
 
         /// <summary>
@@ -144,7 +143,7 @@ namespace TvpMain.Check
         public CheckResultItem(string description,
             string matchText, int matchStart,
             string fixText, CheckType checkType,
-            int resultTypeCode, ResultState resultState)
+            int resultTypeCode, CheckResultState resultState)
         {
             this.Description = description ?? throw new ArgumentNullException(nameof(description));
             this.MatchText = matchText ?? throw new ArgumentNullException(nameof(matchText));
@@ -178,7 +177,7 @@ namespace TvpMain.Check
         : this(description,
             matchText, matchStart,
             "", checkType,
-            resultTypeCode, ResultState.Found)
+            resultTypeCode, CheckResultState.Found)
         {
             ProjectName = projectName;
             Book = book;

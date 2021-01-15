@@ -281,7 +281,7 @@
     <Compile Include="Check\CheckUpdatedArgs.cs" />
     <Compile Include="Check\CheckType.cs" />
     <Compile Include="Project\ProjectManager.cs" />
-    <Compile Include="Result\ResultState.cs" />
+    <Compile Include="Check\CheckResultState.cs" />
     <Compile Include="Forms\ProgressForm.cs">
       <SubType>Form</SubType>
     </Compile>

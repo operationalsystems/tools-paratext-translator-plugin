@@ -11,7 +11,6 @@ using System.Windows.Forms;
 using System.Xml.Serialization;
 using TvpMain.Check;
 using TvpMain.Project;
-using TvpMain.Result;
 using TvpMain.Text;
 
 namespace TvpMain.Util

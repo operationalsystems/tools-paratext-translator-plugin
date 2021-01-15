@@ -1,9 +1,9 @@
-﻿namespace TvpMain.Result
+﻿namespace TvpMain.Check
 {
     /// <summary>
     /// User-controlled result state.
     /// </summary>
-    public enum ResultState
+    public enum CheckResultState
     {
         Found,
         Ignored,
