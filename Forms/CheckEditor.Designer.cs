@@ -62,6 +62,7 @@ namespace TvpMain.Forms
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.publishToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.publishWorker = new System.ComponentModel.BackgroundWorker();
+            this.jsEditor = new ScintillaNET.Scintilla();
             this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
             this.menuStrip.SuspendLayout();
@@ -111,6 +112,7 @@ namespace TvpMain.Forms
             this.groupBox2.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBox2.Controls.Add(this.jsEditor);
             this.groupBox2.Controls.Add(this.label5);
             this.groupBox2.Controls.Add(this.scriptTextBox);
             this.groupBox2.Controls.Add(this.fixRegExTextBox);
@@ -119,7 +121,7 @@ namespace TvpMain.Forms
             this.groupBox2.Controls.Add(this.checkFindRegExTextBox);
             this.groupBox2.Location = new System.Drawing.Point(13, 27);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(659, 546);
+            this.groupBox2.Size = new System.Drawing.Size(1164, 685);
             this.groupBox2.TabIndex = 3;
             this.groupBox2.TabStop = false;
             // 
@@ -143,7 +145,7 @@ namespace TvpMain.Forms
             this.scriptTextBox.Multiline = true;
             this.scriptTextBox.Name = "scriptTextBox";
             this.scriptTextBox.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.scriptTextBox.Size = new System.Drawing.Size(642, 448);
+            this.scriptTextBox.Size = new System.Drawing.Size(313, 575);
             this.scriptTextBox.TabIndex = 4;
             this.scriptTextBox.WordWrap = false;
             this.scriptTextBox.TextChanged += new System.EventHandler(this.content_TextChanged);
@@ -155,7 +157,7 @@ namespace TvpMain.Forms
             | System.Windows.Forms.AnchorStyles.Right)));
             this.fixRegExTextBox.Location = new System.Drawing.Point(116, 43);
             this.fixRegExTextBox.Name = "fixRegExTextBox";
-            this.fixRegExTextBox.Size = new System.Drawing.Size(535, 20);
+            this.fixRegExTextBox.Size = new System.Drawing.Size(1040, 20);
             this.fixRegExTextBox.TabIndex = 3;
             this.fixRegExTextBox.TextChanged += new System.EventHandler(this.content_TextChanged);
             this.fixRegExTextBox.MouseEnter += new System.EventHandler(this.FixRegExTextBox_MouseEnter);
@@ -184,7 +186,7 @@ namespace TvpMain.Forms
             | System.Windows.Forms.AnchorStyles.Right)));
             this.checkFindRegExTextBox.Location = new System.Drawing.Point(116, 16);
             this.checkFindRegExTextBox.Name = "checkFindRegExTextBox";
-            this.checkFindRegExTextBox.Size = new System.Drawing.Size(535, 20);
+            this.checkFindRegExTextBox.Size = new System.Drawing.Size(1040, 20);
             this.checkFindRegExTextBox.TabIndex = 0;
             this.checkFindRegExTextBox.TextChanged += new System.EventHandler(this.content_TextChanged);
             this.checkFindRegExTextBox.MouseEnter += new System.EventHandler(this.checkFindRegExTextBox_MouseEnter);
@@ -233,9 +235,9 @@ namespace TvpMain.Forms
             this.groupBox3.Controls.Add(this.label6);
             this.groupBox3.Controls.Add(this.scopeCombo);
             this.groupBox3.Controls.Add(this.label2);
-            this.groupBox3.Location = new System.Drawing.Point(678, 27);
+            this.groupBox3.Location = new System.Drawing.Point(1183, 27);
             this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Size = new System.Drawing.Size(445, 546);
+            this.groupBox3.Size = new System.Drawing.Size(445, 685);
             this.groupBox3.TabIndex = 7;
             this.groupBox3.TabStop = false;
             // 
@@ -270,7 +272,7 @@ namespace TvpMain.Forms
             this.descriptionTextBox.Multiline = true;
             this.descriptionTextBox.Name = "descriptionTextBox";
             this.descriptionTextBox.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.descriptionTextBox.Size = new System.Drawing.Size(430, 316);
+            this.descriptionTextBox.Size = new System.Drawing.Size(430, 455);
             this.descriptionTextBox.TabIndex = 14;
             this.descriptionTextBox.TextChanged += new System.EventHandler(this.content_TextChanged);
             this.descriptionTextBox.MouseEnter += new System.EventHandler(this.descriptionTextBox_MouseEnter);
@@ -344,10 +346,10 @@ namespace TvpMain.Forms
             this.helpTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.helpTextBox.BackColor = System.Drawing.Color.PaleGoldenrod;
-            this.helpTextBox.Location = new System.Drawing.Point(12, 579);
+            this.helpTextBox.Location = new System.Drawing.Point(12, 718);
             this.helpTextBox.Multiline = true;
             this.helpTextBox.Name = "helpTextBox";
-            this.helpTextBox.Size = new System.Drawing.Size(1111, 74);
+            this.helpTextBox.Size = new System.Drawing.Size(1616, 74);
             this.helpTextBox.TabIndex = 8;
             // 
             // menuStrip
@@ -357,7 +359,7 @@ namespace TvpMain.Forms
             this.publishToolStripMenuItem});
             this.menuStrip.Location = new System.Drawing.Point(0, 0);
             this.menuStrip.Name = "menuStrip";
-            this.menuStrip.Size = new System.Drawing.Size(1135, 24);
+            this.menuStrip.Size = new System.Drawing.Size(1640, 24);
             this.menuStrip.TabIndex = 13;
             this.menuStrip.Text = "menuStrip";
             // 
@@ -412,11 +414,20 @@ namespace TvpMain.Forms
             this.publishWorker.DoWork += new System.ComponentModel.DoWorkEventHandler(this.publishWorker_DoWork);
             this.publishWorker.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.publishWorker_RunWorkerCompleted);
             // 
+            // jsEditor
+            // 
+            this.jsEditor.Lexer = ScintillaNET.Lexer.Cpp;
+            this.jsEditor.Location = new System.Drawing.Point(328, 92);
+            this.jsEditor.Name = "jsEditor";
+            this.jsEditor.Size = new System.Drawing.Size(828, 575);
+            this.jsEditor.TabIndex = 6;
+            this.jsEditor.Text = "scintilla1";
+            // 
             // CheckEditor
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1135, 665);
+            this.ClientSize = new System.Drawing.Size(1640, 804);
             this.Controls.Add(this.helpTextBox);
             this.Controls.Add(this.groupBox3);
             this.Controls.Add(this.groupBox2);
@@ -476,5 +487,6 @@ namespace TvpMain.Forms
         private System.Windows.Forms.MaskedTextBox versionTextBox;
         private System.Windows.Forms.ToolStripMenuItem publishToolStripMenuItem;
         private System.ComponentModel.BackgroundWorker publishWorker;
+        private ScintillaNET.Scintilla jsEditor;
     }
 }
