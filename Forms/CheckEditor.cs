@@ -1,7 +1,9 @@
-﻿using System;
+﻿using ScintillaNET;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
 using TvpMain.Check;
@@ -20,6 +22,19 @@ namespace TvpMain.Forms
         private ICheckManager _checkManager;
 
         private CheckAndFixItem _checkAndFixItem;
+
+        /// <summary>
+        /// max number of characters in a line number
+        /// </summary>
+        private int maxLineNumberCharLength = 5;
+
+        /// <summary>
+        /// a set of javascript keywords
+        /// </summary>
+        private string jsKeywords = "break case catch class const continue debugger default delete do else export extends finally " +
+                "for function if import in instanceof new return super switch this throw try typeof var void while with yield " +
+                "enum implements interface let package private protected public static yield await abstract boolean byte char " +
+                "double final float goto int long native short synchronized throws transient volatile";
 
         /// <summary>
         /// Simple progress bar form for when the checks are being synchronized
@@ -44,6 +59,7 @@ namespace TvpMain.Forms
         private void CheckEditor_Load(object sender, EventArgs e)
         {
             newToolStripMenuItem_Click(sender, e);
+            setScintillaRecipe();
         }
 
         /// <summary>
@@ -66,6 +82,11 @@ namespace TvpMain.Forms
             }
 
             _checkAndFixItem = new CheckAndFixItem();
+            _checkAndFixItem.CheckScript = @"function checkAndFix(checkResultItems) {
+  return checkResultItems
+}
+";
+
             _checkAndFixItem.Id = Guid.NewGuid().ToString();
             updateUI();
 
@@ -223,7 +244,7 @@ namespace TvpMain.Forms
 
             checkFindRegExTextBox.Text = _checkAndFixItem.CheckRegex ?? "";
             fixRegExTextBox.Text = _checkAndFixItem.FixRegex ?? "";
-            scriptTextBox.Text = _checkAndFixItem.CheckScript == null ? "" : _checkAndFixItem.CheckScript.Replace("\n", Environment.NewLine);
+            jsEditor.Text = _checkAndFixItem.CheckScript == null ? "" : _checkAndFixItem.CheckScript.Replace("\n", Environment.NewLine);
         }
 
         /// <summary>
@@ -248,7 +269,7 @@ namespace TvpMain.Forms
 
                 _checkAndFixItem.CheckRegex = checkFindRegExTextBox.Text;
                 _checkAndFixItem.FixRegex = fixRegExTextBox.Text;
-                _checkAndFixItem.CheckScript = scriptTextBox.Text;
+                _checkAndFixItem.CheckScript = jsEditor.Text;
             }
             catch
             {
@@ -397,13 +418,83 @@ namespace TvpMain.Forms
         private void setScintillaRecipe()
         {
 
-            var jsKeywords = "break case catch class const continue debugger default delete do else export extends finally " +
-                "for function if import in instanceof new return super switch this throw try typeof var void while with yield " +
-                "enum implements interface let package private protected public static yield await abstract boolean byte char " +
-                "double final float goto int long native short synchronized throws transient volatile";
+            // Configuring the default style with properties
+            // we have common to every lexer style saves time.
+            jsEditor.StyleResetDefault();
+            jsEditor.Styles[Style.Default].Font = "Consolas";
+            jsEditor.Styles[Style.Default].Size = 10;
+            jsEditor.StyleClearAll();
 
+            // Configure the CPP (C#) lexer styles
+            jsEditor.Styles[Style.Cpp.Default].ForeColor = Color.Silver;
+            jsEditor.Styles[Style.Cpp.Comment].ForeColor = Color.FromArgb(0, 128, 0); // Green
+            jsEditor.Styles[Style.Cpp.CommentLine].ForeColor = Color.FromArgb(0, 128, 0); // Green
+            jsEditor.Styles[Style.Cpp.CommentLineDoc].ForeColor = Color.FromArgb(128, 128, 128); // Gray
+            jsEditor.Styles[Style.Cpp.Number].ForeColor = Color.Olive;
+            jsEditor.Styles[Style.Cpp.Word].ForeColor = Color.Blue;
+            jsEditor.Styles[Style.Cpp.Word2].ForeColor = Color.Blue;
+            jsEditor.Styles[Style.Cpp.String].ForeColor = Color.FromArgb(163, 21, 21); // Red
+            jsEditor.Styles[Style.Cpp.Character].ForeColor = Color.FromArgb(163, 21, 21); // Red
+            jsEditor.Styles[Style.Cpp.Verbatim].ForeColor = Color.FromArgb(163, 21, 21); // Red
+            jsEditor.Styles[Style.Cpp.StringEol].BackColor = Color.Pink;
+            jsEditor.Styles[Style.Cpp.Operator].ForeColor = Color.Purple;
+            jsEditor.Styles[Style.Cpp.Preprocessor].ForeColor = Color.Maroon;
+            jsEditor.Lexer = Lexer.Cpp;
 
+            jsEditor.SetKeywords(0, this.jsKeywords);
         }
 
+        /// <summary>
+        /// On text change, look to increase the size of the marge to handle full line numbers
+        /// </summary>
+        /// <param name="sender">The control that sent this event</param>
+        /// <param name="e">The event information that triggered this call</param>
+        private void jsEditor_TextChanged(object sender, EventArgs e)
+        {
+            // Did the number of characters in the line number display change?
+            // i.e. nnn VS nn, or nnnn VS nn, etc...
+            var maxLineNumberCharLength = jsEditor.Lines.Count.ToString().Length;
+            if (maxLineNumberCharLength == this.maxLineNumberCharLength)
+                return;
+
+            // Calculate the width required to display the last line number
+            // and include some padding for good measure.
+            const int padding = 2;
+            jsEditor.Margins[0].Width = jsEditor.TextWidth(Style.LineNumber, new string('9', maxLineNumberCharLength + 1)) + padding;
+            this.maxLineNumberCharLength = maxLineNumberCharLength;
+        }
+
+        /// <summary>
+        /// While characters are being added, allow for hints for keywords
+        /// </summary>
+        /// <param name="sender">The control that sent this event</param>
+        /// <param name="e">The event information that triggered this call</param>
+        private void jsEditor_CharAdded(object sender, CharAddedEventArgs e)
+        {
+            // Find the word start
+            var currentPos = jsEditor.CurrentPosition;
+            var wordStartPos = jsEditor.WordStartPosition(currentPos, true);
+
+            // Display the autocompletion list
+            var lenEntered = currentPos - wordStartPos;
+            if (lenEntered > 0)
+            {
+                if (!jsEditor.AutoCActive)
+                    jsEditor.AutoCShow(lenEntered, this.jsKeywords);
+            }
+        }
+
+        /// <summary>
+        /// Update the help text for the javascript control
+        /// </summary>
+        /// <param name="sender">The control that sent this event</param>
+        /// <param name="e">The event information that triggered this call</param>
+        private void jsEditor_MouseEnter(object sender, EventArgs e)
+        {
+            helpTextBox.Clear();
+            helpTextBox.AppendText("Javascript that can be called after the two regular expressions are run, if they are defined." + Environment.NewLine);
+            helpTextBox.AppendText("This script MUST implement the function checkAndFix(checkResultItems). The CheckResultItems are the results" +
+                " found in the regular expression pass.");
+        }
     }
 }

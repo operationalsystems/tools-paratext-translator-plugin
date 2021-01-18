@@ -34,8 +34,8 @@ namespace TvpMain.Forms
             this.label1 = new System.Windows.Forms.Label();
             this.checkFixNameTextBox = new System.Windows.Forms.TextBox();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.jsEditor = new ScintillaNET.Scintilla();
             this.label5 = new System.Windows.Forms.Label();
-            this.scriptTextBox = new System.Windows.Forms.TextBox();
             this.fixRegExTextBox = new System.Windows.Forms.TextBox();
             this.label4 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
@@ -62,7 +62,6 @@ namespace TvpMain.Forms
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.publishToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.publishWorker = new System.ComponentModel.BackgroundWorker();
-            this.jsEditor = new ScintillaNET.Scintilla();
             this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
             this.menuStrip.SuspendLayout();
@@ -114,7 +113,6 @@ namespace TvpMain.Forms
             | System.Windows.Forms.AnchorStyles.Right)));
             this.groupBox2.Controls.Add(this.jsEditor);
             this.groupBox2.Controls.Add(this.label5);
-            this.groupBox2.Controls.Add(this.scriptTextBox);
             this.groupBox2.Controls.Add(this.fixRegExTextBox);
             this.groupBox2.Controls.Add(this.label4);
             this.groupBox2.Controls.Add(this.label3);
@@ -125,6 +123,17 @@ namespace TvpMain.Forms
             this.groupBox2.TabIndex = 3;
             this.groupBox2.TabStop = false;
             // 
+            // jsEditor
+            // 
+            this.jsEditor.Lexer = ScintillaNET.Lexer.Cpp;
+            this.jsEditor.Location = new System.Drawing.Point(9, 92);
+            this.jsEditor.Name = "jsEditor";
+            this.jsEditor.Size = new System.Drawing.Size(1147, 575);
+            this.jsEditor.TabIndex = 6;
+            this.jsEditor.CharAdded += new System.EventHandler<ScintillaNET.CharAddedEventArgs>(this.jsEditor_CharAdded);
+            this.jsEditor.TextChanged += new System.EventHandler(this.jsEditor_TextChanged);
+            this.jsEditor.MouseEnter += new System.EventHandler(this.jsEditor_MouseEnter);
+            // 
             // label5
             // 
             this.label5.AutoSize = true;
@@ -133,23 +142,6 @@ namespace TvpMain.Forms
             this.label5.Size = new System.Drawing.Size(57, 13);
             this.label5.TabIndex = 5;
             this.label5.Text = "JavaScript";
-            // 
-            // scriptTextBox
-            // 
-            this.scriptTextBox.AcceptsReturn = true;
-            this.scriptTextBox.AcceptsTab = true;
-            this.scriptTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.scriptTextBox.Location = new System.Drawing.Point(9, 92);
-            this.scriptTextBox.Multiline = true;
-            this.scriptTextBox.Name = "scriptTextBox";
-            this.scriptTextBox.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.scriptTextBox.Size = new System.Drawing.Size(313, 575);
-            this.scriptTextBox.TabIndex = 4;
-            this.scriptTextBox.WordWrap = false;
-            this.scriptTextBox.TextChanged += new System.EventHandler(this.content_TextChanged);
-            this.scriptTextBox.MouseEnter += new System.EventHandler(this.scriptTextBox_MouseEnter);
             // 
             // fixRegExTextBox
             // 
@@ -414,15 +406,6 @@ namespace TvpMain.Forms
             this.publishWorker.DoWork += new System.ComponentModel.DoWorkEventHandler(this.publishWorker_DoWork);
             this.publishWorker.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.publishWorker_RunWorkerCompleted);
             // 
-            // jsEditor
-            // 
-            this.jsEditor.Lexer = ScintillaNET.Lexer.Cpp;
-            this.jsEditor.Location = new System.Drawing.Point(328, 92);
-            this.jsEditor.Name = "jsEditor";
-            this.jsEditor.Size = new System.Drawing.Size(828, 575);
-            this.jsEditor.TabIndex = 6;
-            this.jsEditor.Text = "scintilla1";
-            // 
             // CheckEditor
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -463,7 +446,6 @@ namespace TvpMain.Forms
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.TextBox checkFindRegExTextBox;
         private System.Windows.Forms.Label label5;
-        private System.Windows.Forms.TextBox scriptTextBox;
         private System.Windows.Forms.TextBox fixRegExTextBox;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.ComboBox scopeCombo;
