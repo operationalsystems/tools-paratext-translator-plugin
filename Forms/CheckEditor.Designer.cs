@@ -125,6 +125,9 @@ namespace TvpMain.Forms
             // 
             // jsEditor
             // 
+            this.jsEditor.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.jsEditor.Lexer = ScintillaNET.Lexer.Cpp;
             this.jsEditor.Location = new System.Drawing.Point(9, 92);
             this.jsEditor.Name = "jsEditor";
