@@ -29,7 +29,7 @@ namespace TvpMain.Forms
         private int maxLineNumberCharLength = 5;
 
         /// <summary>
-        /// a set of javascript keywords
+        /// a set of JavaScript keywords
         /// </summary>
         private string jsKeywords = "break case catch class const continue debugger default delete do else export extends finally " +
                 "for function if import in instanceof new return super switch this throw try typeof var void while with yield " +
@@ -297,7 +297,7 @@ namespace TvpMain.Forms
         private void checkFindRegExTextBox_MouseEnter(object sender, EventArgs e)
         {
             helpTextBox.Clear();
-            helpTextBox.AppendText("The regular expression to find issues. This value may be empty if it relies on the Javascript to perform its modifications.");
+            helpTextBox.AppendText("The regular expression to find issues. This value may be empty if it relies on the JavaScript to perform its modifications.");
         }
 
         /// <summary>
@@ -312,14 +312,14 @@ namespace TvpMain.Forms
         }
 
         /// <summary>
-        /// Update the help text for the javascript control
+        /// Update the help text for the JavaScript control
         /// </summary>
         /// <param name="sender">The control that sent this event</param>
         /// <param name="e">The event information that triggered this call</param>
         private void scriptTextBox_MouseEnter(object sender, EventArgs e)
         {
             helpTextBox.Clear();
-            helpTextBox.AppendText("Javascript that can be called after the two regular expressions are run, if they are defined." + Environment.NewLine);
+            helpTextBox.AppendText("JavaScript that can be called after the two regular expressions are run, if they are defined." + Environment.NewLine);
             helpTextBox.AppendText("This script MUST implement the function checkAndFix(checkResultItems). The CheckResultItems are the results" +
                 " found in the regular expression pass.");
         }
@@ -485,14 +485,14 @@ namespace TvpMain.Forms
         }
 
         /// <summary>
-        /// Update the help text for the javascript control
+        /// Update the help text for the JavaScript control
         /// </summary>
         /// <param name="sender">The control that sent this event</param>
         /// <param name="e">The event information that triggered this call</param>
         private void jsEditor_MouseEnter(object sender, EventArgs e)
         {
             helpTextBox.Clear();
-            helpTextBox.AppendText("Javascript that can be called after the two regular expressions are run, if they are defined." + Environment.NewLine);
+            helpTextBox.AppendText("JavaScript that can be called after the two regular expressions are run, if they are defined." + Environment.NewLine);
             helpTextBox.AppendText("This script MUST implement the function checkAndFix(checkResultItems). The CheckResultItems are the results" +
                 " found in the regular expression pass.");
         }
