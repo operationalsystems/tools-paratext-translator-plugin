@@ -24,7 +24,7 @@ namespace TvpMain.Forms
         private CheckAndFixItem _checkAndFixItem;
 
         /// <summary>
-        /// max number of characters in a line number
+        /// Max number of characters in a line number
         /// </summary>
         private int maxLineNumberCharLength = 5;
 
@@ -297,7 +297,7 @@ namespace TvpMain.Forms
         private void checkFindRegExTextBox_MouseEnter(object sender, EventArgs e)
         {
             helpTextBox.Clear();
-            helpTextBox.AppendText("The regular expression to find issues. This value may be empty if it relies on the JavaScript to perform its modifications.");
+            helpTextBox.AppendText("The regular expression to find issues. This value may be empty if the check/fix relies on JavaScript to perform modifications.");
         }
 
         /// <summary>
@@ -415,6 +415,9 @@ namespace TvpMain.Forms
             helpTextBox.Text = "Enter the full description for this check/fix.";
         }
 
+        /// <summary>
+        /// Creates and sets the style information and keywords for JavaScript
+        /// </summary>
         private void setScintillaRecipe()
         {
 
@@ -445,7 +448,7 @@ namespace TvpMain.Forms
         }
 
         /// <summary>
-        /// On text change, look to increase the size of the marge to handle full line numbers
+        /// On text change, look to increase the size of the margin to handle full line numbers
         /// </summary>
         /// <param name="sender">The control that sent this event</param>
         /// <param name="e">The event information that triggered this call</param>
