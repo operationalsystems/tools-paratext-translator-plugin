@@ -152,6 +152,9 @@
       <HintPath>packages\ParatextData.9.0.3\lib\net461\PtxUtils.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="ScintillaNET, Version=3.6.3.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\jacobslusser.ScintillaNET.3.6.3\lib\net40\ScintillaNET.dll</HintPath>
+    </Reference>
     <Reference Include="SIL.Core, Version=6.0.0.0, Culture=neutral, PublicKeyToken=cab3c8c5232dfcf2, processorArchitecture=MSIL">
       <HintPath>packages\SIL.Lib.6.0.12\lib\net46\SIL.Core.dll</HintPath>
     </Reference>

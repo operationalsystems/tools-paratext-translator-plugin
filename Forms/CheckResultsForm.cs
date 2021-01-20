@@ -94,7 +94,7 @@ namespace TvpMain.Forms
         private CheckAndFixRunner CheckRunner { get; set; }
 
         /// <summary>
-        /// Project content import manager.
+        /// The <c>ImportManager</c> used to read in the scripture text.
         /// </summary>
         private ImportManager ImportManager { get; set; }
 
@@ -139,16 +139,13 @@ namespace TvpMain.Forms
         /// <param name="checksToRun">The list of checks to run against the content.</param>
         /// <param name="checkRunContext">The context of what Bible content we're checking against.</param>
         /// <param name="checkRunner">The <c>CheckAndFixRunner</c> that will execute the checks against supplied content.</param>
-        /// <param name="importManager">The <c>ImportManager</c> used to read in the scripture text.</param>
         public CheckResultsForm(
             IHost host,
             string activeProjectName,
             ProjectManager projectManager,
             BookNameItem[] selectedBooks,
             List<CheckAndFixItem> checksToRun,
-            CheckRunContext checkRunContext,
-            CheckAndFixRunner checkRunner,
-            ImportManager importManager)
+            CheckRunContext checkRunContext)
         {
             // validate inputs
             Host = host ?? throw new ArgumentNullException(nameof(host));
@@ -158,29 +155,33 @@ namespace TvpMain.Forms
             }
             ActiveProjectName = activeProjectName;
             ProjectManager = projectManager ?? throw new ArgumentNullException(nameof(projectManager));
+            SelectedBooks = selectedBooks ?? throw new ArgumentNullException(nameof(selectedBooks));
             ChecksToRun = checksToRun ?? throw new ArgumentNullException(nameof(checksToRun));
             CheckRunContext = checkRunContext ?? throw new ArgumentNullException(nameof(checkRunContext));
-            CheckRunner = checkRunner ?? throw new ArgumentNullException(nameof(checkRunner));
-            ImportManager = importManager ?? throw new ArgumentNullException(nameof(importManager));
-            CheckRunContext.Validate();
-
-            ProgressForm = new ProgressForm();
-            ProgressForm.StartPosition = FormStartPosition.CenterParent;
-            ProgressForm.Cancelled += OnProgressFormCancelled;
-
+            
+            ProgressForm = initializeProgressForm();
             CheckUpdated += OnCheckUpdated;
 
             // initialize the components
             InitializeComponent();
+        }
 
-            // set the status column so that empty doesn't show unfound image
-            ((DataGridViewImageColumn)issuesDataGridView.Columns["statusIconColumn"]).DefaultCellStyle.NullValue = null;
+        /// <summary>
+        /// Creates a <c>ProgressForm</c> with default values
+        /// </summary>
+        private ProgressForm initializeProgressForm()
+        {
+            ProgressForm progressForm = new ProgressForm();
+            progressForm.StartPosition = FormStartPosition.CenterParent;
+            progressForm.Cancelled += OnProgressFormCancelled;
+            return progressForm;
+        }
 
-            LoadDeniedResults();
-            BringToFront();
-
-            // set the default set of books, all of them
-            SelectedBooks = selectedBooks;
+        /// <summary>
+        /// Set the default set of books, all of them
+        /// </summary>
+        private void setSelectedBooks()
+        {
             string selectedBooksString = BookSelection.stringFromSelectedBooks(SelectedBooks);
             bookFilterTextBox.Text = selectedBooksString;
         }
@@ -239,6 +240,7 @@ namespace TvpMain.Forms
         /// </summary>
         public void RunChecks()
         {
+            CheckRunContext.Validate();
             if (ChecksToRun.Count <= 0)
             {
                 MessageBox.Show(
@@ -702,7 +704,7 @@ namespace TvpMain.Forms
             {
                 form.StartPosition = FormStartPosition.CenterParent;
 
-                var result = form.ShowDialog();
+                var result = form.ShowDialog(this);
                 if (result == DialogResult.OK)
                 {
                     // update which books were selected
@@ -979,6 +981,14 @@ namespace TvpMain.Forms
 
         private void CheckResultsForm_Shown(object sender, EventArgs e)
         {
+            CheckRunner ??= new CheckAndFixRunner();
+            ImportManager ??= new ImportManager(Host, ActiveProjectName);
+
+            // set the status column so that empty doesn't show unfound image
+            ((DataGridViewImageColumn)issuesDataGridView.Columns["statusIconColumn"]).DefaultCellStyle.NullValue = null;
+            LoadDeniedResults();
+            setSelectedBooks();
+
             RunChecks();
         }
     }
