@@ -54,30 +54,6 @@ namespace TvpMain.CheckManagement
             return checkFileNames;
         }
 
-        public async Task<List<string>> ListAllFilesAsync()
-        {
-            List<string> checkFileNames = new List<string>();
-            ListObjectsV2Request request = new ListObjectsV2Request
-            {
-                BucketName = BucketName,
-                MaxKeys = 10
-            };
-            ListObjectsV2Response response;
-            do
-            {
-                response = await S3Client.ListObjectsV2Async(request);
-
-                // Process the response.
-                foreach (S3Object entry in response.S3Objects)
-                {
-                    checkFileNames.Add(entry.Key);
-                }
-                request.ContinuationToken = response.NextContinuationToken;
-            } while (response.IsTruncated);
-
-            return checkFileNames;
-        }
-
         public Stream GetFileStream(string file)
         {
             GetObjectRequest getObjectRequest = new GetObjectRequest
@@ -87,19 +63,6 @@ namespace TvpMain.CheckManagement
             };
 
             GetObjectResponse getObjectResponse = S3Client.GetObject(getObjectRequest);
-
-            return getObjectResponse.ResponseStream;
-        }
-
-        public async Task<Stream> GetFileStreamAsync(string file)
-        {
-            GetObjectRequest getObjectRequest = new GetObjectRequest
-            {
-                BucketName = BucketName,
-                Key = file
-            };
-
-            GetObjectResponse getObjectResponse = await S3Client.GetObjectAsync(getObjectRequest);
 
             return getObjectResponse.ResponseStream;
         }
@@ -143,19 +106,6 @@ namespace TvpMain.CheckManagement
             DeleteObjectResponse deleteObjectResponse = S3Client.DeleteObject(deleteObjectRequest);
 
             return deleteObjectResponse.HttpStatusCode;
-        }
-
-        public async Task<HttpStatusCode> DeleteFileAsync(string filename)
-        {
-            DeleteObjectRequest deleteObjectRequest = new DeleteObjectRequest
-            {
-                BucketName = BucketName,
-                Key = filename
-            };
-
-            DeleteObjectResponse delectObjectResponse = await S3Client.DeleteObjectAsync(deleteObjectRequest);
-
-            return delectObjectResponse.HttpStatusCode;
         }
     }
 }

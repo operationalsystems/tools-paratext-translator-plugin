@@ -197,24 +197,6 @@ namespace TvpMain.Util
         }
 
         /// <summary>
-        /// This function will get a Paratext projects' directory based on a specific project. This is due to the available plugin framework functions.
-        /// </summary>
-        /// <param name="projectName">Project name to get root projects directory.</param>
-        public string GetParatextProjectsDirectory(string projectName)
-        {
-            _ = projectName ?? throw new ArgumentNullException(nameof(projectName));
-
-            var figurePath = _host.GetFigurePath(projectName, false) ?? _host.GetFigurePath(projectName, true);
-            if (figurePath == null)
-            {
-                throw new Exception("Unable to find the root Paratext projects directory.");
-            }
-
-            //
-            return Directory.GetParent(Directory.GetParent(figurePath).FullName).FullName;
-        }
-
-        /// <summary>
         /// Loads the <c>ProjectCheckSettings</c> for the specified project.
         /// </summary>
         /// <param name="projectName">The project name.</param>

@@ -16,12 +16,6 @@ namespace TvpMain.CheckManagement
         public List<CheckAndFixItem> GetCheckAndFixItems();
 
         /// <summary>
-        /// This method asynchronously gets <c>CheckAndFixItem</c>s from a repository.
-        /// </summary>
-        /// <returns>A task representing a list of check and fix items that are available in the repository.</returns>
-        public Task<List<CheckAndFixItem>> GetCheckAndFixItemsAsync();
-
-        /// <summary>
         /// This method adds a <c>CheckAndFixItem</c> to a repository.
         /// </summary>
         /// <param name="filename">The filename to use for the item in the repository.</param>
@@ -41,12 +35,5 @@ namespace TvpMain.CheckManagement
         /// </summary>
         /// <param name="filename">The <c>CheckAndFixItem</c> to remove.</param>
         public void RemoveCheckAndFixItem(string filename);
-
-        /// <summary>
-        /// This method asynchronously removes a <c>CheckAndFixItem</c> from a repository.
-        /// </summary>
-        /// <param name="filename">The <c>CheckAndFixItem</c> to remove.</param>
-        /// <returns>A task representing the result of the operation.</returns>
-        public Task RemoveCheckAndFixItemAsync(string filename);
     }
 }

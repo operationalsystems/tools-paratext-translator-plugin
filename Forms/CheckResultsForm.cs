@@ -997,14 +997,5 @@ namespace TvpMain.Forms
             : base(messageText, causeEx)
         {
         }
-
-        /// <summary>
-        /// Basic ctor.
-        /// </summary>
-        /// <param name="messageText">Message text (optional, may be null).</param>
-        public TextCheckException(string messageText)
-            : base(messageText)
-        {
-        }
     }
 }

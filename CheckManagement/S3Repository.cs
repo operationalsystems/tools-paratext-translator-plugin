@@ -45,21 +45,6 @@ namespace TvpMain.CheckManagement
             return checkAndFixItems;
         }
 
-        public async Task<List<CheckAndFixItem>> GetCheckAndFixItemsAsync()
-        {
-            List<CheckAndFixItem> checkAndFixItems = new List<CheckAndFixItem>();
-
-            List<String> filenames = await Service.ListAllFilesAsync();
-            foreach (string file in filenames)
-            {
-                using Stream fileStream = await Service.GetFileStreamAsync(file);
-                CheckAndFixItem checkAndFixItem = ReadCheckAndFixItemFromStream(fileStream);
-                if (checkAndFixItem != null) checkAndFixItems.Add(checkAndFixItem);
-            }
-
-            return checkAndFixItems;
-        }
-
         /// <summary>
         /// This loads a <c>CheckAndFixItem</c> from a <c>Stream</c>, guarding against invalid files.
         /// </summary>
@@ -76,11 +61,6 @@ namespace TvpMain.CheckManagement
         public void RemoveCheckAndFixItem(string filename)
         {
             Service.DeleteFile(filename);
-        }
-
-        public Task RemoveCheckAndFixItemAsync(string filename)
-        {
-            return Service.DeleteFileAsync(filename);
         }
     }
 }

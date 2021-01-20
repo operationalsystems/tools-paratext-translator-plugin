@@ -482,17 +482,6 @@ namespace TvpMain.Project
                 }
             }
         }
-
-        /// <summary>
-        /// Determines whether a book is present in the given project.
-        /// </summary>
-        /// <param name="bookNum">Book number (1-based).</param>
-        /// <returns>True if book is present in project, false otherwise.</returns>
-        public bool IsBookPresent(int bookNum)
-        {
-            return (bookNum >= 1 && bookNum <= PresentBookFlags.Count)
-                   && PresentBookFlags[bookNum - 1];
-        }
     }
 
     /// <summary>
