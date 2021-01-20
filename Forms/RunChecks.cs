@@ -353,12 +353,21 @@ namespace TvpMain.Forms
         {
             // grab the selected checks
             var selectedChecks = GetSelectedChecks();
+            if (selectedChecks.Count == 0)
+            {
+                MessageBox.Show(
+                    "No checks provided.",
+                    "Notice...", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
 
             // grab the check run context
             var checkContext = GetCheckRunContext();
+            checkContext.Validate();
 
-            var importManager = new ImportManager(_host, _activeProjectName);
-
+            // prevent clicking the "Run Checks" button multiple times
+            runChecksButton.Enabled = false;
+            
             // pass the checks and specification of what to check to the CheckResultsForm to perform the necessary search with.
             var checkResultsForm = new CheckResultsForm(
                 _host,
@@ -366,13 +375,14 @@ namespace TvpMain.Forms
                 _projectManager,
                 _selectedBooks,
                 selectedChecks,
-                checkContext, 
-                new CheckAndFixRunner(),
-                importManager
+                checkContext
                 );
 
-            checkResultsForm.ShowDialog(this);
             checkResultsForm.BringToFront();
+            checkResultsForm.ShowDialog(this);
+
+            // after the results UI has closed, re-enable the "Run Checks" button
+            runChecksButton.Enabled = true;
         }
 
         /// <summary>
