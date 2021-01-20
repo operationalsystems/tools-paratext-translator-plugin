@@ -146,6 +146,8 @@ namespace TvpMain.Forms
 
             // start the sync for the check/fixes
             _progressForm.Show(this);
+
+            this.Enabled = false;
             loadingWorker.RunWorkerAsync();
         }
 
@@ -181,6 +183,7 @@ namespace TvpMain.Forms
                 this.updateDisplayGrid();
             }));
             _progressForm.Close();
+            this.Enabled = true;
         }
 
         /// <summary>
@@ -326,7 +329,7 @@ namespace TvpMain.Forms
         private void editorToolStripMenuItem_Click(object sender, EventArgs e)
         {
             CheckEditor checkEditor = new CheckEditor();
-            checkEditor.Show(this);
+            checkEditor.ShowDialog(this);
 
         }
 
@@ -350,10 +353,21 @@ namespace TvpMain.Forms
         {
             // grab the selected checks
             var selectedChecks = GetSelectedChecks();
+            if (selectedChecks.Count == 0)
+            {
+                MessageBox.Show(
+                    "No checks provided.",
+                    "Notice...", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
 
             // grab the check run context
             var checkContext = GetCheckRunContext();
+            checkContext.Validate();
 
+            // prevent clicking the "Run Checks" button multiple times
+            runChecksButton.Enabled = false;
+            
             // pass the checks and specification of what to check to the CheckResultsForm to perform the necessary search with.
             var checkResultsForm = new CheckResultsForm(
                 _host,
@@ -361,13 +375,14 @@ namespace TvpMain.Forms
                 _projectManager,
                 _selectedBooks,
                 selectedChecks,
-                checkContext, 
-                new CheckAndFixRunner(), 
-                new ImportManager(_host, _activeProjectName)
+                checkContext
                 );
 
-            checkResultsForm.Show();
-            checkResultsForm.RunChecks();
+            checkResultsForm.BringToFront();
+            checkResultsForm.ShowDialog(this);
+
+            // after the results UI has closed, re-enable the "Run Checks" button
+            runChecksButton.Enabled = true;
         }
 
         /// <summary>
@@ -451,7 +466,7 @@ namespace TvpMain.Forms
             {
                 form.StartPosition = FormStartPosition.CenterParent;
 
-                var result = form.ShowDialog();
+                var result = form.ShowDialog(this);
                 if (result == DialogResult.OK)
                 {
                     // update which books were selected
