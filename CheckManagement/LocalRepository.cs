@@ -52,11 +52,6 @@ namespace TvpMain.CheckManagement
             File.Delete(filePath);
         }
 
-        public Task RemoveCheckAndFixItemAsync(string filename)
-        {
-            return Task.Run(() => RemoveCheckAndFixItem(filename));
-        }
-
         public List<CheckAndFixItem> GetCheckAndFixItems()
         {
             List<CheckAndFixItem> checkAndFixItems = new List<CheckAndFixItem>();
@@ -77,11 +72,6 @@ namespace TvpMain.CheckManagement
             }
 
             return checkAndFixItems;
-        }
-
-        public Task<List<CheckAndFixItem>> GetCheckAndFixItemsAsync()
-        {
-            return Task.Run<List<CheckAndFixItem>>(GetCheckAndFixItems);
         }
 
         /// <summary>

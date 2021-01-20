@@ -1,11 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
-using System.Drawing;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using TvpMain.Project;
 
@@ -47,7 +42,8 @@ namespace TvpMain.Forms
 
             bookList.Items.AddRange(projectManager.BookNamesByNum.Values.ToArray());
 
-            foreach( BookNameItem bookNameItem in selectedBooks) {
+            foreach (BookNameItem bookNameItem in selectedBooks)
+            {
                 int idx = bookList.FindString(bookNameItem.ToString());
                 bookList.SetSelected(idx, true);
             }
@@ -56,11 +52,12 @@ namespace TvpMain.Forms
         /// <summary>
         /// Get the list of the selected books
         /// </summary>
-        /// <returns></returns>
-        public BookNameItem[] GetSelected() {
-            
+        /// <returns>The list of selected books by <see cref="BookNameItem"/></returns>
+        public BookNameItem[] GetSelected()
+        {
+
             return bookList.SelectedItems.Cast<BookNameItem>().ToArray();
-        }  
+        }
 
         /// <summary>
         /// Default constructor
@@ -70,9 +67,14 @@ namespace TvpMain.Forms
             InitializeComponent();
         }
 
+        /// <summary>
+        /// Select all the books in the list
+        /// </summary>
+        /// <param name="sender">The control that sent this event</param>
+        /// <param name="e">The event information that triggered this call</param>
         private void allBooksButton_Click(object sender, EventArgs e)
         {
-            for( int i = 0; i < bookList.Items.Count; i++)
+            for (int i = 0; i < bookList.Items.Count; i++)
             {
                 bookList.SetSelected(i, true);
             }
@@ -81,8 +83,9 @@ namespace TvpMain.Forms
         /// <summary>
         /// Add all OT books to selected set
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
+        /// <param name="sender">The control that sent this event</param>
+        /// <param name="e">The event information that triggered this call</param>
+
         private void otButton_Click(object sender, EventArgs e)
         {
             for (int i = 0; i < OT_COUNT; i++)
@@ -94,8 +97,8 @@ namespace TvpMain.Forms
         /// <summary>
         /// Add all NT books to selected set
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
+        /// <param name="sender">The control that sent this event</param>
+        /// <param name="e">The event information that triggered this call</param>
         private void ntButton_Click(object sender, EventArgs e)
         {
             for (int i = OT_COUNT; i < CANON_BOOK_COUNT; i++)
@@ -107,8 +110,8 @@ namespace TvpMain.Forms
         /// <summary>
         /// Add all extra material to selected  set
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
+        /// <param name="sender">The control that sent this event</param>
+        /// <param name="e">The event information that triggered this call</param>
         private void extraButton_Click(object sender, EventArgs e)
         {
             for (int i = CANON_BOOK_COUNT; i < bookList.Items.Count; i++)
@@ -120,8 +123,8 @@ namespace TvpMain.Forms
         /// <summary>
         /// Deselect all books to start from scratch
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
+        /// <param name="sender">The control that sent this event</param>
+        /// <param name="e">The event information that triggered this call</param>
         private void deselectButton_Click(object sender, EventArgs e)
         {
             for (int i = 0; i < bookList.Items.Count; i++)
@@ -129,5 +132,30 @@ namespace TvpMain.Forms
                 bookList.SetSelected(i, false);
             }
         }
+
+        /// <summary>
+        /// Used to display the list of books selected. If there are more than 4 then truncate in the middle.
+        /// </summary>
+        /// <param name="selectedBooks">This allows for passing in the currently selected books, 
+        /// in case this dialog has already been used previously, 
+        /// to prefill the dialog with
+        /// the currently selected items.</param>
+        /// <returns>A string created by the list of <see cref="BookNameItem"/>s, if greater than 4, ellipsized.</returns>
+        public static string stringFromSelectedBooks(BookNameItem[] selectedBooks)
+        {
+            string names = "";
+
+            if (selectedBooks.Length > 4)
+            {
+                names = selectedBooks[0].ToString() + ", " + selectedBooks[1].ToString() + ", ..., " + selectedBooks[selectedBooks.Length - 1].ToString();
+            }
+            else
+            {
+                names = string.Join(", ", Array.ConvertAll<BookNameItem, string>(selectedBooks, bni => bni.ToString()));
+            }
+
+            return names;
+        }
+
     }
 }

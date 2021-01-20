@@ -17,6 +17,9 @@ namespace TvpMain.CheckManagement
         private readonly IRepository locallyDevelopedChecksRepository;
         private readonly IRepository s3Repository;
 
+        /// <summary>
+        /// Default constructor for CheckManager
+        /// </summary>
         public CheckManager()
         {
             installedChecksRepository = new LocalRepository(Path.Combine(Directory.GetCurrentDirectory(), MainConsts.INSTALLED_CHECK_FOLDER_NAME));
@@ -24,6 +27,11 @@ namespace TvpMain.CheckManagement
             s3Repository = new S3Repository();
         }
 
+        /// <summary>
+        /// This method synchronizes installed <c>CheckAndFixItem</c>s with the remote repository.
+        /// </summary>
+        /// <param name="dryRun">(optional) If true, returns the result of the operation without applying it.</param>
+        /// <returns>A key/value pair mapping of the result, with <c>CheckAndFixItem</c>s grouped by enumerated values.</returns>
         public virtual Dictionary<SynchronizationResultType, List<CheckAndFixItem>> SynchronizeInstalledChecks(bool dryRun = false)
         {
             List<CheckAndFixItem> newCheckAndFixItems = GetNewCheckAndFixItems();
@@ -113,6 +121,10 @@ namespace TvpMain.CheckManagement
             installedChecksRepository.AddCheckAndFixItem(filename, item);
         }
 
+        /// <summary>
+        /// This method saves a new, or modified, locally-developed <c>CheckAndFixItem</c>.
+        /// </summary>
+        /// <param name="item">The <c>CheckAndFixItem</c> to save locally.</param>
         public virtual void SaveCheckAndFixItem(CheckAndFixItem item)
         {
             string filename = GetCheckAndFixItemFilename(item);
@@ -134,12 +146,20 @@ namespace TvpMain.CheckManagement
             installedChecksRepository.RemoveCheckAndFixItem(filename);
         }
 
+        /// <summary>
+        /// This method deletes a locally-developed <c>CheckAndFixItem</c>.
+        /// </summary>
+        /// <param name="item">The <c>CheckAndFixItem</c> to delete locally.</param>
         public virtual void DeleteCheckAndFixItem(CheckAndFixItem item)
         {
             string filename = GetCheckAndFixItemFilename(item);
             locallyDevelopedChecksRepository.RemoveCheckAndFixItem(filename);
         }
 
+        /// <summary>
+        /// This method publishes a locally-developed <c>CheckAndFixItem</c> to a remote repository.
+        /// </summary>
+        /// <param name="item">The <c>CheckAndFixItem</c> to publish to the remote repository.</param>
         public void PublishCheckAndFixItem(CheckAndFixItem item)
         {
             string filename = GetCheckAndFixItemFilename(item);
@@ -155,11 +175,19 @@ namespace TvpMain.CheckManagement
             return s3Repository.GetCheckAndFixItems();
         }
 
+        /// <summary>
+        /// This method returns a list of <c>CheckAndFixItem</c>s that have been installed from a remote repository.
+        /// </summary>
+        /// <returns>A list of saved <c>CheckAndFixItem</c>s.</returns>
         public virtual List<CheckAndFixItem> GetInstalledCheckAndFixItems()
         {
             return installedChecksRepository.GetCheckAndFixItems();
         }
 
+        /// <summary>
+        /// This method returns a list of locally-developed and saved <c>CheckAndFixItem</c>s.
+        /// </summary>
+        /// <returns>A list of saved <c>CheckAndFixItem</c>s.</returns>
         public virtual List<CheckAndFixItem> GetSavedCheckAndFixItems()
         {
             return locallyDevelopedChecksRepository.GetCheckAndFixItems();
@@ -200,7 +228,7 @@ namespace TvpMain.CheckManagement
         /// </summary>
         /// <param name="original"></param>
         /// <param name="candidate"></param>
-        /// <returns></returns>
+        /// <returns>True if this candidate is greater than the original</returns>
         internal virtual Boolean IsNewVersion(CheckAndFixItem original, CheckAndFixItem candidate)
         {
             return String.Equals(candidate.Name, original.Name) &&
@@ -208,9 +236,9 @@ namespace TvpMain.CheckManagement
         }
 
         /// <summary>
-        /// Returns the local check folder path as a string for the editor to open files there.
+        /// Get the local check folder path as a string for the editor to open files there.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>The local check folder path as a string for the editor to open files there</returns>
         public string GetLocalRepoDirectory()
         {
             return Path.Combine(Directory.GetCurrentDirectory(), MainConsts.LOCAL_CHECK_FOLDER_NAME);

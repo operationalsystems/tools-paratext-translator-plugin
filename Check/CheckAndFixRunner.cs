@@ -3,7 +3,6 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
-using TvpMain.Reference;
 
 namespace TvpMain.Check
 {
@@ -24,7 +23,7 @@ namespace TvpMain.Check
         {
             // First, run the check regex, looking for matches
             Regex checkRegex = new Regex(@checkAndFixItem.CheckRegex, RegexOptions.Multiline | RegexOptions.ECMAScript);
-            
+
             MatchCollection matches = checkRegex.Matches(text);
             List<CheckResultItem> checkResultItems = new List<CheckResultItem>();
 
@@ -87,4 +86,22 @@ namespace TvpMain.Check
             return checkResultItems;
         }
     }
+        /// <summary>
+        /// Scripture reference error sub-types,
+        /// used for ResultTypeCode field in ResultItem.
+        /// </summary>
+        public enum ScriptureReferenceErrorType
+        {
+            LooseFormatting, // Spacing or punctuation misses
+            IncorrectNameStyle, // Name style inappropriate for context (e.g., abbrev when it should be long).
+            TagShouldNotExist, // for when there shouldn't be a tag
+                               // (found in section that should not
+                               // have tags (the other ignore list -- overloaded term) )
+            MissingTag, // Reference should have tag, but does not (e.g., in body footnote)
+            IncorrectTag, // Wrong tag for context (e.g., \xt in footnote instead of \+xt)
+            MalformedTag, // Missing slash(es), unmatched tag pair, etc.
+            BadReference, // Book name or chapter number incorrect or doesn't exist
+            Unknown
+        }
+
 }

@@ -1,0 +1,13 @@
+﻿<?xml version="1.0"?>
+<CheckAndFixItem xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <Id>8940084d-e342-40b5-b046-144b9ab8c653</Id>
+  <Name>RTL: Replace or add starter text</Name>
+  <Description>In a given RtL project find the \id and replace it with the desired starter text.</Description>
+  <Version>1.0.0</Version>
+  <Scope>CHAPTER</Scope>
+  <DefaultItemDescription>Replace the Project \id with template text</DefaultItemDescription>
+  <CheckRegex>(?&lt;=\\id\s\w{3,3}\s).*(\s+\\(rem|id)\s.*)*(?=\s)</CheckRegex>
+  <FixRegex>- &lt;Name&gt;
+\rem Copyright &#169; &lt;Year&gt; by Biblica, Inc.&#x200e; </FixRegex>
+  <CheckScript></CheckScript>
+</CheckAndFixItem>

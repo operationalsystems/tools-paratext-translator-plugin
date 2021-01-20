@@ -1,7 +1,6 @@
 ﻿using AddInSideViews;
 using Newtonsoft.Json;
 using Paratext.Data;
-using Paratext.Data.Users;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -9,8 +8,9 @@ using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Windows.Forms;
+using System.Xml.Serialization;
+using TvpMain.Check;
 using TvpMain.Project;
-using TvpMain.Result;
 using TvpMain.Text;
 
 namespace TvpMain.Util
@@ -197,101 +197,6 @@ namespace TvpMain.Util
         }
 
         /// <summary>
-        /// Retrieve the ignore list from the host's plugin data storage.
-        /// </summary>
-        /// <param name="projectName">Active project name (required).</param>
-        /// <returns>Ignore list.</returns>
-        public IList<IgnoreListItem> GetIgnoreList(string projectName)
-        {
-            if (projectName == null || projectName.Length == 0)
-            {
-                Util.HostUtil.Instance.LogLine("Project name is invalid, responding with default empty list", true);
-                return Enumerable.Empty<IgnoreListItem>().ToList();
-            }
-
-            var inputData =
-                _host.GetPlugInData(_translationValidationPlugin,
-                    projectName, MainConsts.IGNORE_LIST_ITEMS_DATA_ID);
-            if (inputData == null)
-            {
-                return Enumerable.Empty<IgnoreListItem>().ToList();
-            }
-            else
-            {
-                IList<IgnoreListItem> ignoreList = JsonConvert.DeserializeObject<List<IgnoreListItem>>(inputData);
-                return ignoreList;
-            }
-        }
-
-        /// <summary>
-        /// Stores the ignore list to the host's plugin data storage.
-        /// </summary>
-        /// <param name="projectName">Active project name (required).</param>
-        /// <param name="outputItems">Ignore list.</param>
-        public void PutIgnoreList(string projectName, IEnumerable<IgnoreListItem> outputItems)
-        {
-            if (projectName == null || projectName.Length < 1)
-            {
-                throw new ArgumentNullException(nameof(projectName));
-            }
-
-            _host.PutPlugInData(_translationValidationPlugin,
-                projectName, MainConsts.IGNORE_LIST_ITEMS_DATA_ID,
-                JsonConvert.SerializeObject(outputItems));
-        }
-
-        /// <summary>
-        /// Retrieve the ignore list from the host's plugin data storage.
-        /// </summary>
-        /// <param name="projectName">Active project name (required).</param>
-        /// <param name="bookId"></param>
-        /// <returns>Ignore list.</returns>
-        public IList<ResultItem> GetResultItems(string projectName, string bookId)
-        {
-            if (projectName == null || projectName.Length < 1)
-            {
-                throw new ArgumentNullException(nameof(projectName));
-            }
-
-            if (bookId == null || bookId.Length < 1)
-            {
-                throw new ArgumentNullException(nameof(bookId));
-            }
-
-            var inputData =
-                _host.GetPlugInData(_translationValidationPlugin, projectName,
-                    string.Format(MainConsts.RESULT_ITEMS_DATA_ID_FORMAT, bookId));
-            return inputData == null
-                ? Enumerable.Empty<ResultItem>().ToList()
-                : JsonConvert.DeserializeObject<List<ResultItem>>(inputData);
-        }
-
-        /// <summary>
-        /// Stores the ignore list to the host's plugin data storage.
-        /// </summary>
-        /// <param name="projectName">Active project name (required).</param>
-        /// <param name="bookId"></param>
-        /// <param name="outputItems">Ignore list.</param>
-        public void PutResultItems(string projectName, string bookId, IEnumerable<ResultItem> outputItems)
-        {
-            if (projectName == null || projectName.Length < 1)
-            {
-                Util.HostUtil.Instance.LogLine("Project name is invalid, can't operate so throwing exception.", true);
-                throw new ArgumentNullException(nameof(projectName));
-            }
-
-            if (bookId == null || bookId.Length < 1)
-            {
-                Util.HostUtil.Instance.LogLine("Book id is invalid, can't operate so throwing exception.", true);
-                throw new ArgumentNullException(nameof(bookId));
-            }
-
-            _host.PutPlugInData(_translationValidationPlugin, projectName,
-                string.Format(MainConsts.RESULT_ITEMS_DATA_ID_FORMAT, bookId),
-                JsonConvert.SerializeObject(outputItems));
-        }
-
-        /// <summary>
         /// Loads the <c>ProjectCheckSettings</c> for the specified project.
         /// </summary>
         /// <param name="projectName">The project name.</param>
@@ -319,8 +224,8 @@ namespace TvpMain.Util
         /// <summary>
         /// Saves the project check settings for the given project
         /// </summary>
-        /// <param name="projectName"></param>
-        /// <param name="settings"></param>
+        /// <param name="projectName">The name of the project to save the settings to</param>
+        /// <param name="settings">The check/fix settings to save. Right now, the default checks.</param>
         public void PutProjectCheckSettings(string projectName, ProjectCheckSettings settings)
         {
             if (projectName == null || projectName.Length < 1)
@@ -336,6 +241,59 @@ namespace TvpMain.Util
             _host.PutPlugInData(_translationValidationPlugin, projectName,
                             MainConsts.CHECK_SETTINGS_DATA_ID,
                             settings.WriteToXmlString());
+        }
+
+        /// <summary>
+        /// Gets the list of <c>CheckResultItem</c>s that have been denied for the project.
+        /// </summary>
+        /// <param name="projectName">The name of the project to get the list for</param>
+        /// <returns>A list of hashes representing <c>CheckResultItem</c>s that have been denied.</returns>
+        public List<int> GetProjectDeniedResults(string projectName)
+        {
+            List<int> deniedResults = new List<int>();
+            
+            if (projectName == null || projectName.Length < 1)
+            {
+                throw new ArgumentNullException(nameof(projectName));
+            }
+
+            var inputData =
+               _host.GetPlugInData(_translationValidationPlugin, projectName,
+                   MainConsts.DENIED_RESULTS_DATA_ID);
+            if (inputData != null)
+            {
+                var serializer = new XmlSerializer(typeof(List<int>));
+                using TextReader reader = new StringReader(inputData);
+                deniedResults = (List<int>)serializer.Deserialize(reader);
+            }
+
+            return deniedResults;
+        }
+
+        /// <summary>
+        /// Saves a list of hashes representing <c>CheckResultItem</c>s that have been denied for the project.
+        /// </summary>
+        /// <param name="projectName">The name of the project to save the list for</param>
+        /// <param name="deniedResults">A list of hashes representing <c>CheckResultItem</c>s that have been denied.</param>
+        public void PutProjectDeniedResults(string projectName, List<int> deniedResults)
+        {
+            if (projectName == null || projectName.Length < 1)
+            {
+                throw new ArgumentNullException(nameof(projectName));
+            }
+
+            if (deniedResults == null)
+            {
+                throw new ArgumentNullException(nameof(deniedResults));
+            }
+
+            XmlSerializer xmlSerializer = new XmlSerializer(typeof(List<int>));
+            using StringWriter textWriter = new StringWriter();
+            xmlSerializer.Serialize(textWriter, deniedResults);
+            
+            _host.PutPlugInData(_translationValidationPlugin, projectName,
+                            MainConsts.DENIED_RESULTS_DATA_ID,
+                            textWriter.ToString());
         }
 
         /// <summary>
@@ -356,8 +314,9 @@ namespace TvpMain.Util
             using Stream reader = new FileStream(Path.Combine(fileManager.ProjectDir.FullName, "ProjectUserAccess.xml"), FileMode.Open);
             ProjectUserAccess projectUserAccess = ProjectUserAccess.LoadFromXML(reader);
 
-            foreach( User user in projectUserAccess.Users) { 
-                if( user.UserName.Equals(_host.UserName) && user.Role.Equals(ADMIN_ROLE))
+            foreach (User user in projectUserAccess.Users)
+            {
+                if (user.UserName.Equals(_host.UserName) && user.Role.Equals(ADMIN_ROLE))
                 {
                     // Bail as soon as we find a match
                     return true;
@@ -381,10 +340,10 @@ namespace TvpMain.Util
         /// <param name="verse">The project's verse 1-based index.</param>
         public void GotoBcvInGui(string projectName, int book, int chapter, int verse)
         {
-            var versificationName = _host.GetProjectVersificationName(projectName); ;
+            var versificationName = _host.GetProjectVersificationName(projectName);
             var bbbcccvvvReference = BookUtil.BcvToRef(book, chapter, verse);
             // Not yet available in latest version
-            // _host.GotoReference(bbbcccvvvReference, versificationName, projectName);
+            _host.GotoReference(bbbcccvvvReference, versificationName, projectName);
         }
     }
 }

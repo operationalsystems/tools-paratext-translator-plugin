@@ -50,19 +50,14 @@ namespace TvpMain.Util
         public const string DEFAULT_REFERENCE_FINAL_PUNCTUATION = "";
 
         /// <summary>
-        /// Plugin data identifier for ignore list items.
-        /// </summary>
-        public const string IGNORE_LIST_ITEMS_DATA_ID = "IgnoreListItems.json";
-
-        /// <summary>
-        /// Plugin data identifier format for result items.
-        /// </summary>
-        public const string RESULT_ITEMS_DATA_ID_FORMAT = "ResultItems-{0}.json";
-
-        /// <summary>
         /// The settings file for each project's default checks
         /// </summary>
         public const string CHECK_SETTINGS_DATA_ID = "CheckSettings.xml";
+
+        /// <summary>
+        /// The settings file for each project's denied results
+        /// </summary>
+        public const string DENIED_RESULTS_DATA_ID = "DeniedResults.xml";
 
         /// <summary>
         /// Update rate for progress form and similar loops.
@@ -79,11 +74,6 @@ namespace TvpMain.Util
         /// Max threads to use for validation checks.
         /// </summary>
         public const int MAX_CHECK_THREADS = 4;
-
-        /// <summary>
-        /// Max threads to use for exporting files.
-        /// </summary>
-        public const int MAX_EXPORT_THREADS = 4;
 
         /// <summary>
         /// Max consecutive empty verses before chapter is considered empty.
@@ -104,16 +94,6 @@ namespace TvpMain.Util
         /// Range ref parts (i.e., chapters, verses).
         /// </summary>
         public const int RefPartRange = 1000;
-
-        /// <summary>
-        /// Number of seconds to wait after changes to save result items.
-        /// </summary>
-        public const int RESULT_ITEM_SAVE_DELAY_IN_SEC = 5;
-
-        /// <summary>
-        /// Number of seconds to wait before loading result items.
-        /// </summary>
-        public const int RESULT_ITEM_LOAD_DELAY_IN_SEC = 5;
 
         /// <summary>
         /// A value used to create hashes.

@@ -61,6 +61,26 @@ namespace TvpMain.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
+        /// </summary>
+        public static System.Drawing.Icon checkmark_16 {
+            get {
+                object obj = ResourceManager.GetObject("checkmark_16", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
+        /// </summary>
+        public static System.Drawing.Icon checkmark_32 {
+            get {
+                object obj = ResourceManager.GetObject("checkmark_32", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to {\rtf1\ansi\ansicpg1252\deff0\nouicompat\deflang1033{\fonttbl{\f0\fnil\fcharset0 Times New Roman;}{\f1\fnil\fcharset0 Calibri;}}
         ///{\colortbl ;\red255\green255\blue0;\red0\green0\blue255;}
         ///{\*\generator Riched20 10.0.19041}\viewkind4\uc1 
@@ -73,6 +93,26 @@ namespace TvpMain.Properties {
         public static string TVP_EULA {
             get {
                 return ResourceManager.GetString("TVP_EULA", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
+        /// </summary>
+        public static System.Drawing.Icon x_mark_16 {
+            get {
+                object obj = ResourceManager.GetObject("x_mark_16", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
+        /// </summary>
+        public static System.Drawing.Icon x_mark_32 {
+            get {
+                object obj = ResourceManager.GetObject("x_mark_32", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
             }
         }
     }

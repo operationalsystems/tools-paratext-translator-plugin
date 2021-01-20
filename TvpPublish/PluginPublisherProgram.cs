@@ -147,7 +147,7 @@ namespace TvpPublish
         /// <summary>
         /// A helper funtion to determine the directory where this application is located.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>The application working directory</returns>
         private static DirectoryInfo GetExecutingDirectory()
         {
             var location = new Uri(Assembly.GetEntryAssembly().GetName().CodeBase);

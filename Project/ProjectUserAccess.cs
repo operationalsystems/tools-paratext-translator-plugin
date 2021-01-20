@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Xml.Serialization;
 
 namespace TvpMain.Project
@@ -26,7 +22,7 @@ namespace TvpMain.Project
         /// Method to load the data from a reader
         /// </summary>
         /// <param name="reader"></param>
-        /// <returns></returns>
+        /// <returns>The ProjectUserAccess loaded from the project file.</returns>
         public static ProjectUserAccess LoadFromXML(Stream reader)
         {
             var serializer = new XmlSerializer(typeof(ProjectUserAccess));
