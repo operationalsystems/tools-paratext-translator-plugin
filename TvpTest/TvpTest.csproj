@@ -168,6 +168,15 @@
     <Content Include="Resources\checkFixes\AddIETag.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="Resources\checkFixes\AddSpaceBetweenVerseTagAndNumber.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\checkFixes\AlternateSeparationCharacterForVerseSpans.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\checkFixes\AddPoTagFollowingBTags.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Resources\checkFixes\ReplaceIorTag.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -215,6 +224,12 @@
     <Content Include="Resources\test-usfm-1.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <None Include="Resources\testReferences\Rom1.sfm">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Resources\testReferences\Mat17.sfm">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="Resources\testReferences\Dan6_PoetryQuoteMatch.sfm">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

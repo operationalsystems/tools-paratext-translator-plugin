@@ -1,0 +1,12 @@
+﻿<?xml version="1.0"?>
+<CheckAndFixItem xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <Id>5e267e28-3bcb-4723-8886-f0a969150be7</Id>
+  <Name>Alternate Separation for Verse Spans</Name>
+  <Description>Add an alternate separation character for verse spans.</Description>
+  <Version>1.0.0</Version>
+  <Scope>VERSE</Scope>
+  <DefaultItemDescription>Value Found</DefaultItemDescription>
+  <CheckRegex>\\v ([0-9]+)-([0-9]+)</CheckRegex>
+  <FixRegex>\v $1-$2 \vp $1,$2 \vp*</FixRegex>
+  <CheckScript></CheckScript>
+</CheckAndFixItem>
