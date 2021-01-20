@@ -15,6 +15,8 @@ namespace TvpMain.Check.Tests
         private string Jhn1;
         private string Dan6_Quotes;
         private string Dan6_NoQuotes;
+        private string Mat17;
+        private string Rom1;
 
         CheckAndFixRunner checkAndFixRunner = new CheckAndFixRunner();
 
@@ -24,6 +26,8 @@ namespace TvpMain.Check.Tests
             Jhn1 = File.ReadAllText(@"Resources/testReferences/Jhn1_Intro.sfm");
             Dan6_Quotes = File.ReadAllText(@"Resources/testReferences/Dan6_PoetryQuoteMatch.sfm");
             Dan6_NoQuotes = File.ReadAllText(@"Resources/testReferences/Dan6_PoetryNoQuoteMatch.sfm");
+            Mat17 = File.ReadAllText(@"Resources/testReferences/Mat17.sfm");
+            Rom1 = File.ReadAllText(@"Resources/testReferences/Rom1.sfm");
         }
 
         /// <summary>
@@ -365,5 +369,52 @@ namespace TvpMain.Check.Tests
 
         }
 
+        /// <summary>
+        /// Add alternate separtion character for 2 verse spans
+        /// </summary>
+        [TestMethod()]
+        public void AlternateSeparationCharacterForVerseSpans()
+        {
+            var inputText = Mat17;
+            var expectedMatchText = @"\v 20-21";
+            var expectedFixText = @"\v 20-21 \vp 20,21 \vp*";
+
+            // Perform the check and fix assessment
+            var checkAndFix = CheckAndFixItem.LoadFromXmlFile(@"Resources/checkFixes/AlternateSeparationCharacterForVerseSpans.xml");
+            List<CheckResultItem> results = checkAndFixRunner.ExecCheckAndFix(inputText, checkAndFix);
+
+            // Should have one result
+            Assert.AreEqual(1, results.Count);
+
+            // Check the found value and the replacement suggestion
+            Assert.AreEqual(expectedMatchText, results[0].MatchText);
+            Assert.AreEqual(expectedFixText, results[0].FixText);
+
+        }
+
+        /// <summary>
+        /// Add a \po tag following a \b tag.
+        /// </summary>
+        [TestMethod()]
+        public void AddPoTagFollowingBTags()
+        {
+            var inputText = Rom1;
+            var expectedMatchText = @"\b
+\p";
+            var expectedFixText = @"\b
+\po";
+
+            // Perform the check and fix assessment
+            var checkAndFix = CheckAndFixItem.LoadFromXmlFile(@"Resources/checkFixes/AddPoTagFollowingBTags.xml");
+            List<CheckResultItem> results = checkAndFixRunner.ExecCheckAndFix(inputText, checkAndFix);
+
+            // Should have one result
+            Assert.AreEqual(2, results.Count);
+
+            // Check the found value and the replacement suggestion
+            Assert.AreEqual(expectedMatchText, results[0].MatchText);
+            Assert.AreEqual(expectedFixText, results[0].FixText);
+
+        }
     }
 }
