@@ -17,6 +17,7 @@ using TvpMain.Util;
 using static TvpMain.Check.CheckAndFixItem;
 using System.IO;
 using System.Reflection;
+using System.Runtime.Serialization;
 
 namespace TvpMain.Forms
 {
@@ -579,10 +580,10 @@ namespace TvpMain.Forms
                         {
                             if( _denied.Contains(item.GetHashCode()))
                             {
-                                item.ResultState = Result.ResultState.Ignored;
+                                item.ResultState = CheckResultState.Ignored;
                             } else
                             {
-                                item.ResultState = Result.ResultState.Found;
+                                item.ResultState = CheckResultState.Found;
                                 filteredItems.Add(item);
                             }
                         }
@@ -725,16 +726,16 @@ namespace TvpMain.Forms
         {
             var item = (CheckResultItem)issuesDataGridView.CurrentRow.Tag;
 
-            if (item.ResultState == Result.ResultState.Found)
+            if (item.ResultState == CheckResultState.Found)
             {
-                item.ResultState = Result.ResultState.Ignored;
+                item.ResultState = CheckResultState.Ignored;
                 if (!_denied.Contains(item.GetHashCode()))
                 {
                     _denied.Add(item.GetHashCode());
                 }
-            } else if(item.ResultState == Result.ResultState.Ignored)
+            } else if(item.ResultState == CheckResultState.Ignored)
             {
-                item.ResultState = Result.ResultState.Found;
+                item.ResultState = CheckResultState.Found;
                 _denied.Remove(item.GetHashCode());
             }
 
@@ -822,13 +823,13 @@ namespace TvpMain.Forms
         /// </summary>
         /// <param name="resultState">The current issue result state</param>
         /// <returns>a bitmap to be used in the column</returns>
-        private Icon getStatusIcon(Result.ResultState resultState)
+        private Icon getStatusIcon(CheckResultState resultState)
         {
             switch(resultState)
             {
-                case Result.ResultState.Ignored:
+                case CheckResultState.Ignored:
                     return Properties.Resources.x_mark_16;
-                case Result.ResultState.Fixed:
+                case CheckResultState.Fixed:
                     return Properties.Resources.checkmark_16;
                 default:
                     return null;
@@ -874,10 +875,10 @@ namespace TvpMain.Forms
                 var item = (CheckResultItem)issuesDataGridView.CurrentRow.Tag;
                 switch (item.ResultState)
                 {
-                    case Result.ResultState.Ignored:
+                    case CheckResultState.Ignored:
                         DenyButton.Text = UNDENY_BUTTON_TEXT;
                         break;
-                    case Result.ResultState.Found:
+                    case CheckResultState.Found:
                     default:
                         DenyButton.Text = DENY_BUTTON_TEXT;
                         break;
@@ -989,6 +990,22 @@ namespace TvpMain.Forms
             setSelectedBooks();
 
             RunChecks();
+        }
+    }
+
+    /// <summary>
+    /// Basic exception for text check errors.
+    /// </summary>
+    public class TextCheckException : ApplicationException, ISerializable
+    {
+        /// <summary>
+        /// Basic ctor.
+        /// </summary>
+        /// <param name="messageText">Message text (optional, may be null).</param>
+        /// <param name="causeEx">Cause exception (optional, may be null).</param>
+        public TextCheckException(string messageText, Exception causeEx)
+            : base(messageText, causeEx)
+        {
         }
     }
 }

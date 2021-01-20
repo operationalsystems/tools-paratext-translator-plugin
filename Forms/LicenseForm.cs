@@ -68,11 +68,6 @@ namespace TvpMain.Forms
         public string FormTitle { get => this.Text; set => this.Text = value; }
 
         /// <summary>
-        /// The text displayed above the license.
-        /// </summary>
-        public string FormDescription { get => LicensePrompt.Text; set => LicensePrompt.Text = value; }
-
-        /// <summary>
         /// The RTF license text.
         /// </summary>
         public string LicenseText
@@ -102,11 +97,6 @@ namespace TvpMain.Forms
         private void Dismiss_Click(object sender, EventArgs e)
         {
             OnDismiss();
-        }
-
-        private void Print_Click(object sender, EventArgs e)
-        {
-            throw new NotImplementedException(nameof(Print_Click));
         }
     }
 }

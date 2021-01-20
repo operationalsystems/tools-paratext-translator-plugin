@@ -11,7 +11,6 @@ using System.Windows.Forms;
 using System.Xml.Serialization;
 using TvpMain.Check;
 using TvpMain.Project;
-using TvpMain.Result;
 using TvpMain.Text;
 
 namespace TvpMain.Util
@@ -195,119 +194,6 @@ namespace TvpMain.Util
         {
             (isError ? Console.Error : Console.Out).WriteLine(inputText);
             _host?.WriteLineToLog(_translationValidationPlugin, inputText);
-        }
-
-        /// <summary>
-        /// Retrieve the ignore list from the host's plugin data storage.
-        /// </summary>
-        /// <param name="projectName">Active project name (required).</param>
-        /// <returns>Ignore list.</returns>
-        public IList<IgnoreListItem> GetIgnoreList(string projectName)
-        {
-            if (projectName == null || projectName.Length == 0)
-            {
-                LogLine("Project name is invalid, responding with default empty list", true);
-                return Enumerable.Empty<IgnoreListItem>().ToList();
-            }
-
-            var inputData =
-                _host.GetPlugInData(_translationValidationPlugin,
-                    projectName, MainConsts.IGNORE_LIST_ITEMS_DATA_ID);
-            if (inputData == null)
-            {
-                return Enumerable.Empty<IgnoreListItem>().ToList();
-            }
-            else
-            {
-                IList<IgnoreListItem> ignoreList = JsonConvert.DeserializeObject<List<IgnoreListItem>>(inputData);
-                return ignoreList;
-            }
-        }
-
-        /// <summary>
-        /// This function will get a Paratext projects' directory based on a specific project. This is due to the available plugin framework functions.
-        /// </summary>
-        /// <param name="projectName">Project name to get root projects directory.</param>
-        public string GetParatextProjectsDirectory(string projectName)
-        {
-            _ = projectName ?? throw new ArgumentNullException(nameof(projectName));
-
-            var figurePath = _host.GetFigurePath(projectName, false) ?? _host.GetFigurePath(projectName, true);
-            if (figurePath == null)
-            {
-                throw new Exception("Unable to find the root Paratext projects directory.");
-            }
-
-            //
-            return Directory.GetParent(Directory.GetParent(figurePath).FullName).FullName;
-        }
-
-        /// <summary>
-        /// Stores the ignore list to the host's plugin data storage.
-        /// </summary>
-        /// <param name="projectName">Active project name (required).</param>
-        /// <param name="outputItems">Ignore list.</param>
-        public void PutIgnoreList(string projectName, IEnumerable<IgnoreListItem> outputItems)
-        {
-            if (projectName == null || projectName.Length < 1)
-            {
-                throw new ArgumentNullException(nameof(projectName));
-            }
-
-            _host.PutPlugInData(_translationValidationPlugin,
-                projectName, MainConsts.IGNORE_LIST_ITEMS_DATA_ID,
-                JsonConvert.SerializeObject(outputItems));
-        }
-
-        /// <summary>
-        /// Retrieve the ignore list from the host's plugin data storage.
-        /// </summary>
-        /// <param name="projectName">Active project name (required).</param>
-        /// <param name="bookId"></param>
-        /// <returns>Ignore list.</returns>
-        public IList<ResultItem> GetResultItems(string projectName, string bookId)
-        {
-            if (projectName == null || projectName.Length < 1)
-            {
-                throw new ArgumentNullException(nameof(projectName));
-            }
-
-            if (bookId == null || bookId.Length < 1)
-            {
-                throw new ArgumentNullException(nameof(bookId));
-            }
-
-            var inputData =
-                _host.GetPlugInData(_translationValidationPlugin, projectName,
-                    string.Format(MainConsts.RESULT_ITEMS_DATA_ID_FORMAT, bookId));
-            return inputData == null
-                ? Enumerable.Empty<ResultItem>().ToList()
-                : JsonConvert.DeserializeObject<List<ResultItem>>(inputData);
-        }
-
-        /// <summary>
-        /// Stores the ignore list to the host's plugin data storage.
-        /// </summary>
-        /// <param name="projectName">Active project name (required).</param>
-        /// <param name="bookId"></param>
-        /// <param name="outputItems">Ignore list.</param>
-        public void PutResultItems(string projectName, string bookId, IEnumerable<ResultItem> outputItems)
-        {
-            if (projectName == null || projectName.Length < 1)
-            {
-                Util.HostUtil.Instance.LogLine("Project name is invalid, can't operate so throwing exception.", true);
-                throw new ArgumentNullException(nameof(projectName));
-            }
-
-            if (bookId == null || bookId.Length < 1)
-            {
-                Util.HostUtil.Instance.LogLine("Book id is invalid, can't operate so throwing exception.", true);
-                throw new ArgumentNullException(nameof(bookId));
-            }
-
-            _host.PutPlugInData(_translationValidationPlugin, projectName,
-                string.Format(MainConsts.RESULT_ITEMS_DATA_ID_FORMAT, bookId),
-                JsonConvert.SerializeObject(outputItems));
         }
 
         /// <summary>

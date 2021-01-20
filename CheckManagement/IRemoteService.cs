@@ -18,23 +18,10 @@ namespace TvpMain.CheckManagement
         public Stream GetFileStream(string filename);
 
         /// <summary>
-        /// This method asynchronously retrieves a file as a <c>Stream</c>.
-        /// </summary>
-        /// <param name="filename">The filename to retrieve.</param>
-        /// <returns>An operation that results in a <c>Stream</c> containing the file data.</returns>
-        public Task<Stream> GetFileStreamAsync(string key);
-
-        /// <summary>
         /// This method retrieves all the available filenames.
         /// </summary>
         /// <returns>The available filenames.</returns>
         public List<string> ListAllFiles();
-
-        /// <summary>
-        /// This method asynchronously retrieves all the available filenames.
-        /// </summary>
-        /// <returns>An operation that results in the available filenames.</returns>
-        public Task<List<string>> ListAllFilesAsync();
 
         /// <summary>
         /// This method uploads a file.
@@ -58,12 +45,5 @@ namespace TvpMain.CheckManagement
         /// <param name="filename">The name of the file to delete from the remote repository.</param>
         /// <returns>The <c>HttpStatusCode</c> returned by the remote repository.</returns>
         HttpStatusCode DeleteFile(string filename);
-
-        /// <summary>
-        /// This method asynchronously deletes a file.
-        /// </summary>
-        /// <param name="filename">The name of the file to delete from the remote repository.</param>
-        /// <returns>An operation that results in the <c>HttpStatusCode</c> returned by the remote repository.</returns>
-        Task<HttpStatusCode> DeleteFileAsync(string filename);
     }
 }
