@@ -312,19 +312,6 @@ namespace TvpMain.Forms
         }
 
         /// <summary>
-        /// Update the help text for the JavaScript control
-        /// </summary>
-        /// <param name="sender">The control that sent this event</param>
-        /// <param name="e">The event information that triggered this call</param>
-        private void scriptTextBox_MouseEnter(object sender, EventArgs e)
-        {
-            helpTextBox.Clear();
-            helpTextBox.AppendText("JavaScript that can be called after the two regular expressions are run, if they are defined." + Environment.NewLine);
-            helpTextBox.AppendText("This script MUST implement the function checkAndFix(checkResultItems). The CheckResultItems are the results" +
-                " found in the regular expression pass.");
-        }
-
-        /// <summary>
         /// Update the help text for the check/fix id label control
         /// </summary>
         /// <param name="sender">The control that sent this event</param>
