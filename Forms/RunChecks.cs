@@ -146,6 +146,8 @@ namespace TvpMain.Forms
 
             // start the sync for the check/fixes
             _progressForm.Show(this);
+
+            this.Enabled = false;
             loadingWorker.RunWorkerAsync();
         }
 
@@ -181,6 +183,7 @@ namespace TvpMain.Forms
                 this.updateDisplayGrid();
             }));
             _progressForm.Close();
+            this.Enabled = true;
         }
 
         /// <summary>
@@ -326,7 +329,7 @@ namespace TvpMain.Forms
         private void editorToolStripMenuItem_Click(object sender, EventArgs e)
         {
             CheckEditor checkEditor = new CheckEditor();
-            checkEditor.Show(this);
+            checkEditor.ShowDialog(this);
 
         }
 
@@ -354,6 +357,8 @@ namespace TvpMain.Forms
             // grab the check run context
             var checkContext = GetCheckRunContext();
 
+            var importManager = new ImportManager(_host, _activeProjectName);
+
             // pass the checks and specification of what to check to the CheckResultsForm to perform the necessary search with.
             var checkResultsForm = new CheckResultsForm(
                 _host,
@@ -362,12 +367,12 @@ namespace TvpMain.Forms
                 _selectedBooks,
                 selectedChecks,
                 checkContext, 
-                new CheckAndFixRunner(), 
-                new ImportManager(_host, _activeProjectName)
+                new CheckAndFixRunner(),
+                importManager
                 );
 
-            checkResultsForm.Show();
-            checkResultsForm.RunChecks();
+            checkResultsForm.ShowDialog(this);
+            checkResultsForm.BringToFront();
         }
 
         /// <summary>
@@ -451,7 +456,7 @@ namespace TvpMain.Forms
             {
                 form.StartPosition = FormStartPosition.CenterParent;
 
-                var result = form.ShowDialog();
+                var result = form.ShowDialog(this);
                 if (result == DialogResult.OK)
                 {
                     // update which books were selected

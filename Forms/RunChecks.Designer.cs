@@ -30,6 +30,7 @@ namespace TvpMain.Forms
         private void InitializeComponent()
         {
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(RunChecks));
             this.runChecksMenu = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -489,12 +490,12 @@ namespace TvpMain.Forms
             this.Controls.Add(this.checksGroupBox);
             this.Controls.Add(this.projectLabel);
             this.Controls.Add(this.runChecksMenu);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MainMenuStrip = this.runChecksMenu;
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "RunChecks";
             this.Padding = new System.Windows.Forms.Padding(10, 10, 10, 25);
-            this.ShowIcon = false;
             this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Show;
             this.Text = "Run Checks";
             this.Load += new System.EventHandler(this.RunChecks_Load);

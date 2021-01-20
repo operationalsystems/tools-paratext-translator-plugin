@@ -91,6 +91,11 @@ namespace TvpMain.Check
         public int Verse { get; set; }
 
         /// <summary>
+        /// This is the reference text that was searched
+        /// </summary>
+        public string Reference { get; set; }
+
+        /// <summary>
         /// Basic ctor.
         /// </summary>
         /// <param name="description">Description text (required).</param>
@@ -219,7 +224,6 @@ namespace TvpMain.Check
                 hashCode = (hashCode * MainConsts.HASH_PRIME) ^ (FixText != null ? FixText.GetHashCode() : 0);
                 hashCode = (hashCode * MainConsts.HASH_PRIME) ^ (int)CheckType;
                 hashCode = (hashCode * MainConsts.HASH_PRIME) ^ ResultTypeCode;
-                hashCode = (hashCode * MainConsts.HASH_PRIME) ^ (int)ResultState;
                 return hashCode;
             }
         }
