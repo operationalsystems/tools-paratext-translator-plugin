@@ -96,7 +96,7 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup>
-    <RunPostBuildEvent>OnOutputUpdated</RunPostBuildEvent>
+    <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
     <DebugSymbols>true</DebugSymbols>
@@ -523,12 +523,12 @@
     <Analyzer Include="packages\AWSSDK.S3.3.5.8.4\analyzers\dotnet\cs\AWSSDK.S3.CodeAnalysis.dll" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <Import Project="packages\ParatextData.9.0.3\build\ParatextData.targets" Condition="Exists('packages\ParatextData.9.0.3\build\ParatextData.targets')" />
+  <Import Project="packages\ParatextData.9.2.4-alpha8\build\ParatextData.targets" Condition="Exists('packages\ParatextData.9.2.4-alpha8\build\ParatextData.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
-    <Error Condition="!Exists('packages\ParatextData.9.0.3\build\ParatextData.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\ParatextData.9.0.3\build\ParatextData.targets'))" />
+    <Error Condition="!Exists('packages\ParatextData.9.2.4-alpha8\build\ParatextData.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\ParatextData.9.2.4-alpha8\build\ParatextData.targets'))" />
     <Error Condition="!Exists('packages\SIL.Lib.6.0.12\build\SIL.Lib.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\SIL.Lib.6.0.12\build\SIL.Lib.targets'))" />
     <Error Condition="!Exists('packages\System.Resources.Extensions.5.0.0\build\net461\System.Resources.Extensions.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\System.Resources.Extensions.5.0.0\build\net461\System.Resources.Extensions.targets'))" />
     <Error Condition="!Exists('packages\Microsoft.ClearScript.V8.ICUData.7.1.0\build\Microsoft.ClearScript.V8.ICUData.props')" Text="$([System.String]::Format('$(ErrorText)', 'packages\Microsoft.ClearScript.V8.ICUData.7.1.0\build\Microsoft.ClearScript.V8.ICUData.props'))" />
@@ -538,18 +538,23 @@
     <Error Condition="!Exists('packages\Icu4c.Win.Min.62.2.1-beta\build\Icu4c.Win.Min.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\Icu4c.Win.Min.62.2.1-beta\build\Icu4c.Win.Min.targets'))" />
   </Target>
   <Target Name="ArchiveBuild" AfterTargets="Build" Condition="$(Configuration) == 'Release' Or $(Configuration) == 'Debug'">
-    <ItemGroup>
-      <ZipFiles Include="$(OutputPath)*.dll" Exclude="$(OutputPath)CC32.dll;$(OutputPath)libgcc_s_sjlj-1.dll;$(OutputPath)libstdc++-6.dll;$(OutputPath)TECkit_Compiler_x86.dll;$(OutputPath)TECkit_x86.dll;$(OutputPath)ClearScriptV8.win-x64.dll;" />
-      <ZipFiles Include="$(OutputPath)*.pdb" />
-      <ZipFiles Include="$(OutputPath)*.config" />
-      <ZipFiles Include="$(OutputPath)*.xml" />
-      <ZipFiles Include="$(OutputPath)runtimes\win-x64\native\ClearScriptV8.win-x64.dll" />
-    </ItemGroup>
-    <Zip OutputFilename="$(OutputPath)$(TargetName).zip" Files="@(ZipFiles)" />
+    <ZipDirectory SourceDirectory="$(OutputPath)zip\" DestinationFile="$(OutputPath)\..\$(AssemblyName).zip" Overwrite="true" />
   </Target>
   <PropertyGroup>
-    <PostBuildEvent>mkdir "$(TargetDir)runtimes\win-x64\native"
-copy "$(TargetDir)ClearScriptV8.win-x64.dll" "$(TargetDir)runtimes\win-x64\native"</PostBuildEvent>
+    <PostBuildEvent>mkdir "$(TargetDir)zip\runtimes\win-x64\native"
+mkdir "$(TargetDir)zip\installed-checks"
+mkdir "$(TargetDir)zip\local-checks"
+copy *.dll "$(TargetDir)zip"
+move "$(TargetDir)zip\ClearScriptV8.win-x64.dll" "$(TargetDir)zip\runtimes\win-x64\native"
+copy *.pdb "$(TargetDir)zip"
+copy *.config "$(TargetDir)zip"
+copy *.xml "$(TargetDir)zip"
+del "$(TargetDir)zip\CC32.dll"
+del "$(TargetDir)zip\libgcc_s_sjlj-1.dll"
+del "$(TargetDir)zip\libstdc++-6.dll"
+del "$(TargetDir)zip\TECkit_Compiler_x86.dll"
+del "$(TargetDir)zip\TECkit_x86.dll"
+</PostBuildEvent>
   </PropertyGroup>
   <PropertyGroup>
     <PreBuildEvent>echo /// This is an auto-generated file, created by a Pre-Build event. &gt; "$(ProjectDir)Util\AWSCredentials.cs"
@@ -572,6 +577,5 @@ echo } &gt;&gt; "$(ProjectDir)Util\AWSCredentials.cs"</PreBuildEvent>
   </PropertyGroup>
   <Import Project="packages\SIL.Lib.6.0.12\build\SIL.Lib.targets" Condition="Exists('packages\SIL.Lib.6.0.12\build\SIL.Lib.targets')" />
   <Import Project="packages\System.Resources.Extensions.5.0.0\build\net461\System.Resources.Extensions.targets" Condition="Exists('packages\System.Resources.Extensions.5.0.0\build\net461\System.Resources.Extensions.targets')" />
-  <Import Project="packages\ParatextData.9.2.4-alpha8\build\ParatextData.targets" Condition="Exists('packages\ParatextData.9.2.4-alpha8\build\ParatextData.targets')" />
   <Import Project="packages\Icu4c.Win.Min.62.2.1-beta\build\Icu4c.Win.Min.targets" Condition="Exists('packages\Icu4c.Win.Min.62.2.1-beta\build\Icu4c.Win.Min.targets')" />
 </Project>
