@@ -40,7 +40,7 @@ namespace TvpPublish
         static readonly string PluginArchiveFilename = $"{PluginTargetFilename}.{ZipExtension}";
         static readonly string PluginManifestPath = Path.Combine(SolutionRootPath, PluginManifestFilename);
         static readonly string PluginLibraryPath = Path.Combine(SolutionRootPath, "bin", "x64", "Release", PluginLibraryFilename);
-        static readonly string PluginArchivePath = Path.Combine(SolutionRootPath, "bin", "x64", "Release", PluginArchiveFilename);
+        static readonly string PluginArchivePath = Path.Combine(SolutionRootPath, "bin", "x64", PluginArchiveFilename);
 
         // The PPM S3 repository information we use to deploy the plugin and manifest files.
         static RegionEndpoint Region { get; } = RegionEndpoint.USEast1;
