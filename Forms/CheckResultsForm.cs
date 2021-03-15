@@ -771,16 +771,6 @@ namespace TvpMain.Forms
         }
 
         /// <summary>
-        /// Update the list of issues in the issue list on click of a data grid view cell
-        /// </summary>
-        /// <param name="sender">The control that sent this event</param>
-        /// <param name="e">The event information that triggered this call</param>
-        private void checksDataGridView_CellContentClick(object sender, DataGridViewCellEventArgs e)
-        {
-            //PopulateIssuesDataGridView();
-        }
-
-        /// <summary>
         /// When the selection on this item changes, update the dependant list
         /// </summary>
         /// <param name="sender">The control that sent this event</param>
