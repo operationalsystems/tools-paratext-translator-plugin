@@ -46,11 +46,6 @@
             this.filterTextBox = new System.Windows.Forms.TextBox();
             this.checkFilterLabel = new System.Windows.Forms.Label();
             this.checksDataGridView = new System.Windows.Forms.DataGridView();
-            this.SelectedColumn = new System.Windows.Forms.DataGridViewCheckBoxColumn();
-            this.CategoryColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.DescriptionColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.CountColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.ActionsColumn = new System.Windows.Forms.DataGridViewButtonColumn();
             this.issuesDataGridView = new System.Windows.Forms.DataGridView();
             this.statusIconColumn = new System.Windows.Forms.DataGridViewImageColumn();
             this.ReferenceColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -60,6 +55,11 @@
             this.label2 = new System.Windows.Forms.Label();
             this.fixTextBox = new System.Windows.Forms.RichTextBox();
             this.imageList1 = new System.Windows.Forms.ImageList(this.components);
+            this.SelectedColumn = new System.Windows.Forms.DataGridViewCheckBoxColumn();
+            this.CategoryColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.DescriptionColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.CountColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.ActionsColumn = new System.Windows.Forms.DataGridViewButtonColumn();
             this.menuStrip.SuspendLayout();
             this.topPanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.checksDataGridView)).BeginInit();
@@ -247,53 +247,6 @@
             this.checksDataGridView.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.checksDataGridView_CellContentClick);
             this.checksDataGridView.SelectionChanged += new System.EventHandler(this.checksDataGridView_SelectionChanged);
             // 
-            // SelectedColumn
-            // 
-            this.SelectedColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.DisplayedCells;
-            this.SelectedColumn.FillWeight = 50F;
-            this.SelectedColumn.HeaderText = "Selected";
-            this.SelectedColumn.MinimumWidth = 70;
-            this.SelectedColumn.Name = "SelectedColumn";
-            this.SelectedColumn.ReadOnly = true;
-            this.SelectedColumn.Resizable = System.Windows.Forms.DataGridViewTriState.True;
-            this.SelectedColumn.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Automatic;
-            this.SelectedColumn.Width = 74;
-            // 
-            // CategoryColumn
-            // 
-            this.CategoryColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
-            this.CategoryColumn.HeaderText = "Category";
-            this.CategoryColumn.Name = "CategoryColumn";
-            this.CategoryColumn.ReadOnly = true;
-            this.CategoryColumn.Width = 74;
-            // 
-            // DescriptionColumn
-            // 
-            this.DescriptionColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.DescriptionColumn.HeaderText = "Description";
-            this.DescriptionColumn.Name = "DescriptionColumn";
-            this.DescriptionColumn.ReadOnly = true;
-            // 
-            // CountColumn
-            // 
-            this.CountColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
-            this.CountColumn.FillWeight = 15F;
-            this.CountColumn.HeaderText = "Count";
-            this.CountColumn.MinimumWidth = 20;
-            this.CountColumn.Name = "CountColumn";
-            this.CountColumn.ReadOnly = true;
-            this.CountColumn.Width = 60;
-            // 
-            // ActionsColumn
-            // 
-            this.ActionsColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
-            this.ActionsColumn.FillWeight = 15F;
-            this.ActionsColumn.HeaderText = "Auto Fix";
-            this.ActionsColumn.MinimumWidth = 20;
-            this.ActionsColumn.Name = "ActionsColumn";
-            this.ActionsColumn.ReadOnly = true;
-            this.ActionsColumn.Width = 51;
-            // 
             // issuesDataGridView
             // 
             this.issuesDataGridView.AllowUserToAddRows = false;
@@ -390,6 +343,56 @@
             this.imageList1.Images.SetKeyName(0, "checkmark-32.ico");
             this.imageList1.Images.SetKeyName(1, "x-mark-32.ico");
             // 
+            // SelectedColumn
+            // 
+            this.SelectedColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.DisplayedCells;
+            this.SelectedColumn.FillWeight = 50F;
+            this.SelectedColumn.HeaderText = "Selected";
+            this.SelectedColumn.MinimumWidth = 70;
+            this.SelectedColumn.Name = "SelectedColumn";
+            this.SelectedColumn.ReadOnly = true;
+            this.SelectedColumn.Resizable = System.Windows.Forms.DataGridViewTriState.True;
+            this.SelectedColumn.Visible = false;
+            this.SelectedColumn.Width = 70;
+            // 
+            // CategoryColumn
+            // 
+            this.CategoryColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
+            this.CategoryColumn.HeaderText = "Category";
+            this.CategoryColumn.Name = "CategoryColumn";
+            this.CategoryColumn.ReadOnly = true;
+            this.CategoryColumn.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            this.CategoryColumn.Width = 55;
+            // 
+            // DescriptionColumn
+            // 
+            this.DescriptionColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.DescriptionColumn.HeaderText = "Description";
+            this.DescriptionColumn.Name = "DescriptionColumn";
+            this.DescriptionColumn.ReadOnly = true;
+            this.DescriptionColumn.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            // 
+            // CountColumn
+            // 
+            this.CountColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
+            this.CountColumn.FillWeight = 15F;
+            this.CountColumn.HeaderText = "Count";
+            this.CountColumn.MinimumWidth = 20;
+            this.CountColumn.Name = "CountColumn";
+            this.CountColumn.ReadOnly = true;
+            this.CountColumn.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            this.CountColumn.Width = 41;
+            // 
+            // ActionsColumn
+            // 
+            this.ActionsColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
+            this.ActionsColumn.FillWeight = 15F;
+            this.ActionsColumn.HeaderText = "Auto Fix";
+            this.ActionsColumn.MinimumWidth = 20;
+            this.ActionsColumn.Name = "ActionsColumn";
+            this.ActionsColumn.ReadOnly = true;
+            this.ActionsColumn.Width = 51;
+            // 
             // CheckResultsForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -432,11 +435,6 @@
         private System.Windows.Forms.Panel topPanel;
         private System.Windows.Forms.ToolStripMenuItem LicenseToolStripMenuItem;
         private System.Windows.Forms.DataGridView checksDataGridView;
-        private System.Windows.Forms.DataGridViewCheckBoxColumn SelectedColumn;
-        private System.Windows.Forms.DataGridViewTextBoxColumn CategoryColumn;
-        private System.Windows.Forms.DataGridViewTextBoxColumn DescriptionColumn;
-        private System.Windows.Forms.DataGridViewTextBoxColumn CountColumn;
-        private System.Windows.Forms.DataGridViewButtonColumn ActionsColumn;
         private System.Windows.Forms.Label bookFilterLabel;
         private System.Windows.Forms.Button clearCheckFilterButton;
         private System.Windows.Forms.Button bookFilterClearButton;
@@ -453,5 +451,10 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn ReferenceColumn;
         private System.Windows.Forms.DataGridViewTextBoxColumn MatchTextColumn;
         private System.Windows.Forms.ImageList imageList1;
+        private System.Windows.Forms.DataGridViewCheckBoxColumn SelectedColumn;
+        private System.Windows.Forms.DataGridViewTextBoxColumn CategoryColumn;
+        private System.Windows.Forms.DataGridViewTextBoxColumn DescriptionColumn;
+        private System.Windows.Forms.DataGridViewTextBoxColumn CountColumn;
+        private System.Windows.Forms.DataGridViewButtonColumn ActionsColumn;
     }
 }
