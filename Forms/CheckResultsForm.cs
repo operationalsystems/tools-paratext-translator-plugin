@@ -44,6 +44,11 @@ namespace TvpMain.Forms
         public const int SCOPE_NOT_APPLICABLE = -1;
 
         /// <summary>
+        /// This index indicates no row is selected
+        /// </summary>
+        public const int DEFAULT_ROW_NOT_SELECTED = -1;
+
+        /// <summary>
         /// Lock for updating check results dictionary.
         /// </summary>
         private readonly object CheckResultslock = new object();
@@ -787,13 +792,13 @@ namespace TvpMain.Forms
         /// <summary>
         /// Update the list of issues in the issues list
         /// </summary>
-        private void PopulateIssuesDataGridView(int rowIndexOverride = -1)
+        private void PopulateIssuesDataGridView(int rowIndexOverride = DEFAULT_ROW_NOT_SELECTED)
         {
             // update list of issues
             if (checksDataGridView.SelectedRows[0] != null && checksDataGridView.SelectedRows[0].Tag != null)
             {
                 // use selected rows[0] instead of current row since they aren't the same thing. Since the control is limited to only a single selection, this is the value we want.
-                int currentSelectedRowIndex = rowIndexOverride != -1 ? rowIndexOverride : checksDataGridView.SelectedRows[0].Index;
+                int currentSelectedRowIndex = rowIndexOverride != DEFAULT_ROW_NOT_SELECTED ? rowIndexOverride : checksDataGridView.SelectedRows[0].Index;
                 KeyValuePair<CheckAndFixItem, List<CheckResultItem>> result = (KeyValuePair<CheckAndFixItem, List<CheckResultItem>>)checksDataGridView.Rows[currentSelectedRowIndex].Tag;
 
                 issuesDataGridView.Rows.Clear();
