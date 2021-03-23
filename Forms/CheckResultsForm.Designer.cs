@@ -244,7 +244,6 @@
             this.checksDataGridView.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.checksDataGridView.Size = new System.Drawing.Size(740, 251);
             this.checksDataGridView.TabIndex = 0;
-            this.checksDataGridView.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.checksDataGridView_CellContentClick);
             this.checksDataGridView.SelectionChanged += new System.EventHandler(this.checksDataGridView_SelectionChanged);
             // 
             // SelectedColumn
@@ -256,8 +255,7 @@
             this.SelectedColumn.Name = "SelectedColumn";
             this.SelectedColumn.ReadOnly = true;
             this.SelectedColumn.Resizable = System.Windows.Forms.DataGridViewTriState.True;
-            this.SelectedColumn.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Automatic;
-            this.SelectedColumn.Width = 74;
+            this.SelectedColumn.Visible = false;
             // 
             // CategoryColumn
             // 
@@ -265,7 +263,8 @@
             this.CategoryColumn.HeaderText = "Category";
             this.CategoryColumn.Name = "CategoryColumn";
             this.CategoryColumn.ReadOnly = true;
-            this.CategoryColumn.Width = 74;
+            this.CategoryColumn.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            this.CategoryColumn.Width = 55;
             // 
             // DescriptionColumn
             // 
@@ -273,6 +272,7 @@
             this.DescriptionColumn.HeaderText = "Description";
             this.DescriptionColumn.Name = "DescriptionColumn";
             this.DescriptionColumn.ReadOnly = true;
+            this.DescriptionColumn.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
             // 
             // CountColumn
             // 
@@ -282,7 +282,8 @@
             this.CountColumn.MinimumWidth = 20;
             this.CountColumn.Name = "CountColumn";
             this.CountColumn.ReadOnly = true;
-            this.CountColumn.Width = 60;
+            this.CountColumn.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            this.CountColumn.Width = 41;
             // 
             // ActionsColumn
             // 
@@ -432,11 +433,6 @@
         private System.Windows.Forms.Panel topPanel;
         private System.Windows.Forms.ToolStripMenuItem LicenseToolStripMenuItem;
         private System.Windows.Forms.DataGridView checksDataGridView;
-        private System.Windows.Forms.DataGridViewCheckBoxColumn SelectedColumn;
-        private System.Windows.Forms.DataGridViewTextBoxColumn CategoryColumn;
-        private System.Windows.Forms.DataGridViewTextBoxColumn DescriptionColumn;
-        private System.Windows.Forms.DataGridViewTextBoxColumn CountColumn;
-        private System.Windows.Forms.DataGridViewButtonColumn ActionsColumn;
         private System.Windows.Forms.Label bookFilterLabel;
         private System.Windows.Forms.Button clearCheckFilterButton;
         private System.Windows.Forms.Button bookFilterClearButton;
@@ -453,5 +449,10 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn ReferenceColumn;
         private System.Windows.Forms.DataGridViewTextBoxColumn MatchTextColumn;
         private System.Windows.Forms.ImageList imageList1;
+        private System.Windows.Forms.DataGridViewCheckBoxColumn SelectedColumn;
+        private System.Windows.Forms.DataGridViewTextBoxColumn CategoryColumn;
+        private System.Windows.Forms.DataGridViewTextBoxColumn DescriptionColumn;
+        private System.Windows.Forms.DataGridViewTextBoxColumn CountColumn;
+        private System.Windows.Forms.DataGridViewButtonColumn ActionsColumn;
     }
 }

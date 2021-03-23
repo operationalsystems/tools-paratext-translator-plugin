@@ -44,6 +44,11 @@ namespace TvpMain.Forms
         public const int SCOPE_NOT_APPLICABLE = -1;
 
         /// <summary>
+        /// This index indicates no row is selected
+        /// </summary>
+        public const int DEFAULT_ROW_NOT_SELECTED = -1;
+
+        /// <summary>
         /// Lock for updating check results dictionary.
         /// </summary>
         private readonly object CheckResultslock = new object();
@@ -514,9 +519,9 @@ namespace TvpMain.Forms
         {
             int currentSelectedRowIndex = 0;
 
-            if (checksDataGridView.CurrentRow != null)
+            if (checksDataGridView.CurrentCell != null)
             {
-                currentSelectedRowIndex = checksDataGridView.CurrentRow.Index;
+                currentSelectedRowIndex = checksDataGridView.SelectedRows[0].Index;
             }
 
             checksDataGridView.Rows.Clear();
@@ -536,12 +541,18 @@ namespace TvpMain.Forms
                     checksDataGridView.Rows[rowIndex].Tag = new KeyValuePair<CheckAndFixItem,List<CheckResultItem>>(result.Key, filteredResultItems);
                 }
             }
+
+            // ensure that there are rows to select
             if(checksDataGridView.Rows != null && checksDataGridView.Rows.Count > 0 && checksDataGridView.Rows[0] != null)
             {
                 checksDataGridView.Rows[currentSelectedRowIndex].Selected = true;
             }
 
-            PopulateIssuesDataGridView();
+            // Send in the currently selected row. This is needed because this value is incorrect from the control
+            // itself until the UI thread has actually updated the control and the event has been triggered.
+            // However, we can't rely on that event to update the issues list because it dosn't trigger in every case.
+            PopulateIssuesDataGridView(currentSelectedRowIndex);
+            
         }
 
         /// <summary>
@@ -765,34 +776,30 @@ namespace TvpMain.Forms
         }
 
         /// <summary>
-        /// Update the list of issues in the issue list on click of a data grid view cell
-        /// </summary>
-        /// <param name="sender">The control that sent this event</param>
-        /// <param name="e">The event information that triggered this call</param>
-        private void checksDataGridView_CellContentClick(object sender, DataGridViewCellEventArgs e)
-        {
-            PopulateIssuesDataGridView();
-        }
-
-        /// <summary>
         /// When the selection on this item changes, update the dependant list
         /// </summary>
         /// <param name="sender">The control that sent this event</param>
         /// <param name="e">The event information that triggered this call</param>
         private void checksDataGridView_SelectionChanged(object sender, EventArgs e)
         {
-            PopulateIssuesDataGridView();
+            // only do updates here when the control is focused. Updates to the UI happen in other ways too.
+            if (checksDataGridView.Focused)
+            {
+                PopulateIssuesDataGridView();
+            }
         }
 
         /// <summary>
         /// Update the list of issues in the issues list
         /// </summary>
-        private void PopulateIssuesDataGridView()
+        private void PopulateIssuesDataGridView(int rowIndexOverride = DEFAULT_ROW_NOT_SELECTED)
         {
             // update list of issues
-            if (checksDataGridView.CurrentRow != null && checksDataGridView.CurrentRow.Tag != null)
+            if (checksDataGridView.SelectedRows != null && checksDataGridView.SelectedRows.Count > 0 && checksDataGridView.SelectedRows[0] != null && checksDataGridView.SelectedRows[0].Tag != null)
             {
-                KeyValuePair<CheckAndFixItem, List<CheckResultItem>> result = (KeyValuePair<CheckAndFixItem, List<CheckResultItem>>)checksDataGridView.CurrentRow.Tag;
+                // use selected rows[0] instead of current row since they aren't the same thing. Since the control is limited to only a single selection, this is the value we want.
+                int currentSelectedRowIndex = rowIndexOverride != DEFAULT_ROW_NOT_SELECTED ? rowIndexOverride : checksDataGridView.SelectedRows[0].Index;
+                KeyValuePair<CheckAndFixItem, List<CheckResultItem>> result = (KeyValuePair<CheckAndFixItem, List<CheckResultItem>>)checksDataGridView.Rows[currentSelectedRowIndex].Tag;
 
                 issuesDataGridView.Rows.Clear();
 
@@ -859,8 +866,12 @@ namespace TvpMain.Forms
         /// <param name="e">The event information that triggered this call</param>
         private void issuesDataGridView_SelectionChanged(object sender, EventArgs e)
         {
-            // update match/fix text boxes
-            PopulateMatchFixTextBoxes();
+            // only do updates here when the control is focused. Updates to the UI happen in other ways too.
+            if (issuesDataGridView.Focused)
+            {
+                // update match/fix text boxes
+                PopulateMatchFixTextBoxes();
+            }
 
             UpdateDenyButton();
         }
