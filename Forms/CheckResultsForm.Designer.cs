@@ -1,4 +1,6 @@
-﻿namespace TvpMain.Forms
+﻿using TvpMain.Util;
+
+namespace TvpMain.Forms
 {
     partial class CheckResultsForm
     {
@@ -55,10 +57,10 @@
             this.statusIconColumn = new System.Windows.Forms.DataGridViewImageColumn();
             this.ReferenceColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.MatchTextColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.matchTextBox = new System.Windows.Forms.RichTextBox();
+            this.matchTextBox = new RichTextBox50();
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
-            this.fixTextBox = new System.Windows.Forms.RichTextBox();
+            this.fixTextBox = new RichTextBox50();
             this.imageList1 = new System.Windows.Forms.ImageList(this.components);
             this.menuStrip.SuspendLayout();
             this.topPanel.SuspendLayout();
