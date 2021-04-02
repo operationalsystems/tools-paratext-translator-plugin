@@ -2,7 +2,7 @@
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 
-namespace TvpMain.Util
+namespace TvpCustomControls
 {
     /**
      * This RichTextBox supports Unicode characters that may otherwise fail in a RichTextBox.
