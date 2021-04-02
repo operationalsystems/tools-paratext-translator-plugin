@@ -1,6 +1,4 @@
-﻿using TvpMain.Util;
-
-namespace TvpMain.Forms
+﻿namespace TvpMain.Forms
 {
     partial class CheckResultsForm
     {
@@ -57,10 +55,10 @@ namespace TvpMain.Forms
             this.statusIconColumn = new System.Windows.Forms.DataGridViewImageColumn();
             this.ReferenceColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.MatchTextColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.matchTextBox = new RichTextBox50();
+            this.matchTextBox = new TvpMain.Util.RichTextBox50();
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
-            this.fixTextBox = new RichTextBox50();
+            this.fixTextBox = new TvpMain.Util.RichTextBox50();
             this.imageList1 = new System.Windows.Forms.ImageList(this.components);
             this.menuStrip.SuspendLayout();
             this.topPanel.SuspendLayout();
@@ -443,10 +441,10 @@ namespace TvpMain.Forms
         private System.Windows.Forms.TextBox filterTextBox;
         private System.Windows.Forms.Label checkFilterLabel;
         private System.Windows.Forms.DataGridView issuesDataGridView;
-        private System.Windows.Forms.RichTextBox matchTextBox;
+        private TvpMain.Util.RichTextBox50 matchTextBox;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.RichTextBox fixTextBox;
+        private TvpMain.Util.RichTextBox50 fixTextBox;
         private System.Windows.Forms.DataGridViewImageColumn statusIconColumn;
         private System.Windows.Forms.DataGridViewTextBoxColumn ReferenceColumn;
         private System.Windows.Forms.DataGridViewTextBoxColumn MatchTextColumn;
