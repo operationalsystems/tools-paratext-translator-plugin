@@ -201,6 +201,8 @@ namespace TvpMain.Forms
 
                 foreach (var item in _remoteChecks)
                 {
+                    Tuple<bool, string> isCheckAvailableTuple = isCheckAvailableForProject(item);
+
                     _displayItems.Add(new DisplayItem(
                         isCheckDefaultForProject(item),
                         item.Name,
@@ -209,13 +211,16 @@ namespace TvpMain.Forms
                         item.Languages != null && item.Languages.Length > 0 ? String.Join(", ", item.Languages) : "All",
                         item.Tags != null ? String.Join(", ", item.Tags) : "",
                         item.Id,
-                        isCheckAvailableForProject(item),
+                        isCheckAvailableTuple.Item1,
+                        isCheckAvailableTuple.Item2,
                         item
                         ));
                 }
 
                 foreach (var item in _localChecks)
                 {
+                    Tuple<bool, string> isCheckAvailableTuple = isCheckAvailableForProject(item);
+
                     _displayItems.Add(new DisplayItem(
                         false,
                         "(Local) " + item.Name,
@@ -224,7 +229,8 @@ namespace TvpMain.Forms
                         item.Languages != null && item.Languages.Length > 0 ? String.Join(", ", item.Languages) : "All",
                         item.Tags != null ? String.Join(", ", item.Tags) : "",
                         item.Id,
-                        isCheckAvailableForProject(item),
+                        isCheckAvailableTuple.Item1,
+                        isCheckAvailableTuple.Item2,
                         item
                         ));
                 }
@@ -264,6 +270,11 @@ namespace TvpMain.Forms
                     {
                         checksList.Rows[rowIndex].DefaultCellStyle.BackColor = SystemColors.Control;
                         checksList.Rows[rowIndex].DefaultCellStyle.ForeColor = SystemColors.GrayText;
+
+                        for (int i = 0; i < checksList.Columns.Count; i++)
+                        {
+                            checksList.Rows[rowIndex].Cells[i].ToolTipText = displayItem.Tooltip;
+                        }
                     }
                 }
             }
@@ -626,7 +637,7 @@ namespace TvpMain.Forms
         /// </summary>
         /// <param name="item">The check/fix item to use to determine if it can be used against the current project</param>
         /// <returns>If the given CFitem is available to be used with the project.</returns>
-        private Boolean isCheckAvailableForProject(CheckAndFixItem item)
+        private Tuple<Boolean, String> isCheckAvailableForProject(CheckAndFixItem item)
         {
             var languageId = _host.GetProjectLanguageId(_activeProjectName, "translation validation").ToUpper();
             var projectRTL = _host.GetProjectRtoL(_activeProjectName);
@@ -648,7 +659,19 @@ namespace TvpMain.Forms
             Debug.WriteLine("Project RTL: " + projectRTL);
             Debug.WriteLine("Item RTL: " + rtlEnabled);
 
-            return languageEnabled && rtlEnabled;
+            String response = "";
+
+            if(!languageEnabled)
+            {
+                response = "This check doesn't support this project's langauge.";
+            }
+
+            if(!rtlEnabled)
+            {
+                response = "This check is for RTL languages only.";
+            }
+
+            return new Tuple<Boolean,String>(languageEnabled && rtlEnabled, response);
         }
 
         // 
@@ -670,7 +693,7 @@ namespace TvpMain.Forms
 
                 helpTextBox.Clear();
 
-                if (!isCheckAvailableForProject(item.Item))
+                if (!isCheckAvailableForProject(item.Item).Item1)
                 {
                     helpTextBox.AppendText("NOTE: This check/fix is not selectedable for this project" + Environment.NewLine + Environment.NewLine);
                 }
@@ -800,9 +823,10 @@ namespace TvpMain.Forms
         public string Tags { get; set; }
         public string Id { get; set; }
         public bool Active { get; set; }
+        public string Tooltip { get; set; }
         public CheckAndFixItem Item { get; set; }
 
-        public DisplayItem(bool selected, string name, string description, string version, string languages, string tags, string id, bool active, CheckAndFixItem item)
+        public DisplayItem(bool selected, string name, string description, string version, string languages, string tags, string id, bool active, string tooltip, CheckAndFixItem item)
         {
             Selected = selected;
             Name = name;
@@ -812,6 +836,7 @@ namespace TvpMain.Forms
             Tags = tags;
             Id = id;
             Active = active;
+            Tooltip = tooltip;
             Item = item;
         }
     }
