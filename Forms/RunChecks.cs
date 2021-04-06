@@ -201,6 +201,7 @@ namespace TvpMain.Forms
 
                 foreach (var item in _remoteChecks)
                 {
+                    // get if the check is available (item1), and if not, the text for the tooltip (item2)
                     Tuple<bool, string> isCheckAvailableTuple = isCheckAvailableForProject(item);
 
                     _displayItems.Add(new DisplayItem(
@@ -219,6 +220,7 @@ namespace TvpMain.Forms
 
                 foreach (var item in _localChecks)
                 {
+                    // get if the check is available (item1), and if not, the text for the tooltip (item2)
                     Tuple<bool, string> isCheckAvailableTuple = isCheckAvailableForProject(item);
 
                     _displayItems.Add(new DisplayItem(
@@ -636,7 +638,7 @@ namespace TvpMain.Forms
         ///  Will filter out based on Tags, add additional tag support here
         /// </summary>
         /// <param name="item">The check/fix item to use to determine if it can be used against the current project</param>
-        /// <returns>If the given CFitem is available to be used with the project.</returns>
+        /// <returns>If the given CFitem is available (item1) to be used with the project. If not, the tooltip to use for the disabled row (item2).</returns>
         private Tuple<Boolean, String> isCheckAvailableForProject(CheckAndFixItem item)
         {
             var languageId = _host.GetProjectLanguageId(_activeProjectName, "translation validation").ToUpper();
@@ -661,6 +663,7 @@ namespace TvpMain.Forms
 
             String response = "";
 
+            // set the response strings for the appropriate filter reason
             if(!languageEnabled)
             {
                 response = "This check doesn't support this project's langauge.";
