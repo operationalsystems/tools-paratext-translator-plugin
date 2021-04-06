@@ -526,6 +526,12 @@
   <ItemGroup>
     <Analyzer Include="packages\AWSSDK.S3.3.5.8.4\analyzers\dotnet\cs\AWSSDK.S3.CodeAnalysis.dll" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="TvpCustomControls\TvpCustomControls.csproj">
+      <Project>{51ee34cd-ab65-402d-9f33-1cc2824cb521}</Project>
+      <Name>TvpCustomControls</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="packages\ParatextData.9.2.4-alpha8\build\ParatextData.targets" Condition="Exists('packages\ParatextData.9.2.4-alpha8\build\ParatextData.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
