@@ -273,6 +273,7 @@ namespace TvpMain.Forms
                         checksList.Rows[rowIndex].DefaultCellStyle.BackColor = SystemColors.Control;
                         checksList.Rows[rowIndex].DefaultCellStyle.ForeColor = SystemColors.GrayText;
 
+                        // loop through all the cells in the row since tool tips can only be placed on the cell
                         for (int i = 0; i < checksList.Columns.Count; i++)
                         {
                             checksList.Rows[rowIndex].Cells[i].ToolTipText = displayItem.Tooltip;
