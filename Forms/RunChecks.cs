@@ -640,7 +640,7 @@ namespace TvpMain.Forms
         /// </summary>
         /// <param name="item">The check/fix item to use to determine if it can be used against the current project</param>
         /// <returns>If the given CFitem is available (item1) to be used with the project. If not, the tooltip to use for the disabled row (item2).</returns>
-        private Tuple<Boolean, String> isCheckAvailableForProject(CheckAndFixItem item)
+        private Tuple<bool, string> isCheckAvailableForProject(CheckAndFixItem item)
         {
             var languageId = _host.GetProjectLanguageId(_activeProjectName, "translation validation").ToUpper();
             var projectRTL = _host.GetProjectRtoL(_activeProjectName);
@@ -681,7 +681,7 @@ namespace TvpMain.Forms
                 }
             }
 
-            return new Tuple<Boolean,String>(languageEnabled && rtlEnabled, response);
+            return new Tuple<bool, string>(languageEnabled && rtlEnabled, response);
         }
 
         // 
