@@ -653,7 +653,7 @@ namespace TvpMain.Forms
             // filter based on Tags
 
             // RTL Tag support
-            var itemRTL = item.Tags != null && item.Tags.Contains("RTL");
+            var itemRTL = (item.Tags != null) && (item.Tags.Contains("RTL"));
 
             var rtlEnabled = (projectRTL && itemRTL)
                 || (!projectRTL && !itemRTL);
@@ -672,7 +672,13 @@ namespace TvpMain.Forms
 
             if(!rtlEnabled)
             {
-                response = "This check is for RTL languages only.";
+                if (projectRTL)
+                {
+                    response = "This check does not support RTL languages.";
+                } else
+                {
+                    response = "This check is for RTL languages only.";
+                }
             }
 
             return new Tuple<Boolean,String>(languageEnabled && rtlEnabled, response);
