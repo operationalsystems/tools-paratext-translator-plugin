@@ -101,7 +101,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
     <DebugSymbols>true</DebugSymbols>
-    <OutputPath>bin\x64\Debug\</OutputPath>
+    <OutputPath>D:\Program Files\Paratext 9\plugins\TVP\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <DebugType>full</DebugType>
     <PlatformTarget>x64</PlatformTarget>
@@ -393,10 +393,13 @@
     <Compile Include="CheckManagement\S3Repository.cs" />
     <Compile Include="Check\CheckAndFixItem.cs" />
     <Compile Include="Check\CheckAndFixRunner.cs" />
+    <Compile Include="Check\CheckArea.cs" />
     <Compile Include="Check\CheckResultItem.cs" />
     <Compile Include="Check\CheckRunContext.cs" />
     <Compile Include="Check\ICheckAndFixRunner.cs" />
+    <Compile Include="Check\ITextCheck.cs" />
     <Compile Include="Check\LocalCheckAndFixManager.cs" />
+    <Compile Include="Check\TextCheckRunner.cs" />
     <Compile Include="Forms\BookSelection.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -443,6 +446,19 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="Punctuation\MissingSentencePunctuationCheck.cs" />
+    <Compile Include="Punctuation\PunctuationErrorType.cs" />
+    <Compile Include="Reference\ScriptureReference.cs" />
+    <Compile Include="Reference\ScriptureReferenceBuilder.cs" />
+    <Compile Include="Reference\ScriptureReferenceCheck.cs" />
+    <Compile Include="Reference\ScriptureReferenceErrorType.cs" />
+    <Compile Include="Reference\ScriptureReferenceParser.cs" />
+    <Compile Include="Reference\ScriptureReferenceSeparators.cs" />
+    <Compile Include="Result\CheckResults.cs" />
+    <Compile Include="Result\IgnoreListItem.cs" />
+    <Compile Include="Result\ResultItem.cs" />
+    <Compile Include="Result\ResultManager.cs" />
+    <Compile Include="Result\ResultState.cs" />
     <Compile Include="Text\BookIdItem.cs" />
     <Compile Include="Text\PartLocation.cs" />
     <Compile Include="Text\ProjectVerse.cs" />
@@ -468,6 +484,8 @@
     <Compile Include="TranslationValidationPlugin.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Util\ObjectUtil.cs" />
+    <Compile Include="Util\ParatextProjectHelper.cs" />
+    <Compile Include="Util\TextUtil.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

@@ -170,7 +170,7 @@ namespace TvpMain.CheckManagement
         /// This method gets the <c>CheckAndFixItem</c>s available in the remote repository.
         /// </summary>
         /// <returns>The <c>CheckAndFixItem</c>s which are available in the remote repository.</returns>
-        internal virtual List<CheckAndFixItem> GetAvailableCheckAndFixItems()
+        public virtual List<CheckAndFixItem> GetAvailableCheckAndFixItems()
         {
             return s3Repository.GetCheckAndFixItems();
         }

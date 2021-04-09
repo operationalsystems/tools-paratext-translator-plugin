@@ -86,6 +86,24 @@ namespace TvpMain.Forms
         List<DisplayItem> _displayItems;
 
         /// <summary>
+        /// This is a fixed CF for V1 TVP scripture reference checking
+        /// </summary>
+        readonly CheckAndFixItem _scriptureReferenceCF = new CheckAndFixItem(MainConsts.V1_SCRIPTURE_REFERENCE_CHECK_GUID,
+            "Scripture Reference Verficiations",
+            "Scripture reference tag and formatting checks.",
+            "2.0.0.0",
+            CheckAndFixItem.CheckScope.VERSE);
+
+        /// <summary>
+        /// This is a fixed CF for V1 TVP missing punctuation checking
+        /// </summary>
+        readonly CheckAndFixItem _missingPunctuationCF = new CheckAndFixItem(MainConsts.V1_PUNCTUATION_CHECK_GUID,
+            "Missing Punctuation Verifications",
+            "Searches for missing punctuation.",
+            "2.0.0.0",
+            CheckAndFixItem.CheckScope.VERSE);
+
+        /// <summary>
         /// Standard constructor for kicking off main plugin dialog
         /// </summary>
         /// <param name="host">This is the iHost instance, the interface class to the Paratext Plugin API</param>
@@ -199,6 +217,32 @@ namespace TvpMain.Forms
 
                 _displayItems = new List<DisplayItem>();
 
+               // add the V1 defaults
+                _displayItems.Add(new DisplayItem(
+                        isCheckDefaultForProject(_scriptureReferenceCF),
+                        _scriptureReferenceCF.Name,
+                        _scriptureReferenceCF.Description,
+                        _scriptureReferenceCF.Version,
+                        _scriptureReferenceCF.Languages != null && _scriptureReferenceCF.Languages.Length > 0 ? String.Join(", ", _scriptureReferenceCF.Languages) : "All",
+                        _scriptureReferenceCF.Tags != null ? String.Join(", ", _scriptureReferenceCF.Tags) : "",
+                        _scriptureReferenceCF.Id,
+                        isCheckAvailableForProject(_scriptureReferenceCF),
+                        _scriptureReferenceCF
+                    ));
+
+                _displayItems.Add(new DisplayItem(
+                        isCheckDefaultForProject(_missingPunctuationCF),
+                        _missingPunctuationCF.Name,
+                        _missingPunctuationCF.Description,
+                        _missingPunctuationCF.Version,
+                        _missingPunctuationCF.Languages != null && _missingPunctuationCF.Languages.Length > 0 ? String.Join(", ", _missingPunctuationCF.Languages) : "All",
+                        _missingPunctuationCF.Tags != null ? String.Join(", ", _missingPunctuationCF.Tags) : "",
+                        _missingPunctuationCF.Id,
+                        isCheckAvailableForProject(_missingPunctuationCF),
+                        _missingPunctuationCF
+                    ));
+
+                // add all the known remote checks
                 foreach (var item in _remoteChecks)
                 {
                     _displayItems.Add(new DisplayItem(
@@ -214,6 +258,7 @@ namespace TvpMain.Forms
                         ));
                 }
 
+                // add all the local checks
                 foreach (var item in _localChecks)
                 {
                     _displayItems.Add(new DisplayItem(

@@ -37,3 +37,4 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyVersion("2.0.0.4")]
 [assembly: AssemblyFileVersion("2.0.0.4")]
 [assembly: NeutralResourcesLanguage("en")]
+[assembly: System.Runtime.CompilerServices.InternalsVisibleTo("DynamicProxyGenAssembly2")]

@@ -10,6 +10,15 @@ namespace TvpMain.Util
     public static class ObjectUtil
     {
         /// <summary>
+        /// Creates immutable, singleton list of one item.
+        /// </summary>
+        /// <typeparam name="T">Item type (provided).</typeparam>
+        /// <param name="thisObject">This object (provided).</param>
+        /// <returns>Object wrapped in immutable, singleton list.</returns>
+        public static IList<T> ToSingletonList<T>(this T thisObject) =>
+            Enumerable.Repeat(thisObject, 1).ToImmutableList();
+
+        /// <summary>
         /// Creates singleton enumerable of one item.
         /// </summary>
         /// <typeparam name="T">Item type (provided).</typeparam>

@@ -19,6 +19,15 @@ namespace TvpMain.Check
             _id = Guid.NewGuid();
         }
 
+        public CheckAndFixItem(String guid, String name, String description, String version, CheckScope scope)
+        {
+            Id = guid;
+            Name = name;
+            Description = description;
+            Version = version;
+            Scope = scope;
+        }
+
         /// <summary>
         /// The internal GUID object for the ID.
         /// </summary>
