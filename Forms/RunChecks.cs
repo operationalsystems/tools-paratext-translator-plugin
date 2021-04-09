@@ -89,7 +89,7 @@ namespace TvpMain.Forms
         /// This is a fixed CF for V1 TVP scripture reference checking
         /// </summary>
         readonly CheckAndFixItem _scriptureReferenceCF = new CheckAndFixItem(MainConsts.V1_SCRIPTURE_REFERENCE_CHECK_GUID,
-            "Scripture Reference Verficiations",
+            "Scripture Reference Verifications",
             "Scripture reference tag and formatting checks.",
             "2.0.0.0",
             CheckAndFixItem.CheckScope.VERSE);
