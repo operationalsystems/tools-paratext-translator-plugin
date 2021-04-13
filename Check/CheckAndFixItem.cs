@@ -18,7 +18,15 @@ namespace TvpMain.Check
         {
             _id = Guid.NewGuid();
         }
-
+        
+        /// <summary>
+        /// Alternative constructor for the V1 TVP checks/fixes that allow for a fixed GUID and other paramters
+        /// </summary>
+        /// <param name="guid">The GUI to use instead of the default created one</param>
+        /// <param name="name">The name of the check/fix</param>
+        /// <param name="description">The description </param>
+        /// <param name="version">The version of the C/F</param>
+        /// <param name="scope">The scope for the C/F</param>
         public CheckAndFixItem(String guid, String name, String description, String version, CheckScope scope)
         {
             Id = guid;
