@@ -18,6 +18,10 @@ using static TvpMain.Check.CheckAndFixItem;
 using System.IO;
 using System.Reflection;
 using System.Runtime.Serialization;
+using TvpMain.Result;
+using TvpMain.Punctuation;
+using TvpMain.Reference;
+using System.Collections.Immutable;
 
 namespace TvpMain.Forms
 {
@@ -77,6 +81,11 @@ namespace TvpMain.Forms
         /// Provides project setting & metadata access.
         /// </summary>
         private ProjectManager ProjectManager { get; set; }
+
+        /// <summary>
+        /// Provides access to results.
+        /// </summary>
+        private readonly ResultManager resultManager;
 
         /// <summary>
         /// A collection of the <c>CheckAndFixItem</c>s to run against the content.
@@ -169,6 +178,9 @@ namespace TvpMain.Forms
 
             // initialize the components
             InitializeComponent();
+
+            resultManager = new ResultManager(Host, ActiveProjectName);
+            resultManager.ScheduleLoadBooks(ProjectManager.PresentBookNums);
         }
 
         /// <summary>
@@ -360,7 +372,7 @@ namespace TvpMain.Forms
             checksToRun.ForEach(check =>
             {
                 List<CheckResultItem> results = CheckRunner.ExecCheckAndFix(content, check);
-
+                
                 foreach(CheckResultItem item in results)
                 {
                     item.Book = book;
@@ -382,6 +394,71 @@ namespace TvpMain.Forms
                     }
                 }
             });
+        }
+
+        /// <summary>
+        /// This function will execute the specified V1 check
+        /// </summary>
+        /// <param name="content">The content to check against.</param>
+        /// <param name="checksToRun">The list of checks to assess the content.</param>
+        /// <param name="book">The current book (1-based).</param>
+        /// <param name="chapter">The current chapter (1-based).</param>
+        /// <param name="verse">The current verse (1-based).</param>
+        private void ExecuteV1CheckAndStoreResults(string content, ITextCheck textCheck, CheckAndFixItem check, int book, int chapter, int verse)
+        {
+            // check the content with every specified check
+            List<CheckResultItem> results = new List<CheckResultItem>();
+
+            TextCheckRunner textCheckRunner = new TextCheckRunner(Host, ActiveProjectName, ProjectManager, ImportManager, resultManager);
+            IList<ResultItem> allResultItems = Enumerable.Empty<ResultItem>().ToList();
+
+            IEnumerable<ITextCheck> allChecks = new List<ITextCheck>()
+            {
+                textCheck
+            };
+
+            // by default, select all parts to check
+            ISet<PartContext> checkContexts = new HashSet<PartContext>();
+            checkContexts.Add(PartContext.MainText);
+            checkContexts.Add(PartContext.Introductions);
+            checkContexts.Add(PartContext.Outlines);
+            checkContexts.Add(PartContext.NoteOrReference);
+
+            if (textCheckRunner.RunChecks(
+                CheckArea.CurrentBook,
+                allChecks,
+                checkContexts,
+                false,
+                book,
+                out var nextResults))
+            {
+                allResultItems = nextResults.ResultItems.ToImmutableList();
+                // translate the v1 result items to v2 result items that are compatible with displaying
+                foreach (ResultItem result in allResultItems)
+                {
+                    CheckResultItem checkResultItem = new CheckResultItem(result.ErrorText,
+                        result.MatchText, result.MatchStart,
+                        result.CheckType, result.ResultTypeCode);
+                    checkResultItem.Book = book;
+                    checkResultItem.Chapter = chapter;
+                    checkResultItem.Verse = verse;
+                    checkResultItem.Reference = result.VersePart.ProjectVerse.VerseText;
+                    results.Add(checkResultItem);
+                }
+            }
+
+            lock (CheckResultslock)
+            {
+                // add or append results
+                if (CheckResults.ContainsKey(check))
+                {
+                    CheckResults[check].AddRange(results);
+                }
+                else
+                {
+                    CheckResults.Add(check, results);
+                }
+            }
         }
 
         /// <summary>
@@ -484,6 +561,20 @@ namespace TvpMain.Forms
 
                     // check the book with book checks
                     ExecuteChecksAndStoreResults(bookSb.ToString(), ChecksByScope[CheckScope.BOOK], currBookNum, SCOPE_NOT_APPLICABLE, SCOPE_NOT_APPLICABLE);
+
+                    // These calls do not need the text passed it, the V1 checks get the text a different way. They are actually verse scope checks, not book scope. But, they
+                    // must be run at the book level.
+                    var referenceCheck = ChecksByScope[CheckScope.VERSE].Find(i => i.Id == MainConsts.V1_SCRIPTURE_REFERENCE_CHECK_GUID);
+                    if (referenceCheck != null)
+                    {
+                        ExecuteV1CheckAndStoreResults("", new ScriptureReferenceCheck(ProjectManager), referenceCheck, currBookNum, SCOPE_NOT_APPLICABLE, SCOPE_NOT_APPLICABLE);
+                    }
+
+                    var punctuationCheck = ChecksByScope[CheckScope.VERSE].Find(i => i.Id == MainConsts.V1_PUNCTUATION_CHECK_GUID);
+                    if (punctuationCheck != null)
+                    {
+                        ExecuteV1CheckAndStoreResults("", new MissingSentencePunctuationCheck(ProjectManager), punctuationCheck, currBookNum, SCOPE_NOT_APPLICABLE, SCOPE_NOT_APPLICABLE);
+                    }
 
                     OnCheckUpdated(inputBookNum);
                 }

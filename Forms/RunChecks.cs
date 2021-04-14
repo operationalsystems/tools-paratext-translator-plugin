@@ -86,6 +86,24 @@ namespace TvpMain.Forms
         List<DisplayItem> _displayItems;
 
         /// <summary>
+        /// This is a fixed CF for V1 TVP scripture reference checking
+        /// </summary>
+        readonly CheckAndFixItem _scriptureReferenceCF = new CheckAndFixItem(MainConsts.V1_SCRIPTURE_REFERENCE_CHECK_GUID,
+            "Scripture Reference Verifications",
+            "Scripture reference tag and formatting checks.",
+            "2.0.0.0",
+            CheckAndFixItem.CheckScope.VERSE);
+
+        /// <summary>
+        /// This is a fixed CF for V1 TVP missing punctuation checking
+        /// </summary>
+        readonly CheckAndFixItem _missingPunctuationCF = new CheckAndFixItem(MainConsts.V1_PUNCTUATION_CHECK_GUID,
+            "Missing Punctuation Verifications",
+            "Searches for missing punctuation.",
+            "2.0.0.0",
+            CheckAndFixItem.CheckScope.VERSE);
+
+        /// <summary>
         /// Standard constructor for kicking off main plugin dialog
         /// </summary>
         /// <param name="host">This is the iHost instance, the interface class to the Paratext Plugin API</param>
@@ -199,8 +217,37 @@ namespace TvpMain.Forms
 
                 _displayItems = new List<DisplayItem>();
 
+               // add the V1 defaults
+                _displayItems.Add(new DisplayItem(
+                        isCheckDefaultForProject(_scriptureReferenceCF),
+                        _scriptureReferenceCF.Name,
+                        _scriptureReferenceCF.Description,
+                        _scriptureReferenceCF.Version,
+                        _scriptureReferenceCF.Languages != null && _scriptureReferenceCF.Languages.Length > 0 ? String.Join(", ", _scriptureReferenceCF.Languages) : "All",
+                        _scriptureReferenceCF.Tags != null ? String.Join(", ", _scriptureReferenceCF.Tags) : "",
+                        _scriptureReferenceCF.Id,
+                        isCheckAvailableForProject(_scriptureReferenceCF),
+                        _scriptureReferenceCF
+                    ));
+
+                _displayItems.Add(new DisplayItem(
+                        isCheckDefaultForProject(_missingPunctuationCF),
+                        _missingPunctuationCF.Name,
+                        _missingPunctuationCF.Description,
+                        _missingPunctuationCF.Version,
+                        _missingPunctuationCF.Languages != null && _missingPunctuationCF.Languages.Length > 0 ? String.Join(", ", _missingPunctuationCF.Languages) : "All",
+                        _missingPunctuationCF.Tags != null ? String.Join(", ", _missingPunctuationCF.Tags) : "",
+                        _missingPunctuationCF.Id,
+                        isCheckAvailableForProject(_missingPunctuationCF),
+                        _missingPunctuationCF
+                    ));
+
+                // add all the known remote checks
                 foreach (var item in _remoteChecks)
                 {
+                    // get if the check is available (item1), and if not, the text for the tooltip (item2)
+                    Tuple<bool, string> isCheckAvailableTuple = isCheckAvailableForProject(item);
+
                     _displayItems.Add(new DisplayItem(
                         isCheckDefaultForProject(item),
                         item.Name,
@@ -209,13 +256,18 @@ namespace TvpMain.Forms
                         item.Languages != null && item.Languages.Length > 0 ? String.Join(", ", item.Languages) : "All",
                         item.Tags != null ? String.Join(", ", item.Tags) : "",
                         item.Id,
-                        isCheckAvailableForProject(item),
+                        isCheckAvailableTuple.Item1,
+                        isCheckAvailableTuple.Item2,
                         item
                         ));
                 }
 
+                // add all the local checks
                 foreach (var item in _localChecks)
                 {
+                    // get if the check is available (item1), and if not, the text for the tooltip (item2)
+                    Tuple<bool, string> isCheckAvailableTuple = isCheckAvailableForProject(item);
+
                     _displayItems.Add(new DisplayItem(
                         false,
                         "(Local) " + item.Name,
@@ -224,7 +276,8 @@ namespace TvpMain.Forms
                         item.Languages != null && item.Languages.Length > 0 ? String.Join(", ", item.Languages) : "All",
                         item.Tags != null ? String.Join(", ", item.Tags) : "",
                         item.Id,
-                        isCheckAvailableForProject(item),
+                        isCheckAvailableTuple.Item1,
+                        isCheckAvailableTuple.Item2,
                         item
                         ));
                 }
@@ -264,6 +317,12 @@ namespace TvpMain.Forms
                     {
                         checksList.Rows[rowIndex].DefaultCellStyle.BackColor = SystemColors.Control;
                         checksList.Rows[rowIndex].DefaultCellStyle.ForeColor = SystemColors.GrayText;
+
+                        // loop through all the cells in the row since tool tips can only be placed on the cell
+                        for (int i = 0; i < checksList.Columns.Count; i++)
+                        {
+                            checksList.Rows[rowIndex].Cells[i].ToolTipText = displayItem.Tooltip;
+                        }
                     }
                 }
             }
@@ -625,8 +684,8 @@ namespace TvpMain.Forms
         ///  Will filter out based on Tags, add additional tag support here
         /// </summary>
         /// <param name="item">The check/fix item to use to determine if it can be used against the current project</param>
-        /// <returns>If the given CFitem is available to be used with the project.</returns>
-        private Boolean isCheckAvailableForProject(CheckAndFixItem item)
+        /// <returns>If the given CFitem is available (item1) to be used with the project. If not, the tooltip to use for the disabled row (item2).</returns>
+        private Tuple<bool, string> isCheckAvailableForProject(CheckAndFixItem item)
         {
             var languageId = _host.GetProjectLanguageId(_activeProjectName, "translation validation").ToUpper();
             var projectRTL = _host.GetProjectRtoL(_activeProjectName);
@@ -639,7 +698,7 @@ namespace TvpMain.Forms
             // filter based on Tags
 
             // RTL Tag support
-            var itemRTL = item.Tags != null && item.Tags.Contains("RTL");
+            var itemRTL = (item.Tags != null) && (item.Tags.Contains("RTL"));
 
             var rtlEnabled = (projectRTL && itemRTL)
                 || (!projectRTL && !itemRTL);
@@ -648,7 +707,26 @@ namespace TvpMain.Forms
             Debug.WriteLine("Project RTL: " + projectRTL);
             Debug.WriteLine("Item RTL: " + rtlEnabled);
 
-            return languageEnabled && rtlEnabled;
+            String response = "";
+
+            // set the response strings for the appropriate filter reason
+            if(!languageEnabled)
+            {
+                response = "This check doesn't support this project's langauge.";
+            }
+
+            if(!rtlEnabled)
+            {
+                if (projectRTL)
+                {
+                    response = "This check does not support RTL languages.";
+                } else
+                {
+                    response = "This check is for RTL languages only.";
+                }
+            }
+
+            return new Tuple<bool, string>(languageEnabled && rtlEnabled, response);
         }
 
         // 
@@ -670,7 +748,7 @@ namespace TvpMain.Forms
 
                 helpTextBox.Clear();
 
-                if (!isCheckAvailableForProject(item.Item))
+                if (!isCheckAvailableForProject(item.Item).Item1)
                 {
                     helpTextBox.AppendText("NOTE: This check/fix is not selectedable for this project" + Environment.NewLine + Environment.NewLine);
                 }
@@ -800,9 +878,10 @@ namespace TvpMain.Forms
         public string Tags { get; set; }
         public string Id { get; set; }
         public bool Active { get; set; }
+        public string Tooltip { get; set; }
         public CheckAndFixItem Item { get; set; }
 
-        public DisplayItem(bool selected, string name, string description, string version, string languages, string tags, string id, bool active, CheckAndFixItem item)
+        public DisplayItem(bool selected, string name, string description, string version, string languages, string tags, string id, bool active, string tooltip, CheckAndFixItem item)
         {
             Selected = selected;
             Name = name;
@@ -812,6 +891,7 @@ namespace TvpMain.Forms
             Tags = tags;
             Id = id;
             Active = active;
+            Tooltip = tooltip;
             Item = item;
         }
     }

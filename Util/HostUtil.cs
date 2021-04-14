@@ -11,6 +11,7 @@ using System.Windows.Forms;
 using System.Xml.Serialization;
 using TvpMain.Check;
 using TvpMain.Project;
+using TvpMain.Result;
 using TvpMain.Text;
 
 namespace TvpMain.Util
@@ -344,6 +345,57 @@ namespace TvpMain.Util
             var bbbcccvvvReference = BookUtil.BcvToRef(book, chapter, verse);
             // Not yet available in latest version
             _host.GotoReference(bbbcccvvvReference, versificationName, projectName);
+        }
+
+        /// <summary>
+        /// Stores the ignore list to the host's plugin data storage.
+        /// </summary>
+        /// <param name="projectName">Active project name (required).</param>
+        /// <param name="bookId"></param>
+        /// <param name="outputItems">Ignore list.</param>
+        public void PutResultItems(string projectName, string bookId, IEnumerable<ResultItem> outputItems)
+        {
+            if (projectName == null || projectName.Length < 1)
+            {
+                Util.HostUtil.Instance.LogLine("Project name is invalid, can't operate so throwing exception.", true);
+                throw new ArgumentNullException(nameof(projectName));
+            }
+
+            if (bookId == null || bookId.Length < 1)
+            {
+                Util.HostUtil.Instance.LogLine("Book id is invalid, can't operate so throwing exception.", true);
+                throw new ArgumentNullException(nameof(bookId));
+            }
+
+            _host.PutPlugInData(_translationValidationPlugin, projectName,
+                string.Format(MainConsts.RESULT_ITEMS_DATA_ID_FORMAT, bookId),
+                JsonConvert.SerializeObject(outputItems));
+        }
+
+        /// <summary>
+        /// Retrieve the ignore list from the host's plugin data storage.
+        /// </summary>
+        /// <param name="projectName">Active project name (required).</param>
+        /// <param name="bookId"></param>
+        /// <returns>Ignore list.</returns>
+        public IList<ResultItem> GetResultItems(string projectName, string bookId)
+        {
+            if (projectName == null || projectName.Length < 1)
+            {
+                throw new ArgumentNullException(nameof(projectName));
+            }
+
+            if (bookId == null || bookId.Length < 1)
+            {
+                throw new ArgumentNullException(nameof(bookId));
+            }
+
+            var inputData =
+                _host.GetPlugInData(_translationValidationPlugin, projectName,
+                    string.Format(MainConsts.RESULT_ITEMS_DATA_ID_FORMAT, bookId));
+            return inputData == null
+                ? Enumerable.Empty<ResultItem>().ToList()
+                : JsonConvert.DeserializeObject<List<ResultItem>>(inputData);
         }
     }
 }
