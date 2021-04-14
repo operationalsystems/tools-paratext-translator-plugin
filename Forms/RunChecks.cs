@@ -217,7 +217,11 @@ namespace TvpMain.Forms
 
                 _displayItems = new List<DisplayItem>();
 
-               // add the V1 defaults
+                // add the V1 defaults
+
+                // get if the check is available (item1), and if not, the text for the tooltip (item2)
+                Tuple<bool, string> isCheckAvailableTupleRef = isCheckAvailableForProject(_scriptureReferenceCF);
+
                 _displayItems.Add(new DisplayItem(
                         isCheckDefaultForProject(_scriptureReferenceCF),
                         _scriptureReferenceCF.Name,
@@ -226,9 +230,12 @@ namespace TvpMain.Forms
                         _scriptureReferenceCF.Languages != null && _scriptureReferenceCF.Languages.Length > 0 ? String.Join(", ", _scriptureReferenceCF.Languages) : "All",
                         _scriptureReferenceCF.Tags != null ? String.Join(", ", _scriptureReferenceCF.Tags) : "",
                         _scriptureReferenceCF.Id,
-                        isCheckAvailableForProject(_scriptureReferenceCF),
+                        isCheckAvailableTupleRef.Item1,
+                        isCheckAvailableTupleRef.Item2,
                         _scriptureReferenceCF
                     ));
+
+                Tuple<bool, string> isCheckAvailableTuplePunc = isCheckAvailableForProject(_missingPunctuationCF);
 
                 _displayItems.Add(new DisplayItem(
                         isCheckDefaultForProject(_missingPunctuationCF),
@@ -238,7 +245,8 @@ namespace TvpMain.Forms
                         _missingPunctuationCF.Languages != null && _missingPunctuationCF.Languages.Length > 0 ? String.Join(", ", _missingPunctuationCF.Languages) : "All",
                         _missingPunctuationCF.Tags != null ? String.Join(", ", _missingPunctuationCF.Tags) : "",
                         _missingPunctuationCF.Id,
-                        isCheckAvailableForProject(_missingPunctuationCF),
+                        isCheckAvailableTuplePunc.Item1,
+                        isCheckAvailableTuplePunc.Item2,
                         _missingPunctuationCF
                     ));
 
