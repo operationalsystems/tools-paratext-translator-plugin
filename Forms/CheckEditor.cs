@@ -92,7 +92,7 @@ namespace TvpMain.Forms
 
             checkFixIdLabel.Text = _checkAndFixItem.Id;
 
-            scopeCombo.SelectedItem = "CHAPTER";
+            scopeCombo.SelectedItem = "VERSE";
             _dirty = false;
 
         }
@@ -353,7 +353,7 @@ namespace TvpMain.Forms
         {
             helpTextBox.Clear();
             helpTextBox.AppendText("The text scope to run this check/fix at; PROJECT, BOOK, CHAPTER, VERSE" + Environment.NewLine);
-            helpTextBox.AppendText("Leave defaulted to CHAPTER if unsure.");
+            helpTextBox.AppendText("Leave defaulted to VERSE if unsure.");
         }
 
         /// <summary>
