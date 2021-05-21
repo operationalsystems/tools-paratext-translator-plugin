@@ -1036,10 +1036,12 @@ namespace TvpMain.Forms
                     fixTextBox.ScrollToCaret();
 
                     fixTextBox.Refresh();
+                    fixTextBox.Enabled = true;
                 } else
                 {
                     fixTextBox.Text = "";
                     fixTextBox.Refresh();
+                    fixTextBox.Enabled = false;
                 }
                 
             } else
