@@ -29,6 +29,7 @@ namespace TvpMain.Forms
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(CheckEditor));
             this.idLabel = new System.Windows.Forms.Label();
             this.checkFixIdLabel = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
@@ -62,6 +63,7 @@ namespace TvpMain.Forms
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.publishWorker = new System.ComponentModel.BackgroundWorker();
             this.publishToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.saveIconToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
             this.menuStrip.SuspendLayout();
@@ -131,7 +133,7 @@ namespace TvpMain.Forms
             this.jsEditor.Lexer = ScintillaNET.Lexer.Cpp;
             this.jsEditor.Location = new System.Drawing.Point(9, 92);
             this.jsEditor.Name = "jsEditor";
-            this.jsEditor.Size = new System.Drawing.Size(1147, 575);
+            this.jsEditor.Size = new System.Drawing.Size(1009, 437);
             this.jsEditor.TabIndex = 6;
             this.jsEditor.CharAdded += new System.EventHandler<ScintillaNET.CharAddedEventArgs>(this.jsEditor_CharAdded);
             this.jsEditor.TextChanged += new System.EventHandler(this.jsEditor_TextChanged);
@@ -152,7 +154,7 @@ namespace TvpMain.Forms
             | System.Windows.Forms.AnchorStyles.Right)));
             this.fixRegExTextBox.Location = new System.Drawing.Point(116, 43);
             this.fixRegExTextBox.Name = "fixRegExTextBox";
-            this.fixRegExTextBox.Size = new System.Drawing.Size(1040, 20);
+            this.fixRegExTextBox.Size = new System.Drawing.Size(902, 20);
             this.fixRegExTextBox.TabIndex = 3;
             this.fixRegExTextBox.TextChanged += new System.EventHandler(this.content_TextChanged);
             this.fixRegExTextBox.MouseEnter += new System.EventHandler(this.FixRegExTextBox_MouseEnter);
@@ -350,7 +352,8 @@ namespace TvpMain.Forms
             // menuStrip
             // 
             this.menuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.fileToolStripMenuItem});
+            this.fileToolStripMenuItem,
+            this.saveIconToolStripMenuItem});
             this.menuStrip.Location = new System.Drawing.Point(0, 0);
             this.menuStrip.Name = "menuStrip";
             this.menuStrip.Size = new System.Drawing.Size(1640, 24);
@@ -421,6 +424,23 @@ namespace TvpMain.Forms
             this.publishToolStripMenuItem.Text = "Save and &Publish";
             this.publishToolStripMenuItem.Click += new System.EventHandler(this.publishToolStripMenuItem_Click);
             // 
+            // saveIconToolStripMenuItem
+            // 
+            this.saveIconToolStripMenuItem.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+            this.saveIconToolStripMenuItem.AutoToolTip = true;
+            this.saveIconToolStripMenuItem.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.saveIconToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("saveIconToolStripMenuItem.Image")));
+            this.saveIconToolStripMenuItem.ImageAlign = System.Drawing.ContentAlignment.TopCenter;
+            this.saveIconToolStripMenuItem.Name = "saveIconToolStripMenuItem";
+            this.saveIconToolStripMenuItem.Padding = new System.Windows.Forms.Padding(4, 0, 0, 0);
+            this.saveIconToolStripMenuItem.ShortcutKeyDisplayString = "Ctlr+S";
+            this.saveIconToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
+            this.saveIconToolStripMenuItem.ShowShortcutKeys = false;
+            this.saveIconToolStripMenuItem.Size = new System.Drawing.Size(24, 20);
+            this.saveIconToolStripMenuItem.Text = "saveIconMenuItem";
+            this.saveIconToolStripMenuItem.ToolTipText = "Ctrl+S";
+            this.saveIconToolStripMenuItem.Click += new System.EventHandler(this.saveToolStripMenuItem_Click);
+            // 
             // CheckEditor
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -485,5 +505,6 @@ namespace TvpMain.Forms
         private System.ComponentModel.BackgroundWorker publishWorker;
         private ScintillaNET.Scintilla jsEditor;
         private System.Windows.Forms.ToolStripMenuItem publishToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem saveIconToolStripMenuItem;
     }
 }
