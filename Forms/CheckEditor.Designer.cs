@@ -60,8 +60,8 @@ namespace TvpMain.Forms
             this.openToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.publishToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.publishWorker = new System.ComponentModel.BackgroundWorker();
+            this.publishToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
             this.menuStrip.SuspendLayout();
@@ -350,8 +350,7 @@ namespace TvpMain.Forms
             // menuStrip
             // 
             this.menuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.fileToolStripMenuItem,
-            this.publishToolStripMenuItem});
+            this.fileToolStripMenuItem});
             this.menuStrip.Location = new System.Drawing.Point(0, 0);
             this.menuStrip.Name = "menuStrip";
             this.menuStrip.Size = new System.Drawing.Size(1640, 24);
@@ -364,50 +363,63 @@ namespace TvpMain.Forms
             this.newToolStripMenuItem,
             this.openToolStripMenuItem,
             this.saveToolStripMenuItem,
+            this.publishToolStripMenuItem,
             this.exitToolStripMenuItem});
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
+            this.fileToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.F)));
+            this.fileToolStripMenuItem.ShowShortcutKeys = false;
             this.fileToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
-            this.fileToolStripMenuItem.Text = "File";
+            this.fileToolStripMenuItem.Text = "&File";
             // 
             // newToolStripMenuItem
             // 
             this.newToolStripMenuItem.Name = "newToolStripMenuItem";
-            this.newToolStripMenuItem.Size = new System.Drawing.Size(103, 22);
+            this.newToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.N)));
+            this.newToolStripMenuItem.ShowShortcutKeys = false;
+            this.newToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.newToolStripMenuItem.Text = "&New";
             this.newToolStripMenuItem.Click += new System.EventHandler(this.newToolStripMenuItem_Click);
             // 
             // openToolStripMenuItem
             // 
             this.openToolStripMenuItem.Name = "openToolStripMenuItem";
-            this.openToolStripMenuItem.Size = new System.Drawing.Size(103, 22);
+            this.openToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.O)));
+            this.openToolStripMenuItem.ShowShortcutKeys = false;
+            this.openToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.openToolStripMenuItem.Text = "&Open";
             this.openToolStripMenuItem.Click += new System.EventHandler(this.openToolStripMenuItem_Click);
             // 
             // saveToolStripMenuItem
             // 
             this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
-            this.saveToolStripMenuItem.Size = new System.Drawing.Size(103, 22);
+            this.saveToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
+            this.saveToolStripMenuItem.ShowShortcutKeys = false;
+            this.saveToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.saveToolStripMenuItem.Text = "&Save";
             this.saveToolStripMenuItem.Click += new System.EventHandler(this.saveToolStripMenuItem_Click);
             // 
             // exitToolStripMenuItem
             // 
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(103, 22);
+            this.exitToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.X)));
+            this.exitToolStripMenuItem.ShowShortcutKeys = false;
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.exitToolStripMenuItem.Text = "E&xit";
             this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
-            // 
-            // publishToolStripMenuItem
-            // 
-            this.publishToolStripMenuItem.Name = "publishToolStripMenuItem";
-            this.publishToolStripMenuItem.Size = new System.Drawing.Size(108, 20);
-            this.publishToolStripMenuItem.Text = "Save and &Publish";
-            this.publishToolStripMenuItem.Click += new System.EventHandler(this.publishToolStripMenuItem_Click);
             // 
             // publishWorker
             // 
             this.publishWorker.DoWork += new System.ComponentModel.DoWorkEventHandler(this.publishWorker_DoWork);
             this.publishWorker.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.publishWorker_RunWorkerCompleted);
+            // 
+            // publishToolStripMenuItem
+            // 
+            this.publishToolStripMenuItem.Name = "publishToolStripMenuItem";
+            this.publishToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.P)));
+            this.publishToolStripMenuItem.ShowShortcutKeys = false;
+            this.publishToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.publishToolStripMenuItem.Text = "Save and &Publish";
+            this.publishToolStripMenuItem.Click += new System.EventHandler(this.publishToolStripMenuItem_Click);
             // 
             // CheckEditor
             // 
@@ -470,8 +482,8 @@ namespace TvpMain.Forms
         private System.Windows.Forms.ToolStripMenuItem saveToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem exitToolStripMenuItem;
         private System.Windows.Forms.MaskedTextBox versionTextBox;
-        private System.Windows.Forms.ToolStripMenuItem publishToolStripMenuItem;
         private System.ComponentModel.BackgroundWorker publishWorker;
         private ScintillaNET.Scintilla jsEditor;
+        private System.Windows.Forms.ToolStripMenuItem publishToolStripMenuItem;
     }
 }
