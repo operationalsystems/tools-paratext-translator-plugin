@@ -152,19 +152,7 @@ namespace TvpMain.Forms
         /// <param name="e">The event information that triggered this call</param>
         private void exitToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (_dirty)
-            {
-                DialogResult dialogResult = MessageBox.Show("Are you sure you wish to exit without saving?", "Exit?", MessageBoxButtons.YesNo);
-
-                if (dialogResult == DialogResult.Yes)
-                {
-                    this.Close();
-                }
-            }
-            else
-            {
-                this.Close();
-            }
+            this.Close();
         }
 
         /// <summary>
@@ -485,6 +473,24 @@ namespace TvpMain.Forms
             helpTextBox.AppendText("JavaScript that can be called after the two regular expressions are run, if they are defined." + Environment.NewLine);
             helpTextBox.AppendText("This script MUST implement the function checkAndFix(checkResultItems). The CheckResultItems are the results" +
                 " found in the regular expression pass.");
+        }
+
+        /// <summary>
+        /// Handles closing of the form via the "X" button
+        /// </summary>
+        /// <param name="sender">The control that sent this event</param>
+        /// <param name="e">The event information that triggered this call</param>
+        private void onFormClose_Click(object sender, FormClosingEventArgs e)
+        {
+            if (_dirty)
+            {
+                DialogResult dialogResult = MessageBox.Show("Are you sure you wish to exit without saving?", "Exit?", MessageBoxButtons.YesNo);
+
+                if (dialogResult == DialogResult.No)
+                {
+                    e.Cancel = true;
+                }
+            }
         }
     }
 }

@@ -60,10 +60,10 @@ namespace TvpMain.Forms
             this.newToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.publishWorker = new System.ComponentModel.BackgroundWorker();
             this.publishToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveIconToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.publishWorker = new System.ComponentModel.BackgroundWorker();
             this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
             this.menuStrip.SuspendLayout();
@@ -401,20 +401,6 @@ namespace TvpMain.Forms
             this.saveToolStripMenuItem.Text = "&Save";
             this.saveToolStripMenuItem.Click += new System.EventHandler(this.saveToolStripMenuItem_Click);
             // 
-            // exitToolStripMenuItem
-            // 
-            this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            this.exitToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.X)));
-            this.exitToolStripMenuItem.ShowShortcutKeys = false;
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.exitToolStripMenuItem.Text = "E&xit";
-            this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
-            // 
-            // publishWorker
-            // 
-            this.publishWorker.DoWork += new System.ComponentModel.DoWorkEventHandler(this.publishWorker_DoWork);
-            this.publishWorker.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.publishWorker_RunWorkerCompleted);
-            // 
             // publishToolStripMenuItem
             // 
             this.publishToolStripMenuItem.Name = "publishToolStripMenuItem";
@@ -423,6 +409,15 @@ namespace TvpMain.Forms
             this.publishToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.publishToolStripMenuItem.Text = "Save and &Publish";
             this.publishToolStripMenuItem.Click += new System.EventHandler(this.publishToolStripMenuItem_Click);
+            // 
+            // exitToolStripMenuItem
+            // 
+            this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
+            this.exitToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.X)));
+            this.exitToolStripMenuItem.ShowShortcutKeys = false;
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.exitToolStripMenuItem.Text = "E&xit";
+            this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
             // 
             // saveIconToolStripMenuItem
             // 
@@ -441,6 +436,11 @@ namespace TvpMain.Forms
             this.saveIconToolStripMenuItem.ToolTipText = "Ctrl+S";
             this.saveIconToolStripMenuItem.Click += new System.EventHandler(this.saveToolStripMenuItem_Click);
             // 
+            // publishWorker
+            // 
+            this.publishWorker.DoWork += new System.ComponentModel.DoWorkEventHandler(this.publishWorker_DoWork);
+            this.publishWorker.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.publishWorker_RunWorkerCompleted);
+            // 
             // CheckEditor
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -458,6 +458,7 @@ namespace TvpMain.Forms
             this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Show;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Check/Fix Editor & Publisher";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.onFormClose_Click);
             this.Load += new System.EventHandler(this.CheckEditor_Load);
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
