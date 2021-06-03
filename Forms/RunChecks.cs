@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Windows.Forms;
 using TvpMain.Check;
@@ -868,6 +869,14 @@ namespace TvpMain.Forms
         private void filterTextBox_TextChanged(object sender, EventArgs e)
         {
             updateDisplayGrid();
+        }
+
+        private void checksList_EditCheck(object sender, DataGridViewCellEventArgs e)
+        {
+            var selectedCheck = _displayItems[e.RowIndex];
+            var fileName = CheckManager.GetCheckAndFixItemFilename(selectedCheck.Name.Replace("(Local)", ""), selectedCheck.Version);
+            CheckEditor checkEditor = new CheckEditor(new FileInfo(@"C:\Program Files\Paratext 9\plugins\TVP\local-checks\" + fileName));
+            checkEditor.ShowDialog(this);
         }
     }
 

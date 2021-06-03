@@ -214,13 +214,23 @@ namespace TvpMain.CheckManagement
         }
 
         /// <summary>
+        /// This method creates a filename for the provided <c>CheckAndFixItem</c>. //Todo change text
+        /// </summary>
+        /// <param name="item">The <c>CheckAndFixItem</c> for which to produce a filename.</param>
+        /// <returns>The filename produced for the provided <c>CheckAndFixItem</c>.</returns>
+        public static string GetCheckAndFixItemFilename(string name, string version)
+        {
+            return $"{name.ConvertToTitleCase().Replace(" ", String.Empty)}-{version.Trim()}.{MainConsts.CHECK_FILE_EXTENSION}";
+        }
+
+        /// <summary>
         /// This method creates a filename for the provided <c>CheckAndFixItem</c>.
         /// </summary>
         /// <param name="item">The <c>CheckAndFixItem</c> for which to produce a filename.</param>
         /// <returns>The filename produced for the provided <c>CheckAndFixItem</c>.</returns>
         private string GetCheckAndFixItemFilename(CheckAndFixItem item)
         {
-            return $"{item.Name.ConvertToTitleCase().Replace(" ", String.Empty)}-{item.Version.Trim()}.{MainConsts.CHECK_FILE_EXTENSION}";
+            return GetCheckAndFixItemFilename(item.Name, item.Version);
         }
 
         /// <summary>

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Windows.Forms;
 using TvpMain.Check;
@@ -51,6 +52,17 @@ namespace TvpMain.Forms
             _checkManager = new CheckManager();
         }
 
+        public CheckEditor(FileInfo checkAndFixFile)
+        {
+            InitializeComponent();
+
+            _checkManager = new CheckManager();
+            using (var fileStream = checkAndFixFile.OpenRead())
+            {
+                _checkAndFixItem = CheckAndFixItem.LoadFromXmlContent(fileStream);
+            }
+        }
+
         /// <summary>
         /// On dialog load, set to 'new' state
         /// </summary>
@@ -58,7 +70,12 @@ namespace TvpMain.Forms
         /// <param name="e">The event information that triggered this call</param>
         private void CheckEditor_Load(object sender, EventArgs e)
         {
-            newToolStripMenuItem_Click(sender, e);
+            if (_checkAndFixItem == null)
+            {
+                newToolStripMenuItem_Click(sender, e);
+            }
+            updateUI();
+            _dirty = false;
             setScintillaRecipe();
         }
 
