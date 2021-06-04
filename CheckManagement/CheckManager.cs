@@ -214,7 +214,7 @@ namespace TvpMain.CheckManagement
         }
 
         /// <summary>
-        /// This method creates a filename for the provided <c>CheckAndFixItem</c>. //Todo change text
+        /// An overloaded method that creates a filename for the provided <c>CheckAndFixItem</c> to provide a path to open a check from the RunChecks UI.
         /// </summary>
         /// <param name="item">The <c>CheckAndFixItem</c> for which to produce a filename.</param>
         /// <returns>The filename produced for the provided <c>CheckAndFixItem</c>.</returns>
@@ -250,6 +250,15 @@ namespace TvpMain.CheckManagement
         /// </summary>
         /// <returns>The local check folder path as a string for the editor to open files there</returns>
         public string GetLocalRepoDirectory()
+        {
+            return Path.Combine(Directory.GetCurrentDirectory(), MainConsts.LOCAL_CHECK_FOLDER_NAME);
+        }
+
+        /// <summary>
+        /// An overloaded method to get the local check folder path as a string to open files from the RunChecks UI.
+        /// </summary>
+        /// <returns>The local check folder path as a string for the editor to open files there</returns>
+        public static string GetLocalRepoDirectory(string name)
         {
             return Path.Combine(Directory.GetCurrentDirectory(), MainConsts.LOCAL_CHECK_FOLDER_NAME);
         }

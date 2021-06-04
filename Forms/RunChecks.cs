@@ -871,13 +871,37 @@ namespace TvpMain.Forms
             updateDisplayGrid();
         }
 
+        /// <summary>
+        /// Opens a local check in the editor from the RunChecks UI.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void checksList_EditCheck(object sender, DataGridViewCellEventArgs e)
         {
             var selectedCheck = _displayItems[e.RowIndex];
+            if (!selectedCheck.Name.StartsWith("(Local)")) return;
             var fileName = CheckManager.GetCheckAndFixItemFilename(selectedCheck.Name.Replace("(Local)", ""), selectedCheck.Version);
-            CheckEditor checkEditor = new CheckEditor(new FileInfo(@"C:\Program Files\Paratext 9\plugins\TVP\local-checks\" + fileName));
+            var checkDir = CheckManager.GetLocalRepoDirectory(selectedCheck.Name);
+            string fullPath = Path.Combine(checkDir, fileName);
+            CheckEditor checkEditor = new CheckEditor(new FileInfo(fullPath));
             checkEditor.ShowDialog(this);
         }
+
+        /// <summary>
+        /// Provides a tooltip on the row with Local checks only
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void checksList_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
+        {
+            String name = (String)this.checksList.Rows[e.RowIndex].Cells[this.checksList.Columns["CFName"].Index].Value;
+            if (name.StartsWith("(Local)"))
+            {
+                DataGridViewCell cell = this.checksList.Rows[e.RowIndex].Cells[e.ColumnIndex];
+                cell.ToolTipText = "Local checks can be edited by double-clicking on the name of the check.";
+            }
+        }
+
     }
 
     /// <summary>
