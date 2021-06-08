@@ -878,8 +878,11 @@ namespace TvpMain.Forms
         /// <param name="e"></param>
         private void checksList_EditCheck(object sender, DataGridViewCellEventArgs e)
         {
+            // Gets the row item of a selected check
             var selectedCheck = _displayItems[e.RowIndex];
             if (!selectedCheck.Name.StartsWith("(Local)")) return;
+
+            // Locates a local check to open in the CheckEditor UI
             var fileName = CheckManager.GetCheckAndFixItemFilename(selectedCheck.Name.Replace("(Local)", ""), selectedCheck.Version);
             var checkDir = CheckManager.GetLocalRepoDirectory(selectedCheck.Name);
             string fullPath = Path.Combine(checkDir, fileName);
@@ -894,7 +897,10 @@ namespace TvpMain.Forms
         /// <param name="e"></param>
         private void checksList_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
         {
+            // Conversion of the value in the "Name" column to a string to enable the tooltip logic
+            String nameColumnIndex = (String)this.checksList.Columns["CFName"].Index.ToString();
             String name = (String)this.checksList.Rows[e.RowIndex].Cells[this.checksList.Columns["CFName"].Index].Value;
+            
             if (name.StartsWith("(Local)"))
             {
                 DataGridViewCell cell = this.checksList.Rows[e.RowIndex].Cells[e.ColumnIndex];

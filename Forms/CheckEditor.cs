@@ -51,7 +51,10 @@ namespace TvpMain.Forms
 
             _checkManager = new CheckManager();
         }
-
+        /// <summary>
+        /// Constructor for creating an editor from the Run Checks UI
+        /// </summary>
+        /// <param name="checkAndFixFile"></param>
         public CheckEditor(FileInfo checkAndFixFile)
         {
             InitializeComponent();

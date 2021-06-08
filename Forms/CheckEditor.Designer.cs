@@ -356,7 +356,7 @@ namespace TvpMain.Forms
             this.saveIconToolStripMenuItem});
             this.menuStrip.Location = new System.Drawing.Point(0, 0);
             this.menuStrip.Name = "menuStrip";
-            this.menuStrip.Size = new System.Drawing.Size(1640, 24);
+            this.menuStrip.Size = new System.Drawing.Size(1640, 34);
             this.menuStrip.TabIndex = 13;
             this.menuStrip.Text = "menuStrip";
             // 
@@ -371,7 +371,7 @@ namespace TvpMain.Forms
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
             this.fileToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.F)));
             this.fileToolStripMenuItem.ShowShortcutKeys = false;
-            this.fileToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
+            this.fileToolStripMenuItem.Size = new System.Drawing.Size(37, 30);
             this.fileToolStripMenuItem.Text = "&File";
             // 
             // newToolStripMenuItem
@@ -379,7 +379,7 @@ namespace TvpMain.Forms
             this.newToolStripMenuItem.Name = "newToolStripMenuItem";
             this.newToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.N)));
             this.newToolStripMenuItem.ShowShortcutKeys = false;
-            this.newToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.newToolStripMenuItem.Size = new System.Drawing.Size(156, 22);
             this.newToolStripMenuItem.Text = "&New";
             this.newToolStripMenuItem.Click += new System.EventHandler(this.newToolStripMenuItem_Click);
             // 
@@ -388,7 +388,7 @@ namespace TvpMain.Forms
             this.openToolStripMenuItem.Name = "openToolStripMenuItem";
             this.openToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.O)));
             this.openToolStripMenuItem.ShowShortcutKeys = false;
-            this.openToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.openToolStripMenuItem.Size = new System.Drawing.Size(156, 22);
             this.openToolStripMenuItem.Text = "&Open";
             this.openToolStripMenuItem.Click += new System.EventHandler(this.openToolStripMenuItem_Click);
             // 
@@ -397,7 +397,7 @@ namespace TvpMain.Forms
             this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
             this.saveToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
             this.saveToolStripMenuItem.ShowShortcutKeys = false;
-            this.saveToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.saveToolStripMenuItem.Size = new System.Drawing.Size(156, 22);
             this.saveToolStripMenuItem.Text = "&Save";
             this.saveToolStripMenuItem.Click += new System.EventHandler(this.saveToolStripMenuItem_Click);
             // 
@@ -406,7 +406,7 @@ namespace TvpMain.Forms
             this.publishToolStripMenuItem.Name = "publishToolStripMenuItem";
             this.publishToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.P)));
             this.publishToolStripMenuItem.ShowShortcutKeys = false;
-            this.publishToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.publishToolStripMenuItem.Size = new System.Drawing.Size(156, 22);
             this.publishToolStripMenuItem.Text = "Save and &Publish";
             this.publishToolStripMenuItem.Click += new System.EventHandler(this.publishToolStripMenuItem_Click);
             // 
@@ -415,7 +415,7 @@ namespace TvpMain.Forms
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
             this.exitToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.X)));
             this.exitToolStripMenuItem.ShowShortcutKeys = false;
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(156, 22);
             this.exitToolStripMenuItem.Text = "E&xit";
             this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
             // 
@@ -426,12 +426,13 @@ namespace TvpMain.Forms
             this.saveIconToolStripMenuItem.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
             this.saveIconToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("saveIconToolStripMenuItem.Image")));
             this.saveIconToolStripMenuItem.ImageAlign = System.Drawing.ContentAlignment.TopCenter;
+            this.saveIconToolStripMenuItem.Margin = new System.Windows.Forms.Padding(5, 0, 5, 5);
             this.saveIconToolStripMenuItem.Name = "saveIconToolStripMenuItem";
-            this.saveIconToolStripMenuItem.Padding = new System.Windows.Forms.Padding(4, 0, 0, 0);
+            this.saveIconToolStripMenuItem.Padding = new System.Windows.Forms.Padding(0, 0, 0, 5);
             this.saveIconToolStripMenuItem.ShortcutKeyDisplayString = "Ctlr+S";
             this.saveIconToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
             this.saveIconToolStripMenuItem.ShowShortcutKeys = false;
-            this.saveIconToolStripMenuItem.Size = new System.Drawing.Size(24, 20);
+            this.saveIconToolStripMenuItem.Size = new System.Drawing.Size(20, 25);
             this.saveIconToolStripMenuItem.Text = "saveIconMenuItem";
             this.saveIconToolStripMenuItem.ToolTipText = "Ctrl+S";
             this.saveIconToolStripMenuItem.Click += new System.EventHandler(this.saveToolStripMenuItem_Click);
