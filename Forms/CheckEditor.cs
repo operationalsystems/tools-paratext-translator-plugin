@@ -139,6 +139,10 @@ namespace TvpMain.Forms
                 using var fileStream = openFileDialog.OpenFile();
                 _checkAndFixItem = CheckAndFixItem.LoadFromXmlContent(fileStream);
                 updateUI();
+                _dirty = false;
+                saveIconToolStripMenuItem.Enabled = _dirty;
+                saveToolStripMenuItem.Enabled = _dirty;
+                publishToolStripMenuItem.Enabled = _dirty;
             }
         }
 
