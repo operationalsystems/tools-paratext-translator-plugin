@@ -321,26 +321,30 @@ namespace TvpMain.Forms
 
                     checksList.Rows[rowIndex].Tag = displayItem;
 
-                    // Creates the localToolTip 
+                    // Whether a check is local
                     bool isLocal = displayItem.Name.StartsWith("(Local)");
+
+                    // Tooltip text for the local check
                     string localCheckToolTip = "Local checks can be edited by double-clicking on the name of the check.";
 
                     // loop through all the cells in the row since tool tips can only be placed on the cell
                     for (int i = 0; i < checksList.Columns.Count; i++)
                     {
+                        checksList.Rows[rowIndex].Cells[i].ToolTipText = "";
+
                         // Determines which tool tip to display on the cell
                         if (!displayItem.Active)
                         {
-                            checksList.Rows[rowIndex].Cells[i].ToolTipText = displayItem.Tooltip;
+                            checksList.Rows[rowIndex].Cells[i].ToolTipText += displayItem.Tooltip;
 
-                            if (!displayItem.Active && isLocal)
+                            if (isLocal)
                             {
-                                checksList.Rows[rowIndex].Cells[i].ToolTipText = displayItem.Tooltip + Environment.NewLine + Environment.NewLine + localCheckToolTip;
+                                checksList.Rows[rowIndex].Cells[i].ToolTipText += Environment.NewLine + Environment.NewLine;
                             }
                         } 
-                        else                        
+                        if (isLocal)                       
                         {
-                            checksList.Rows[rowIndex].Cells[i].ToolTipText = localCheckToolTip;
+                            checksList.Rows[rowIndex].Cells[i].ToolTipText += localCheckToolTip;
                         }
                         
                     }

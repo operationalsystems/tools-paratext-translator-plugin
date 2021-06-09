@@ -52,7 +52,7 @@ namespace TvpMain.Forms
             _checkManager = new CheckManager();
         }
         /// <summary>
-        /// Constructor for creating an editor from the Run Checks UI
+        /// Constructor for opening with a specific check loaded
         /// </summary>
         /// <param name="checkAndFixFile"></param>
         public CheckEditor(FileInfo checkAndFixFile)
@@ -97,9 +97,6 @@ namespace TvpMain.Forms
             if (_dirty)
             {
                 DialogResult dialogResult = MessageBox.Show("You have unsaved changes, are you sure you wish to proceed?", "Verify", MessageBoxButtons.YesNo);
-                saveIconToolStripMenuItem.Enabled = _dirty;
-                saveToolStripMenuItem.Enabled = _dirty;
-                publishToolStripMenuItem.Enabled = _dirty;
 
                 if (dialogResult == DialogResult.No)
                 {
@@ -121,7 +118,9 @@ namespace TvpMain.Forms
 
             scopeCombo.SelectedItem = "VERSE";
             _dirty = false;
-
+            saveIconToolStripMenuItem.Enabled = _dirty;
+            saveToolStripMenuItem.Enabled = _dirty;
+            publishToolStripMenuItem.Enabled = _dirty;
         }
 
         /// <summary>
@@ -153,9 +152,6 @@ namespace TvpMain.Forms
             if (_dirty)
             {
                 updateCheckAndFix();
-                saveIconToolStripMenuItem.Enabled = _dirty;
-                saveToolStripMenuItem.Enabled = _dirty;
-                publishToolStripMenuItem.Enabled = _dirty;
 
                 if (String.IsNullOrEmpty(_checkAndFixItem.Name.Trim()) ||
                     String.IsNullOrEmpty(_checkAndFixItem.Version.Trim()) ||
@@ -172,6 +168,9 @@ namespace TvpMain.Forms
                 _checkManager.SaveCheckAndFixItem(_checkAndFixItem);
 
                 _dirty = false;
+                saveIconToolStripMenuItem.Enabled = _dirty;
+                saveToolStripMenuItem.Enabled = _dirty;
+                publishToolStripMenuItem.Enabled = _dirty;
             }
         }
 
@@ -509,18 +508,15 @@ namespace TvpMain.Forms
         }
 
         /// <summary>
-        /// Handles closing of the form via the "X" button
+        /// A callback for handling when a form is closing
         /// </summary>
         /// <param name="sender">The control that sent this event</param>
         /// <param name="e">The event information that triggered this call</param>
-        private void onFormClose_Click(object sender, FormClosingEventArgs e)
+        private void onFormClosing(object sender, FormClosingEventArgs e)
         {
             if (_dirty)
             {
                 DialogResult dialogResult = MessageBox.Show("Are you sure you wish to exit without saving?", "Exit?", MessageBoxButtons.YesNo);
-                saveIconToolStripMenuItem.Enabled = _dirty;
-                saveToolStripMenuItem.Enabled = _dirty;
-                publishToolStripMenuItem.Enabled = _dirty;
 
                 if (dialogResult == DialogResult.No)
                 {

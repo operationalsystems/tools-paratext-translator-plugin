@@ -459,7 +459,7 @@ namespace TvpMain.Forms
             this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Show;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Check/Fix Editor & Publisher";
-            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.onFormClose_Click);
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.onFormClosing);
             this.Load += new System.EventHandler(this.CheckEditor_Load);
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
