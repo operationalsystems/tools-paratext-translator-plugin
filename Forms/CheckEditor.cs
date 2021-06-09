@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Windows.Forms;
 using TvpMain.Check;
@@ -50,6 +51,20 @@ namespace TvpMain.Forms
 
             _checkManager = new CheckManager();
         }
+        /// <summary>
+        /// Constructor for opening with a specific check loaded
+        /// </summary>
+        /// <param name="checkAndFixFile"></param>
+        public CheckEditor(FileInfo checkAndFixFile)
+        {
+            InitializeComponent();
+
+            _checkManager = new CheckManager();
+            using (var fileStream = checkAndFixFile.OpenRead())
+            {
+                _checkAndFixItem = CheckAndFixItem.LoadFromXmlContent(fileStream);
+            }
+        }
 
         /// <summary>
         /// On dialog load, set to 'new' state
@@ -58,7 +73,16 @@ namespace TvpMain.Forms
         /// <param name="e">The event information that triggered this call</param>
         private void CheckEditor_Load(object sender, EventArgs e)
         {
-            newToolStripMenuItem_Click(sender, e);
+            if (_checkAndFixItem == null)
+            {
+                newToolStripMenuItem_Click(sender, e);
+            }
+            updateUI();
+            _dirty = false;
+            saveIconToolStripMenuItem.Enabled = _dirty;
+            saveToolStripMenuItem.Enabled = _dirty;
+            publishToolStripMenuItem.Enabled = _dirty;
+
             setScintillaRecipe();
         }
 
@@ -86,15 +110,17 @@ namespace TvpMain.Forms
   return checkResultItems
 }
 ";
-
+            _checkAndFixItem.Scope = CheckAndFixItem.CheckScope.VERSE;
             _checkAndFixItem.Id = Guid.NewGuid().ToString();
-            updateUI();
+            
 
             checkFixIdLabel.Text = _checkAndFixItem.Id;
 
-            scopeCombo.SelectedItem = "VERSE";
+            updateUI();
             _dirty = false;
-
+            saveIconToolStripMenuItem.Enabled = _dirty;
+            saveToolStripMenuItem.Enabled = _dirty;
+            publishToolStripMenuItem.Enabled = _dirty;
         }
 
         /// <summary>
@@ -104,6 +130,18 @@ namespace TvpMain.Forms
         /// <param name="e">The event information that triggered this call</param>
         private void openToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            // prevent overwriting changes unless explicit
+            if (_dirty)
+            {
+                DialogResult dialogResult = MessageBox.Show("You have unsaved changes, are you sure you wish to proceed?", "Verify", MessageBoxButtons.YesNo);
+
+                if (dialogResult == DialogResult.No)
+                {
+                    return;
+                }
+
+            }
+
             using OpenFileDialog openFileDialog = new OpenFileDialog();
             openFileDialog.InitialDirectory = _checkManager.GetLocalRepoDirectory();
             openFileDialog.Filter = "check/fix files (*.xml)|*.xml";
@@ -113,6 +151,10 @@ namespace TvpMain.Forms
                 using var fileStream = openFileDialog.OpenFile();
                 _checkAndFixItem = CheckAndFixItem.LoadFromXmlContent(fileStream);
                 updateUI();
+                _dirty = false;
+                saveIconToolStripMenuItem.Enabled = _dirty;
+                saveToolStripMenuItem.Enabled = _dirty;
+                publishToolStripMenuItem.Enabled = _dirty;
             }
         }
 
@@ -142,6 +184,9 @@ namespace TvpMain.Forms
                 _checkManager.SaveCheckAndFixItem(_checkAndFixItem);
 
                 _dirty = false;
+                saveIconToolStripMenuItem.Enabled = _dirty;
+                saveToolStripMenuItem.Enabled = _dirty;
+                publishToolStripMenuItem.Enabled = _dirty;
             }
         }
 
@@ -152,19 +197,7 @@ namespace TvpMain.Forms
         /// <param name="e">The event information that triggered this call</param>
         private void exitToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (_dirty)
-            {
-                DialogResult dialogResult = MessageBox.Show("Are you sure you wish to exit without saving?", "Exit?", MessageBoxButtons.YesNo);
-
-                if (dialogResult == DialogResult.Yes)
-                {
-                    this.Close();
-                }
-            }
-            else
-            {
-                this.Close();
-            }
+            this.Close();
         }
 
         /// <summary>
@@ -287,6 +320,9 @@ namespace TvpMain.Forms
         private void content_TextChanged(object sender, EventArgs e)
         {
             _dirty = true;
+            saveIconToolStripMenuItem.Enabled = _dirty;
+            saveToolStripMenuItem.Enabled = _dirty;
+            publishToolStripMenuItem.Enabled = _dirty;
         }
 
         /// <summary>
@@ -485,6 +521,24 @@ namespace TvpMain.Forms
             helpTextBox.AppendText("JavaScript that can be called after the two regular expressions are run, if they are defined." + Environment.NewLine);
             helpTextBox.AppendText("This script MUST implement the function checkAndFix(checkResultItems). The CheckResultItems are the results" +
                 " found in the regular expression pass.");
+        }
+
+        /// <summary>
+        /// A callback for handling when a form is closing
+        /// </summary>
+        /// <param name="sender">The control that sent this event</param>
+        /// <param name="e">The event information that triggered this call</param>
+        private void onFormClosing(object sender, FormClosingEventArgs e)
+        {
+            if (_dirty)
+            {
+                DialogResult dialogResult = MessageBox.Show("Are you sure you wish to exit without saving?", "Exit?", MessageBoxButtons.YesNo);
+
+                if (dialogResult == DialogResult.No)
+                {
+                    e.Cancel = true;
+                }
+            }
         }
     }
 }

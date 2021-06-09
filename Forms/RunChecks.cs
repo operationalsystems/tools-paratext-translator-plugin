@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Windows.Forms;
 using TvpMain.Check;
@@ -269,13 +270,13 @@ namespace TvpMain.Forms
                         item
                         ));
                 }
-
+                
                 // add all the local checks
                 foreach (var item in _localChecks)
                 {
                     // get if the check is available (item1), and if not, the text for the tooltip (item2)
                     Tuple<bool, string> isCheckAvailableTuple = isCheckAvailableForProject(item);
-
+                    
                     _displayItems.Add(new DisplayItem(
                         false,
                         "(Local) " + item.Name,
@@ -320,17 +321,39 @@ namespace TvpMain.Forms
 
                     checksList.Rows[rowIndex].Tag = displayItem;
 
+                    // Whether a check is local
+                    bool isLocal = displayItem.Name.StartsWith("(Local)");
+
+                    // Tooltip text for the local check
+                    string localCheckToolTip = "Local checks can be edited by double-clicking on the name of the check.";
+
+                    // loop through all the cells in the row since tool tips can only be placed on the cell
+                    for (int i = 0; i < checksList.Columns.Count; i++)
+                    {
+                        checksList.Rows[rowIndex].Cells[i].ToolTipText = "";
+
+                        // Determines which tool tip to display on the cell
+                        if (!displayItem.Active)
+                        {
+                            checksList.Rows[rowIndex].Cells[i].ToolTipText += displayItem.Tooltip;
+
+                            if (isLocal)
+                            {
+                                checksList.Rows[rowIndex].Cells[i].ToolTipText += Environment.NewLine + Environment.NewLine;
+                            }
+                        } 
+                        if (isLocal)                       
+                        {
+                            checksList.Rows[rowIndex].Cells[i].ToolTipText += localCheckToolTip;
+                        }
+                        
+                    }
+                    
                     // disable row if it can't be used on this project
                     if (!displayItem.Active)
                     {
                         checksList.Rows[rowIndex].DefaultCellStyle.BackColor = SystemColors.Control;
                         checksList.Rows[rowIndex].DefaultCellStyle.ForeColor = SystemColors.GrayText;
-
-                        // loop through all the cells in the row since tool tips can only be placed on the cell
-                        for (int i = 0; i < checksList.Columns.Count; i++)
-                        {
-                            checksList.Rows[rowIndex].Cells[i].ToolTipText = displayItem.Tooltip;
-                        }
                     }
                 }
             }
@@ -868,6 +891,29 @@ namespace TvpMain.Forms
         private void filterTextBox_TextChanged(object sender, EventArgs e)
         {
             updateDisplayGrid();
+        }
+
+        /// <summary>
+        /// Opens a local check in the editor from the RunChecks UI.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void checksList_EditCheck(object sender, DataGridViewCellEventArgs e)
+        {
+            // Gets the check that was clicked
+            var selectedCheck = _displayItems[e.RowIndex];
+
+            // Only local checks can be edited
+            if (!selectedCheck.Name.StartsWith("(Local)")) return;
+
+            // Gets the file location for the selected check
+            var fileName = _checkManager.GetCheckAndFixItemFilename(selectedCheck.Name.Replace("(Local)", ""), selectedCheck.Version);
+            var checkDir = _checkManager.GetLocalRepoDirectory();
+            string fullPath = Path.Combine(checkDir, fileName);
+
+            // Open the CheckEditor with the selected check
+            CheckEditor checkEditor = new CheckEditor(new FileInfo(fullPath));
+            checkEditor.ShowDialog(this);
         }
     }
 
