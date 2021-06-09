@@ -119,9 +119,9 @@ namespace TvpMain.Forms
             this.groupBox2.Controls.Add(this.label4);
             this.groupBox2.Controls.Add(this.label3);
             this.groupBox2.Controls.Add(this.checkFindRegExTextBox);
-            this.groupBox2.Location = new System.Drawing.Point(13, 27);
+            this.groupBox2.Location = new System.Drawing.Point(13, 37);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(1164, 685);
+            this.groupBox2.Size = new System.Drawing.Size(1164, 675);
             this.groupBox2.TabIndex = 3;
             this.groupBox2.TabStop = false;
             // 
@@ -133,7 +133,7 @@ namespace TvpMain.Forms
             this.jsEditor.Lexer = ScintillaNET.Lexer.Cpp;
             this.jsEditor.Location = new System.Drawing.Point(9, 92);
             this.jsEditor.Name = "jsEditor";
-            this.jsEditor.Size = new System.Drawing.Size(1009, 437);
+            this.jsEditor.Size = new System.Drawing.Size(1147, 577);
             this.jsEditor.TabIndex = 6;
             this.jsEditor.CharAdded += new System.EventHandler<ScintillaNET.CharAddedEventArgs>(this.jsEditor_CharAdded);
             this.jsEditor.TextChanged += new System.EventHandler(this.jsEditor_TextChanged);
@@ -154,7 +154,7 @@ namespace TvpMain.Forms
             | System.Windows.Forms.AnchorStyles.Right)));
             this.fixRegExTextBox.Location = new System.Drawing.Point(116, 43);
             this.fixRegExTextBox.Name = "fixRegExTextBox";
-            this.fixRegExTextBox.Size = new System.Drawing.Size(902, 20);
+            this.fixRegExTextBox.Size = new System.Drawing.Size(1040, 20);
             this.fixRegExTextBox.TabIndex = 3;
             this.fixRegExTextBox.TextChanged += new System.EventHandler(this.content_TextChanged);
             this.fixRegExTextBox.MouseEnter += new System.EventHandler(this.FixRegExTextBox_MouseEnter);
@@ -232,9 +232,9 @@ namespace TvpMain.Forms
             this.groupBox3.Controls.Add(this.label6);
             this.groupBox3.Controls.Add(this.scopeCombo);
             this.groupBox3.Controls.Add(this.label2);
-            this.groupBox3.Location = new System.Drawing.Point(1183, 27);
+            this.groupBox3.Location = new System.Drawing.Point(1183, 37);
             this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Size = new System.Drawing.Size(445, 685);
+            this.groupBox3.Size = new System.Drawing.Size(445, 675);
             this.groupBox3.TabIndex = 7;
             this.groupBox3.TabStop = false;
             // 
@@ -269,7 +269,7 @@ namespace TvpMain.Forms
             this.descriptionTextBox.Multiline = true;
             this.descriptionTextBox.Name = "descriptionTextBox";
             this.descriptionTextBox.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.descriptionTextBox.Size = new System.Drawing.Size(430, 455);
+            this.descriptionTextBox.Size = new System.Drawing.Size(430, 445);
             this.descriptionTextBox.TabIndex = 14;
             this.descriptionTextBox.TextChanged += new System.EventHandler(this.content_TextChanged);
             this.descriptionTextBox.MouseEnter += new System.EventHandler(this.descriptionTextBox_MouseEnter);
