@@ -216,10 +216,10 @@ namespace TvpMain.CheckManagement
         /// <summary>
         /// This method creates a filename for the provided <c>CheckAndFixItem</c>. 
         /// </summary>
-        /// <param name="name">The <c>CheckAndFixItem</c> for which to produce a filename.</param>
-        /// <param name="version">The <c>CheckAndFixItem</c> for which to produce a filename.</param>
+        /// <param name="name">The <c>CheckAndFixItem</c> name</param>
+        /// <param name="version">The <c>CheckAndFixItem</c> version</param>
         /// <returns>The filename produced for the provided <c>CheckAndFixItem</c>.</returns>
-        public static string GetCheckAndFixItemFilename(string name, string version)
+        public string GetCheckAndFixItemFilename(string name, string version)
         {
             return $"{name.ConvertToTitleCase().Replace(" ", String.Empty)}-{version.Trim()}.{MainConsts.CHECK_FILE_EXTENSION}";
         }
@@ -251,15 +251,6 @@ namespace TvpMain.CheckManagement
         /// </summary>
         /// <returns>The local check folder path as a string for the editor to open files there</returns>
         public string GetLocalRepoDirectory()
-        {
-            return Path.Combine(Directory.GetCurrentDirectory(), MainConsts.LOCAL_CHECK_FOLDER_NAME);
-        }
-
-        /// <summary>
-        /// Get the local check folder path as a string for the editor to open files there.
-        /// </summary>
-        /// <returns>The local check folder path as a string for the editor to open files there</returns>
-        public static string GetLocalRepoDirectory(string name)
         {
             return Path.Combine(Directory.GetCurrentDirectory(), MainConsts.LOCAL_CHECK_FOLDER_NAME);
         }

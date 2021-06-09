@@ -270,13 +270,13 @@ namespace TvpMain.Forms
                         item
                         ));
                 }
-
+                
                 // add all the local checks
                 foreach (var item in _localChecks)
                 {
                     // get if the check is available (item1), and if not, the text for the tooltip (item2)
                     Tuple<bool, string> isCheckAvailableTuple = isCheckAvailableForProject(item);
-
+                    
                     _displayItems.Add(new DisplayItem(
                         false,
                         "(Local) " + item.Name,
@@ -321,17 +321,35 @@ namespace TvpMain.Forms
 
                     checksList.Rows[rowIndex].Tag = displayItem;
 
+                    // Creates the localToolTip 
+                    bool isLocal = displayItem.Name.StartsWith("(Local)");
+                    string localCheckToolTip = "Local checks can be edited by double-clicking on the name of the check.";
+
+                    // loop through all the cells in the row since tool tips can only be placed on the cell
+                    for (int i = 0; i < checksList.Columns.Count; i++)
+                    {
+                        // Determines which tool tip to display on the cell
+                        if (!displayItem.Active)
+                        {
+                            checksList.Rows[rowIndex].Cells[i].ToolTipText = displayItem.Tooltip;
+
+                            if (!displayItem.Active && isLocal)
+                            {
+                                checksList.Rows[rowIndex].Cells[i].ToolTipText = displayItem.Tooltip + Environment.NewLine + Environment.NewLine + localCheckToolTip;
+                            }
+                        } 
+                        else                        
+                        {
+                            checksList.Rows[rowIndex].Cells[i].ToolTipText = localCheckToolTip;
+                        }
+                        
+                    }
+                    
                     // disable row if it can't be used on this project
                     if (!displayItem.Active)
                     {
                         checksList.Rows[rowIndex].DefaultCellStyle.BackColor = SystemColors.Control;
                         checksList.Rows[rowIndex].DefaultCellStyle.ForeColor = SystemColors.GrayText;
-
-                        // loop through all the cells in the row since tool tips can only be placed on the cell
-                        for (int i = 0; i < checksList.Columns.Count; i++)
-                        {
-                            checksList.Rows[rowIndex].Cells[i].ToolTipText = displayItem.Tooltip;
-                        }
                     }
                 }
             }
@@ -878,36 +896,21 @@ namespace TvpMain.Forms
         /// <param name="e"></param>
         private void checksList_EditCheck(object sender, DataGridViewCellEventArgs e)
         {
-            // Gets the row item of a selected check
+            // Gets the check that was clicked
             var selectedCheck = _displayItems[e.RowIndex];
+
+            // Only local checks can be edited
             if (!selectedCheck.Name.StartsWith("(Local)")) return;
 
-            // Locates a local check to open in the CheckEditor UI
-            var fileName = CheckManager.GetCheckAndFixItemFilename(selectedCheck.Name.Replace("(Local)", ""), selectedCheck.Version);
-            var checkDir = CheckManager.GetLocalRepoDirectory(selectedCheck.Name);
+            // Gets the file location for the selected check
+            var fileName = _checkManager.GetCheckAndFixItemFilename(selectedCheck.Name.Replace("(Local)", ""), selectedCheck.Version);
+            var checkDir = _checkManager.GetLocalRepoDirectory();
             string fullPath = Path.Combine(checkDir, fileName);
+
+            // Open the CheckEditor with the selected check
             CheckEditor checkEditor = new CheckEditor(new FileInfo(fullPath));
             checkEditor.ShowDialog(this);
         }
-
-        /// <summary>
-        /// Provides a tooltip on the row with Local checks only
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void checksList_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
-        {
-            // Conversion of the value in the "Name" column to a string to enable the tooltip logic
-            String nameColumnIndex = (String)this.checksList.Columns["CFName"].Index.ToString();
-            String name = (String)this.checksList.Rows[e.RowIndex].Cells[this.checksList.Columns["CFName"].Index].Value;
-            
-            if (name.StartsWith("(Local)"))
-            {
-                DataGridViewCell cell = this.checksList.Rows[e.RowIndex].Cells[e.ColumnIndex];
-                cell.ToolTipText = "Local checks can be edited by double-clicking on the name of the check.";
-            }
-        }
-
     }
 
     /// <summary>

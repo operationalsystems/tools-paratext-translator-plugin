@@ -230,7 +230,6 @@ namespace TvpMain.Forms
             this.checksList.TabIndex = 0;
             this.checksList.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.checksList_CellClick);
             this.checksList.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.checksList_EditCheck);
-            this.checksList.CellFormatting += new System.Windows.Forms.DataGridViewCellFormattingEventHandler(this.checksList_CellFormatting);
             this.checksList.CellMouseEnter += new System.Windows.Forms.DataGridViewCellEventHandler(this.checksList_CellMouseEnter);
             // 
             // CFSelected

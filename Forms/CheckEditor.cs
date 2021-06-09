@@ -79,6 +79,10 @@ namespace TvpMain.Forms
             }
             updateUI();
             _dirty = false;
+            saveIconToolStripMenuItem.Enabled = _dirty;
+            saveToolStripMenuItem.Enabled = _dirty;
+            publishToolStripMenuItem.Enabled = _dirty;
+
             setScintillaRecipe();
         }
 
@@ -93,6 +97,9 @@ namespace TvpMain.Forms
             if (_dirty)
             {
                 DialogResult dialogResult = MessageBox.Show("You have unsaved changes, are you sure you wish to proceed?", "Verify", MessageBoxButtons.YesNo);
+                saveIconToolStripMenuItem.Enabled = _dirty;
+                saveToolStripMenuItem.Enabled = _dirty;
+                publishToolStripMenuItem.Enabled = _dirty;
 
                 if (dialogResult == DialogResult.No)
                 {
@@ -146,6 +153,9 @@ namespace TvpMain.Forms
             if (_dirty)
             {
                 updateCheckAndFix();
+                saveIconToolStripMenuItem.Enabled = _dirty;
+                saveToolStripMenuItem.Enabled = _dirty;
+                publishToolStripMenuItem.Enabled = _dirty;
 
                 if (String.IsNullOrEmpty(_checkAndFixItem.Name.Trim()) ||
                     String.IsNullOrEmpty(_checkAndFixItem.Version.Trim()) ||
@@ -295,6 +305,9 @@ namespace TvpMain.Forms
         private void content_TextChanged(object sender, EventArgs e)
         {
             _dirty = true;
+            saveIconToolStripMenuItem.Enabled = _dirty;
+            saveToolStripMenuItem.Enabled = _dirty;
+            publishToolStripMenuItem.Enabled = _dirty;
         }
 
         /// <summary>
@@ -505,6 +518,9 @@ namespace TvpMain.Forms
             if (_dirty)
             {
                 DialogResult dialogResult = MessageBox.Show("Are you sure you wish to exit without saving?", "Exit?", MessageBoxButtons.YesNo);
+                saveIconToolStripMenuItem.Enabled = _dirty;
+                saveToolStripMenuItem.Enabled = _dirty;
+                publishToolStripMenuItem.Enabled = _dirty;
 
                 if (dialogResult == DialogResult.No)
                 {
