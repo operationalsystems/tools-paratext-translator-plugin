@@ -110,13 +110,13 @@ namespace TvpMain.Forms
   return checkResultItems
 }
 ";
-
+            _checkAndFixItem.Scope = CheckAndFixItem.CheckScope.VERSE;
             _checkAndFixItem.Id = Guid.NewGuid().ToString();
-            updateUI();
+            
 
             checkFixIdLabel.Text = _checkAndFixItem.Id;
 
-            scopeCombo.SelectedItem = "VERSE";
+            updateUI();
             _dirty = false;
             saveIconToolStripMenuItem.Enabled = _dirty;
             saveToolStripMenuItem.Enabled = _dirty;
