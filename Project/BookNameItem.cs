@@ -82,7 +82,7 @@ namespace TvpMain.Project
         {
             if (inputTypes == null)
             {
-                Util.HostUtil.Instance.LogLine("Instance types is null, responding with default book code", true);
+                HostUtil.Instance.LogLine("Instance types is null, responding with default book code", true);
                 return BookCode;
             }
 

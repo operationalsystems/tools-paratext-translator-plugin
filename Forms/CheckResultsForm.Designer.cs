@@ -32,6 +32,8 @@ namespace TvpMain.Forms
         {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(CheckResultsForm));
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
             this.DenyButton = new System.Windows.Forms.Button();
             this.ShowDeniedCheckbox = new System.Windows.Forms.CheckBox();
             this.cancel = new System.Windows.Forms.Button();
@@ -47,25 +49,26 @@ namespace TvpMain.Forms
             this.bookFilterTextBox = new System.Windows.Forms.TextBox();
             this.filterTextBox = new System.Windows.Forms.TextBox();
             this.checkFilterLabel = new System.Windows.Forms.Label();
-            this.checksDataGridView = new System.Windows.Forms.DataGridView();
+            this.ChecksDataGridView = new System.Windows.Forms.DataGridView();
             this.SelectedColumn = new System.Windows.Forms.DataGridViewCheckBoxColumn();
             this.CategoryColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.DescriptionColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.CountColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.ActionsColumn = new System.Windows.Forms.DataGridViewButtonColumn();
-            this.issuesDataGridView = new System.Windows.Forms.DataGridView();
-            this.statusIconColumn = new System.Windows.Forms.DataGridViewImageColumn();
-            this.ReferenceColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.MatchTextColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.matchTextBox = new RichTextBox50();
+            this.IssuesDataGridView = new System.Windows.Forms.DataGridView();
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
-            this.fixTextBox = new RichTextBox50();
             this.imageList1 = new System.Windows.Forms.ImageList(this.components);
+            this.fixTextBox = new TvpCustomControls.RichTextBox50();
+            this.matchTextBox = new TvpCustomControls.RichTextBox50();
+            this.statusIconColumn = new System.Windows.Forms.DataGridViewImageColumn();
+            this.ReferenceColumnProject = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.ReferenceColumnEng = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.MatchTextColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.menuStrip.SuspendLayout();
             this.topPanel.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.checksDataGridView)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.issuesDataGridView)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.ChecksDataGridView)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.IssuesDataGridView)).BeginInit();
             this.SuspendLayout();
             // 
             // DenyButton
@@ -146,7 +149,7 @@ namespace TvpMain.Forms
             this.topPanel.Controls.Add(this.bookFilterTextBox);
             this.topPanel.Controls.Add(this.filterTextBox);
             this.topPanel.Controls.Add(this.checkFilterLabel);
-            this.topPanel.Controls.Add(this.checksDataGridView);
+            this.topPanel.Controls.Add(this.ChecksDataGridView);
             this.topPanel.Location = new System.Drawing.Point(0, 27);
             this.topPanel.Name = "topPanel";
             this.topPanel.Size = new System.Drawing.Size(987, 251);
@@ -171,7 +174,7 @@ namespace TvpMain.Forms
             this.clearCheckFilterButton.TabIndex = 7;
             this.clearCheckFilterButton.Text = "X";
             this.clearCheckFilterButton.UseVisualStyleBackColor = true;
-            this.clearCheckFilterButton.Click += new System.EventHandler(this.clearCheckFilterButton_Click);
+            this.clearCheckFilterButton.Click += new System.EventHandler(this.ClearCheckFilterButton_Click);
             // 
             // bookFilterClearButton
             // 
@@ -182,7 +185,7 @@ namespace TvpMain.Forms
             this.bookFilterClearButton.TabIndex = 6;
             this.bookFilterClearButton.Text = "X";
             this.bookFilterClearButton.UseVisualStyleBackColor = true;
-            this.bookFilterClearButton.Click += new System.EventHandler(this.bookFilterClearButton_Click);
+            this.bookFilterClearButton.Click += new System.EventHandler(this.BookFilterClearButton_Click);
             // 
             // selectBooksButton
             // 
@@ -193,7 +196,7 @@ namespace TvpMain.Forms
             this.selectBooksButton.TabIndex = 5;
             this.selectBooksButton.Text = "Select Books";
             this.selectBooksButton.UseVisualStyleBackColor = true;
-            this.selectBooksButton.Click += new System.EventHandler(this.selectBooksButton_Click);
+            this.selectBooksButton.Click += new System.EventHandler(this.SelectBooksButton_Click);
             // 
             // bookFilterTextBox
             // 
@@ -211,7 +214,7 @@ namespace TvpMain.Forms
             this.filterTextBox.Name = "filterTextBox";
             this.filterTextBox.Size = new System.Drawing.Size(198, 20);
             this.filterTextBox.TabIndex = 2;
-            this.filterTextBox.TextChanged += new System.EventHandler(this.filterTextBox_TextChanged);
+            this.filterTextBox.TextChanged += new System.EventHandler(this.FilterTextBox_TextChanged);
             // 
             // checkFilterLabel
             // 
@@ -223,30 +226,30 @@ namespace TvpMain.Forms
             this.checkFilterLabel.TabIndex = 1;
             this.checkFilterLabel.Text = "Check Filter";
             // 
-            // checksDataGridView
+            // ChecksDataGridView
             // 
-            this.checksDataGridView.AllowUserToAddRows = false;
-            this.checksDataGridView.AllowUserToDeleteRows = false;
-            this.checksDataGridView.AllowUserToResizeRows = false;
-            this.checksDataGridView.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.ChecksDataGridView.AllowUserToAddRows = false;
+            this.ChecksDataGridView.AllowUserToDeleteRows = false;
+            this.ChecksDataGridView.AllowUserToResizeRows = false;
+            this.ChecksDataGridView.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.checksDataGridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.checksDataGridView.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.ChecksDataGridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.ChecksDataGridView.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.SelectedColumn,
             this.CategoryColumn,
             this.DescriptionColumn,
             this.CountColumn,
             this.ActionsColumn});
-            this.checksDataGridView.Location = new System.Drawing.Point(0, 0);
-            this.checksDataGridView.MultiSelect = false;
-            this.checksDataGridView.Name = "checksDataGridView";
-            this.checksDataGridView.ReadOnly = true;
-            this.checksDataGridView.RowHeadersVisible = false;
-            this.checksDataGridView.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.AutoSizeToDisplayedHeaders;
-            this.checksDataGridView.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.checksDataGridView.Size = new System.Drawing.Size(740, 251);
-            this.checksDataGridView.TabIndex = 0;
-            this.checksDataGridView.SelectionChanged += new System.EventHandler(this.checksDataGridView_SelectionChanged);
+            this.ChecksDataGridView.Location = new System.Drawing.Point(0, 0);
+            this.ChecksDataGridView.MultiSelect = false;
+            this.ChecksDataGridView.Name = "ChecksDataGridView";
+            this.ChecksDataGridView.ReadOnly = true;
+            this.ChecksDataGridView.RowHeadersVisible = false;
+            this.ChecksDataGridView.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.AutoSizeToDisplayedHeaders;
+            this.ChecksDataGridView.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
+            this.ChecksDataGridView.Size = new System.Drawing.Size(740, 251);
+            this.ChecksDataGridView.TabIndex = 0;
+            this.ChecksDataGridView.SelectionChanged += new System.EventHandler(this.ChecksDataGridView_SelectionChanged);
             // 
             // SelectedColumn
             // 
@@ -258,6 +261,7 @@ namespace TvpMain.Forms
             this.SelectedColumn.ReadOnly = true;
             this.SelectedColumn.Resizable = System.Windows.Forms.DataGridViewTriState.True;
             this.SelectedColumn.Visible = false;
+            this.SelectedColumn.Width = 70;
             // 
             // CategoryColumn
             // 
@@ -297,63 +301,30 @@ namespace TvpMain.Forms
             this.ActionsColumn.ReadOnly = true;
             this.ActionsColumn.Width = 51;
             // 
-            // issuesDataGridView
+            // IssuesDataGridView
             // 
-            this.issuesDataGridView.AllowUserToAddRows = false;
-            this.issuesDataGridView.AllowUserToDeleteRows = false;
-            this.issuesDataGridView.AllowUserToResizeRows = false;
-            this.issuesDataGridView.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            this.IssuesDataGridView.AllowUserToAddRows = false;
+            this.IssuesDataGridView.AllowUserToDeleteRows = false;
+            this.IssuesDataGridView.AllowUserToResizeRows = false;
+            this.IssuesDataGridView.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left)));
-            this.issuesDataGridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.issuesDataGridView.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.IssuesDataGridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.IssuesDataGridView.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.statusIconColumn,
-            this.ReferenceColumn,
+            this.ReferenceColumnProject,
+            this.ReferenceColumnEng,
             this.MatchTextColumn});
-            this.issuesDataGridView.Location = new System.Drawing.Point(0, 284);
-            this.issuesDataGridView.MultiSelect = false;
-            this.issuesDataGridView.Name = "issuesDataGridView";
-            this.issuesDataGridView.ReadOnly = true;
-            this.issuesDataGridView.RowHeadersVisible = false;
-            this.issuesDataGridView.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.issuesDataGridView.Size = new System.Drawing.Size(343, 285);
-            this.issuesDataGridView.TabIndex = 3;
-            this.issuesDataGridView.CellContentDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.issuesDataGridView_CellContentDoubleClick);
-            this.issuesDataGridView.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.issuesDataGridView_CellContentDoubleClick);
-            this.issuesDataGridView.SelectionChanged += new System.EventHandler(this.issuesDataGridView_SelectionChanged);
-            // 
-            // statusIconColumn
-            // 
-            this.statusIconColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
-            this.statusIconColumn.FillWeight = 60F;
-            this.statusIconColumn.HeaderText = "Status";
-            this.statusIconColumn.Name = "statusIconColumn";
-            this.statusIconColumn.ReadOnly = true;
-            this.statusIconColumn.Width = 43;
-            // 
-            // ReferenceColumn
-            // 
-            this.ReferenceColumn.HeaderText = "Reference";
-            this.ReferenceColumn.Name = "ReferenceColumn";
-            this.ReferenceColumn.ReadOnly = true;
-            // 
-            // MatchTextColumn
-            // 
-            this.MatchTextColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.MatchTextColumn.HeaderText = "Match Text";
-            this.MatchTextColumn.Name = "MatchTextColumn";
-            this.MatchTextColumn.ReadOnly = true;
-            // 
-            // matchTextBox
-            // 
-            this.matchTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.matchTextBox.BackColor = System.Drawing.Color.White;
-            this.matchTextBox.Location = new System.Drawing.Point(349, 300);
-            this.matchTextBox.Name = "matchTextBox";
-            this.matchTextBox.ReadOnly = true;
-            this.matchTextBox.Size = new System.Drawing.Size(530, 125);
-            this.matchTextBox.TabIndex = 4;
-            this.matchTextBox.Text = "";
+            this.IssuesDataGridView.Location = new System.Drawing.Point(0, 284);
+            this.IssuesDataGridView.MultiSelect = false;
+            this.IssuesDataGridView.Name = "IssuesDataGridView";
+            this.IssuesDataGridView.ReadOnly = true;
+            this.IssuesDataGridView.RowHeadersVisible = false;
+            this.IssuesDataGridView.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
+            this.IssuesDataGridView.Size = new System.Drawing.Size(343, 285);
+            this.IssuesDataGridView.TabIndex = 3;
+            this.IssuesDataGridView.CellContentDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.IssuesDataGridView_CellContentDoubleClick);
+            this.IssuesDataGridView.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.IssuesDataGridView_CellContentDoubleClick);
+            this.IssuesDataGridView.SelectionChanged += new System.EventHandler(this.IssuesDataGridView_SelectionChanged);
             // 
             // label1
             // 
@@ -373,6 +344,13 @@ namespace TvpMain.Forms
             this.label2.TabIndex = 6;
             this.label2.Text = "Suggested Fix in Context";
             // 
+            // imageList1
+            // 
+            this.imageList1.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("imageList1.ImageStream")));
+            this.imageList1.TransparentColor = System.Drawing.Color.Transparent;
+            this.imageList1.Images.SetKeyName(0, "checkmark-32.ico");
+            this.imageList1.Images.SetKeyName(1, "x-mark-32.ico");
+            // 
             // fixTextBox
             // 
             this.fixTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
@@ -386,12 +364,51 @@ namespace TvpMain.Forms
             this.fixTextBox.TabIndex = 7;
             this.fixTextBox.Text = "";
             // 
-            // imageList1
+            // matchTextBox
             // 
-            this.imageList1.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("imageList1.ImageStream")));
-            this.imageList1.TransparentColor = System.Drawing.Color.Transparent;
-            this.imageList1.Images.SetKeyName(0, "checkmark-32.ico");
-            this.imageList1.Images.SetKeyName(1, "x-mark-32.ico");
+            this.matchTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.matchTextBox.BackColor = System.Drawing.Color.White;
+            this.matchTextBox.Location = new System.Drawing.Point(349, 300);
+            this.matchTextBox.Name = "matchTextBox";
+            this.matchTextBox.ReadOnly = true;
+            this.matchTextBox.Size = new System.Drawing.Size(530, 125);
+            this.matchTextBox.TabIndex = 4;
+            this.matchTextBox.Text = "";
+            // 
+            // statusIconColumn
+            // 
+            this.statusIconColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
+            this.statusIconColumn.FillWeight = 60F;
+            this.statusIconColumn.HeaderText = "Status";
+            this.statusIconColumn.Name = "statusIconColumn";
+            this.statusIconColumn.ReadOnly = true;
+            this.statusIconColumn.Width = 43;
+            // 
+            // ReferenceColumnProject
+            // 
+            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.TopCenter;
+            this.ReferenceColumnProject.DefaultCellStyle = dataGridViewCellStyle1;
+            this.ReferenceColumnProject.HeaderText = "Ref";
+            this.ReferenceColumnProject.Name = "ReferenceColumnProject";
+            this.ReferenceColumnProject.ReadOnly = true;
+            this.ReferenceColumnProject.Width = 60;
+            // 
+            // ReferenceColumnEng
+            // 
+            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.TopCenter;
+            this.ReferenceColumnEng.DefaultCellStyle = dataGridViewCellStyle2;
+            this.ReferenceColumnEng.HeaderText = "Ref(en)";
+            this.ReferenceColumnEng.Name = "ReferenceColumnEng";
+            this.ReferenceColumnEng.ReadOnly = true;
+            this.ReferenceColumnEng.Width = 60;
+            // 
+            // MatchTextColumn
+            // 
+            this.MatchTextColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.MatchTextColumn.HeaderText = "Match Text";
+            this.MatchTextColumn.Name = "MatchTextColumn";
+            this.MatchTextColumn.ReadOnly = true;
             // 
             // CheckResultsForm
             // 
@@ -402,7 +419,7 @@ namespace TvpMain.Forms
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.matchTextBox);
-            this.Controls.Add(this.issuesDataGridView);
+            this.Controls.Add(this.IssuesDataGridView);
             this.Controls.Add(this.ShowDeniedCheckbox);
             this.Controls.Add(this.DenyButton);
             this.Controls.Add(this.topPanel);
@@ -418,8 +435,8 @@ namespace TvpMain.Forms
             this.menuStrip.PerformLayout();
             this.topPanel.ResumeLayout(false);
             this.topPanel.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.checksDataGridView)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.issuesDataGridView)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.ChecksDataGridView)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.IssuesDataGridView)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -434,7 +451,7 @@ namespace TvpMain.Forms
         private System.Windows.Forms.ToolStripMenuItem editToolStripMenuItem;
         private System.Windows.Forms.Panel topPanel;
         private System.Windows.Forms.ToolStripMenuItem LicenseToolStripMenuItem;
-        private System.Windows.Forms.DataGridView checksDataGridView;
+        private System.Windows.Forms.DataGridView ChecksDataGridView;
         private System.Windows.Forms.Label bookFilterLabel;
         private System.Windows.Forms.Button clearCheckFilterButton;
         private System.Windows.Forms.Button bookFilterClearButton;
@@ -442,19 +459,20 @@ namespace TvpMain.Forms
         private System.Windows.Forms.TextBox bookFilterTextBox;
         private System.Windows.Forms.TextBox filterTextBox;
         private System.Windows.Forms.Label checkFilterLabel;
-        private System.Windows.Forms.DataGridView issuesDataGridView;
+        private System.Windows.Forms.DataGridView IssuesDataGridView;
         private RichTextBox50 matchTextBox;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label2;
         private RichTextBox50 fixTextBox;
-        private System.Windows.Forms.DataGridViewImageColumn statusIconColumn;
-        private System.Windows.Forms.DataGridViewTextBoxColumn ReferenceColumn;
-        private System.Windows.Forms.DataGridViewTextBoxColumn MatchTextColumn;
         private System.Windows.Forms.ImageList imageList1;
         private System.Windows.Forms.DataGridViewCheckBoxColumn SelectedColumn;
         private System.Windows.Forms.DataGridViewTextBoxColumn CategoryColumn;
         private System.Windows.Forms.DataGridViewTextBoxColumn DescriptionColumn;
         private System.Windows.Forms.DataGridViewTextBoxColumn CountColumn;
         private System.Windows.Forms.DataGridViewButtonColumn ActionsColumn;
+        private System.Windows.Forms.DataGridViewImageColumn statusIconColumn;
+        private System.Windows.Forms.DataGridViewTextBoxColumn ReferenceColumnProject;
+        private System.Windows.Forms.DataGridViewTextBoxColumn ReferenceColumnEng;
+        private System.Windows.Forms.DataGridViewTextBoxColumn MatchTextColumn;
     }
 }

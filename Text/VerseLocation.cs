@@ -1,6 +1,7 @@
 ﻿using CsvHelper.Configuration.Attributes;
 using Newtonsoft.Json;
 using System;
+using TvpMain.Project;
 using TvpMain.Util;
 
 namespace TvpMain.Text
@@ -73,27 +74,92 @@ namespace TvpMain.Text
         /// Similar to VerseCoordinateText, but handles -1 values at book, chapter, or verse
         /// </summary>
         /// <returns></returns>
-        public string toString()
+        public override string ToString()
         {
+            // no book number = "project"
             if (BookNum == -1)
             {
                 return "Project";
             }
+
+            // try retrieving the book ID, if we've gotten this far
+            BookUtil.BookIdsByNum.TryGetValue(BookNum, out var bookId);
+
+            // no chapter = only the book
             if (ChapterNum == -1)
             {
-                return BookUtil.BookIdsByNum.TryGetValue(BookNum, out var bookIdTmp)
-                    ? $"{bookIdTmp.BookCode}"
+                return bookId != null
+                    ? $"{bookId.BookCode}"
                     : $"{"#" + BookNum}";
             }
+
+            // no verse = only the book and chapter
             if (VerseNum == -1)
             {
-                return BookUtil.BookIdsByNum.TryGetValue(BookNum, out var bookIdTmp)
-                    ? $"{bookIdTmp.BookCode + " " + ChapterNum}"
+                return bookId != null
+                    ? $"{bookId.BookCode + " " + ChapterNum}"
                     : $"{"#" + BookNum + " " + ChapterNum}";
             }
-            return BookUtil.BookIdsByNum.TryGetValue(BookNum, out var bookId)
+
+            // else = book, chapter, and verse
+            return bookId != null
                 ? $"{bookId.BookCode + " " + ChapterNum + ":" + VerseNum}"
                 : $"{"#" + BookNum + " " + ChapterNum + ":" + VerseNum}";
+        }
+
+        /// <summary>
+        /// Create project-specific reference text.
+        /// </summary>
+        /// <param name="projectManager">Project manager (required).</param>
+        /// <returns></returns>
+        public string ToProjectString(ProjectManager projectManager)
+        {
+            // no book number = project name
+            if (BookNum == -1)
+            {
+                return projectManager.ProjectName;
+            }
+
+            // first, try getting a project-specific name
+            string bookText = null;
+            if (projectManager.BookNamesByNum.TryGetValue(BookNum, out var bookName))
+            {
+                bookText = bookName.GetAvailableName(
+                    BookNameType.Abbreviation,
+                    BookNameType.ShortName,
+                    BookNameType.LongName);
+            }
+
+            // second, try the standard book codes
+            if (bookText == null)
+            {
+                if (BookUtil.BookIdsByNum.TryGetValue(BookNum, out var bookId))
+                {
+                    bookText = bookId.BookCode;
+                }
+            }
+
+            // no chapter = only the book
+            if (ChapterNum == -1)
+            {
+                return !string.IsNullOrWhiteSpace(bookText)
+                    ? $"{bookText}"
+                    : $"{"#" + BookNum}";
+            }
+
+            // no verse = only the book and chapter
+            if (VerseNum == -1)
+            {
+                return !string.IsNullOrWhiteSpace(bookText)
+                    ? $"{bookText + " " + ChapterNum}"
+                    : $"{"#" + BookNum + " " + ChapterNum}";
+            }
+
+            // else = book, chapter, and verse
+            return !string.IsNullOrWhiteSpace(bookText)
+                ? $"{bookText + " " + ChapterNum + ":" + VerseNum}"
+                : $"{"#" + BookNum + " " + ChapterNum + ":" + VerseNum}";
+
         }
 
         /// <summary>
