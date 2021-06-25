@@ -19,6 +19,7 @@ using TvpMain.Reference;
 using TvpMain.Result;
 using TvpMain.Text;
 using TvpMain.Util;
+using static System.String;
 using static TvpMain.Check.CheckAndFixItem;
 
 namespace TvpMain.Forms
@@ -160,7 +161,7 @@ namespace TvpMain.Forms
         {
             // validate inputs
             Host = host ?? throw new ArgumentNullException(nameof(host));
-            if (string.IsNullOrEmpty(activeProjectName))
+            if (IsNullOrEmpty(activeProjectName))
             {
                 throw new ArgumentNullException(nameof(activeProjectName));
             }
@@ -217,12 +218,20 @@ namespace TvpMain.Forms
 
                     args.SortResult = CheckResultItem.CompareByLocation(
                         resultItem1, resultItem2);
+
+                    // if references are equivalent, further sort by row index to ensure sorting on
+                    // either project or english reference columns produces consistent results
+                    // (won't be stable with respect to each other, otherwise).
+                    if (args.SortResult == 0)
+                    {
+                        args.SortResult = args.RowIndex1.CompareTo(args.RowIndex2);
+                    }
                 }
                 else // else, sort by cell text
                 {
-                    args.SortResult = string.CompareOrdinal(
-                        (args.CellValue1 ?? string.Empty).ToString(),
-                        (args.CellValue2 ?? string.Empty).ToString());
+                    args.SortResult = CompareOrdinal(
+                        (args.CellValue1 ?? Empty).ToString(),
+                        (args.CellValue2 ?? Empty).ToString());
                 }
                 args.Handled = true;
             };
@@ -572,7 +581,7 @@ namespace TvpMain.Forms
                                 var verseText = ImportManager.Extract(verseLocation);
 
                                 // empty text = consecutive check, in case we're looking at an empty chapter
-                                if (string.IsNullOrWhiteSpace(verseText))
+                                if (IsNullOrWhiteSpace(verseText))
                                 {
                                     emptyVerseCtr++;
                                     if (emptyVerseCtr > MainConsts.MAX_CONSECUTIVE_EMPTY_VERSES)
@@ -694,7 +703,7 @@ namespace TvpMain.Forms
         /// <returns>If the item has a match and is not filtered out</returns>
         private bool IfCheckFixItemIsNotFiltered(CheckAndFixItem checkAndFixItem)
         {
-            if (string.IsNullOrEmpty(filterTextBox.Text))
+            if (IsNullOrEmpty(filterTextBox.Text))
             {
                 return true;
             }
@@ -941,7 +950,7 @@ namespace TvpMain.Forms
                     int rowIndex = IssuesDataGridView.Rows.Add(
                         GetStatusIcon(item.ResultState),
                         ProjectManager.IsEnglishProject // saves cycles on English projects
-                            ? string.Empty
+                            ? Empty
                             : verseLocation.ToProjectString(ProjectManager),
                         verseLocation.ToString(),
                         item.MatchText);
@@ -1055,7 +1064,7 @@ namespace TvpMain.Forms
                 matchTextBox.Refresh();
 
                 // update fix text
-                if (!string.IsNullOrEmpty(item.FixText))
+                if (!IsNullOrEmpty(item.FixText))
                 {
                     StringBuilder stringBuilder = new StringBuilder(item.Reference);
                     stringBuilder.Remove(item.MatchStart, item.MatchLength);
@@ -1109,7 +1118,7 @@ namespace TvpMain.Forms
         private static int MinusPrecedingChars(string inputText, int inputPosition, char searchChar)
         {
             var searchPosition = 0;
-            if (!string.IsNullOrEmpty(inputText))
+            if (!IsNullOrEmpty(inputText))
             {
                 searchPosition = inputText.IndexOf(searchChar);
             }
