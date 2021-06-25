@@ -81,7 +81,7 @@ namespace TvpMain.Text
             }
             if (ChapterNum == -1)
             {
-                return BookUtil.BookIdsByNum.TryGetValue(BookNum, out var bookIdTmp) 
+                return BookUtil.BookIdsByNum.TryGetValue(BookNum, out var bookIdTmp)
                     ? $"{bookIdTmp.BookCode}"
                     : $"{"#" + BookNum}";
             }

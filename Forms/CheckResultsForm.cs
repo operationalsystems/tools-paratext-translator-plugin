@@ -22,6 +22,7 @@ using TvpMain.Result;
 using TvpMain.Punctuation;
 using TvpMain.Reference;
 using System.Collections.Immutable;
+using System.DirectoryServices.Protocols;
 
 namespace TvpMain.Forms
 {
@@ -163,21 +164,49 @@ namespace TvpMain.Forms
         {
             // validate inputs
             Host = host ?? throw new ArgumentNullException(nameof(host));
-            if (activeProjectName == null || activeProjectName.Length < 1)
+            if (string.IsNullOrEmpty(activeProjectName))
             {
                 throw new ArgumentNullException(nameof(activeProjectName));
             }
+
             ActiveProjectName = activeProjectName;
             ProjectManager = projectManager ?? throw new ArgumentNullException(nameof(projectManager));
             SelectedBooks = selectedBooks ?? throw new ArgumentNullException(nameof(selectedBooks));
             ChecksToRun = checksToRun ?? throw new ArgumentNullException(nameof(checksToRun));
             CheckRunContext = checkRunContext ?? throw new ArgumentNullException(nameof(checkRunContext));
-            
+
             ProgressForm = initializeProgressForm();
             CheckUpdated += OnCheckUpdated;
 
             // initialize the components
             InitializeComponent();
+
+            issuesDataGridView.SortCompare += (sender, args) =>
+            {
+                if (issuesDataGridView.SortOrder == SortOrder.None)
+                {
+                    args.SortResult = args.RowIndex1.CompareTo(args.RowIndex2);
+                }
+                else
+                {
+                    if (args.Column.Name == "Reference")
+                    {
+                        var resultItem1 = (CheckResultItem)issuesDataGridView.Rows[args.RowIndex1].Tag;
+                        var resultItem2 = (CheckResultItem)issuesDataGridView.Rows[args.RowIndex2].Tag;
+
+                        args.SortResult = CheckResultItem.CompareByLocation(
+                            resultItem1, resultItem2);
+                    }
+                    else
+                    {
+                        args.SortResult = string.CompareOrdinal(
+                            (args.CellValue1 ?? "").ToString(),
+                            (args.CellValue2 ?? "").ToString());
+                    }
+                }
+
+                args.Handled = true;
+            };
 
             resultManager = new ResultManager(Host, ActiveProjectName);
             resultManager.ScheduleLoadBooks(ProjectManager.PresentBookNums);
@@ -372,8 +401,8 @@ namespace TvpMain.Forms
             checksToRun.ForEach(check =>
             {
                 List<CheckResultItem> results = CheckRunner.ExecCheckAndFix(content, check);
-                
-                foreach(CheckResultItem item in results)
+
+                foreach (CheckResultItem item in results)
                 {
                     item.Book = book;
                     item.Chapter = chapter;
@@ -629,12 +658,12 @@ namespace TvpMain.Forms
                         result.Key.Description.Trim(),              // description
                         filteredResultItems.Count                   // count
                     });
-                    checksDataGridView.Rows[rowIndex].Tag = new KeyValuePair<CheckAndFixItem,List<CheckResultItem>>(result.Key, filteredResultItems);
+                    checksDataGridView.Rows[rowIndex].Tag = new KeyValuePair<CheckAndFixItem, List<CheckResultItem>>(result.Key, filteredResultItems);
                 }
             }
 
             // ensure that there are rows to select
-            if(checksDataGridView.Rows != null && checksDataGridView.Rows.Count > 0 && checksDataGridView.Rows[0] != null)
+            if (checksDataGridView.Rows != null && checksDataGridView.Rows.Count > 0 && checksDataGridView.Rows[0] != null)
             {
                 checksDataGridView.Rows[currentSelectedRowIndex].Selected = true;
             }
@@ -643,7 +672,7 @@ namespace TvpMain.Forms
             // itself until the UI thread has actually updated the control and the event has been triggered.
             // However, we can't rely on that event to update the issues list because it dosn't trigger in every case.
             PopulateIssuesDataGridView(currentSelectedRowIndex);
-            
+
         }
 
         /// <summary>
@@ -653,7 +682,8 @@ namespace TvpMain.Forms
         /// <returns>If the item has a match and is not filtered out</returns>
         private bool IfCheckFixItemIsNotFiltered(CheckAndFixItem checkAndFixItem)
         {
-            if(String.IsNullOrEmpty(filterTextBox.Text)) {
+            if (String.IsNullOrEmpty(filterTextBox.Text))
+            {
                 return true;
             }
             return checkAndFixItem.Name.IndexOf(filterTextBox.Text, StringComparison.OrdinalIgnoreCase) >= 0 ||
@@ -669,21 +699,23 @@ namespace TvpMain.Forms
         {
             List<CheckResultItem> filteredItems = new List<CheckResultItem>();
 
-            foreach ( CheckResultItem item in results)
+            foreach (CheckResultItem item in results)
             {
-                foreach(BookNameItem bookNameItem in SelectedBooks)
+                foreach (BookNameItem bookNameItem in SelectedBooks)
                 {
-                    if(bookNameItem.BookNum == item.Book)
+                    if (bookNameItem.BookNum == item.Book)
                     {
                         if (ShowDeniedCheckbox.Checked)
                         {
                             filteredItems.Add(item);
-                        } else
+                        }
+                        else
                         {
-                            if( _denied.Contains(item.GetHashCode()))
+                            if (_denied.Contains(item.GetHashCode()))
                             {
                                 item.ResultState = CheckResultState.Ignored;
-                            } else
+                            }
+                            else
                             {
                                 item.ResultState = CheckResultState.Found;
                                 filteredItems.Add(item);
@@ -835,7 +867,8 @@ namespace TvpMain.Forms
                 {
                     _denied.Add(item.GetHashCode());
                 }
-            } else if(item.ResultState == CheckResultState.Ignored)
+            }
+            else if (item.ResultState == CheckResultState.Ignored)
             {
                 item.ResultState = CheckResultState.Found;
                 _denied.Remove(item.GetHashCode());
@@ -923,7 +956,7 @@ namespace TvpMain.Forms
         /// <returns>a bitmap to be used in the column</returns>
         private Icon getStatusIcon(CheckResultState resultState)
         {
-            switch(resultState)
+            switch (resultState)
             {
                 case CheckResultState.Ignored:
                     return Properties.Resources.x_mark_16;
@@ -966,7 +999,7 @@ namespace TvpMain.Forms
 
             UpdateDenyButton();
         }
-        
+
         /// <summary>
         /// Update the text on the deny button based on the currently selected row
         /// </summary>
@@ -993,7 +1026,7 @@ namespace TvpMain.Forms
         /// </summary>
         private void PopulateMatchFixTextBoxes()
         {
-            if(issuesDataGridView.Rows != null && issuesDataGridView.Rows.Count > 0 && issuesDataGridView.CurrentRow != null && issuesDataGridView.CurrentRow.Tag != null)
+            if (issuesDataGridView.Rows != null && issuesDataGridView.Rows.Count > 0 && issuesDataGridView.CurrentRow != null && issuesDataGridView.CurrentRow.Tag != null)
             {
                 var item = (CheckResultItem)issuesDataGridView.CurrentRow.Tag;
 
@@ -1037,14 +1070,16 @@ namespace TvpMain.Forms
 
                     fixTextBox.Refresh();
                     fixTextBox.Enabled = true;
-                } else
+                }
+                else
                 {
                     fixTextBox.Text = "";
                     fixTextBox.Refresh();
                     fixTextBox.Enabled = false;
                 }
-                
-            } else
+
+            }
+            else
             {
                 matchTextBox.Text = "";
                 matchTextBox.Refresh();
