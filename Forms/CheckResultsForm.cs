@@ -183,28 +183,20 @@ namespace TvpMain.Forms
 
             issuesDataGridView.SortCompare += (sender, args) =>
             {
-                if (issuesDataGridView.SortOrder == SortOrder.None)
+                if (args.Column.Name == "Reference")
                 {
-                    args.SortResult = args.RowIndex1.CompareTo(args.RowIndex2);
+                    var resultItem1 = (CheckResultItem)issuesDataGridView.Rows[args.RowIndex1].Tag;
+                    var resultItem2 = (CheckResultItem)issuesDataGridView.Rows[args.RowIndex2].Tag;
+
+                    args.SortResult = CheckResultItem.CompareByLocation(
+                        resultItem1, resultItem2);
                 }
                 else
                 {
-                    if (args.Column.Name == "Reference")
-                    {
-                        var resultItem1 = (CheckResultItem)issuesDataGridView.Rows[args.RowIndex1].Tag;
-                        var resultItem2 = (CheckResultItem)issuesDataGridView.Rows[args.RowIndex2].Tag;
-
-                        args.SortResult = CheckResultItem.CompareByLocation(
-                            resultItem1, resultItem2);
-                    }
-                    else
-                    {
-                        args.SortResult = string.CompareOrdinal(
-                            (args.CellValue1 ?? "").ToString(),
-                            (args.CellValue2 ?? "").ToString());
-                    }
+                    args.SortResult = string.CompareOrdinal(
+                        (args.CellValue1 ?? "").ToString(),
+                        (args.CellValue2 ?? "").ToString());
                 }
-
                 args.Handled = true;
             };
 
