@@ -157,6 +157,11 @@ namespace TvpMain.Project
         public string LanguageIsoCode { get; private set; }
 
         /// <summary>
+        /// True if the project is English-based (any locale -- US, UK, etc.), false otherwise.
+        /// </summary>
+        public bool IsEnglishProject { get; private set; }
+
+        /// <summary>
         /// Book names map, keyed by book number (1-based).
         /// </summary>
         public virtual IDictionary<int, BookNameItem> BookNamesByNum { get; private set; }
@@ -215,7 +220,11 @@ namespace TvpMain.Project
         private void ReadLanguage()
         {
             Language = Host.GetProjectSetting(ProjectName, "Language");
+            Language = Language?.Trim().ToLower();
             LanguageIsoCode = Host.GetProjectSetting(ProjectName, "LanguageIsoCode");
+            LanguageIsoCode = Language?.Trim().ToLower();
+            IsEnglishProject = (Language ?? string.Empty).Equals("english")
+                                 || (LanguageIsoCode ?? string.Empty).StartsWith("en::");
         }
 
         /// <summary>

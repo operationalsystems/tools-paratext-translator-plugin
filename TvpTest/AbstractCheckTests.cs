@@ -57,6 +57,16 @@ namespace TvpTest
         protected const string TEST_PROJECT_NAME = "testProjectName";
 
         /// <summary>
+        /// Test language name.
+        /// </summary>
+        protected const string TEST_LANGUAGE = "English";
+
+        /// <summary>
+        /// Test language ISO code.
+        /// </summary>
+        protected const string TEST_LANGUAGE_ISO_CODE = "en::US:";
+
+        /// <summary>
         /// Test versification name.
         /// </summary>
         protected const string TEST_VERSIFICATION_NAME = "testVersificationName";
@@ -205,6 +215,10 @@ namespace TvpTest
                 .Returns<string, string>((projectName, settingsKey) => TARGET_NAME_TYPE_SETTING);
             MockHost.Setup(hostItem => hostItem.GetProjectSetting(TEST_PROJECT_NAME, "BookSourceForMarkerR"))
                 .Returns<string, string>((projectName, settingsKey) => PASSAGE_NAME_TYPE_SETTING);
+            MockHost.Setup(hostItem => hostItem.GetProjectSetting(TEST_PROJECT_NAME, "Language"))
+                .Returns<string, string>((projectName, settingsKey) => TEST_LANGUAGE);
+            MockHost.Setup(hostItem => hostItem.GetProjectSetting(TEST_PROJECT_NAME, "LanguageIsoCode"))
+                .Returns<string, string>((projectName, settingsKey) => TEST_LANGUAGE_ISO_CODE);
             MockHost.Setup(hostItem => hostItem.GetPlugInData(It.IsAny<IParatextAddIn>(), TEST_PROJECT_NAME, It.IsAny<string>()))
                 .Returns<IParatextAddIn, string, string>((addIn, projectName, dataId) => null);
             MockHost.Setup(hostItem => hostItem.PutPlugInData(It.IsAny<IParatextAddIn>(), TEST_PROJECT_NAME, It.IsAny<string>(), It.IsAny<string>()))

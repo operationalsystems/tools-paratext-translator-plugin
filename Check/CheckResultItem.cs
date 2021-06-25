@@ -229,7 +229,8 @@ namespace TvpMain.Check
         }
 
         /// <summary>
-        /// Compare two result items by location alone, allowing for possibly incomplete book, chapter, or verse.
+        /// Compare two result items by location alone, allowing for
+        /// possibly incomplete book, chapter, or verse elements.
         /// </summary>
         /// <param name="leftItem">Left result item to compare.</param>
         /// <param name="rightItem">Right result item to compare.</param>

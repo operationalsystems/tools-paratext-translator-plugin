@@ -10,7 +10,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using AddInSideViews;
-using Paratext.Data;
 using TvpMain.Check;
 using TvpMain.Import;
 using TvpMain.Project;
@@ -30,13 +29,13 @@ namespace TvpMain.Forms
     /// </summary>
     public partial class CheckResultsForm : Form
     {
-        // Deny Button Text
-        readonly string _denyButtonText = "Deny";
-        readonly string _undenyButtonText = "Un-Deny";
+        private const string DENY_BUTTON_TEXT = "Deny";
+        private const string UNDENY_BUTTON_TEXT = "Un-Deny";
 
         // A list of <c>CheckResultItem</c>s which have been denied
         private List<int> _denied;
 
+        /// <summary>
         /// This index indicates to the progress form that the project scope checks are being run.
         /// </summary>
         public const int ALL_PROJECTS_INDEX = -1;
@@ -69,17 +68,17 @@ namespace TvpMain.Forms
         /// <summary>
         /// The Paratext plugin host.
         /// </summary>
-        private IHost Host { get; set; }
+        private IHost Host { get; }
 
         /// <summary>
         /// Active project name.
         /// </summary>
-        private string ActiveProjectName { get; set; }
+        private string ActiveProjectName { get; }
 
         /// <summary>
         /// Provides project setting & metadata access.
         /// </summary>
-        private ProjectManager ProjectManager { get; set; }
+        private ProjectManager ProjectManager { get; }
 
         /// <summary>
         /// Provides access to results.
@@ -89,7 +88,7 @@ namespace TvpMain.Forms
         /// <summary>
         /// A collection of the <c>CheckAndFixItem</c>s to run against the content.
         /// </summary>
-        private List<CheckAndFixItem> ChecksToRun { get; set; }
+        private List<CheckAndFixItem> ChecksToRun { get; }
 
         /// <summary>
         /// The checks organized by check scope.
@@ -99,7 +98,7 @@ namespace TvpMain.Forms
         /// <summary>
         /// The context of what we're checking against.
         /// </summary>
-        private CheckRunContext CheckRunContext { get; set; }
+        private CheckRunContext CheckRunContext { get; }
 
         /// <summary>
         /// The Check and Fix executor.
@@ -119,7 +118,7 @@ namespace TvpMain.Forms
         /// <summary>
         /// The collection of <c>CheckResultItem</c>s mapped by the associated <c>CheckAndFixItem</c>.
         /// </summary>
-        Dictionary<CheckAndFixItem, List<CheckResultItem>> CheckResults { get; set; } = new Dictionary<CheckAndFixItem, List<CheckResultItem>>();
+        Dictionary<CheckAndFixItem, List<CheckResultItem>> CheckResults { get; } = new Dictionary<CheckAndFixItem, List<CheckResultItem>>();
 
         /// <summary>
         /// The collection for holding project content in the correct book order.
@@ -177,15 +176,41 @@ namespace TvpMain.Forms
 
             // initialize the components
             InitializeComponent();
+            SetUpResultsTable();
 
+            _resultManager = new ResultManager(Host, ActiveProjectName);
+            _resultManager.ScheduleLoadBooks(ProjectManager.PresentBookNums);
+        }
 
-            IssuesDataGridView.Columns[1].Visible =
-                !((ProjectManager.Language ?? "").ToLower().Equals("english")
-                  || (ProjectManager.LanguageIsoCode ?? "").ToLower().StartsWith("en::"));
+        /// <summary>
+        /// Sets up the results table headers and sort behavior.
+        /// </summary>
+        private void SetUpResultsTable()
+        {
+            // set up reference column visibility ,
+            // depending on the language we're using
+            if (ProjectManager.IsEnglishProject)
+            {
+                IssuesDataGridView.Columns[1].Visible = false;
+                IssuesDataGridView.Columns[2].HeaderText = @"Reference";
+                IssuesDataGridView.Columns[2].Width *= 2;
+            }
+            else
+            {
+                IssuesDataGridView.Columns[1].Visible = true;
+                IssuesDataGridView.Columns[2].HeaderText = @"Ref";
+            }
+
+            // set header style to middle/center, as with the cell text
+            IssuesDataGridView.Columns[1].HeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleCenter;
+            IssuesDataGridView.Columns[2].HeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleCenter;
+
+            // set up reference column sorting
             IssuesDataGridView.SortCompare += (sender, args) =>
             {
+                // either reference column = sort by book, chapter, and verse
                 if (args.Column.Index == 1
-                || args.Column.Index == 2)
+                    || args.Column.Index == 2)
                 {
                     var resultItem1 = (CheckResultItem)IssuesDataGridView.Rows[args.RowIndex1].Tag;
                     var resultItem2 = (CheckResultItem)IssuesDataGridView.Rows[args.RowIndex2].Tag;
@@ -193,17 +218,14 @@ namespace TvpMain.Forms
                     args.SortResult = CheckResultItem.CompareByLocation(
                         resultItem1, resultItem2);
                 }
-                else
+                else // else, sort by cell text
                 {
                     args.SortResult = string.CompareOrdinal(
-                        (args.CellValue1 ?? "").ToString(),
-                        (args.CellValue2 ?? "").ToString());
+                        (args.CellValue1 ?? string.Empty).ToString(),
+                        (args.CellValue2 ?? string.Empty).ToString());
                 }
                 args.Handled = true;
             };
-
-            _resultManager = new ResultManager(Host, ActiveProjectName);
-            _resultManager.ScheduleLoadBooks(ProjectManager.PresentBookNums);
         }
 
         /// <summary>
@@ -283,8 +305,8 @@ namespace TvpMain.Forms
             if (ChecksToRun.Count <= 0)
             {
                 MessageBox.Show(
-                    "No checks provided.",
-                    "Notice...", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    @"No checks provided.",
+                    @"Notice...", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 Hide();
                 return;
             }
@@ -385,9 +407,9 @@ namespace TvpMain.Forms
         /// </summary>
         /// <param name="content">The content to check against.</param>
         /// <param name="checksToRun">The list of checks to assess the content.</param>
-        /// <param name="book">The current book (1-based).</param>
-        /// <param name="chapter">The current chapter (1-based).</param>
-        /// <param name="verse">The current verse (1-based).</param>
+        /// <param name="book">The current bookNum (1-based).</param>
+        /// <param name="chapter">The current chapterNum (1-based).</param>
+        /// <param name="verse">The current verseNum (1-based).</param>
         private void ExecuteChecksAndStoreResults(string content, List<CheckAndFixItem> checksToRun, int book, int chapter, int verse)
         {
             // check the content with every specified check
@@ -421,18 +443,19 @@ namespace TvpMain.Forms
         /// <summary>
         /// This function will execute the specified V1 check
         /// </summary>
-        /// <param name="content">The content to check against.</param>
-        /// <param name="checksToRun">The list of checks to assess the content.</param>
-        /// <param name="book">The current book (1-based).</param>
-        /// <param name="chapter">The current chapter (1-based).</param>
-        /// <param name="verse">The current verse (1-based).</param>
-        private void ExecuteV1CheckAndStoreResults(string content, ITextCheck textCheck, CheckAndFixItem check, int book, int chapter, int verse)
+        /// <param name="content">The content to check against (required).</param>
+        /// <param name="textCheck">The check used to assess the content (required).</param>
+        /// <param name="checkItem">Check item (required).</param>
+        /// <param name="bookNum">The current bookNum (1-based).</param>
+        /// <param name="chapterNum">The current chapterNum (1-based).</param>
+        /// <param name="verseNum">The current verseNum (1-based).</param>
+        private void ExecuteV1CheckAndStoreResults(
+            string content, ITextCheck textCheck, CheckAndFixItem checkItem,
+            int bookNum, int chapterNum, int verseNum)
         {
             // check the content with every specified check
             List<CheckResultItem> results = new List<CheckResultItem>();
-
             TextCheckRunner textCheckRunner = new TextCheckRunner(Host, ActiveProjectName, ProjectManager, ImportManager, _resultManager);
-            IList<ResultItem> allResultItems = Enumerable.Empty<ResultItem>().ToList();
 
             IEnumerable<ITextCheck> allChecks = new List<ITextCheck>
             {
@@ -451,20 +474,22 @@ namespace TvpMain.Forms
                 allChecks,
                 checkContexts,
                 false,
-                book,
+                bookNum,
                 out var nextResults))
             {
-                allResultItems = nextResults.ResultItems.ToImmutableList();
+                IList<ResultItem> allResultItems = nextResults.ResultItems.ToImmutableList();
                 // translate the v1 result items to v2 result items that are compatible with displaying
                 foreach (ResultItem result in allResultItems)
                 {
                     CheckResultItem checkResultItem = new CheckResultItem(result.ErrorText,
                         result.MatchText, result.MatchStart,
-                        result.CheckType, result.ResultTypeCode);
-                    checkResultItem.Book = book;
-                    checkResultItem.Chapter = chapter;
-                    checkResultItem.Verse = verse;
-                    checkResultItem.Reference = result.VersePart.ProjectVerse.VerseText;
+                        result.CheckType, result.ResultTypeCode)
+                    {
+                        Book = bookNum,
+                        Chapter = chapterNum,
+                        Verse = verseNum,
+                        Reference = result.VersePart.ProjectVerse.VerseText
+                    };
                     results.Add(checkResultItem);
                 }
             }
@@ -472,13 +497,13 @@ namespace TvpMain.Forms
             lock (_checkResultslock)
             {
                 // add or append results
-                if (CheckResults.ContainsKey(check))
+                if (CheckResults.ContainsKey(checkItem))
                 {
-                    CheckResults[check].AddRange(results);
+                    CheckResults[checkItem].AddRange(results);
                 }
                 else
                 {
-                    CheckResults.Add(check, results);
+                    CheckResults.Add(checkItem, results);
                 }
             }
         }
@@ -872,6 +897,7 @@ namespace TvpMain.Forms
             PopulateChecksDataGridView();
         }
 
+        /// <summary>
         /// When the filter text changes, trigger filtering
         /// </summary>
         /// <param name="sender">The control that sent this event</param>
@@ -914,7 +940,9 @@ namespace TvpMain.Forms
                     var verseLocation = new VerseLocation(item.Book, item.Chapter, item.Verse);
                     int rowIndex = IssuesDataGridView.Rows.Add(
                         GetStatusIcon(item.ResultState),
-                        verseLocation.ToProjectString(ProjectManager),
+                        ProjectManager.IsEnglishProject // saves cycles on English projects
+                            ? string.Empty
+                            : verseLocation.ToProjectString(ProjectManager),
                         verseLocation.ToString(),
                         item.MatchText);
                     IssuesDataGridView.Rows[rowIndex].Tag = item;
@@ -991,11 +1019,11 @@ namespace TvpMain.Forms
                 switch (item.ResultState)
                 {
                     case CheckResultState.Ignored:
-                        DenyButton.Text = _undenyButtonText;
+                        DenyButton.Text = UNDENY_BUTTON_TEXT;
                         break;
                     case CheckResultState.Found:
                     default:
-                        DenyButton.Text = _denyButtonText;
+                        DenyButton.Text = DENY_BUTTON_TEXT;
                         break;
                 }
             }
@@ -1070,18 +1098,18 @@ namespace TvpMain.Forms
         }
 
         /// <summary>
-        /// Subtract the occurences of a search char from before an input position.
+        /// Subtract the occurrences of a search char from before an input position.
         ///
         /// Used to deal with rich text control's filtering out '\r' from input text.
         /// </summary>
         /// <param name="inputText">Text to search (required).</param>
         /// <param name="inputPosition">Position to search up to (0-based).</param>
         /// <param name="searchChar">Character to search for.</param>
-        /// <returns>Input position minus occurences of search char before it.</returns>
+        /// <returns>Input position minus occurrences of search char before it.</returns>
         private static int MinusPrecedingChars(string inputText, int inputPosition, char searchChar)
         {
             var searchPosition = 0;
-            if (inputText != null && inputText.Length > 0)
+            if (!string.IsNullOrEmpty(inputText))
             {
                 searchPosition = inputText.IndexOf(searchChar);
             }

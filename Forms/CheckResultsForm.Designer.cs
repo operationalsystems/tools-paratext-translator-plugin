@@ -387,21 +387,23 @@ namespace TvpMain.Forms
             // 
             // ReferenceColumnProject
             // 
-            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.TopCenter;
+            this.ReferenceColumnProject.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
+            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
             this.ReferenceColumnProject.DefaultCellStyle = dataGridViewCellStyle1;
             this.ReferenceColumnProject.HeaderText = "Ref";
             this.ReferenceColumnProject.Name = "ReferenceColumnProject";
             this.ReferenceColumnProject.ReadOnly = true;
-            this.ReferenceColumnProject.Width = 60;
+            this.ReferenceColumnProject.Width = 49;
             // 
             // ReferenceColumnEng
             // 
-            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.TopCenter;
+            this.ReferenceColumnEng.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
+            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
             this.ReferenceColumnEng.DefaultCellStyle = dataGridViewCellStyle2;
-            this.ReferenceColumnEng.HeaderText = "Ref(en)";
+            this.ReferenceColumnEng.HeaderText = "Ref";
             this.ReferenceColumnEng.Name = "ReferenceColumnEng";
             this.ReferenceColumnEng.ReadOnly = true;
-            this.ReferenceColumnEng.Width = 60;
+            this.ReferenceColumnEng.Width = 49;
             // 
             // MatchTextColumn
             // 
