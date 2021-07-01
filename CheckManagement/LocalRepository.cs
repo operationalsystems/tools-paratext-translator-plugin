@@ -15,7 +15,7 @@ namespace TvpMain.CheckManagement
         /// <summary>
         /// The path where checks should be persisted.
         /// </summary>
-        private string FolderPath { get; set; } = Directory.GetCurrentDirectory();
+        private string FolderPath { get; }
 
         public LocalRepository(string folderPath)
         {
@@ -24,10 +24,10 @@ namespace TvpMain.CheckManagement
 
         public void AddCheckAndFixItem(string filename, CheckAndFixItem item)
         {
-            if (String.IsNullOrEmpty(filename)) throw new ArgumentNullException(nameof(filename));
+            if (string.IsNullOrEmpty(filename)) throw new ArgumentNullException(nameof(filename));
 
             VerifyFolderPath();
-            string filePath = Path.Combine(FolderPath, filename);
+            var filePath = Path.Combine(FolderPath, filename);
 
             try
             {
@@ -35,7 +35,7 @@ namespace TvpMain.CheckManagement
             }
             catch (Exception e)
             {
-                new FileWriteException($"There was a problem writing to '{filePath}'.", e.InnerException);
+                throw new FileWriteException($"There was a problem writing to '{filePath}'.", e.InnerException);
             }
         }
 
@@ -46,7 +46,7 @@ namespace TvpMain.CheckManagement
 
         public void RemoveCheckAndFixItem(string filename)
         {
-            string filePath = Path.Combine(FolderPath, filename);
+            var filePath = Path.Combine(FolderPath, filename);
             if (!File.Exists(filePath)) return;
 
             File.Delete(filePath);
@@ -54,20 +54,20 @@ namespace TvpMain.CheckManagement
 
         public List<CheckAndFixItem> GetCheckAndFixItems()
         {
-            List<CheckAndFixItem> checkAndFixItems = new List<CheckAndFixItem>();
-
+            var checkAndFixItems = new List<CheckAndFixItem>();
             VerifyFolderPath();
-            string[] checkFiles = Directory.GetFiles(FolderPath, "*.xml");
-            foreach (string checkFilePath in checkFiles)
+
+            var checkFiles = Directory.GetFiles(FolderPath, "*.xml");
+            foreach (var checkFilePath in checkFiles)
             {
                 try
                 {
-                    CheckAndFixItem checkAndFixItem = CheckAndFixItem.LoadFromXmlFile(checkFilePath);
+                    var checkAndFixItem = CheckAndFixItem.LoadFromXmlFile(checkFilePath);
                     checkAndFixItems.Add(checkAndFixItem);
                 }
                 catch (Exception e)
                 {
-                    new FileLoadException($"Unable to load '{checkFilePath}'.", e.InnerException);
+                    throw new FileLoadException($"Unable to load '{checkFilePath}'.", e.InnerException);
                 }
             }
 
