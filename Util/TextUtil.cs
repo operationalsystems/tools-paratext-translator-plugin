@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.IO;
 using System.Linq;
 using System.Text;
+using PtxUtils;
 
 namespace TvpMain.Util
 {
@@ -16,6 +18,12 @@ namespace TvpMain.Util
         /// </summary>
         private static readonly char[] ParenthesisChars
             = "({[]})".ToCharArray();
+
+        /// <summary>
+        /// Characters safe for file names (not paths).
+        /// </summary>
+        private static readonly ISet<char> InvalidFileChars
+            = Path.GetInvalidFileNameChars().ToImmutableHashSet();
 
         /// <summary>
         /// Append to a string builder, adding a space first if
@@ -135,5 +143,28 @@ namespace TvpMain.Util
             thisText.Trim()
                 .Trim(ParenthesisChars)
                 .Trim();
+
+        /// <summary>
+        /// Converts a string to a usable filename.
+        ///
+        /// Algorithm:
+        /// 1. Convert input to title case
+        /// 2. Process each character:
+        /// 2.a. Letters & numbers = unchanged
+        /// 2.b. Whitespace = removed
+        /// 2.c. Other = _
+        /// </summary>
+        /// <param name="thisText">This text (provided).</param>
+        /// <returns>Converted text.</returns>
+        public static string ConvertToFileName(this string thisText)
+        {
+            return string.Concat(thisText
+                .ConvertToTitleCase()
+                .Select(foundChar =>
+                    char.IsWhiteSpace(foundChar)
+                    ? '\0'
+                    : (InvalidFileChars.Contains(foundChar) ? '_' : foundChar))
+                .Where(foundChar => foundChar != '\0'));
+        }
     }
 }

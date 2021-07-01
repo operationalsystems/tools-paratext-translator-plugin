@@ -1,6 +1,7 @@
 ﻿using AddInSideViews;
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
@@ -208,6 +209,15 @@ namespace TvpMain.Forms
         {
             try
             {
+                // track display items that may already be selected,
+                // so they can stay selected
+                ISet<string> prevCheckedItems = (_displayItems == null
+                    ? Enumerable.Empty<string>()
+                    : _displayItems
+                        .Where(foundItem => foundItem.Selected)
+                        .Select(foundItem => foundItem.Name))
+                        .ToImmutableHashSet();
+
                 // load all the checks into the list
                 _remoteChecks = _checkManager.GetInstalledCheckAndFixItems();
                 _localChecks = _checkManager.GetSavedCheckAndFixItems();
@@ -217,9 +227,8 @@ namespace TvpMain.Forms
 
                 // get if the check is available (item1), and if not, the text for the tooltip (item2)
                 var isCheckAvailableTupleRef = IsCheckAvailableForProject(_scriptureReferenceCf);
-
                 _displayItems.Add(new DisplayItem(
-                        IsCheckDefaultForProject(_scriptureReferenceCf),
+                    prevCheckedItems.Contains(_scriptureReferenceCf.Name) || IsCheckDefaultForProject(_scriptureReferenceCf),
                         _scriptureReferenceCf.Name,
                         _scriptureReferenceCf.Description,
                         _scriptureReferenceCf.Version,
@@ -232,9 +241,8 @@ namespace TvpMain.Forms
                     ));
 
                 var isCheckAvailableTuplePunc = IsCheckAvailableForProject(_missingPunctuationCf);
-
                 _displayItems.Add(new DisplayItem(
-                        IsCheckDefaultForProject(_missingPunctuationCf),
+                    prevCheckedItems.Contains(_missingPunctuationCf.Name) || IsCheckDefaultForProject(_missingPunctuationCf),
                         _missingPunctuationCf.Name,
                         _missingPunctuationCf.Description,
                         _missingPunctuationCf.Version,
@@ -251,9 +259,8 @@ namespace TvpMain.Forms
                 {
                     // get if the check is available (item1), and if not, the text for the tooltip (item2)
                     var isCheckAvailableTuple = IsCheckAvailableForProject(item);
-
                     _displayItems.Add(new DisplayItem(
-                        IsCheckDefaultForProject(item),
+                        prevCheckedItems.Contains(item.Name) || IsCheckDefaultForProject(item),
                         item.Name,
                         item.Description,
                         item.Version,
@@ -271,10 +278,10 @@ namespace TvpMain.Forms
                 {
                     // get if the check is available (item1), and if not, the text for the tooltip (item2)
                     var isCheckAvailableTuple = IsCheckAvailableForProject(item);
-
+                    var localName = "(Local) " + item.Name;
                     _displayItems.Add(new DisplayItem(
-                        false,
-                        "(Local) " + item.Name,
+                        prevCheckedItems.Contains(localName) || false,
+                        localName,
                         item.Description,
                         item.Version,
                         item.Languages != null && item.Languages.Length > 0 ? string.Join(", ", item.Languages) : "All",
@@ -691,19 +698,26 @@ namespace TvpMain.Forms
         /// Change the selected value for the check, if it's to be in the set
         /// </summary>
         /// <param name="sender">The control that sent this event</param>
-        /// <param name="e">The event information that triggered this call</param>
-        private void ChecksList_CellClick(object sender, DataGridViewCellEventArgs e)
+        /// <param name="eventArgs">The event information that triggered this call</param>
+        private void ChecksList_CellClick(object sender, DataGridViewCellEventArgs eventArgs)
         {
-            if (e.RowIndex >= 0)
+            if (eventArgs.RowIndex < 0
+                || eventArgs.ColumnIndex > 0)
             {
-                var item = (DisplayItem)checksList.Rows[e.RowIndex].Tag;
-                if (item.Active)
-                {
-                    var cell = (DataGridViewCheckBoxCell)checksList.Rows[e.RowIndex].Cells[0];
-                    cell.Value = !(bool)cell.Value;
-                    item.Selected = !item.Selected;
-                }
+                return;
             }
+
+            var displayItem = (DisplayItem)checksList.Rows[eventArgs.RowIndex].Tag;
+            if (!displayItem.Active)
+            {
+                return;
+            }
+
+            var checkCell = (DataGridViewCheckBoxCell)checksList.Rows[eventArgs.RowIndex].Cells[0];
+            var itemSelected = !(bool)checkCell.Value;
+
+            checkCell.Value = itemSelected;
+            displayItem.Selected = itemSelected;
         }
 
         /// <summary>
@@ -745,14 +759,9 @@ namespace TvpMain.Forms
 
             if (!rtlEnabled)
             {
-                if (projectRtl)
-                {
-                    response = "This check does not support RTL languages.";
-                }
-                else
-                {
-                    response = "This check is for RTL languages only.";
-                }
+                response = projectRtl
+                    ? "This check does not support RTL languages."
+                    : "This check is for RTL languages only.";
             }
 
             return new Tuple<bool, string>(languageEnabled && rtlEnabled, response);
