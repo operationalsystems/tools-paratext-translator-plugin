@@ -92,19 +92,23 @@ namespace TvpMain.Check
         public string DefaultItemDescription { get; set; }
 
         /// <summary>
-        /// The Check's regular expression, optionally encoded in base-64.
+        /// Serialized check regex, optionally base-64 encoded.
+        /// 
+        /// Note: For serialization, only (do not set with code). Use CheckRegex, instead.
         /// </summary>
         [XmlElement(ElementName = "CheckRegex")]
-        public string CheckRegexBody;
+        public string CheckRegexBody { get; set; }
 
         /// <summary>
-        /// The Fix's regular expression, optionally encoded in base-64.
+        /// True if serialized check regex content is base-64 encoded, false otherwise.
+        /// 
+        /// Note: For serialization, only (do not set with code). Use CheckRegex, instead.
         /// </summary>
         [XmlElement(ElementName = "IsCheckRegexEncoded", IsNullable = true)]
-        public bool? IsCheckRegexEncoded;
+        public bool? IsCheckRegexEncoded { get; set; }
 
         /// <summary>
-        /// The Check's regular expression. The check regex will be evaluated before the check script.
+        /// Check regex accessor, as plain text.
         /// </summary>
         [XmlIgnore]
         public string CheckRegex
@@ -121,19 +125,23 @@ namespace TvpMain.Check
         }
 
         /// <summary>
-        /// The Fix's regular expression, optionally encoded in base-64.
+        /// Serialized replacement (fix) regex, optionally base-64 encoded.
+        ///
+        /// Note: For serialization, only (do not set with code). Use FixRegex, instead.
         /// </summary>
         [XmlElement(ElementName = "FixRegex")]
-        public string FixRegexBody;
+        public string FixRegexBody { get; set; }
 
         /// <summary>
-        /// The Fix's regular expression, optionally encoded in base-64.
+        /// True if serialized replacement (fix) regex content is base-64 encoded, false otherwise.
+        /// 
+        /// Note: For serialization, only (do not set with code). Use FixRegex, instead.
         /// </summary>
         [XmlElement(ElementName = "IsFixRegexEncoded", IsNullable = true)]
-        public bool? IsFixRegexEncoded;
+        public bool? IsFixRegexEncoded { get; set; }
 
         /// <summary>
-        /// The Fix's regular expression. The fix regex will be evaluated before the fix script, if present.
+        /// Replacement (fix) regex accessor, as plain text.
         /// </summary>
         [XmlIgnore]
         public string FixRegex
