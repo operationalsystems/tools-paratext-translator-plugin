@@ -257,11 +257,11 @@ namespace TvpMain.Check.Tests
 ";
             var expectedMatchText = @"- Persian Contemporary Bible‎
 \rem Copyright © 1995‎, 2005, 2018  by Biblica‎, Inc‎.‎®‎‎";
-            var expectedFixText = "- <Name>\r\n\\rem Copyright © <Year> by Biblica, Inc.‎ ";
+            var expectedFixText = @"- <Name>
+\rem Copyright © <Year> by Biblica, Inc.‎ ";
 
             // Perform the check and fix assessment
             var checkAndFix = CheckAndFixItem.LoadFromXmlFile(@"Resources/checkFixes/RTLReplaceIdCheck2.xml");
-
             List<CheckResultItem> results = checkAndFixRunner.ExecCheckAndFix(inputText, checkAndFix);
 
             // Should have one result
@@ -309,7 +309,7 @@ namespace TvpMain.Check.Tests
 \s1 Los egipcios oprimen a los israelitas";
             var expectedMatchText = @"Éxodo";
             var expectedFixText = @"Éxodo
-\\ie
+\ie
 ";
 
             // Perform the check and fix assessment

@@ -2,6 +2,7 @@
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text.RegularExpressions;
 
 namespace TvpMain.Check
@@ -14,34 +15,44 @@ namespace TvpMain.Check
     public class CheckAndFixRunner : ICheckAndFixRunner
     {
         /// <summary>
+        /// Default regex options.
+        /// </summary>
+        private const RegexOptions DEFAULT_REGEX_OPTIONS = (RegexOptions.Multiline | RegexOptions.ECMAScript);
+
+        /// <summary>
+        /// Escape code regex.
+        /// </summary>
+        private static readonly Regex EscapeCodeRegex = new Regex(@"(\\\\|\\r|\\n|\\t|\\u[0-9A-Fa-f]{1,4})", DEFAULT_REGEX_OPTIONS);
+
+        /// <summary>
         /// Executes the check/fix against the given text
         /// </summary>
-        /// <param name="text">The text (BCV) to be checked.</param>
+        /// <param name="inputText">The inputText (BCV) to be checked.</param>
         /// <param name="checkAndFixItem">The model that describes the check/fix</param>
         /// <returns>The list of check result items. This includes the suggested fixes if they are available.</returns>
-        public List<CheckResultItem> ExecCheckAndFix(string text, CheckAndFixItem checkAndFixItem)
+        public List<CheckResultItem> ExecCheckAndFix(string inputText, CheckAndFixItem checkAndFixItem)
         {
             // First, run the check regex, looking for matches
-            var checkRegex = new Regex(checkAndFixItem.CheckRegex, RegexOptions.Multiline | RegexOptions.ECMAScript);
-
-            var matches = checkRegex.Matches(text);
+            var checkRegex = new Regex(checkAndFixItem.CheckRegex, DEFAULT_REGEX_OPTIONS);
+            var fixRegex = EscapeCodeRegex.Replace(checkAndFixItem.FixRegex ?? string.Empty,
+                foundMatch => Regex.Unescape(foundMatch.Value));
             var checkResultItems = new List<CheckResultItem>();
 
             // Now, loop through the matches
-            foreach (Match match in matches)
+            foreach (Match matchItem in checkRegex.Matches(inputText))
             {
                 // Create a result item
                 var checkResultItem = new CheckResultItem(checkAndFixItem.Description,
-                    match.Value,
-                    match.Index,
+                    matchItem.Value,
+                    matchItem.Index,
                     CheckType.MissingSentencePunctuation,
                     (int)ScriptureReferenceErrorType.LooseFormatting
                     );
 
                 // If there is a replacement regex, apply that to the result
-                if (!string.IsNullOrEmpty(checkAndFixItem.FixRegex))
+                if (!string.IsNullOrEmpty(fixRegex))
                 {
-                    checkResultItem.FixText = match.Result(Regex.Unescape(checkAndFixItem.FixRegex));
+                    checkResultItem.FixText = matchItem.Result(fixRegex);
                 }
                 checkResultItems.Add(checkResultItem);
             }
@@ -87,6 +98,7 @@ namespace TvpMain.Check
             return checkResultItems;
         }
     }
+
     /// <summary>
     /// Scripture reference error sub-types,
     /// used for ResultTypeCode field in ResultItem.
