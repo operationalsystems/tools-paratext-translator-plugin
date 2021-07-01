@@ -1,27 +1,26 @@
-﻿using AddInSideViews;
-using System;
-using System.Collections.Generic;
-using System.Windows.Forms;
-using TvpMain.Check;
+﻿using System;
 using System.Collections.Concurrent;
-using System.Data;
+using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Drawing;
 using System.Linq;
+using System.Runtime.Serialization;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows.Forms;
+using AddInSideViews;
+using TvpMain.Check;
 using TvpMain.Import;
 using TvpMain.Project;
-using TvpMain.Text;
-using TvpMain.Util;
-using static TvpMain.Check.CheckAndFixItem;
-using System.IO;
-using System.Reflection;
-using System.Runtime.Serialization;
-using TvpMain.Result;
+using TvpMain.Properties;
 using TvpMain.Punctuation;
 using TvpMain.Reference;
-using System.Collections.Immutable;
+using TvpMain.Result;
+using TvpMain.Text;
+using TvpMain.Util;
+using static System.String;
+using static TvpMain.Check.CheckAndFixItem;
 
 namespace TvpMain.Forms
 {
@@ -31,13 +30,13 @@ namespace TvpMain.Forms
     /// </summary>
     public partial class CheckResultsForm : Form
     {
-        // Deny Button Text
-        readonly string DENY_BUTTON_TEXT = "Deny";
-        readonly string UNDENY_BUTTON_TEXT = "Un-Deny";
+        private const string DENY_BUTTON_TEXT = "Deny";
+        private const string UNDENY_BUTTON_TEXT = "Un-Deny";
 
         // A list of <c>CheckResultItem</c>s which have been denied
         private List<int> _denied;
 
+        /// <summary>
         /// This index indicates to the progress form that the project scope checks are being run.
         /// </summary>
         public const int ALL_PROJECTS_INDEX = -1;
@@ -55,42 +54,42 @@ namespace TvpMain.Forms
         /// <summary>
         /// Lock for updating check results dictionary.
         /// </summary>
-        private readonly object CheckResultslock = new object();
+        private readonly object _checkResultslock = new object();
 
         /// <summary>
         /// Cancellation token source.
         /// </summary>
-        private CancellationTokenSource RunCancellationTokenSource;
+        private CancellationTokenSource _runCancellationTokenSource;
 
         /// <summary>
         /// Current run's task semaphore.
         /// </summary>
-        private SemaphoreSlim RunSemaphore;
+        private SemaphoreSlim _runSemaphore;
 
         /// <summary>
         /// The Paratext plugin host.
         /// </summary>
-        private IHost Host { get; set; }
+        private IHost Host { get; }
 
         /// <summary>
         /// Active project name.
         /// </summary>
-        private string ActiveProjectName { get; set; }
+        private string ActiveProjectName { get; }
 
         /// <summary>
         /// Provides project setting & metadata access.
         /// </summary>
-        private ProjectManager ProjectManager { get; set; }
+        private ProjectManager ProjectManager { get; }
 
         /// <summary>
         /// Provides access to results.
         /// </summary>
-        private readonly ResultManager resultManager;
+        private readonly ResultManager _resultManager;
 
         /// <summary>
         /// A collection of the <c>CheckAndFixItem</c>s to run against the content.
         /// </summary>
-        private List<CheckAndFixItem> ChecksToRun { get; set; }
+        private List<CheckAndFixItem> ChecksToRun { get; }
 
         /// <summary>
         /// The checks organized by check scope.
@@ -100,7 +99,7 @@ namespace TvpMain.Forms
         /// <summary>
         /// The context of what we're checking against.
         /// </summary>
-        private CheckRunContext CheckRunContext { get; set; }
+        private CheckRunContext CheckRunContext { get; }
 
         /// <summary>
         /// The Check and Fix executor.
@@ -115,12 +114,12 @@ namespace TvpMain.Forms
         /// <summary>
         /// Progress of current run (1-based indexing).
         /// </summary>
-        private int RunBookCtr;
+        private int _runBookCtr;
 
         /// <summary>
         /// The collection of <c>CheckResultItem</c>s mapped by the associated <c>CheckAndFixItem</c>.
         /// </summary>
-        Dictionary<CheckAndFixItem, List<CheckResultItem>> CheckResults { get; set; } = new Dictionary<CheckAndFixItem, List<CheckResultItem>>();
+        Dictionary<CheckAndFixItem, List<CheckResultItem>> CheckResults { get; } = new Dictionary<CheckAndFixItem, List<CheckResultItem>>();
 
         /// <summary>
         /// The collection for holding project content in the correct book order.
@@ -135,7 +134,7 @@ namespace TvpMain.Forms
         /// <summary>
         /// Reusable progress form.
         /// </summary>
-        private readonly ProgressForm ProgressForm;
+        private readonly ProgressForm _progressForm;
 
         /// <summary>
         /// The list of selected books to check
@@ -152,7 +151,6 @@ namespace TvpMain.Forms
         /// <param name="selectedBooks">The selected books when the filter was run</param
         /// <param name="checksToRun">The list of checks to run against the content.</param>
         /// <param name="checkRunContext">The context of what Bible content we're checking against.</param>
-        /// <param name="checkRunner">The <c>CheckAndFixRunner</c> that will execute the checks against supplied content.</param>
         public CheckResultsForm(
             IHost host,
             string activeProjectName,
@@ -163,33 +161,88 @@ namespace TvpMain.Forms
         {
             // validate inputs
             Host = host ?? throw new ArgumentNullException(nameof(host));
-            if (activeProjectName == null || activeProjectName.Length < 1)
+            if (IsNullOrEmpty(activeProjectName))
             {
                 throw new ArgumentNullException(nameof(activeProjectName));
             }
+
             ActiveProjectName = activeProjectName;
             ProjectManager = projectManager ?? throw new ArgumentNullException(nameof(projectManager));
             SelectedBooks = selectedBooks ?? throw new ArgumentNullException(nameof(selectedBooks));
             ChecksToRun = checksToRun ?? throw new ArgumentNullException(nameof(checksToRun));
             CheckRunContext = checkRunContext ?? throw new ArgumentNullException(nameof(checkRunContext));
-            
-            ProgressForm = initializeProgressForm();
+
+            _progressForm = InitializeProgressForm();
             CheckUpdated += OnCheckUpdated;
 
             // initialize the components
             InitializeComponent();
+            SetUpResultsTable();
 
-            resultManager = new ResultManager(Host, ActiveProjectName);
-            resultManager.ScheduleLoadBooks(ProjectManager.PresentBookNums);
+            _resultManager = new ResultManager(Host, ActiveProjectName);
+            _resultManager.ScheduleLoadBooks(ProjectManager.PresentBookNums);
+        }
+
+        /// <summary>
+        /// Sets up the results table headers and sort behavior.
+        /// </summary>
+        private void SetUpResultsTable()
+        {
+            // set up reference column visibility ,
+            // depending on the language we're using
+            if (ProjectManager.IsEnglishProject)
+            {
+                IssuesDataGridView.Columns[1].Visible = false;
+                IssuesDataGridView.Columns[2].HeaderText = @"Reference";
+                IssuesDataGridView.Columns[2].Width *= 2;
+            }
+            else
+            {
+                IssuesDataGridView.Columns[1].Visible = true;
+                IssuesDataGridView.Columns[2].HeaderText = @"Ref";
+            }
+
+            // set header style to middle/center, as with the cell text
+            IssuesDataGridView.Columns[1].HeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleCenter;
+            IssuesDataGridView.Columns[2].HeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleCenter;
+
+            // set up reference column sorting
+            IssuesDataGridView.SortCompare += (sender, args) =>
+            {
+                // either reference column = sort by book, chapter, and verse
+                if (args.Column.Index == 1
+                    || args.Column.Index == 2)
+                {
+                    var resultItem1 = (CheckResultItem)IssuesDataGridView.Rows[args.RowIndex1].Tag;
+                    var resultItem2 = (CheckResultItem)IssuesDataGridView.Rows[args.RowIndex2].Tag;
+
+                    args.SortResult = CheckResultItem.CompareByLocation(
+                        resultItem1, resultItem2);
+
+                    // if references are equivalent, further sort by row index to ensure sorting on
+                    // either project or english reference columns produces consistent results
+                    // (won't be stable with respect to each other, otherwise).
+                    if (args.SortResult == 0)
+                    {
+                        args.SortResult = args.RowIndex1.CompareTo(args.RowIndex2);
+                    }
+                }
+                else // else, sort by cell text
+                {
+                    args.SortResult = CompareOrdinal(
+                        (args.CellValue1 ?? Empty).ToString(),
+                        (args.CellValue2 ?? Empty).ToString());
+                }
+                args.Handled = true;
+            };
         }
 
         /// <summary>
         /// Creates a <c>ProgressForm</c> with default values
         /// </summary>
-        private ProgressForm initializeProgressForm()
+        private ProgressForm InitializeProgressForm()
         {
-            ProgressForm progressForm = new ProgressForm();
-            progressForm.StartPosition = FormStartPosition.CenterParent;
+            ProgressForm progressForm = new ProgressForm { StartPosition = FormStartPosition.CenterParent };
             progressForm.Cancelled += OnProgressFormCancelled;
             return progressForm;
         }
@@ -197,7 +250,7 @@ namespace TvpMain.Forms
         /// <summary>
         /// Set the default set of books, all of them
         /// </summary>
-        private void setSelectedBooks()
+        private void SetSelectedBooks()
         {
             string selectedBooksString = BookSelection.stringFromSelectedBooks(SelectedBooks);
             bookFilterTextBox.Text = selectedBooksString;
@@ -208,7 +261,7 @@ namespace TvpMain.Forms
         /// </summary>
         private void LoadDeniedResults()
         {
-            _denied = Util.HostUtil.Instance.GetProjectDeniedResults(ActiveProjectName);
+            _denied = HostUtil.Instance.GetProjectDeniedResults(ActiveProjectName);
         }
 
         /// <summary>
@@ -216,7 +269,7 @@ namespace TvpMain.Forms
         /// </summary>
         private void SaveDeniedResults()
         {
-            Util.HostUtil.Instance.PutProjectDeniedResults(ActiveProjectName, _denied);
+            HostUtil.Instance.PutProjectDeniedResults(ActiveProjectName, _denied);
         }
 
         /// <summary>
@@ -224,7 +277,7 @@ namespace TvpMain.Forms
         /// </summary>
         public void CancelChecks()
         {
-            RunCancellationTokenSource?.Cancel();
+            _runCancellationTokenSource?.Cancel();
         }
 
         /// <summary>
@@ -233,12 +286,12 @@ namespace TvpMain.Forms
         /// <param name="updateBookNum">The number of the book that finished being checked.</param>
         private void OnCheckUpdated(int updateBookNum)
         {
-            lock (CheckResultslock)
+            lock (_checkResultslock)
             {
                 // we increased the max number of books to account for the project. We pass -1 as the book num to represent the project.
-                RunBookCtr++;
+                _runBookCtr++;
                 CheckUpdated?.Invoke(this,
-                    new CheckUpdatedArgs(CheckRunContext.Books.Count() + 1, RunBookCtr, updateBookNum));
+                    new CheckUpdatedArgs(CheckRunContext.Books.Count() + 1, _runBookCtr, updateBookNum));
             }
         }
 
@@ -249,7 +302,7 @@ namespace TvpMain.Forms
         /// <param name="updatedArgs">Check update details.</param>
         private void OnCheckUpdated(object sender, CheckUpdatedArgs updatedArgs)
         {
-            ProgressForm.OnCheckUpdated(updatedArgs);
+            _progressForm.OnCheckUpdated(updatedArgs);
         }
 
         /// <summary>
@@ -261,9 +314,9 @@ namespace TvpMain.Forms
             if (ChecksToRun.Count <= 0)
             {
                 MessageBox.Show(
-                    "No checks provided.",
-                    "Notice...", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                this.Hide();
+                    @"No checks provided.",
+                    @"Notice...", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                Hide();
                 return;
             }
 
@@ -274,8 +327,8 @@ namespace TvpMain.Forms
             CheckResults.Clear();
 
             // Pre-filter the checks and fixes so we don't have to do it repeatedly later.
-            ChecksByScope = new Dictionary<CheckScope, List<CheckAndFixItem>>()
-                {
+            ChecksByScope = new Dictionary<CheckScope, List<CheckAndFixItem>>
+            {
                     { CheckScope.PROJECT, new List<CheckAndFixItem>() },
                     { CheckScope.BOOK, new List<CheckAndFixItem>() },
                     { CheckScope.CHAPTER, new List<CheckAndFixItem>() },
@@ -305,7 +358,7 @@ namespace TvpMain.Forms
                 {
                     try
                     {
-                        Task.WaitAll(taskList.ToArray(), RunCancellationTokenSource.Token);
+                        Task.WaitAll(taskList.ToArray(), _runCancellationTokenSource.Token);
                     }
                     catch (OperationCanceledException)
                     {
@@ -316,8 +369,8 @@ namespace TvpMain.Forms
                         var messageText =
                             $"Error: Can't check project: \"{CheckRunContext.Project}\" (error: {ex.Message}).";
 
-                        var _runEx = new TextCheckException(messageText, ex);
-                        HostUtil.Instance.ReportError(messageText, _runEx);
+                        var runEx = new TextCheckException(messageText, ex);
+                        HostUtil.Instance.ReportError(messageText, runEx);
                     }
                 })
                 { IsBackground = true };
@@ -330,7 +383,7 @@ namespace TvpMain.Forms
                     Application.DoEvents();
                     Thread.Sleep(MainConsts.CHECK_EVENTS_DELAY_IN_MSEC);
 
-                    if (RunCancellationTokenSource.IsCancellationRequested)
+                    if (_runCancellationTokenSource.IsCancellationRequested)
                     {
                         return;
                     }
@@ -343,7 +396,7 @@ namespace TvpMain.Forms
                 var finalSb = new StringBuilder();
                 foreach (var key in sortedKeys)
                 {
-                    finalSb.Append(ProjectSb[key].ToString());
+                    finalSb.Append(ProjectSb[key]);
                 }
 
                 ExecuteChecksAndStoreResults(finalSb.ToString(), ChecksByScope[CheckScope.PROJECT], SCOPE_NOT_APPLICABLE, SCOPE_NOT_APPLICABLE, SCOPE_NOT_APPLICABLE);
@@ -363,17 +416,17 @@ namespace TvpMain.Forms
         /// </summary>
         /// <param name="content">The content to check against.</param>
         /// <param name="checksToRun">The list of checks to assess the content.</param>
-        /// <param name="book">The current book (1-based).</param>
-        /// <param name="chapter">The current chapter (1-based).</param>
-        /// <param name="verse">The current verse (1-based).</param>
+        /// <param name="book">The current bookNum (1-based).</param>
+        /// <param name="chapter">The current chapterNum (1-based).</param>
+        /// <param name="verse">The current verseNum (1-based).</param>
         private void ExecuteChecksAndStoreResults(string content, List<CheckAndFixItem> checksToRun, int book, int chapter, int verse)
         {
             // check the content with every specified check
             checksToRun.ForEach(check =>
             {
                 List<CheckResultItem> results = CheckRunner.ExecCheckAndFix(content, check);
-                
-                foreach(CheckResultItem item in results)
+
+                foreach (CheckResultItem item in results)
                 {
                     item.Book = book;
                     item.Chapter = chapter;
@@ -381,7 +434,7 @@ namespace TvpMain.Forms
                     item.Reference = content;
                 }
 
-                lock (CheckResultslock)
+                lock (_checkResultslock)
                 {
                     // add or append results
                     if (CheckResults.ContainsKey(check))
@@ -399,20 +452,21 @@ namespace TvpMain.Forms
         /// <summary>
         /// This function will execute the specified V1 check
         /// </summary>
-        /// <param name="content">The content to check against.</param>
-        /// <param name="checksToRun">The list of checks to assess the content.</param>
-        /// <param name="book">The current book (1-based).</param>
-        /// <param name="chapter">The current chapter (1-based).</param>
-        /// <param name="verse">The current verse (1-based).</param>
-        private void ExecuteV1CheckAndStoreResults(string content, ITextCheck textCheck, CheckAndFixItem check, int book, int chapter, int verse)
+        /// <param name="content">The content to check against (required).</param>
+        /// <param name="textCheck">The check used to assess the content (required).</param>
+        /// <param name="checkItem">Check item (required).</param>
+        /// <param name="bookNum">The current bookNum (1-based).</param>
+        /// <param name="chapterNum">The current chapterNum (1-based).</param>
+        /// <param name="verseNum">The current verseNum (1-based).</param>
+        private void ExecuteV1CheckAndStoreResults(
+            string content, ITextCheck textCheck, CheckAndFixItem checkItem,
+            int bookNum, int chapterNum, int verseNum)
         {
             // check the content with every specified check
             List<CheckResultItem> results = new List<CheckResultItem>();
+            TextCheckRunner textCheckRunner = new TextCheckRunner(Host, ActiveProjectName, ProjectManager, ImportManager, _resultManager);
 
-            TextCheckRunner textCheckRunner = new TextCheckRunner(Host, ActiveProjectName, ProjectManager, ImportManager, resultManager);
-            IList<ResultItem> allResultItems = Enumerable.Empty<ResultItem>().ToList();
-
-            IEnumerable<ITextCheck> allChecks = new List<ITextCheck>()
+            IEnumerable<ITextCheck> allChecks = new List<ITextCheck>
             {
                 textCheck
             };
@@ -429,34 +483,36 @@ namespace TvpMain.Forms
                 allChecks,
                 checkContexts,
                 false,
-                book,
+                bookNum,
                 out var nextResults))
             {
-                allResultItems = nextResults.ResultItems.ToImmutableList();
+                IList<ResultItem> allResultItems = nextResults.ResultItems.ToImmutableList();
                 // translate the v1 result items to v2 result items that are compatible with displaying
                 foreach (ResultItem result in allResultItems)
                 {
                     CheckResultItem checkResultItem = new CheckResultItem(result.ErrorText,
                         result.MatchText, result.MatchStart,
-                        result.CheckType, result.ResultTypeCode);
-                    checkResultItem.Book = book;
-                    checkResultItem.Chapter = chapter;
-                    checkResultItem.Verse = verse;
-                    checkResultItem.Reference = result.VersePart.ProjectVerse.VerseText;
+                        result.CheckType, result.ResultTypeCode)
+                    {
+                        Book = bookNum,
+                        Chapter = chapterNum,
+                        Verse = verseNum,
+                        Reference = result.VersePart.ProjectVerse.VerseText
+                    };
                     results.Add(checkResultItem);
                 }
             }
 
-            lock (CheckResultslock)
+            lock (_checkResultslock)
             {
                 // add or append results
-                if (CheckResults.ContainsKey(check))
+                if (CheckResults.ContainsKey(checkItem))
                 {
-                    CheckResults[check].AddRange(results);
+                    CheckResults[checkItem].AddRange(results);
                 }
                 else
                 {
-                    CheckResults.Add(check, results);
+                    CheckResults.Add(checkItem, results);
                 }
             }
         }
@@ -471,7 +527,7 @@ namespace TvpMain.Forms
             return Task.Run(() =>
             {
                 // wait to get started
-                RunSemaphore.Wait();
+                _runSemaphore.Wait();
 
                 if (!ProjectSb.TryAdd(inputBookNum, new StringBuilder()))
                 {
@@ -519,13 +575,13 @@ namespace TvpMain.Forms
                             try
                             {
                                 // Check if the parallel.ForEach has been cancelled. The verse is the smallest entitity granularity
-                                RunCancellationTokenSource.Token.ThrowIfCancellationRequested();
+                                _runCancellationTokenSource.Token.ThrowIfCancellationRequested();
 
                                 var verseLocation = new VerseLocation(currBookNum, chapterNum, verseNum);
                                 var verseText = ImportManager.Extract(verseLocation);
 
                                 // empty text = consecutive check, in case we're looking at an empty chapter
-                                if (string.IsNullOrWhiteSpace(verseText))
+                                if (IsNullOrWhiteSpace(verseText))
                                 {
                                     emptyVerseCtr++;
                                     if (emptyVerseCtr > MainConsts.MAX_CONSECUTIVE_EMPTY_VERSES)
@@ -551,7 +607,6 @@ namespace TvpMain.Forms
                                 // arg exceptions occur when verses are missing, 
                                 // which they can be for given translations (ignore and move on)
                                 // TODO spit out warning
-                                continue;
                             }
                         }
 
@@ -591,7 +646,7 @@ namespace TvpMain.Forms
                 }
                 finally
                 {
-                    RunSemaphore.Release();
+                    _runSemaphore.Release();
                 }
             });
         }
@@ -610,12 +665,12 @@ namespace TvpMain.Forms
         {
             int currentSelectedRowIndex = 0;
 
-            if (checksDataGridView.CurrentCell != null)
+            if (ChecksDataGridView.CurrentCell != null)
             {
-                currentSelectedRowIndex = checksDataGridView.SelectedRows[0].Index;
+                currentSelectedRowIndex = ChecksDataGridView.SelectedRows[0].Index;
             }
 
-            checksDataGridView.Rows.Clear();
+            ChecksDataGridView.Rows.Clear();
 
             foreach (KeyValuePair<CheckAndFixItem, List<CheckResultItem>> result in CheckResults)
             {
@@ -623,27 +678,22 @@ namespace TvpMain.Forms
                 {
                     List<CheckResultItem> filteredResultItems = FilterResults(result.Value);
 
-                    int rowIndex = checksDataGridView.Rows.Add(new object[] {
-                        false,                                      // selected
-                        result.Key.Name.Trim(),                     // category
-                        result.Key.Description.Trim(),              // description
-                        filteredResultItems.Count                   // count
-                    });
-                    checksDataGridView.Rows[rowIndex].Tag = new KeyValuePair<CheckAndFixItem,List<CheckResultItem>>(result.Key, filteredResultItems);
+                    int rowIndex = ChecksDataGridView.Rows.Add(false, result.Key.Name.Trim(), result.Key.Description.Trim(), filteredResultItems.Count);
+                    ChecksDataGridView.Rows[rowIndex].Tag = new KeyValuePair<CheckAndFixItem, List<CheckResultItem>>(result.Key, filteredResultItems);
                 }
             }
 
             // ensure that there are rows to select
-            if(checksDataGridView.Rows != null && checksDataGridView.Rows.Count > 0 && checksDataGridView.Rows[0] != null)
+            if (ChecksDataGridView.Rows != null && ChecksDataGridView.Rows.Count > 0 && ChecksDataGridView.Rows[0] != null)
             {
-                checksDataGridView.Rows[currentSelectedRowIndex].Selected = true;
+                ChecksDataGridView.Rows[currentSelectedRowIndex].Selected = true;
             }
 
             // Send in the currently selected row. This is needed because this value is incorrect from the control
             // itself until the UI thread has actually updated the control and the event has been triggered.
             // However, we can't rely on that event to update the issues list because it dosn't trigger in every case.
             PopulateIssuesDataGridView(currentSelectedRowIndex);
-            
+
         }
 
         /// <summary>
@@ -653,7 +703,8 @@ namespace TvpMain.Forms
         /// <returns>If the item has a match and is not filtered out</returns>
         private bool IfCheckFixItemIsNotFiltered(CheckAndFixItem checkAndFixItem)
         {
-            if(String.IsNullOrEmpty(filterTextBox.Text)) {
+            if (IsNullOrEmpty(filterTextBox.Text))
+            {
                 return true;
             }
             return checkAndFixItem.Name.IndexOf(filterTextBox.Text, StringComparison.OrdinalIgnoreCase) >= 0 ||
@@ -669,27 +720,28 @@ namespace TvpMain.Forms
         {
             List<CheckResultItem> filteredItems = new List<CheckResultItem>();
 
-            foreach ( CheckResultItem item in results)
+            foreach (CheckResultItem item in results)
             {
-                foreach(BookNameItem bookNameItem in SelectedBooks)
+                foreach (BookNameItem bookNameItem in SelectedBooks)
                 {
-                    if(bookNameItem.BookNum == item.Book)
+                    if (bookNameItem.BookNum == item.Book)
                     {
                         if (ShowDeniedCheckbox.Checked)
                         {
                             filteredItems.Add(item);
-                        } else
+                        }
+                        else
                         {
-                            if( _denied.Contains(item.GetHashCode()))
+                            if (_denied.Contains(item.GetHashCode()))
                             {
                                 item.ResultState = CheckResultState.Ignored;
-                            } else
+                            }
+                            else
                             {
                                 item.ResultState = CheckResultState.Found;
                                 filteredItems.Add(item);
                             }
                         }
-                        continue;
                     }
                 }
             }
@@ -704,7 +756,7 @@ namespace TvpMain.Forms
         /// <param name="e">The event information that triggered this call</param>
         private void Cancel_Click(object sender, EventArgs e)
         {
-            this.Close();
+            Close();
             CancelChecks();
         }
 
@@ -714,13 +766,13 @@ namespace TvpMain.Forms
         /// <param name="isCreateNew">True to create a new one, false to only dispose any existing one.</param>
         private void RecycleRunEntities(bool isCreateNew)
         {
-            RunSemaphore?.Dispose();
-            RunSemaphore = isCreateNew
+            _runSemaphore?.Dispose();
+            _runSemaphore = isCreateNew
                 ? new SemaphoreSlim(MainConsts.MAX_CHECK_THREADS)
                 : null;
 
-            RunCancellationTokenSource?.Dispose();
-            RunCancellationTokenSource = isCreateNew
+            _runCancellationTokenSource?.Dispose();
+            _runCancellationTokenSource = isCreateNew
                 ? new CancellationTokenSource()
                 : null;
         }
@@ -730,10 +782,10 @@ namespace TvpMain.Forms
         /// </summary>
         private void ShowProgress()
         {
-            ProgressForm.ResetForm();
+            _progressForm.ResetForm();
 
             Enabled = false;
-            ProgressForm.Show(this);
+            _progressForm.Show(this);
         }
 
         /// <summary>
@@ -741,7 +793,7 @@ namespace TvpMain.Forms
         /// </summary>
         private void HideProgress()
         {
-            ProgressForm.Hide();
+            _progressForm.Hide();
 
             Enabled = true;
             Activate();
@@ -755,7 +807,6 @@ namespace TvpMain.Forms
         private void OnProgressFormCancelled(object sender, EventArgs e)
         {
             CancelChecks();
-
             HideProgress();
         }
 
@@ -774,7 +825,7 @@ namespace TvpMain.Forms
         /// </summary>
         /// <param name="sender">The control that sent this event</param>
         /// <param name="e">The event information that triggered this call</param>
-        private void clearCheckFilterButton_Click(object sender, EventArgs e)
+        private void ClearCheckFilterButton_Click(object sender, EventArgs e)
         {
             filterTextBox.Text = "";
             PopulateChecksDataGridView();
@@ -785,7 +836,7 @@ namespace TvpMain.Forms
         /// </summary>
         /// <param name="sender">The control that sent this event</param>
         /// <param name="e">The event information that triggered this call</param>
-        private void bookFilterClearButton_Click(object sender, EventArgs e)
+        private void BookFilterClearButton_Click(object sender, EventArgs e)
         {
             // set the default set of books, all of them
             SelectedBooks = ProjectManager.BookNamesByNum.Values.ToArray();
@@ -799,7 +850,7 @@ namespace TvpMain.Forms
         /// </summary>
         /// <param name="sender">The control that sent this event</param>
         /// <param name="e">The event information that triggered this call</param>
-        private void selectBooksButton_Click(object sender, EventArgs e)
+        private void SelectBooksButton_Click(object sender, EventArgs e)
         {
             // bring up book selection dialog, use current selection to initialize
             using (var form = new BookSelection(ProjectManager, SelectedBooks))
@@ -810,10 +861,7 @@ namespace TvpMain.Forms
                 if (result == DialogResult.OK)
                 {
                     // update which books were selected
-                    SelectedBooks = form.GetSelected();
-                    string selectedBooksString = BookSelection.stringFromSelectedBooks(SelectedBooks);
-                    bookFilterTextBox.Text = selectedBooksString;
-
+                    bookFilterTextBox.Text = BookSelection.stringFromSelectedBooks(form.GetSelected());
                     PopulateChecksDataGridView();
                 }
             }
@@ -826,7 +874,7 @@ namespace TvpMain.Forms
         /// <param name="e">The event information</param>
         private void Deny_Click(object sender, EventArgs e)
         {
-            var item = (CheckResultItem)issuesDataGridView.CurrentRow.Tag;
+            var item = (CheckResultItem)IssuesDataGridView.CurrentRow.Tag;
 
             if (item.ResultState == CheckResultState.Found)
             {
@@ -835,7 +883,8 @@ namespace TvpMain.Forms
                 {
                     _denied.Add(item.GetHashCode());
                 }
-            } else if(item.ResultState == CheckResultState.Ignored)
+            }
+            else if (item.ResultState == CheckResultState.Ignored)
             {
                 item.ResultState = CheckResultState.Found;
                 _denied.Remove(item.GetHashCode());
@@ -847,7 +896,7 @@ namespace TvpMain.Forms
         }
 
         /// <summary>
-        /// This method handles checking/unchecking the "Show Denied" checkbox.
+        /// This method handles checking/un-checking the "Show Denied" checkbox.
         /// </summary>
         /// <param name="sender">The "Show Denied" checkbox</param>
         /// <param name="e">The event information</param>
@@ -857,11 +906,12 @@ namespace TvpMain.Forms
             PopulateChecksDataGridView();
         }
 
+        /// <summary>
         /// When the filter text changes, trigger filtering
         /// </summary>
         /// <param name="sender">The control that sent this event</param>
         /// <param name="e">The event information that triggered this call</param>
-        private void filterTextBox_TextChanged(object sender, EventArgs e)
+        private void FilterTextBox_TextChanged(object sender, EventArgs e)
         {
             PopulateChecksDataGridView();
         }
@@ -871,10 +921,10 @@ namespace TvpMain.Forms
         /// </summary>
         /// <param name="sender">The control that sent this event</param>
         /// <param name="e">The event information that triggered this call</param>
-        private void checksDataGridView_SelectionChanged(object sender, EventArgs e)
+        private void ChecksDataGridView_SelectionChanged(object sender, EventArgs e)
         {
             // only do updates here when the control is focused. Updates to the UI happen in other ways too.
-            if (checksDataGridView.Focused)
+            if (ChecksDataGridView.Focused)
             {
                 PopulateIssuesDataGridView();
             }
@@ -886,30 +936,30 @@ namespace TvpMain.Forms
         private void PopulateIssuesDataGridView(int rowIndexOverride = DEFAULT_ROW_NOT_SELECTED)
         {
             // update list of issues
-            if (checksDataGridView.SelectedRows != null && checksDataGridView.SelectedRows.Count > 0 && checksDataGridView.SelectedRows[0] != null && checksDataGridView.SelectedRows[0].Tag != null)
+            if (ChecksDataGridView.SelectedRows != null && ChecksDataGridView.SelectedRows.Count > 0 && ChecksDataGridView.SelectedRows[0] != null && ChecksDataGridView.SelectedRows[0].Tag != null)
             {
                 // use selected rows[0] instead of current row since they aren't the same thing. Since the control is limited to only a single selection, this is the value we want.
-                int currentSelectedRowIndex = rowIndexOverride != DEFAULT_ROW_NOT_SELECTED ? rowIndexOverride : checksDataGridView.SelectedRows[0].Index;
-                KeyValuePair<CheckAndFixItem, List<CheckResultItem>> result = (KeyValuePair<CheckAndFixItem, List<CheckResultItem>>)checksDataGridView.Rows[currentSelectedRowIndex].Tag;
+                int currentSelectedRowIndex = rowIndexOverride != DEFAULT_ROW_NOT_SELECTED ? rowIndexOverride : ChecksDataGridView.SelectedRows[0].Index;
+                KeyValuePair<CheckAndFixItem, List<CheckResultItem>> result = (KeyValuePair<CheckAndFixItem, List<CheckResultItem>>)ChecksDataGridView.Rows[currentSelectedRowIndex].Tag;
 
-                issuesDataGridView.Rows.Clear();
+                IssuesDataGridView.Rows.Clear();
 
                 foreach (CheckResultItem item in result.Value)
                 {
                     var verseLocation = new VerseLocation(item.Book, item.Chapter, item.Verse);
-
-                    int rowIndex = issuesDataGridView.Rows.Add(new object[]
-                    {
-                        getStatusIcon(item.ResultState),
-                        verseLocation.toString(),
-                        item.MatchText
-                    });
-                    issuesDataGridView.Rows[rowIndex].Tag = item;
+                    int rowIndex = IssuesDataGridView.Rows.Add(
+                        GetStatusIcon(item.ResultState),
+                        ProjectManager.IsEnglishProject // saves cycles on English projects
+                            ? Empty
+                            : verseLocation.ToProjectString(ProjectManager),
+                        verseLocation.ToString(),
+                        item.MatchText);
+                    IssuesDataGridView.Rows[rowIndex].Tag = item;
                 }
 
-                if (issuesDataGridView.Rows != null && issuesDataGridView.Rows.Count > 0 && issuesDataGridView.Rows[0] != null)
+                if (IssuesDataGridView.Rows != null && IssuesDataGridView.Rows.Count > 0 && IssuesDataGridView.Rows[0] != null)
                 {
-                    issuesDataGridView.Rows[0].Selected = true;
+                    IssuesDataGridView.Rows[0].Selected = true;
                 }
                 PopulateMatchFixTextBoxes();
             }
@@ -921,14 +971,14 @@ namespace TvpMain.Forms
         /// </summary>
         /// <param name="resultState">The current issue result state</param>
         /// <returns>a bitmap to be used in the column</returns>
-        private Icon getStatusIcon(CheckResultState resultState)
+        private Icon GetStatusIcon(CheckResultState resultState)
         {
-            switch(resultState)
+            switch (resultState)
             {
                 case CheckResultState.Ignored:
-                    return Properties.Resources.x_mark_16;
+                    return Resources.x_mark_16;
                 case CheckResultState.Fixed:
-                    return Properties.Resources.checkmark_16;
+                    return Resources.checkmark_16;
                 default:
                     return null;
             }
@@ -939,11 +989,11 @@ namespace TvpMain.Forms
         /// </summary>
         /// <param name="sender">The control that sent this event</param>
         /// <param name="e">The event information that triggered this call</param>
-        private void issuesDataGridView_CellContentDoubleClick(object sender, DataGridViewCellEventArgs e)
+        private void IssuesDataGridView_CellContentDoubleClick(object sender, DataGridViewCellEventArgs e)
         {
-            if (issuesDataGridView.Rows != null && issuesDataGridView.Rows.Count > 0 && issuesDataGridView.CurrentRow != null && issuesDataGridView.CurrentRow.Tag != null)
+            if (IssuesDataGridView.Rows != null && IssuesDataGridView.Rows.Count > 0 && IssuesDataGridView.CurrentRow != null && IssuesDataGridView.CurrentRow.Tag != null)
             {
-                var item = (CheckResultItem)issuesDataGridView.CurrentRow.Tag;
+                var item = (CheckResultItem)IssuesDataGridView.CurrentRow.Tag;
 
                 // navigate project to BCV
                 HostUtil.Instance.GotoBcvInGui(ActiveProjectName, item.Book == -1 ? 0 : item.Book, item.Chapter == -1 ? 0 : item.Chapter, item.Verse == -1 ? 0 : item.Verse);
@@ -955,10 +1005,10 @@ namespace TvpMain.Forms
         /// </summary>
         /// <param name="sender">The control that sent this event</param>
         /// <param name="e">The event information that triggered this call</param>
-        private void issuesDataGridView_SelectionChanged(object sender, EventArgs e)
+        private void IssuesDataGridView_SelectionChanged(object sender, EventArgs e)
         {
             // only do updates here when the control is focused. Updates to the UI happen in other ways too.
-            if (issuesDataGridView.Focused)
+            if (IssuesDataGridView.Focused)
             {
                 // update match/fix text boxes
                 PopulateMatchFixTextBoxes();
@@ -966,15 +1016,15 @@ namespace TvpMain.Forms
 
             UpdateDenyButton();
         }
-        
+
         /// <summary>
         /// Update the text on the deny button based on the currently selected row
         /// </summary>
         private void UpdateDenyButton()
         {
-            if (issuesDataGridView.Rows != null && issuesDataGridView.Rows.Count > 0 && issuesDataGridView.CurrentRow != null && issuesDataGridView.CurrentRow.Tag != null)
+            if (IssuesDataGridView.Rows != null && IssuesDataGridView.Rows.Count > 0 && IssuesDataGridView.CurrentRow != null && IssuesDataGridView.CurrentRow.Tag != null)
             {
-                var item = (CheckResultItem)issuesDataGridView.CurrentRow.Tag;
+                var item = (CheckResultItem)IssuesDataGridView.CurrentRow.Tag;
                 switch (item.ResultState)
                 {
                     case CheckResultState.Ignored:
@@ -993,9 +1043,9 @@ namespace TvpMain.Forms
         /// </summary>
         private void PopulateMatchFixTextBoxes()
         {
-            if(issuesDataGridView.Rows != null && issuesDataGridView.Rows.Count > 0 && issuesDataGridView.CurrentRow != null && issuesDataGridView.CurrentRow.Tag != null)
+            if (IssuesDataGridView.Rows != null && IssuesDataGridView.Rows.Count > 0 && IssuesDataGridView.CurrentRow != null && IssuesDataGridView.CurrentRow.Tag != null)
             {
-                var item = (CheckResultItem)issuesDataGridView.CurrentRow.Tag;
+                var item = (CheckResultItem)IssuesDataGridView.CurrentRow.Tag;
 
                 // update match text
                 matchTextBox.Text = item.Reference;
@@ -1014,7 +1064,7 @@ namespace TvpMain.Forms
                 matchTextBox.Refresh();
 
                 // update fix text
-                if (!String.IsNullOrEmpty(item.FixText))
+                if (!IsNullOrEmpty(item.FixText))
                 {
                     StringBuilder stringBuilder = new StringBuilder(item.Reference);
                     stringBuilder.Remove(item.MatchStart, item.MatchLength);
@@ -1037,14 +1087,16 @@ namespace TvpMain.Forms
 
                     fixTextBox.Refresh();
                     fixTextBox.Enabled = true;
-                } else
+                }
+                else
                 {
                     fixTextBox.Text = "";
                     fixTextBox.Refresh();
                     fixTextBox.Enabled = false;
                 }
-                
-            } else
+
+            }
+            else
             {
                 matchTextBox.Text = "";
                 matchTextBox.Refresh();
@@ -1055,18 +1107,18 @@ namespace TvpMain.Forms
         }
 
         /// <summary>
-        /// Subtract the occurences of a search char from before an input position.
+        /// Subtract the occurrences of a search char from before an input position.
         ///
         /// Used to deal with rich text control's filtering out '\r' from input text.
         /// </summary>
         /// <param name="inputText">Text to search (required).</param>
         /// <param name="inputPosition">Position to search up to (0-based).</param>
         /// <param name="searchChar">Character to search for.</param>
-        /// <returns>Input position minus occurences of search char before it.</returns>
+        /// <returns>Input position minus occurrences of search char before it.</returns>
         private static int MinusPrecedingChars(string inputText, int inputPosition, char searchChar)
         {
             var searchPosition = 0;
-            if (inputText != null && inputText.Length > 0)
+            if (!IsNullOrEmpty(inputText))
             {
                 searchPosition = inputText.IndexOf(searchChar);
             }
@@ -1089,9 +1141,9 @@ namespace TvpMain.Forms
             ImportManager ??= new ImportManager(Host, ActiveProjectName);
 
             // set the status column so that empty doesn't show unfound image
-            ((DataGridViewImageColumn)issuesDataGridView.Columns["statusIconColumn"]).DefaultCellStyle.NullValue = null;
+            ((DataGridViewImageColumn)IssuesDataGridView.Columns["statusIconColumn"]).DefaultCellStyle.NullValue = null;
             LoadDeniedResults();
-            setSelectedBooks();
+            SetSelectedBooks();
 
             RunChecks();
         }
