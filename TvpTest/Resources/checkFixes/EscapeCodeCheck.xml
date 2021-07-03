@@ -1,0 +1,21 @@
+<CheckAndFixItem xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<Id>cd14efb8-b870-4227-b4e0-886253ab8f4f</Id>
+	<Name>Test-1</Name>
+	<Description />
+	<Version>0.0.0.0</Version>
+	<Scope>VERSE</Scope>
+	<DefaultItemDescription>Test-1</DefaultItemDescription>
+	<CheckRegex>([^\.]*\.)</CheckRegex>
+	<FixRegex>$1XXX</FixRegex>
+	<CheckScript>function checkAndFix(checkResultItems) {
+
+  return checkResultItems
+
+}
+
+</CheckScript>
+	<Languages>
+		<Language>en-US</Language>
+	</Languages>
+	<Tags />
+</CheckAndFixItem>

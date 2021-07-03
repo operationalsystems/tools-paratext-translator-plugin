@@ -21,8 +21,11 @@ namespace TvpMain.Check
 
         /// <summary>
         /// Escape code regex.
+        ///
+        /// Note: This needs to be an or-block instead of a list of regexes, otherwise there will be overlapping matches on the same text
+        /// since USFM escape codes all begin with "\".
         /// </summary>
-        private static readonly Regex EscapeCodeRegex = new Regex(@"(\\\\|\\r|\\n|\\t|\\u[0-9A-Fa-f]{1,4})", DEFAULT_REGEX_OPTIONS);
+        private static readonly Regex EscapeCodeRegex = new Regex(@"(\\\\|\\r|\\n|\\t|\\u[0-9A-Fa-f]{4})", DEFAULT_REGEX_OPTIONS);
 
         /// <summary>
         /// Executes the check/fix against the given text

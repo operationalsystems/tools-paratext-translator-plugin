@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using System.Text;
 using System.Xml;
 using System.Xml.Serialization;
 using TvpMain.Util;
@@ -90,73 +89,14 @@ namespace TvpMain.Check
         /// Used for a default value in the resulting check items if there isn't a specific one already provided
         /// </summary>
         public string DefaultItemDescription { get; set; }
-
         /// <summary>
-        /// Serialized check regex, optionally base-64 encoded.
-        /// 
-        /// Note: For serialization, only (do not set with code). Use CheckRegex, instead.
+        /// The Check's regular expression. The check regex will be evaluated before the check script.
         /// </summary>
-        [XmlElement(ElementName = "CheckRegex")]
-        public string CheckRegexBody { get; set; }
-
+        public string CheckRegex { get; set; }
         /// <summary>
-        /// True if serialized check regex content is base-64 encoded, false otherwise.
-        /// 
-        /// Note: For serialization, only (do not set with code). Use CheckRegex, instead.
+        /// The Fix's regular expression. The fix regex will be evaluated before the fix script, if present.
         /// </summary>
-        [XmlElement(ElementName = "IsCheckRegexEncoded", IsNullable = true)]
-        public bool? IsCheckRegexEncoded { get; set; }
-
-        /// <summary>
-        /// Check regex accessor, as plain text.
-        /// </summary>
-        [XmlIgnore]
-        public string CheckRegex
-        {
-            get =>
-                IsCheckRegexEncoded ?? false
-                    ? DecodeField(CheckRegexBody)
-                    : CheckRegexBody;
-            set
-            {
-                CheckRegexBody = EncodeField(value);
-                IsCheckRegexEncoded = true;
-            }
-        }
-
-        /// <summary>
-        /// Serialized replacement (fix) regex, optionally base-64 encoded.
-        ///
-        /// Note: For serialization, only (do not set with code). Use FixRegex, instead.
-        /// </summary>
-        [XmlElement(ElementName = "FixRegex")]
-        public string FixRegexBody { get; set; }
-
-        /// <summary>
-        /// True if serialized replacement (fix) regex content is base-64 encoded, false otherwise.
-        /// 
-        /// Note: For serialization, only (do not set with code). Use FixRegex, instead.
-        /// </summary>
-        [XmlElement(ElementName = "IsFixRegexEncoded", IsNullable = true)]
-        public bool? IsFixRegexEncoded { get; set; }
-
-        /// <summary>
-        /// Replacement (fix) regex accessor, as plain text.
-        /// </summary>
-        [XmlIgnore]
-        public string FixRegex
-        {
-            get =>
-                IsFixRegexEncoded ?? false
-                    ? DecodeField(FixRegexBody)
-                    : FixRegexBody;
-            set
-            {
-                FixRegexBody = EncodeField(value);
-                IsFixRegexEncoded = true;
-            }
-        }
-
+        public string FixRegex { get; set; }
         /// <summary>
         /// The Check's javascript script content.
         /// </summary>
@@ -176,28 +116,7 @@ namespace TvpMain.Check
         [XmlArray("Tags")]
         public string[] Tags { get; set; }
 
-        //////////////// Serialization and Deserialization methods ///////////////////////
-
-        public static string DecodeField(string encodedText)
-        {
-            if (!string.IsNullOrWhiteSpace(encodedText))
-                try
-                {
-                    return Encoding.UTF8.GetString(Convert.FromBase64String(encodedText));
-                }
-                catch (Exception)
-                {
-                    // ignore;
-                }
-            return encodedText;
-        }
-
-        public static string EncodeField(string decodedText)
-        {
-            return string.IsNullOrWhiteSpace(decodedText)
-                ? decodedText
-                : Convert.ToBase64String(Encoding.UTF8.GetBytes(decodedText));
-        }
+        //////////////// Serialization and Deserialization functions ///////////////////////
 
         /// <summary>
         /// Deserialize a <c>CheckAndFixItem</c> XML file into a corresponding object.
@@ -212,11 +131,13 @@ namespace TvpMain.Check
             // deserialize the file into an object
             var serializer = new XmlSerializer(typeof(CheckAndFixItem));
             using var xmlReader = new XmlTextReader(xmlFilePath);
-            return (CheckAndFixItem)serializer.Deserialize(xmlReader);
+            var obj = (CheckAndFixItem)serializer.Deserialize(xmlReader);
+
+            return obj;
         }
 
         /// <summary>
-        /// Deserialize <c>CheckAndFixItem</c> XML content into a corresonding object.
+        /// Deserialize <c>CheckAndFixItem</c> XML content into a corresponding object.
         /// </summary>
         /// <param name="xmlContent">A <c>Stream</c> representing a <c>CheckAndFixItem</c>. (required)</param>
         /// <returns>Corresponding <c>CheckAndFixItem</c> object.</returns>
@@ -227,11 +148,12 @@ namespace TvpMain.Check
 
             // deserialize the file into an object
             var serializer = new XmlSerializer(typeof(CheckAndFixItem));
-            return (CheckAndFixItem)serializer.Deserialize(xmlContent);
+            var result = (CheckAndFixItem)serializer.Deserialize(xmlContent);
+            return result;
         }
 
         /// <summary>
-        /// Deserialize <c>CheckAndFixItem</c> XML content into a corresonding object.
+        /// Deserialize <c>CheckAndFixItem</c> XML content into a corresponding object.
         /// </summary>
         /// <param name="xmlContent">A string representing a <c>CheckAndFixItem</c>. (required)</param>
         /// <returns>Corresponding <c>CheckAndFixItem</c> object.</returns>
@@ -242,9 +164,10 @@ namespace TvpMain.Check
 
             // deserialize the file into an object
             var serializer = new XmlSerializer(typeof(CheckAndFixItem));
+
             using TextReader reader = new StringReader(xmlContent);
-            reader.ReadToEnd();
-            return (CheckAndFixItem)serializer.Deserialize(reader);
+            var result = (CheckAndFixItem)serializer.Deserialize(reader);
+            return result;
         }
 
         /// <summary>
@@ -256,7 +179,6 @@ namespace TvpMain.Check
             // validate input
             _ = xmlFilePath ?? throw new ArgumentNullException(nameof(xmlFilePath));
 
-            // serialize the object into a file
             var writer = new XmlSerializer(this.GetType());
             using var file = File.Create(xmlFilePath);
             writer.Serialize(file, this);
@@ -269,9 +191,10 @@ namespace TvpMain.Check
         public Stream WriteToXmlStream()
         {
             var xmlSerializer = new XmlSerializer(this.GetType());
+
             var stream = new MemoryStream();
             xmlSerializer.Serialize(stream, this);
-            return stream;
+            return (Stream)stream;
         }
 
         /// <summary>
@@ -281,12 +204,11 @@ namespace TvpMain.Check
         public string WriteToXmlString()
         {
             var xmlSerializer = new XmlSerializer(this.GetType());
+
             using var textWriter = new StringWriter();
             xmlSerializer.Serialize(textWriter, this);
             return textWriter.ToString();
         }
-
-        //////////////// Utility methods ///////////////////////
 
         /// <summary>
         /// An override of the equals capability to validate the content of two <c>CheckAndFixItem</c>s are the same.
