@@ -1058,12 +1058,14 @@ namespace TvpMain.Forms
                 matchTextBox.SelectionStart = MinusPrecedingChars(
                     item.Reference,
                     item.MatchStart,
-                    '\r');
+                    Environment.NewLine,
+                    1);
                 matchTextBox.SelectionLength =
                     MinusPrecedingChars(
                         item.MatchText,
                         item.MatchLength,
-                        '\r');
+                        Environment.NewLine,
+                        1);
                 matchTextBox.SelectionBackColor = Color.Yellow;
                 matchTextBox.ScrollToCaret();
                 matchTextBox.Refresh();
@@ -1083,11 +1085,13 @@ namespace TvpMain.Forms
                     fixTextBox.SelectionStart = MinusPrecedingChars(
                         fixReference,
                         item.MatchStart,
-                        '\r');
+                        Environment.NewLine,
+                        1);
                     fixTextBox.SelectionLength = MinusPrecedingChars(
                         item.FixText,
                         item.FixText.Length,
-                        '\r');
+                        Environment.NewLine,
+                        1);
                     fixTextBox.SelectionBackColor = Color.LightGreen;
                     fixTextBox.ScrollToCaret();
                     fixTextBox.Refresh();
@@ -1119,26 +1123,35 @@ namespace TvpMain.Forms
         /// </summary>
         /// <param name="inputText">Text to search (required).</param>
         /// <param name="inputPosition">Position to search up to (0-based).</param>
-        /// <param name="searchChar">Character to search for.</param>
-        /// <returns>Input position minus occurrences of search char before it.</returns>
-        private static int MinusPrecedingChars(string inputText, int inputPosition, char searchChar)
+        /// <param name="searchText">Character to search for.</param>
+        /// <param name="matchOffset">Number of characters to subtract per match (e.g., match length, or a constant value).</param>
+        /// <returns>Input position minus occurrences of search text before it, times the match offset.</returns>
+        private static int MinusPrecedingChars(
+            string inputText,
+            int inputPosition,
+            string searchText,
+            int matchOffset)
         {
-            var searchPosition = 0;
-            if (!IsNullOrEmpty(inputText))
+            if (IsNullOrEmpty(inputText))
             {
-                searchPosition = inputText.IndexOf(searchChar);
+                return inputPosition;
             }
 
-            var charCtr = 0;
+            var totalOffset = 0;
+            var searchPosition = inputText.IndexOf(
+                searchText,
+                StringComparison.Ordinal);
 
             while (searchPosition >= 0
                    && searchPosition < inputPosition)
             {
-                charCtr++;
-                searchPosition = inputText.IndexOf(searchChar, searchPosition + 1);
+                totalOffset += matchOffset;
+                searchPosition = inputText.IndexOf(
+                    searchText, searchPosition + searchText.Length,
+                    StringComparison.Ordinal);
             }
 
-            return Math.Max(inputPosition - charCtr, 0);
+            return Math.Max(inputPosition - totalOffset, 0);
         }
 
         private void CheckResultsForm_Shown(object sender, EventArgs e)

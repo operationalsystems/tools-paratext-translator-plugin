@@ -89,7 +89,7 @@ namespace TvpMain.CheckManagement
             var localChecks = from local in GetInstalledCheckAndFixItems()
                               select new
                               {
-                                  local.Name,
+                                  local.Name
                               };
             var newChecks = availableChecks.Where(check =>
             {
@@ -109,7 +109,7 @@ namespace TvpMain.CheckManagement
             var remoteChecks = from remote in GetAvailableCheckAndFixItems()
                                select new
                                {
-                                   remote.Name,
+                                   remote.Name
                                };
             var deprecated = installedChecks.Where(check =>
             {
