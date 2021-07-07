@@ -1119,7 +1119,7 @@ namespace TvpMain.Forms
         /// <summary>
         /// Subtract the occurrences of a search char from before an input position.
         ///
-        /// Used to deal with rich text control's filtering out '\r' from input text.
+        /// Used to deal with rich text control's half-filtering of '\r\n' from input text.
         /// </summary>
         /// <param name="inputText">Text to search (required).</param>
         /// <param name="inputPosition">Position to search up to (0-based).</param>
