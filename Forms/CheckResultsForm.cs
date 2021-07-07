@@ -2,6 +2,7 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.ComponentModel;
 using System.Drawing;
 using System.Linq;
 using System.Runtime.Serialization;
@@ -235,6 +236,10 @@ namespace TvpMain.Forms
                 }
                 args.Handled = true;
             };
+
+            IssuesDataGridView.Sort(
+                ProjectManager.IsEnglishProject ? IssuesDataGridView.Columns[2] : IssuesDataGridView.Columns[1],
+                ListSortDirection.Ascending);
         }
 
         /// <summary>
@@ -970,7 +975,26 @@ namespace TvpMain.Forms
                 }
                 PopulateMatchFixTextBoxes();
             }
+
+            ReSortIssuesGrid();
             UpdateDenyButton();
+        }
+
+        /// <summary>
+        /// Re-sorts the issues grid after update, as needed.
+        /// </summary>
+        private void ReSortIssuesGrid()
+        {
+            if (IssuesDataGridView.SortOrder != SortOrder.None)
+            {
+                IssuesDataGridView.Sort(
+                    IssuesDataGridView.SortedColumn,
+                    IssuesDataGridView.SortOrder switch
+                    {
+                        SortOrder.Ascending => ListSortDirection.Ascending,
+                        _ => ListSortDirection.Descending
+                    });
+            }
         }
 
         /// <summary>
@@ -978,7 +1002,7 @@ namespace TvpMain.Forms
         /// </summary>
         /// <param name="resultState">The current issue result state</param>
         /// <returns>a bitmap to be used in the column</returns>
-        private Icon GetStatusIcon(CheckResultState resultState)
+        private static Icon GetStatusIcon(CheckResultState resultState)
         {
             return resultState switch
             {
@@ -995,13 +1019,17 @@ namespace TvpMain.Forms
         /// <param name="e">The event information that triggered this call</param>
         private void IssuesDataGridView_CellContentDoubleClick(object sender, DataGridViewCellEventArgs e)
         {
-            if (IssuesDataGridView.Rows.Count > 0 && IssuesDataGridView.CurrentRow is { Tag: { } })
+            if (IssuesDataGridView.Rows.Count <= 0 || !(IssuesDataGridView.CurrentRow is { Tag: { } }))
             {
-                var item = (CheckResultItem)IssuesDataGridView.CurrentRow.Tag;
-
-                // navigate project to BCV
-                HostUtil.Instance.GotoBcvInGui(ActiveProjectName, item.Book == -1 ? 0 : item.Book, item.Chapter == -1 ? 0 : item.Chapter, item.Verse == -1 ? 0 : item.Verse);
+                return;
             }
+
+            // navigate project to BCV
+            var item = (CheckResultItem)IssuesDataGridView.CurrentRow.Tag;
+            HostUtil.Instance.GotoBcvInGui(ActiveProjectName,
+                item.Book == -1 ? 0 : item.Book,
+                item.Chapter == -1 ? 0 : item.Chapter,
+                item.Verse == -1 ? 0 : item.Verse);
         }
 
         /// <summary>
@@ -1026,19 +1054,17 @@ namespace TvpMain.Forms
         /// </summary>
         private void UpdateDenyButton()
         {
-            if (IssuesDataGridView.Rows.Count > 0 && IssuesDataGridView.CurrentRow is { Tag: { } })
+            if (IssuesDataGridView.Rows.Count <= 0 || !(IssuesDataGridView.CurrentRow is { Tag: { } }))
             {
-                var item = (CheckResultItem)IssuesDataGridView.CurrentRow.Tag;
-                switch (item.ResultState)
-                {
-                    case CheckResultState.Ignored:
-                        DenyButton.Text = UNDENY_BUTTON_TEXT;
-                        break;
-                    default:
-                        DenyButton.Text = DENY_BUTTON_TEXT;
-                        break;
-                }
+                return;
             }
+
+            var item = (CheckResultItem)IssuesDataGridView.CurrentRow.Tag;
+            DenyButton.Text = item.ResultState switch
+            {
+                CheckResultState.Ignored => UNDENY_BUTTON_TEXT,
+                _ => DENY_BUTTON_TEXT
+            };
         }
 
         /// <summary>
