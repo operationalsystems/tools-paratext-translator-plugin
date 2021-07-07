@@ -119,12 +119,12 @@ namespace TvpMain.Forms
         /// <summary>
         /// The collection of <c>CheckResultItem</c>s mapped by the associated <c>CheckAndFixItem</c>.
         /// </summary>
-        Dictionary<CheckAndFixItem, List<CheckResultItem>> CheckResults { get; } = new Dictionary<CheckAndFixItem, List<CheckResultItem>>();
+        private Dictionary<CheckAndFixItem, List<CheckResultItem>> CheckResults { get; } = new Dictionary<CheckAndFixItem, List<CheckResultItem>>();
 
         /// <summary>
         /// The collection for holding project content in the correct book order.
         /// </summary>
-        ConcurrentDictionary<int, StringBuilder> ProjectSb { get; set; } = new ConcurrentDictionary<int, StringBuilder>();
+        private ConcurrentDictionary<int, StringBuilder> ProjectSb { get; set; } = new ConcurrentDictionary<int, StringBuilder>();
 
         /// <summary>
         /// Check updated event handler.
@@ -242,7 +242,7 @@ namespace TvpMain.Forms
         /// </summary>
         private ProgressForm InitializeProgressForm()
         {
-            ProgressForm progressForm = new ProgressForm { StartPosition = FormStartPosition.CenterParent };
+            var progressForm = new ProgressForm { StartPosition = FormStartPosition.CenterParent };
             progressForm.Cancelled += OnProgressFormCancelled;
             return progressForm;
         }
@@ -252,7 +252,7 @@ namespace TvpMain.Forms
         /// </summary>
         private void SetSelectedBooks()
         {
-            string selectedBooksString = BookSelection.stringFromSelectedBooks(SelectedBooks);
+            var selectedBooksString = BookSelection.stringFromSelectedBooks(SelectedBooks);
             bookFilterTextBox.Text = selectedBooksString;
         }
 
@@ -424,9 +424,9 @@ namespace TvpMain.Forms
             // check the content with every specified check
             checksToRun.ForEach(check =>
             {
-                List<CheckResultItem> results = CheckRunner.ExecCheckAndFix(content, check);
+                var results = CheckRunner.ExecCheckAndFix(content, check);
 
-                foreach (CheckResultItem item in results)
+                foreach (var item in results)
                 {
                     item.Book = book;
                     item.Chapter = chapter;
@@ -463,8 +463,8 @@ namespace TvpMain.Forms
             int bookNum, int chapterNum, int verseNum)
         {
             // check the content with every specified check
-            List<CheckResultItem> results = new List<CheckResultItem>();
-            TextCheckRunner textCheckRunner = new TextCheckRunner(Host, ActiveProjectName, ProjectManager, ImportManager, _resultManager);
+            var results = new List<CheckResultItem>();
+            var textCheckRunner = new TextCheckRunner(Host, ActiveProjectName, ProjectManager, ImportManager, _resultManager);
 
             IEnumerable<ITextCheck> allChecks = new List<ITextCheck>
             {
@@ -472,11 +472,13 @@ namespace TvpMain.Forms
             };
 
             // by default, select all parts to check
-            ISet<PartContext> checkContexts = new HashSet<PartContext>();
-            checkContexts.Add(PartContext.MainText);
-            checkContexts.Add(PartContext.Introductions);
-            checkContexts.Add(PartContext.Outlines);
-            checkContexts.Add(PartContext.NoteOrReference);
+            ISet<PartContext> checkContexts = new HashSet<PartContext>
+            {
+                PartContext.MainText,
+                PartContext.Introductions,
+                PartContext.Outlines,
+                PartContext.NoteOrReference
+            };
 
             if (textCheckRunner.RunChecks(
                 CheckArea.CurrentBook,
@@ -488,9 +490,9 @@ namespace TvpMain.Forms
             {
                 IList<ResultItem> allResultItems = nextResults.ResultItems.ToImmutableList();
                 // translate the v1 result items to v2 result items that are compatible with displaying
-                foreach (ResultItem result in allResultItems)
+                foreach (var result in allResultItems)
                 {
-                    CheckResultItem checkResultItem = new CheckResultItem(result.ErrorText,
+                    var checkResultItem = new CheckResultItem(result.ErrorText,
                         result.MatchText, result.MatchStart,
                         result.CheckType, result.ResultTypeCode)
                     {
@@ -592,8 +594,6 @@ namespace TvpMain.Forms
                                 // else, take apart text
                                 emptyVerseCtr = 0;
 
-                                var verseData = new ProjectVerse(verseLocation, verseText);
-
                                 // build the scoped strings
                                 ProjectSb[inputBookNum].AppendLine(verseText);
                                 bookSb.AppendLine(verseText);
@@ -651,7 +651,6 @@ namespace TvpMain.Forms
             });
         }
 
-        /// <inheritdoc />
         public new virtual void Dispose()
         {
             RecycleRunEntities(false);
@@ -663,7 +662,7 @@ namespace TvpMain.Forms
         /// </summary>
         protected void PopulateChecksDataGridView()
         {
-            int currentSelectedRowIndex = 0;
+            var currentSelectedRowIndex = 0;
 
             if (ChecksDataGridView.CurrentCell != null)
             {
@@ -672,19 +671,21 @@ namespace TvpMain.Forms
 
             ChecksDataGridView.Rows.Clear();
 
-            foreach (KeyValuePair<CheckAndFixItem, List<CheckResultItem>> result in CheckResults)
+            foreach (var result in CheckResults)
             {
-                if (IfCheckFixItemIsNotFiltered(result.Key))
+                if (!IfCheckFixItemIsNotFiltered(result.Key))
                 {
-                    List<CheckResultItem> filteredResultItems = FilterResults(result.Value);
-
-                    int rowIndex = ChecksDataGridView.Rows.Add(false, result.Key.Name.Trim(), result.Key.Description.Trim(), filteredResultItems.Count);
-                    ChecksDataGridView.Rows[rowIndex].Tag = new KeyValuePair<CheckAndFixItem, List<CheckResultItem>>(result.Key, filteredResultItems);
+                    continue;
                 }
+
+                var filteredResultItems = FilterResults(result.Value);
+                var rowIndex = ChecksDataGridView.Rows.Add(false, result.Key.Name.Trim(), result.Key.Description.Trim(), filteredResultItems.Count);
+
+                ChecksDataGridView.Rows[rowIndex].Tag = new KeyValuePair<CheckAndFixItem, List<CheckResultItem>>(result.Key, filteredResultItems);
             }
 
             // ensure that there are rows to select
-            if (ChecksDataGridView.Rows != null && ChecksDataGridView.Rows.Count > 0 && ChecksDataGridView.Rows[0] != null)
+            if (ChecksDataGridView.Rows.Count > 0)
             {
                 ChecksDataGridView.Rows[currentSelectedRowIndex].Selected = true;
             }
@@ -707,6 +708,7 @@ namespace TvpMain.Forms
             {
                 return true;
             }
+
             return checkAndFixItem.Name.IndexOf(filterTextBox.Text, StringComparison.OrdinalIgnoreCase) >= 0 ||
                 checkAndFixItem.Description.IndexOf(filterTextBox.Text, StringComparison.OrdinalIgnoreCase) >= 0;
         }
@@ -716,31 +718,33 @@ namespace TvpMain.Forms
         /// </summary>
         /// <param name="results">The results to review</param>
         /// <returns>A filtered set of results that match for the selected books</returns>
-        protected List<CheckResultItem> FilterResults(List<CheckResultItem> results)
+        protected List<CheckResultItem> FilterResults(IEnumerable<CheckResultItem> results)
         {
-            List<CheckResultItem> filteredItems = new List<CheckResultItem>();
+            var filteredItems = new List<CheckResultItem>();
 
-            foreach (CheckResultItem item in results)
+            foreach (var item in results)
             {
-                foreach (BookNameItem bookNameItem in SelectedBooks)
+                foreach (var bookNameItem in SelectedBooks)
                 {
-                    if (bookNameItem.BookNum == item.Book)
+                    if (bookNameItem.BookNum != item.Book)
                     {
-                        if (ShowDeniedCheckbox.Checked)
+                        continue;
+                    }
+
+                    if (ShowDeniedCheckbox.Checked)
+                    {
+                        filteredItems.Add(item);
+                    }
+                    else
+                    {
+                        if (_denied.Contains(item.GetHashCode()))
                         {
-                            filteredItems.Add(item);
+                            item.ResultState = CheckResultState.Ignored;
                         }
                         else
                         {
-                            if (_denied.Contains(item.GetHashCode()))
-                            {
-                                item.ResultState = CheckResultState.Ignored;
-                            }
-                            else
-                            {
-                                item.ResultState = CheckResultState.Found;
-                                filteredItems.Add(item);
-                            }
+                            item.ResultState = CheckResultState.Found;
+                            filteredItems.Add(item);
                         }
                     }
                 }
@@ -840,7 +844,7 @@ namespace TvpMain.Forms
         {
             // set the default set of books, all of them
             SelectedBooks = ProjectManager.BookNamesByNum.Values.ToArray();
-            string selectedBooksString = BookSelection.stringFromSelectedBooks(SelectedBooks);
+            var selectedBooksString = BookSelection.stringFromSelectedBooks(SelectedBooks);
             bookFilterTextBox.Text = selectedBooksString;
             PopulateChecksDataGridView();
         }
@@ -853,17 +857,17 @@ namespace TvpMain.Forms
         private void SelectBooksButton_Click(object sender, EventArgs e)
         {
             // bring up book selection dialog, use current selection to initialize
-            using (var form = new BookSelection(ProjectManager, SelectedBooks))
+            using var form = new BookSelection(ProjectManager, SelectedBooks)
             {
-                form.StartPosition = FormStartPosition.CenterParent;
+                StartPosition = FormStartPosition.CenterParent
+            };
 
-                var result = form.ShowDialog(this);
-                if (result == DialogResult.OK)
-                {
-                    // update which books were selected
-                    bookFilterTextBox.Text = BookSelection.stringFromSelectedBooks(form.GetSelected());
-                    PopulateChecksDataGridView();
-                }
+            var result = form.ShowDialog(this);
+            if (result == DialogResult.OK)
+            {
+                // update which books were selected
+                bookFilterTextBox.Text = BookSelection.stringFromSelectedBooks(form.GetSelected());
+                PopulateChecksDataGridView();
             }
         }
 
@@ -876,18 +880,22 @@ namespace TvpMain.Forms
         {
             var item = (CheckResultItem)IssuesDataGridView.CurrentRow.Tag;
 
-            if (item.ResultState == CheckResultState.Found)
+            switch (item.ResultState)
             {
-                item.ResultState = CheckResultState.Ignored;
-                if (!_denied.Contains(item.GetHashCode()))
-                {
-                    _denied.Add(item.GetHashCode());
-                }
-            }
-            else if (item.ResultState == CheckResultState.Ignored)
-            {
-                item.ResultState = CheckResultState.Found;
-                _denied.Remove(item.GetHashCode());
+                case CheckResultState.Found:
+                    {
+                        item.ResultState = CheckResultState.Ignored;
+                        if (!_denied.Contains(item.GetHashCode()))
+                        {
+                            _denied.Add(item.GetHashCode());
+                        }
+
+                        break;
+                    }
+                case CheckResultState.Ignored:
+                    item.ResultState = CheckResultState.Found;
+                    _denied.Remove(item.GetHashCode());
+                    break;
             }
 
             SaveDeniedResults();
@@ -902,7 +910,6 @@ namespace TvpMain.Forms
         /// <param name="e">The event information</param>
         private void ShowDenied_CheckedChanged(object sender, EventArgs e)
         {
-            CheckState.Checked.Equals(ShowDeniedCheckbox.CheckState);
             PopulateChecksDataGridView();
         }
 
@@ -917,7 +924,7 @@ namespace TvpMain.Forms
         }
 
         /// <summary>
-        /// When the selection on this item changes, update the dependant list
+        /// When the selection on this item changes, update the dependent list
         /// </summary>
         /// <param name="sender">The control that sent this event</param>
         /// <param name="e">The event information that triggered this call</param>
@@ -936,18 +943,18 @@ namespace TvpMain.Forms
         private void PopulateIssuesDataGridView(int rowIndexOverride = DEFAULT_ROW_NOT_SELECTED)
         {
             // update list of issues
-            if (ChecksDataGridView.SelectedRows != null && ChecksDataGridView.SelectedRows.Count > 0 && ChecksDataGridView.SelectedRows[0] != null && ChecksDataGridView.SelectedRows[0].Tag != null)
+            if (ChecksDataGridView.SelectedRows.Count > 0 && ChecksDataGridView.SelectedRows[0] != null && ChecksDataGridView.SelectedRows[0].Tag != null)
             {
                 // use selected rows[0] instead of current row since they aren't the same thing. Since the control is limited to only a single selection, this is the value we want.
-                int currentSelectedRowIndex = rowIndexOverride != DEFAULT_ROW_NOT_SELECTED ? rowIndexOverride : ChecksDataGridView.SelectedRows[0].Index;
-                KeyValuePair<CheckAndFixItem, List<CheckResultItem>> result = (KeyValuePair<CheckAndFixItem, List<CheckResultItem>>)ChecksDataGridView.Rows[currentSelectedRowIndex].Tag;
+                var currentSelectedRowIndex = rowIndexOverride != DEFAULT_ROW_NOT_SELECTED ? rowIndexOverride : ChecksDataGridView.SelectedRows[0].Index;
+                var result = (KeyValuePair<CheckAndFixItem, List<CheckResultItem>>)ChecksDataGridView.Rows[currentSelectedRowIndex].Tag;
 
                 IssuesDataGridView.Rows.Clear();
 
-                foreach (CheckResultItem item in result.Value)
+                foreach (var item in result.Value)
                 {
                     var verseLocation = new VerseLocation(item.Book, item.Chapter, item.Verse);
-                    int rowIndex = IssuesDataGridView.Rows.Add(
+                    var rowIndex = IssuesDataGridView.Rows.Add(
                         GetStatusIcon(item.ResultState),
                         ProjectManager.IsEnglishProject // saves cycles on English projects
                             ? Empty
@@ -957,7 +964,7 @@ namespace TvpMain.Forms
                     IssuesDataGridView.Rows[rowIndex].Tag = item;
                 }
 
-                if (IssuesDataGridView.Rows != null && IssuesDataGridView.Rows.Count > 0 && IssuesDataGridView.Rows[0] != null)
+                if (IssuesDataGridView.Rows.Count > 0)
                 {
                     IssuesDataGridView.Rows[0].Selected = true;
                 }
@@ -973,15 +980,12 @@ namespace TvpMain.Forms
         /// <returns>a bitmap to be used in the column</returns>
         private Icon GetStatusIcon(CheckResultState resultState)
         {
-            switch (resultState)
+            return resultState switch
             {
-                case CheckResultState.Ignored:
-                    return Resources.x_mark_16;
-                case CheckResultState.Fixed:
-                    return Resources.checkmark_16;
-                default:
-                    return null;
-            }
+                CheckResultState.Ignored => Resources.x_mark_16,
+                CheckResultState.Fixed => Resources.checkmark_16,
+                _ => null
+            };
         }
 
         /// <summary>
@@ -991,7 +995,7 @@ namespace TvpMain.Forms
         /// <param name="e">The event information that triggered this call</param>
         private void IssuesDataGridView_CellContentDoubleClick(object sender, DataGridViewCellEventArgs e)
         {
-            if (IssuesDataGridView.Rows != null && IssuesDataGridView.Rows.Count > 0 && IssuesDataGridView.CurrentRow != null && IssuesDataGridView.CurrentRow.Tag != null)
+            if (IssuesDataGridView.Rows.Count > 0 && IssuesDataGridView.CurrentRow is { Tag: { } })
             {
                 var item = (CheckResultItem)IssuesDataGridView.CurrentRow.Tag;
 
@@ -1022,7 +1026,7 @@ namespace TvpMain.Forms
         /// </summary>
         private void UpdateDenyButton()
         {
-            if (IssuesDataGridView.Rows != null && IssuesDataGridView.Rows.Count > 0 && IssuesDataGridView.CurrentRow != null && IssuesDataGridView.CurrentRow.Tag != null)
+            if (IssuesDataGridView.Rows.Count > 0 && IssuesDataGridView.CurrentRow is { Tag: { } })
             {
                 var item = (CheckResultItem)IssuesDataGridView.CurrentRow.Tag;
                 switch (item.ResultState)
@@ -1030,7 +1034,6 @@ namespace TvpMain.Forms
                     case CheckResultState.Ignored:
                         DenyButton.Text = UNDENY_BUTTON_TEXT;
                         break;
-                    case CheckResultState.Found:
                     default:
                         DenyButton.Text = DENY_BUTTON_TEXT;
                         break;
@@ -1043,7 +1046,7 @@ namespace TvpMain.Forms
         /// </summary>
         private void PopulateMatchFixTextBoxes()
         {
-            if (IssuesDataGridView.Rows != null && IssuesDataGridView.Rows.Count > 0 && IssuesDataGridView.CurrentRow != null && IssuesDataGridView.CurrentRow.Tag != null)
+            if (IssuesDataGridView.Rows.Count > 0 && IssuesDataGridView.CurrentRow is { Tag: { } })
             {
                 var item = (CheckResultItem)IssuesDataGridView.CurrentRow.Tag;
 
@@ -1052,28 +1055,28 @@ namespace TvpMain.Forms
 
                 matchTextBox.SelectAll();
                 matchTextBox.SelectionBackColor = Color.White;
-
                 matchTextBox.SelectionStart = MinusPrecedingChars(
                     item.Reference,
                     item.MatchStart,
                     '\r');
-                matchTextBox.SelectionLength = item.MatchLength;
+                matchTextBox.SelectionLength =
+                    MinusPrecedingChars(
+                        item.MatchText,
+                        item.MatchLength,
+                        '\r');
                 matchTextBox.SelectionBackColor = Color.Yellow;
                 matchTextBox.ScrollToCaret();
-
                 matchTextBox.Refresh();
 
                 // update fix text
                 if (!IsNullOrEmpty(item.FixText))
                 {
-                    StringBuilder stringBuilder = new StringBuilder(item.Reference);
+                    var stringBuilder = new StringBuilder(item.Reference);
                     stringBuilder.Remove(item.MatchStart, item.MatchLength);
                     stringBuilder.Insert(item.MatchStart, item.FixText);
 
                     var fixReference = stringBuilder.ToString();
-
                     fixTextBox.Text = fixReference;
-
                     fixTextBox.SelectAll();
                     fixTextBox.SelectionBackColor = Color.White;
 
@@ -1081,11 +1084,14 @@ namespace TvpMain.Forms
                         fixReference,
                         item.MatchStart,
                         '\r');
-                    fixTextBox.SelectionLength = item.MatchLength;
+                    fixTextBox.SelectionLength = MinusPrecedingChars(
+                        item.FixText,
+                        item.FixText.Length,
+                        '\r');
                     fixTextBox.SelectionBackColor = Color.LightGreen;
                     fixTextBox.ScrollToCaret();
-
                     fixTextBox.Refresh();
+
                     fixTextBox.Enabled = true;
                 }
                 else
