@@ -87,7 +87,7 @@ namespace TvpMain.Forms
             this.checkFixIdLabel.TabIndex = 1;
             this.checkFixIdLabel.Text = "label1";
             this.checkFixIdLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.checkFixIdLabel.MouseEnter += new System.EventHandler(this.checkFixIdLabel_MouseEnter);
+            this.checkFixIdLabel.MouseEnter += new System.EventHandler(this.CheckFixIdLabel_MouseEnter);
             // 
             // label1
             // 
@@ -105,8 +105,8 @@ namespace TvpMain.Forms
             this.checkFixNameTextBox.Name = "checkFixNameTextBox";
             this.checkFixNameTextBox.Size = new System.Drawing.Size(294, 20);
             this.checkFixNameTextBox.TabIndex = 3;
-            this.checkFixNameTextBox.TextChanged += new System.EventHandler(this.content_TextChanged);
-            this.checkFixNameTextBox.MouseEnter += new System.EventHandler(this.checkFixNameTextBox_MouseEnter);
+            this.checkFixNameTextBox.TextChanged += new System.EventHandler(this.Content_TextChanged);
+            this.checkFixNameTextBox.MouseEnter += new System.EventHandler(this.CheckFixNameTextBox_MouseEnter);
             // 
             // groupBox2
             // 
@@ -135,9 +135,9 @@ namespace TvpMain.Forms
             this.jsEditor.Name = "jsEditor";
             this.jsEditor.Size = new System.Drawing.Size(1147, 577);
             this.jsEditor.TabIndex = 6;
-            this.jsEditor.CharAdded += new System.EventHandler<ScintillaNET.CharAddedEventArgs>(this.jsEditor_CharAdded);
-            this.jsEditor.TextChanged += new System.EventHandler(this.jsEditor_TextChanged);
-            this.jsEditor.MouseEnter += new System.EventHandler(this.jsEditor_MouseEnter);
+            this.jsEditor.CharAdded += new System.EventHandler<ScintillaNET.CharAddedEventArgs>(this.JsEditor_CharAdded);
+            this.jsEditor.TextChanged += new System.EventHandler(this.JsEditor_TextChanged);
+            this.jsEditor.MouseEnter += new System.EventHandler(this.JsEditor_MouseEnter);
             // 
             // label5
             // 
@@ -156,7 +156,7 @@ namespace TvpMain.Forms
             this.fixRegExTextBox.Name = "fixRegExTextBox";
             this.fixRegExTextBox.Size = new System.Drawing.Size(1040, 20);
             this.fixRegExTextBox.TabIndex = 3;
-            this.fixRegExTextBox.TextChanged += new System.EventHandler(this.content_TextChanged);
+            this.fixRegExTextBox.TextChanged += new System.EventHandler(this.Content_TextChanged);
             this.fixRegExTextBox.MouseEnter += new System.EventHandler(this.FixRegExTextBox_MouseEnter);
             // 
             // label4
@@ -185,8 +185,8 @@ namespace TvpMain.Forms
             this.checkFindRegExTextBox.Name = "checkFindRegExTextBox";
             this.checkFindRegExTextBox.Size = new System.Drawing.Size(1040, 20);
             this.checkFindRegExTextBox.TabIndex = 0;
-            this.checkFindRegExTextBox.TextChanged += new System.EventHandler(this.content_TextChanged);
-            this.checkFindRegExTextBox.MouseEnter += new System.EventHandler(this.checkFindRegExTextBox_MouseEnter);
+            this.checkFindRegExTextBox.TextChanged += new System.EventHandler(this.Content_TextChanged);
+            this.checkFindRegExTextBox.MouseEnter += new System.EventHandler(this.CheckFindRegExTextBox_MouseEnter);
             // 
             // label2
             // 
@@ -210,7 +210,7 @@ namespace TvpMain.Forms
             this.scopeCombo.Name = "scopeCombo";
             this.scopeCombo.Size = new System.Drawing.Size(294, 21);
             this.scopeCombo.TabIndex = 6;
-            this.scopeCombo.MouseEnter += new System.EventHandler(this.scopeCombo_MouseEnter);
+            this.scopeCombo.MouseEnter += new System.EventHandler(this.ScopeCombo_MouseEnter);
             // 
             // groupBox3
             // 
@@ -246,8 +246,8 @@ namespace TvpMain.Forms
             this.versionTextBox.Name = "versionTextBox";
             this.versionTextBox.Size = new System.Drawing.Size(294, 20);
             this.versionTextBox.TabIndex = 16;
-            this.versionTextBox.TextChanged += new System.EventHandler(this.content_TextChanged);
-            this.versionTextBox.MouseEnter += new System.EventHandler(this.versionTextBox_MouseEnter);
+            this.versionTextBox.TextChanged += new System.EventHandler(this.Content_TextChanged);
+            this.versionTextBox.MouseEnter += new System.EventHandler(this.VersionTextBox_MouseEnter);
             // 
             // label10
             // 
@@ -271,8 +271,8 @@ namespace TvpMain.Forms
             this.descriptionTextBox.ScrollBars = System.Windows.Forms.ScrollBars.Both;
             this.descriptionTextBox.Size = new System.Drawing.Size(430, 445);
             this.descriptionTextBox.TabIndex = 14;
-            this.descriptionTextBox.TextChanged += new System.EventHandler(this.content_TextChanged);
-            this.descriptionTextBox.MouseEnter += new System.EventHandler(this.descriptionTextBox_MouseEnter);
+            this.descriptionTextBox.TextChanged += new System.EventHandler(this.Content_TextChanged);
+            this.descriptionTextBox.MouseEnter += new System.EventHandler(this.DescriptionTextBox_MouseEnter);
             // 
             // label9
             // 
@@ -289,8 +289,8 @@ namespace TvpMain.Forms
             this.tagsTextBox.Name = "tagsTextBox";
             this.tagsTextBox.Size = new System.Drawing.Size(294, 20);
             this.tagsTextBox.TabIndex = 12;
-            this.tagsTextBox.TextChanged += new System.EventHandler(this.content_TextChanged);
-            this.tagsTextBox.MouseEnter += new System.EventHandler(this.tagsTextBox_MouseEnter);
+            this.tagsTextBox.TextChanged += new System.EventHandler(this.Content_TextChanged);
+            this.tagsTextBox.MouseEnter += new System.EventHandler(this.TagsTextBox_MouseEnter);
             // 
             // label8
             // 
@@ -307,8 +307,8 @@ namespace TvpMain.Forms
             this.languagesTextBox.Name = "languagesTextBox";
             this.languagesTextBox.Size = new System.Drawing.Size(294, 20);
             this.languagesTextBox.TabIndex = 10;
-            this.languagesTextBox.TextChanged += new System.EventHandler(this.content_TextChanged);
-            this.languagesTextBox.MouseEnter += new System.EventHandler(this.languagesTextBox_MouseEnter);
+            this.languagesTextBox.TextChanged += new System.EventHandler(this.Content_TextChanged);
+            this.languagesTextBox.MouseEnter += new System.EventHandler(this.LanguagesTextBox_MouseEnter);
             // 
             // defaultDescTextBox
             // 
@@ -317,8 +317,8 @@ namespace TvpMain.Forms
             this.defaultDescTextBox.Name = "defaultDescTextBox";
             this.defaultDescTextBox.Size = new System.Drawing.Size(294, 20);
             this.defaultDescTextBox.TabIndex = 9;
-            this.defaultDescTextBox.TextChanged += new System.EventHandler(this.content_TextChanged);
-            this.defaultDescTextBox.MouseEnter += new System.EventHandler(this.defaultDescTextBox_MouseEnter);
+            this.defaultDescTextBox.TextChanged += new System.EventHandler(this.Content_TextChanged);
+            this.defaultDescTextBox.MouseEnter += new System.EventHandler(this.DefaultDescTextBox_MouseEnter);
             // 
             // label7
             // 
@@ -381,7 +381,7 @@ namespace TvpMain.Forms
             this.newToolStripMenuItem.ShowShortcutKeys = false;
             this.newToolStripMenuItem.Size = new System.Drawing.Size(156, 22);
             this.newToolStripMenuItem.Text = "&New";
-            this.newToolStripMenuItem.Click += new System.EventHandler(this.newToolStripMenuItem_Click);
+            this.newToolStripMenuItem.Click += new System.EventHandler(this.NewToolStripMenuItem_Click);
             // 
             // openToolStripMenuItem
             // 
@@ -390,7 +390,7 @@ namespace TvpMain.Forms
             this.openToolStripMenuItem.ShowShortcutKeys = false;
             this.openToolStripMenuItem.Size = new System.Drawing.Size(156, 22);
             this.openToolStripMenuItem.Text = "&Open";
-            this.openToolStripMenuItem.Click += new System.EventHandler(this.openToolStripMenuItem_Click);
+            this.openToolStripMenuItem.Click += new System.EventHandler(this.OpenToolStripMenuItem_Click);
             // 
             // saveToolStripMenuItem
             // 
@@ -399,7 +399,7 @@ namespace TvpMain.Forms
             this.saveToolStripMenuItem.ShowShortcutKeys = false;
             this.saveToolStripMenuItem.Size = new System.Drawing.Size(156, 22);
             this.saveToolStripMenuItem.Text = "&Save";
-            this.saveToolStripMenuItem.Click += new System.EventHandler(this.saveToolStripMenuItem_Click);
+            this.saveToolStripMenuItem.Click += new System.EventHandler(this.SaveToolStripMenuItem_Click);
             // 
             // publishToolStripMenuItem
             // 
@@ -408,7 +408,7 @@ namespace TvpMain.Forms
             this.publishToolStripMenuItem.ShowShortcutKeys = false;
             this.publishToolStripMenuItem.Size = new System.Drawing.Size(156, 22);
             this.publishToolStripMenuItem.Text = "Save and &Publish";
-            this.publishToolStripMenuItem.Click += new System.EventHandler(this.publishToolStripMenuItem_Click);
+            this.publishToolStripMenuItem.Click += new System.EventHandler(this.PublishToolStripMenuItem_Click);
             // 
             // exitToolStripMenuItem
             // 
@@ -417,7 +417,7 @@ namespace TvpMain.Forms
             this.exitToolStripMenuItem.ShowShortcutKeys = false;
             this.exitToolStripMenuItem.Size = new System.Drawing.Size(156, 22);
             this.exitToolStripMenuItem.Text = "E&xit";
-            this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
+            this.exitToolStripMenuItem.Click += new System.EventHandler(this.ExitToolStripMenuItem_Click);
             // 
             // saveIconToolStripMenuItem
             // 
@@ -435,12 +435,12 @@ namespace TvpMain.Forms
             this.saveIconToolStripMenuItem.Size = new System.Drawing.Size(20, 25);
             this.saveIconToolStripMenuItem.Text = "saveIconMenuItem";
             this.saveIconToolStripMenuItem.ToolTipText = "Ctrl+S";
-            this.saveIconToolStripMenuItem.Click += new System.EventHandler(this.saveToolStripMenuItem_Click);
+            this.saveIconToolStripMenuItem.Click += new System.EventHandler(this.SaveToolStripMenuItem_Click);
             // 
             // publishWorker
             // 
-            this.publishWorker.DoWork += new System.ComponentModel.DoWorkEventHandler(this.publishWorker_DoWork);
-            this.publishWorker.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.publishWorker_RunWorkerCompleted);
+            this.publishWorker.DoWork += new System.ComponentModel.DoWorkEventHandler(this.PublishWorker_DoWork);
+            this.publishWorker.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.PublishWorker_RunWorkerCompleted);
             // 
             // CheckEditor
             // 
@@ -459,7 +459,7 @@ namespace TvpMain.Forms
             this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Show;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Check/Fix Editor & Publisher";
-            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.onFormClosing);
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.OnFormClosing);
             this.Load += new System.EventHandler(this.CheckEditor_Load);
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();

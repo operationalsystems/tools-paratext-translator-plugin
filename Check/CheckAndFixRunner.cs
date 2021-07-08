@@ -2,6 +2,7 @@
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text.RegularExpressions;
 
 namespace TvpMain.Check
@@ -14,94 +15,109 @@ namespace TvpMain.Check
     public class CheckAndFixRunner : ICheckAndFixRunner
     {
         /// <summary>
+        /// Default regex options.
+        /// </summary>
+        private const RegexOptions DEFAULT_REGEX_OPTIONS = (RegexOptions.Multiline | RegexOptions.ECMAScript);
+
+        /// <summary>
+        /// Escape code regex.
+        ///
+        /// Note: This needs to be an or-block instead of a list of regexes, otherwise there will be overlapping matches on the same text
+        /// since USFM escape codes all begin with "\".
+        /// </summary>
+        private static readonly Regex EscapeCodeRegex = new Regex(@"(\\\\|\\r|\\n|\\t|\\u[0-9A-Fa-f]{4})", DEFAULT_REGEX_OPTIONS);
+
+        /// <summary>
         /// Executes the check/fix against the given text
         /// </summary>
-        /// <param name="text">The text (BCV) to be checked.</param>
+        /// <param name="inputText">The inputText (BCV) to be checked.</param>
         /// <param name="checkAndFixItem">The model that describes the check/fix</param>
         /// <returns>The list of check result items. This includes the suggested fixes if they are available.</returns>
-        public List<CheckResultItem> ExecCheckAndFix(string text, CheckAndFixItem checkAndFixItem)
+        public List<CheckResultItem> ExecCheckAndFix(string inputText, CheckAndFixItem checkAndFixItem)
         {
             // First, run the check regex, looking for matches
-            Regex checkRegex = new Regex(@checkAndFixItem.CheckRegex, RegexOptions.Multiline | RegexOptions.ECMAScript);
-
-            MatchCollection matches = checkRegex.Matches(text);
-            List<CheckResultItem> checkResultItems = new List<CheckResultItem>();
+            var checkRegex = new Regex(checkAndFixItem.CheckRegex, DEFAULT_REGEX_OPTIONS);
+            var fixRegex = EscapeCodeRegex.Replace(checkAndFixItem.FixRegex ?? string.Empty,
+                foundMatch => Regex.Unescape(foundMatch.Value));
+            var checkResultItems = new List<CheckResultItem>();
 
             // Now, loop through the matches
-            foreach (Match match in matches)
+            foreach (Match matchItem in checkRegex.Matches(inputText))
             {
                 // Create a result item
-                CheckResultItem checkResultItem = new CheckResultItem(checkAndFixItem.Description,
-                    match.Value,
-                    match.Index,
+                var checkResultItem = new CheckResultItem(checkAndFixItem.Description,
+                    matchItem.Value,
+                    matchItem.Index,
                     CheckType.MissingSentencePunctuation,
                     (int)ScriptureReferenceErrorType.LooseFormatting
                     );
 
                 // If there is a replacement regex, apply that to the result
-                if (!String.IsNullOrEmpty(checkAndFixItem.FixRegex))
+                if (!string.IsNullOrEmpty(fixRegex))
                 {
-                    checkResultItem.FixText = match.Result(@checkAndFixItem.FixRegex);
+                    checkResultItem.FixText = matchItem.Result(fixRegex);
                 }
                 checkResultItems.Add(checkResultItem);
             }
 
             // if we have a script to run, run it
-            if (!String.IsNullOrEmpty(checkAndFixItem.CheckScript))
+            if (string.IsNullOrEmpty(checkAndFixItem.CheckScript))
             {
-                // start up the V8 engine to run the script
-                // can set various flags
-                // See [V8ScriptEngineFlags] The most interesting are
-                // V8ScriptEngineFlags.EnableRemoteDebugging - for remote debugging using something like VS Code
-                // V8ScriptEngineFlags.EnableDebugging - again, enable debugging
-                // V8ScriptEngineFlags.AwaitDebuggerAndPauseOnStart - used to allow the debugger to attach as soon 
-                // as the engine is set for the script
-                using (var engine = new V8ScriptEngine())
-                {
-                    // passing data into and out of the script is done by JSON to limit issues with conversions
-                    var resultsString = JsonConvert.SerializeObject(checkResultItems);
+                return checkResultItems;
+            }
 
-                    // This entry script demarshals the input and marshals the response
-                    // The script in the check/fix need only have the 'checkAndFix' function defined
-                    var entryScript = @"
+            // start up the V8 engine to run the script
+            // can set various flags
+            // See [V8ScriptEngineFlags] The most interesting are
+            // V8ScriptEngineFlags.EnableRemoteDebugging - for remote debugging using something like VS Code
+            // V8ScriptEngineFlags.EnableDebugging - again, enable debugging
+            // V8ScriptEngineFlags.AwaitDebuggerAndPauseOnStart - used to allow the debugger to attach as soon 
+            // as the engine is set for the script
+            using var engine = new V8ScriptEngine();
+
+            // passing data into and out of the script is done by JSON to limit issues with conversions
+            var resultsString = JsonConvert.SerializeObject(checkResultItems);
+
+            // This entry script demarshals the input and marshals the response
+            // The script in the check/fix need only have the 'checkAndFix' function defined
+            var entryScript = @"
                         function entry(jsonCheckResultItems) {
                             let checkResultItems = JSON.parse(jsonCheckResultItems)
                             return JSON.stringify(checkAndFix(checkResultItems))
                         }
                     ";
 
-                    // Here we can add a bunch of different data and bind context variables
-                    // For example, this is where we'd bind project settings
-                    // Right now, just the console
-                    engine.AddHostType("Console", typeof(Console));
-                    // execute the script
-                    engine.Execute(@checkAndFixItem.CheckScript + entryScript);
-                    // convert the response to json
-                    var outResultItems = engine.Script.entry(resultsString);
-                    checkResultItems = JsonConvert.DeserializeObject<List<CheckResultItem>>(outResultItems);
-                }
-            }
+            // Here we can add a bunch of different data and bind context variables
+            // For example, this is where we'd bind project settings
+            // Right now, just the console
+            engine.AddHostType("Console", typeof(Console));
+            // execute the script
+            engine.Execute(@checkAndFixItem.CheckScript + entryScript);
+            // convert the response to json
+            var outResultItems = engine.Script.entry(resultsString);
+            checkResultItems = JsonConvert.DeserializeObject<List<CheckResultItem>>(outResultItems);
 
             // return the results
             return checkResultItems;
         }
     }
-        /// <summary>
-        /// Scripture reference error sub-types,
-        /// used for ResultTypeCode field in ResultItem.
-        /// </summary>
-        public enum ScriptureReferenceErrorType
-        {
-            LooseFormatting, // Spacing or punctuation misses
-            IncorrectNameStyle, // Name style inappropriate for context (e.g., abbrev when it should be long).
-            TagShouldNotExist, // for when there shouldn't be a tag
-                               // (found in section that should not
-                               // have tags (the other ignore list -- overloaded term) )
-            MissingTag, // Reference should have tag, but does not (e.g., in body footnote)
-            IncorrectTag, // Wrong tag for context (e.g., \xt in footnote instead of \+xt)
-            MalformedTag, // Missing slash(es), unmatched tag pair, etc.
-            BadReference, // Book name or chapter number incorrect or doesn't exist
-            Unknown
-        }
+
+    /// <summary>
+    /// Scripture reference error sub-types,
+    /// used for ResultTypeCode field in ResultItem.
+    /// </summary>
+    public enum ScriptureReferenceErrorType
+    {
+        LooseFormatting, // Spacing or punctuation misses
+        IncorrectNameStyle, // Name style inappropriate for context (e.g., abbrev when it should be long).
+        TagShouldNotExist, // for when there shouldn't be a tag
+                           // (found in section that should not
+                           // have tags (the other ignore list -- overloaded term) )
+        MissingTag, // Reference should have tag, but does not (e.g., in body footnote)
+        IncorrectTag, // Wrong tag for context (e.g., \xt in footnote instead of \+xt)
+        MalformedTag, // Missing slash(es), unmatched tag pair, etc.
+        BadReference, // Book name or chapter number incorrect or doesn't exist
+        Unknown
+    }
 
 }

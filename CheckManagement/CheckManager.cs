@@ -13,18 +13,18 @@ namespace TvpMain.CheckManagement
     /// </summary>
     public class CheckManager : ICheckManager
     {
-        private readonly IRepository installedChecksRepository;
-        private readonly IRepository locallyDevelopedChecksRepository;
-        private readonly IRepository s3Repository;
+        private readonly IRepository _installedChecksRepository;
+        private readonly IRepository _locallyDevelopedChecksRepository;
+        private readonly IRepository _s3Repository;
 
         /// <summary>
         /// Default constructor for CheckManager
         /// </summary>
         public CheckManager()
         {
-            installedChecksRepository = new LocalRepository(Path.Combine(Directory.GetCurrentDirectory(), MainConsts.INSTALLED_CHECK_FOLDER_NAME));
-            locallyDevelopedChecksRepository = new LocalRepository(Path.Combine(Directory.GetCurrentDirectory(), MainConsts.LOCAL_CHECK_FOLDER_NAME));
-            s3Repository = new S3Repository();
+            _installedChecksRepository = new LocalRepository(Path.Combine(Directory.GetCurrentDirectory(), MainConsts.INSTALLED_CHECK_FOLDER_NAME));
+            _locallyDevelopedChecksRepository = new LocalRepository(Path.Combine(Directory.GetCurrentDirectory(), MainConsts.LOCAL_CHECK_FOLDER_NAME));
+            _s3Repository = new S3Repository();
         }
 
         /// <summary>
@@ -34,32 +34,40 @@ namespace TvpMain.CheckManagement
         /// <returns>A key/value pair mapping of the result, with <c>CheckAndFixItem</c>s grouped by enumerated values.</returns>
         public virtual Dictionary<SynchronizationResultType, List<CheckAndFixItem>> SynchronizeInstalledChecks(bool dryRun = false)
         {
-            List<CheckAndFixItem> newCheckAndFixItems = GetNewCheckAndFixItems();
-            Dictionary<CheckAndFixItem, CheckAndFixItem> outdatedCheckAndFixItems = GetOutdatedCheckAndFixItems();
-            List<CheckAndFixItem> deprecatedCheckAndFixItems = GetDeprecatedCheckAndFixItems();
+            var newCheckAndFixItems = GetNewCheckAndFixItems();
+            var outdatedCheckAndFixItems = GetOutdatedCheckAndFixItems();
+            var deprecatedCheckAndFixItems = GetDeprecatedCheckAndFixItems();
 
-            if (!dryRun)
+            if (dryRun)
             {
-                foreach (CheckAndFixItem check in deprecatedCheckAndFixItems)
+                return new Dictionary<SynchronizationResultType, List<CheckAndFixItem>>
                 {
-                    UninstallCheckAndFixItem(check);
-                }
+                    [SynchronizationResultType.New] = newCheckAndFixItems,
+                    [SynchronizationResultType.Outdated] = outdatedCheckAndFixItems.Keys.ToList(),
+                    [SynchronizationResultType.Updated] = outdatedCheckAndFixItems.Values.ToList(),
+                    [SynchronizationResultType.Deprecated] = deprecatedCheckAndFixItems
+                };
+            }
 
-                // Handle any situation where a newer check was removed from remote, but an older version still exists.
-                newCheckAndFixItems = GetNewCheckAndFixItems();
+            foreach (var check in deprecatedCheckAndFixItems)
+            {
+                UninstallCheckAndFixItem(check);
+            }
 
-                foreach (CheckAndFixItem check in newCheckAndFixItems)
-                {
-                    InstallCheckAndFixItem(check);
-                }
-                foreach (CheckAndFixItem check in outdatedCheckAndFixItems.Keys)
-                {
-                    UninstallCheckAndFixItem(check);
-                }
-                foreach (CheckAndFixItem check in outdatedCheckAndFixItems.Values)
-                {
-                    InstallCheckAndFixItem(check);
-                }
+            // Handle any situation where a newer check was removed from remote, but an older version still exists.
+            newCheckAndFixItems = GetNewCheckAndFixItems();
+
+            foreach (var check in newCheckAndFixItems)
+            {
+                InstallCheckAndFixItem(check);
+            }
+            foreach (var check in outdatedCheckAndFixItems.Keys)
+            {
+                UninstallCheckAndFixItem(check);
+            }
+            foreach (var check in outdatedCheckAndFixItems.Values)
+            {
+                InstallCheckAndFixItem(check);
             }
 
             return new Dictionary<SynchronizationResultType, List<CheckAndFixItem>>
@@ -77,13 +85,13 @@ namespace TvpMain.CheckManagement
         /// <returns>A list of new <c>CheckAndFixItem</c>s which can be installed.</returns>
         internal virtual List<CheckAndFixItem> GetNewCheckAndFixItems()
         {
-            List<CheckAndFixItem> availableChecks = GetAvailableCheckAndFixItems();
+            var availableChecks = GetAvailableCheckAndFixItems();
             var localChecks = from local in GetInstalledCheckAndFixItems()
                               select new
                               {
-                                  local.Name,
+                                  local.Name
                               };
-            List<CheckAndFixItem> newChecks = availableChecks.Where(check =>
+            var newChecks = availableChecks.Where(check =>
             {
                 var installed = new { check.Name };
                 return !localChecks.Contains(installed);
@@ -97,13 +105,13 @@ namespace TvpMain.CheckManagement
         /// <returns>A list of deprecated <c>CheckAndFixItem</c>s.</returns>
         internal virtual List<CheckAndFixItem> GetDeprecatedCheckAndFixItems()
         {
-            List<CheckAndFixItem> installedChecks = GetInstalledCheckAndFixItems();
+            var installedChecks = GetInstalledCheckAndFixItems();
             var remoteChecks = from remote in GetAvailableCheckAndFixItems()
                                select new
                                {
-                                   remote.Name,
+                                   remote.Name
                                };
-            List<CheckAndFixItem> deprecated = installedChecks.Where(check =>
+            var deprecated = installedChecks.Where(check =>
             {
                 var installed = new { check.Name };
                 return !remoteChecks.Contains(installed);
@@ -117,8 +125,8 @@ namespace TvpMain.CheckManagement
         /// <param name="item">The <c>CheckAndFixItem</c> to be installed.</param>
         internal virtual void InstallCheckAndFixItem(CheckAndFixItem item)
         {
-            string filename = GetCheckAndFixItemFilename(item);
-            installedChecksRepository.AddCheckAndFixItem(filename, item);
+            var filename = GetCheckAndFixItemFilename(item);
+            _installedChecksRepository.AddCheckAndFixItem(filename, item);
         }
 
         /// <summary>
@@ -127,13 +135,13 @@ namespace TvpMain.CheckManagement
         /// <param name="item">The <c>CheckAndFixItem</c> to save locally.</param>
         public virtual void SaveCheckAndFixItem(CheckAndFixItem item)
         {
-            string filename = GetCheckAndFixItemFilename(item);
+            var filename = GetCheckAndFixItemFilename(item);
 
             // Remove previous versions of the item before saving a new one.
-            foreach (CheckAndFixItem check in GetSavedCheckAndFixItems().Where(check => check.Name == item.Name).ToList())
+            foreach (var check in GetSavedCheckAndFixItems()
+                .Where(check => check.Name == item.Name).ToList())
                 DeleteCheckAndFixItem(check);
-
-            locallyDevelopedChecksRepository.AddCheckAndFixItem(filename, item);
+            _locallyDevelopedChecksRepository.AddCheckAndFixItem(filename, item);
         }
 
         /// <summary>
@@ -142,8 +150,8 @@ namespace TvpMain.CheckManagement
         /// <param name="item">The <c>CheckAndFixItem</c> to uninstall.</param>
         internal virtual void UninstallCheckAndFixItem(CheckAndFixItem item)
         {
-            string filename = GetCheckAndFixItemFilename(item);
-            installedChecksRepository.RemoveCheckAndFixItem(filename);
+            var filename = GetCheckAndFixItemFilename(item);
+            _installedChecksRepository.RemoveCheckAndFixItem(filename);
         }
 
         /// <summary>
@@ -152,8 +160,8 @@ namespace TvpMain.CheckManagement
         /// <param name="item">The <c>CheckAndFixItem</c> to delete locally.</param>
         public virtual void DeleteCheckAndFixItem(CheckAndFixItem item)
         {
-            string filename = GetCheckAndFixItemFilename(item);
-            locallyDevelopedChecksRepository.RemoveCheckAndFixItem(filename);
+            var filename = GetCheckAndFixItemFilename(item);
+            _locallyDevelopedChecksRepository.RemoveCheckAndFixItem(filename);
         }
 
         /// <summary>
@@ -162,8 +170,8 @@ namespace TvpMain.CheckManagement
         /// <param name="item">The <c>CheckAndFixItem</c> to publish to the remote repository.</param>
         public void PublishCheckAndFixItem(CheckAndFixItem item)
         {
-            string filename = GetCheckAndFixItemFilename(item);
-            s3Repository.AddCheckAndFixItem(filename, item);
+            var filename = GetCheckAndFixItemFilename(item);
+            _s3Repository.AddCheckAndFixItem(filename, item);
         }
 
         /// <summary>
@@ -172,7 +180,7 @@ namespace TvpMain.CheckManagement
         /// <returns>The <c>CheckAndFixItem</c>s which are available in the remote repository.</returns>
         public virtual List<CheckAndFixItem> GetAvailableCheckAndFixItems()
         {
-            return s3Repository.GetCheckAndFixItems();
+            return _s3Repository.GetCheckAndFixItems();
         }
 
         /// <summary>
@@ -181,7 +189,7 @@ namespace TvpMain.CheckManagement
         /// <returns>A list of saved <c>CheckAndFixItem</c>s.</returns>
         public virtual List<CheckAndFixItem> GetInstalledCheckAndFixItems()
         {
-            return installedChecksRepository.GetCheckAndFixItems();
+            return _installedChecksRepository.GetCheckAndFixItems();
         }
 
         /// <summary>
@@ -190,7 +198,7 @@ namespace TvpMain.CheckManagement
         /// <returns>A list of saved <c>CheckAndFixItem</c>s.</returns>
         public virtual List<CheckAndFixItem> GetSavedCheckAndFixItems()
         {
-            return locallyDevelopedChecksRepository.GetCheckAndFixItems();
+            return _locallyDevelopedChecksRepository.GetCheckAndFixItems();
         }
 
         /// <summary>
@@ -199,15 +207,17 @@ namespace TvpMain.CheckManagement
         /// <returns>A dictionary comprising of {KEY: the current <c>CheckAndFixItem</c>} and {VALUE: the updated <c>CheckAndFixItem</c> available in the remote repository}.</returns>
         internal virtual Dictionary<CheckAndFixItem, CheckAndFixItem> GetOutdatedCheckAndFixItems()
         {
-            List<CheckAndFixItem> availableCheckAndFixItems = GetAvailableCheckAndFixItems();
-            availableCheckAndFixItems.Sort((x, y) => new Version(y.Version).CompareTo(new Version(x.Version)));
-            List<CheckAndFixItem> installedCheckAndFixItems = GetInstalledCheckAndFixItems();
-            Dictionary<CheckAndFixItem, CheckAndFixItem> outdatedCheckAndFixItems = new Dictionary<CheckAndFixItem, CheckAndFixItem>();
+            var availableCheckAndFixItems = GetAvailableCheckAndFixItems();
+            availableCheckAndFixItems.Sort((x, y) =>
+                new Version(y.Version).CompareTo(new Version(x.Version)));
+            var installedCheckAndFixItems = GetInstalledCheckAndFixItems();
+            var outdatedCheckAndFixItems = new Dictionary<CheckAndFixItem, CheckAndFixItem>();
 
             installedCheckAndFixItems.ForEach(installedCheck =>
             {
-                CheckAndFixItem availableUpdate = availableCheckAndFixItems.Find(availableCheck => IsNewVersion(installedCheck, availableCheck));
-                if (availableUpdate != default(CheckAndFixItem)) outdatedCheckAndFixItems.Add(installedCheck, availableUpdate);
+                var availableUpdate = availableCheckAndFixItems.Find(availableCheck =>
+                    IsNewVersion(installedCheck, availableCheck));
+                if (availableUpdate is { }) outdatedCheckAndFixItems.Add(installedCheck, availableUpdate);
             });
 
             return outdatedCheckAndFixItems;
@@ -221,8 +231,9 @@ namespace TvpMain.CheckManagement
         /// <returns>The filename produced for the provided <c>CheckAndFixItem</c>.</returns>
         public string GetCheckAndFixItemFilename(string name, string version)
         {
-            return $"{name.ConvertToTitleCase().Replace(" ", String.Empty)}-{version.Trim()}.{MainConsts.CHECK_FILE_EXTENSION}";
+            return $"{name.ConvertToFileName()}-{version.Trim()}.{MainConsts.CHECK_FILE_EXTENSION}";
         }
+
 
         /// <summary>
         /// This method creates a filename for the provided <c>CheckAndFixItem</c>.
@@ -240,9 +251,9 @@ namespace TvpMain.CheckManagement
         /// <param name="original"></param>
         /// <param name="candidate"></param>
         /// <returns>True if this candidate is greater than the original</returns>
-        internal virtual Boolean IsNewVersion(CheckAndFixItem original, CheckAndFixItem candidate)
+        internal virtual bool IsNewVersion(CheckAndFixItem original, CheckAndFixItem candidate)
         {
-            return String.Equals(candidate.Name, original.Name) &&
+            return string.Equals(candidate.Name, original.Name) &&
                     Version.Parse(candidate.Version) > Version.Parse(original.Version);
         }
 

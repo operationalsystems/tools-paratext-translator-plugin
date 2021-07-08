@@ -97,21 +97,21 @@ namespace TvpMain.Forms
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
             this.exitToolStripMenuItem.Size = new System.Drawing.Size(93, 22);
             this.exitToolStripMenuItem.Text = "E&xit";
-            this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
+            this.exitToolStripMenuItem.Click += new System.EventHandler(this.ExitToolStripMenuItem_Click);
             // 
             // editorToolStripMenuItem
             // 
             this.editorToolStripMenuItem.Name = "editorToolStripMenuItem";
             this.editorToolStripMenuItem.Size = new System.Drawing.Size(50, 20);
             this.editorToolStripMenuItem.Text = "Editor";
-            this.editorToolStripMenuItem.Click += new System.EventHandler(this.editorToolStripMenuItem_Click);
+            this.editorToolStripMenuItem.Click += new System.EventHandler(this.EditorToolStripMenuItem_Click);
             // 
             // licenseToolStripMenuItem
             // 
             this.licenseToolStripMenuItem.Name = "licenseToolStripMenuItem";
             this.licenseToolStripMenuItem.Size = new System.Drawing.Size(58, 20);
             this.licenseToolStripMenuItem.Text = "License";
-            this.licenseToolStripMenuItem.Click += new System.EventHandler(this.licenseToolStripMenuItem_Click);
+            this.licenseToolStripMenuItem.Click += new System.EventHandler(this.LicenseToolStripMenuItem_Click);
             // 
             // projectLabel
             // 
@@ -157,7 +157,7 @@ namespace TvpMain.Forms
             this.filterTextBox.Name = "filterTextBox";
             this.filterTextBox.Size = new System.Drawing.Size(332, 20);
             this.filterTextBox.TabIndex = 4;
-            this.filterTextBox.TextChanged += new System.EventHandler(this.filterTextBox_TextChanged);
+            this.filterTextBox.TextChanged += new System.EventHandler(this.FilterTextBox_TextChanged);
             // 
             // refreshButton
             // 
@@ -168,7 +168,7 @@ namespace TvpMain.Forms
             this.refreshButton.TabIndex = 3;
             this.refreshButton.Text = "Refresh for New Checks";
             this.refreshButton.UseVisualStyleBackColor = true;
-            this.refreshButton.Click += new System.EventHandler(this.refreshButton_Click);
+            this.refreshButton.Click += new System.EventHandler(this.RefreshButton_Click);
             // 
             // setDefaultsToSelected
             // 
@@ -179,8 +179,8 @@ namespace TvpMain.Forms
             this.setDefaultsToSelected.TabIndex = 2;
             this.setDefaultsToSelected.Text = "Set Selected Checks as the Project Defaults";
             this.setDefaultsToSelected.UseVisualStyleBackColor = true;
-            this.setDefaultsToSelected.Click += new System.EventHandler(this.setDefaultsToSelected_Click);
-            this.setDefaultsToSelected.MouseEnter += new System.EventHandler(this.setDefaultsToSelected_MouseEnter);
+            this.setDefaultsToSelected.Click += new System.EventHandler(this.SetDefaultsToSelected_Click);
+            this.setDefaultsToSelected.MouseEnter += new System.EventHandler(this.SetDefaultsToSelected_MouseEnter);
             // 
             // resetToProjectDefaultsButton
             // 
@@ -191,8 +191,8 @@ namespace TvpMain.Forms
             this.resetToProjectDefaultsButton.TabIndex = 1;
             this.resetToProjectDefaultsButton.Text = "Reset to Project Defaults";
             this.resetToProjectDefaultsButton.UseVisualStyleBackColor = true;
-            this.resetToProjectDefaultsButton.Click += new System.EventHandler(this.resetToProjectDefaults_Click);
-            this.resetToProjectDefaultsButton.MouseEnter += new System.EventHandler(this.resetToProjectDefaults_MouseEnter);
+            this.resetToProjectDefaultsButton.Click += new System.EventHandler(this.ResetToProjectDefaults_Click);
+            this.resetToProjectDefaultsButton.MouseEnter += new System.EventHandler(this.ResetToProjectDefaults_MouseEnter);
             // 
             // checksList
             // 
@@ -228,9 +228,9 @@ namespace TvpMain.Forms
             this.checksList.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.checksList.Size = new System.Drawing.Size(874, 346);
             this.checksList.TabIndex = 0;
-            this.checksList.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.checksList_CellClick);
-            this.checksList.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.checksList_EditCheck);
-            this.checksList.CellMouseEnter += new System.Windows.Forms.DataGridViewCellEventHandler(this.checksList_CellMouseEnter);
+            this.checksList.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.ChecksList_CellClick);
+            this.checksList.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.ChecksList_EditCheck);
+            this.checksList.CellMouseEnter += new System.Windows.Forms.DataGridViewCellEventHandler(this.ChecksList_CellMouseEnter);
             // 
             // contextGroupBox
             // 
@@ -280,8 +280,8 @@ namespace TvpMain.Forms
             this.chooseBooksButton.TabIndex = 6;
             this.chooseBooksButton.Text = "Choose...";
             this.chooseBooksButton.UseVisualStyleBackColor = true;
-            this.chooseBooksButton.Click += new System.EventHandler(this.chooseBooksButton_Click);
-            this.chooseBooksButton.MouseEnter += new System.EventHandler(this.chooseBooksRadioButton_MouseEnter);
+            this.chooseBooksButton.Click += new System.EventHandler(this.ChooseBooksButton_Click);
+            this.chooseBooksButton.MouseEnter += new System.EventHandler(this.ChooseBooksRadioButton_MouseEnter);
             // 
             // toChapterDropDown
             // 
@@ -292,7 +292,7 @@ namespace TvpMain.Forms
             this.toChapterDropDown.Name = "toChapterDropDown";
             this.toChapterDropDown.Size = new System.Drawing.Size(75, 21);
             this.toChapterDropDown.TabIndex = 5;
-            this.toChapterDropDown.MouseEnter += new System.EventHandler(this.toChapterDropDown_MouseEnter);
+            this.toChapterDropDown.MouseEnter += new System.EventHandler(this.ToChapterDropDown_MouseEnter);
             // 
             // fromChapterDropDown
             // 
@@ -303,7 +303,7 @@ namespace TvpMain.Forms
             this.fromChapterDropDown.Name = "fromChapterDropDown";
             this.fromChapterDropDown.Size = new System.Drawing.Size(75, 21);
             this.fromChapterDropDown.TabIndex = 4;
-            this.fromChapterDropDown.MouseEnter += new System.EventHandler(this.fromChapterDropDown_MouseEnter);
+            this.fromChapterDropDown.MouseEnter += new System.EventHandler(this.FromChapterDropDown_MouseEnter);
             // 
             // currentBookText
             // 
@@ -314,7 +314,7 @@ namespace TvpMain.Forms
             this.currentBookText.ReadOnly = true;
             this.currentBookText.Size = new System.Drawing.Size(541, 20);
             this.currentBookText.TabIndex = 3;
-            this.currentBookText.MouseEnter += new System.EventHandler(this.currentBookRadioButton_MouseEnter);
+            this.currentBookText.MouseEnter += new System.EventHandler(this.CurrentBookRadioButton_MouseEnter);
             // 
             // chooseBooksText
             // 
@@ -326,7 +326,7 @@ namespace TvpMain.Forms
             this.chooseBooksText.Size = new System.Drawing.Size(699, 20);
             this.chooseBooksText.TabIndex = 2;
             this.chooseBooksText.Text = "*none*";
-            this.chooseBooksText.MouseEnter += new System.EventHandler(this.chooseBooksText_MouseEnter);
+            this.chooseBooksText.MouseEnter += new System.EventHandler(this.ChooseBooksText_MouseEnter);
             // 
             // chooseBooksRadioButton
             // 
@@ -339,8 +339,8 @@ namespace TvpMain.Forms
             this.chooseBooksRadioButton.TabStop = true;
             this.chooseBooksRadioButton.Text = "Choose Books";
             this.chooseBooksRadioButton.UseVisualStyleBackColor = true;
-            this.chooseBooksRadioButton.Click += new System.EventHandler(this.chooseBooksRadioButton_Click);
-            this.chooseBooksRadioButton.MouseEnter += new System.EventHandler(this.chooseBooksRadioButton_MouseEnter);
+            this.chooseBooksRadioButton.Click += new System.EventHandler(this.ChooseBooksRadioButton_Click);
+            this.chooseBooksRadioButton.MouseEnter += new System.EventHandler(this.ChooseBooksRadioButton_MouseEnter);
             // 
             // currentBookRadioButton
             // 
@@ -353,8 +353,8 @@ namespace TvpMain.Forms
             this.currentBookRadioButton.TabStop = true;
             this.currentBookRadioButton.Text = "Current Book";
             this.currentBookRadioButton.UseVisualStyleBackColor = true;
-            this.currentBookRadioButton.Click += new System.EventHandler(this.currentBookRadioButton_Click);
-            this.currentBookRadioButton.MouseEnter += new System.EventHandler(this.currentBookRadioButton_MouseEnter);
+            this.currentBookRadioButton.Click += new System.EventHandler(this.CurrentBookRadioButton_Click);
+            this.currentBookRadioButton.MouseEnter += new System.EventHandler(this.CurrentBookRadioButton_MouseEnter);
             // 
             // Copyright
             // 
@@ -375,7 +375,7 @@ namespace TvpMain.Forms
             this.runChecksButton.TabIndex = 11;
             this.runChecksButton.Text = "Run Checks";
             this.runChecksButton.UseVisualStyleBackColor = true;
-            this.runChecksButton.Click += new System.EventHandler(this.runChecksButton_Click);
+            this.runChecksButton.Click += new System.EventHandler(this.RunChecksButton_Click);
             // 
             // cancelButton
             // 
@@ -387,7 +387,7 @@ namespace TvpMain.Forms
             this.cancelButton.TabIndex = 13;
             this.cancelButton.Text = "Cancel";
             this.cancelButton.UseVisualStyleBackColor = true;
-            this.cancelButton.Click += new System.EventHandler(this.cancelButton_Click);
+            this.cancelButton.Click += new System.EventHandler(this.CancelButton_Click);
             // 
             // helpTextBox
             // 
@@ -416,8 +416,8 @@ namespace TvpMain.Forms
             // loadingWorker
             // 
             this.loadingWorker.WorkerReportsProgress = true;
-            this.loadingWorker.DoWork += new System.ComponentModel.DoWorkEventHandler(this.loadingWorker_DoWork);
-            this.loadingWorker.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.loadingWorker_RunWorkerCompleted);
+            this.loadingWorker.DoWork += new System.ComponentModel.DoWorkEventHandler(this.LoadingWorker_DoWork);
+            this.loadingWorker.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.LoadingWorker_RunWorkerCompleted);
             // 
             // CFSelected
             // 
