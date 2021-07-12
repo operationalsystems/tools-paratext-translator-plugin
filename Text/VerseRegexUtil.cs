@@ -364,7 +364,6 @@ namespace TvpMain.Text
                 }
             }
         }
-
         /// <summary>
         /// Maps a part context to a list of positive- or negative-matching regexes.
         ///

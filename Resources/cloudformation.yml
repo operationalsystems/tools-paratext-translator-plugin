@@ -1,0 +1,70 @@
+﻿AWSTemplateFormatVersion: 2010-09-09
+Description: |
+  This template creates a CloudFront distribution (protected by signed-URLs) for an S3 bucket.
+Parameters:
+  S3BucketName:
+    Type: String
+    Description: |
+      The bucket (must be in the same region as the stack) that will serve as the origin for this distribution.
+      IMPORTANT: There can not be any bucket policies on the bucket when this stack runs.
+    Default: biblica-tvp-check-repo
+  CloudFrontOAIName:
+    Type: String
+    Description: The name of the Origin Access Identity to create for this disctribution.
+    Default: TVP CloudFront OAI
+  DistributionName:
+    Type: String
+    Description: The name of the CloudFront distribution. This should be unique for easy identification.
+    Default: S3-biblica-tvp-check-repo
+Resources:
+  CloudFrontDistribution:
+    Type: AWS::CloudFront::Distribution
+    Properties:
+      DistributionConfig:
+        DefaultCacheBehavior:
+          CachePolicyId: 658327ea-f89d-4fab-a63d-7e88639e58f6 # Managed-CachingOptimized (https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/using-managed-cache-policies.html)
+          OriginRequestPolicyId: 88a5eaf4-2fd4-4709-b370-b4c650ea3fcf # Managed-CORS-S3Origin (https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/using-managed-origin-request-policies.html)
+          TargetOriginId: !Ref DistributionName
+          TrustedSigners:
+            - !Ref "AWS::AccountId"
+          ViewerProtocolPolicy: allow-all
+        DefaultRootObject: ""
+        Enabled: TRUE
+        Origins:
+          - DomainName: !Sub
+              - "${bucketName}.s3.amazonaws.com"
+              - { bucketName: !Ref S3BucketName }
+            Id: !Ref DistributionName
+            S3OriginConfig:
+              OriginAccessIdentity: !Sub
+                - "origin-access-identity/cloudfront/${oai}"
+                - { oai: !Ref CloudFrontOai }
+  CloudFrontOai:
+    Type: AWS::CloudFront::CloudFrontOriginAccessIdentity
+    Properties:
+      CloudFrontOriginAccessIdentityConfig:
+        Comment: !Ref CloudFrontOAIName
+  S3BucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref S3BucketName
+      PolicyDocument:
+        Id: CloudFront OAI Access
+        Statement:
+          - Action:
+              - s3:GetObject
+              - s3:ListBucket
+            Effect: Allow
+            Resource:
+              - !Sub
+                - "arn:aws:s3:::${bucketName}/*"
+                - { bucketName: !Ref S3BucketName }
+              - !Sub
+                - "arn:aws:s3:::${bucketName}"
+                - { bucketName: !Ref S3BucketName }
+            Principal:
+              CanonicalUser: !GetAtt CloudFrontOai.S3CanonicalUserId
+Outputs:
+  CloudFrontDistributionDomainName:
+    Description: The URL of the CloudFront distribution.
+    Value: !GetAtt CloudFrontDistribution.DomainName

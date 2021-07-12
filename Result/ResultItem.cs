@@ -101,40 +101,20 @@ namespace TvpMain.Result
         /// <param name="suggestionText">Suggested replacement text (optional, may be null).</param>
         /// <param name="checkType">Check type (i.e., source).</param>
         /// <param name="resultTypeCode">Result type code (i.e., a discrete error sub-type).</param>
-        public ResultItem(VersePart partData, string errorText,
-            string matchText, int matchStart,
-            string suggestionText, CheckType checkType,
-            int resultTypeCode)
-        : this(partData, errorText,
-            matchText, matchStart,
-            suggestionText, checkType,
-            resultTypeCode, ResultState.Found)
-        { }
-
-        /// <summary>
-        /// Basic ctor.
-        /// </summary>
-        /// <param name="partData">Verse part data, including original verse, location, etc. (required).</param>
-        /// <param name="errorText">Error text (required).</param>
-        /// <param name="matchText">Match text (required).</param>
-        /// <param name="matchStart">Start of match text, relative to verse start (0-based).</param>
-        /// <param name="suggestionText">Suggested replacement text (optional, may be null).</param>
-        /// <param name="checkType">Check type (i.e., source).</param>
-        /// <param name="resultTypeCode">Result type code (i.e., a discrete error sub-type).</param>
         /// <param name="resultState">User-controlled result state.</param>
         public ResultItem(VersePart partData, string errorText,
             string matchText, int matchStart,
             string suggestionText, CheckType checkType,
-            int resultTypeCode, ResultState resultState)
+            int resultTypeCode, ResultState resultState = ResultState.Found)
         {
-            this.VersePart = partData ?? throw new ArgumentNullException(nameof(partData));
-            this.ErrorText = errorText ?? throw new ArgumentNullException(nameof(errorText));
-            this.MatchText = matchText ?? throw new ArgumentNullException(nameof(matchText));
-            this.MatchStart = matchStart;
-            this.SuggestionText = suggestionText;
-            this.CheckType = checkType;
-            this.ResultTypeCode = resultTypeCode;
-            this.ResultState = resultState;
+            VersePart = partData ?? throw new ArgumentNullException(nameof(partData));
+            ErrorText = errorText ?? throw new ArgumentNullException(nameof(errorText));
+            MatchText = matchText ?? throw new ArgumentNullException(nameof(matchText));
+            MatchStart = matchStart;
+            SuggestionText = suggestionText;
+            CheckType = checkType;
+            ResultTypeCode = resultTypeCode;
+            ResultState = resultState;
         }
 
         /// <summary>
@@ -161,7 +141,7 @@ namespace TvpMain.Result
         {
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != this.GetType()) return false;
+            if (obj.GetType() != GetType()) return false;
             return Equals((ResultItem)obj);
         }
 

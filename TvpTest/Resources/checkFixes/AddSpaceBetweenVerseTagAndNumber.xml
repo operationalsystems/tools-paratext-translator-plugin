@@ -1,0 +1,12 @@
+﻿<?xml version="1.0"?>
+<CheckAndFixItem xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <Id>e51b13da-d12a-4603-83fd-a3a3886e9637</Id>
+  <Name>Add Space Between Verse Tag and Number</Name>
+  <Description></Description>
+  <Version>1.0.0</Version>
+  <Scope>VERSE</Scope>
+  <DefaultItemDescription>Missing Space</DefaultItemDescription>
+  <CheckRegex>\\v(\d)</CheckRegex>
+  <FixRegex>\v $1</FixRegex>
+  <CheckScript></CheckScript>
+</CheckAndFixItem>

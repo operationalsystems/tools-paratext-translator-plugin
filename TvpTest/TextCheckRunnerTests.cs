@@ -53,6 +53,11 @@ namespace TvpTest
         protected bool AreVersesDelayed;
 
         /// <summary>
+        /// Value to pass in so that book nums aren't overridden
+        /// </summary>
+        protected const int DO_NOT_OVERRIDE_BOOK = -1;
+
+        /// <summary>
         /// Test contexts.
         /// </summary>
         protected readonly ISet<PartContext> TestContexts = new HashSet<PartContext>()
@@ -134,6 +139,7 @@ namespace TvpTest
                    new MissingSentencePunctuationCheck(MockProjectManager.Object)
                }, TestContexts,
                false,
+               DO_NOT_OVERRIDE_BOOK,
                out var checkResult);
 
             // assert
@@ -169,6 +175,7 @@ namespace TvpTest
                     new MissingSentencePunctuationCheck(MockProjectManager.Object)
                 }, TestContexts,
                 false,
+                DO_NOT_OVERRIDE_BOOK,
                 out var checkResult);
 
             // assert
@@ -201,6 +208,7 @@ namespace TvpTest
                     new MissingSentencePunctuationCheck(MockProjectManager.Object)
                 }, TestContexts,
                 false,
+                DO_NOT_OVERRIDE_BOOK,
                 out var checkResult);
 
             // assert
@@ -243,6 +251,7 @@ namespace TvpTest
                             new MissingSentencePunctuationCheck(MockProjectManager.Object)
                         }, TestContexts,
                         false,
+                        DO_NOT_OVERRIDE_BOOK,
                         out var checkResult))
             { IsBackground = true };
             workThread.Start();

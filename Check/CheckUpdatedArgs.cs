@@ -28,8 +28,8 @@
         public CheckUpdatedArgs(int totalBooks, int bookCtr, int bookNum)
         {
             this.TotalBooks = totalBooks > 0 ? totalBooks : 0;
-            this.BookCtr = bookCtr > 0 ? totalBooks : 0;
-            this.BookNum = bookNum > 0 ? totalBooks : 0;
+            this.BookCtr = bookCtr > 0 ? bookCtr : 0;
+            this.BookNum = bookNum > 0 ? bookNum : 0;
         }
     }
 }

@@ -57,6 +57,16 @@ namespace TvpTest
         protected const string TEST_PROJECT_NAME = "testProjectName";
 
         /// <summary>
+        /// Test language name.
+        /// </summary>
+        protected const string TEST_LANGUAGE = "English";
+
+        /// <summary>
+        /// Test language ISO code.
+        /// </summary>
+        protected const string TEST_LANGUAGE_ISO_CODE = "en::US:";
+
+        /// <summary>
         /// Test versification name.
         /// </summary>
         protected const string TEST_VERSIFICATION_NAME = "testVersificationName";
@@ -139,6 +149,11 @@ namespace TvpTest
         protected Mock<ScrText> MockScrText { get; private set; }
 
         /// <summary>
+        /// Mock ParatextUser for use when creating Scr Text mock
+        /// </summary>
+        protected Mock<Paratext.Data.Users.ParatextUser> MockParatextUser { get; private set; }
+
+        /// <summary>
         /// Mock file manager.
         /// </summary>
         protected Mock<FileManager> MockFileManager { get; private set; }
@@ -200,6 +215,10 @@ namespace TvpTest
                 .Returns<string, string>((projectName, settingsKey) => TARGET_NAME_TYPE_SETTING);
             MockHost.Setup(hostItem => hostItem.GetProjectSetting(TEST_PROJECT_NAME, "BookSourceForMarkerR"))
                 .Returns<string, string>((projectName, settingsKey) => PASSAGE_NAME_TYPE_SETTING);
+            MockHost.Setup(hostItem => hostItem.GetProjectSetting(TEST_PROJECT_NAME, "Language"))
+                .Returns<string, string>((projectName, settingsKey) => TEST_LANGUAGE);
+            MockHost.Setup(hostItem => hostItem.GetProjectSetting(TEST_PROJECT_NAME, "LanguageIsoCode"))
+                .Returns<string, string>((projectName, settingsKey) => TEST_LANGUAGE_ISO_CODE);
             MockHost.Setup(hostItem => hostItem.GetPlugInData(It.IsAny<IParatextAddIn>(), TEST_PROJECT_NAME, It.IsAny<string>()))
                 .Returns<IParatextAddIn, string, string>((addIn, projectName, dataId) => null);
             MockHost.Setup(hostItem => hostItem.PutPlugInData(It.IsAny<IParatextAddIn>(), TEST_PROJECT_NAME, It.IsAny<string>(), It.IsAny<string>()))
@@ -210,8 +229,10 @@ namespace TvpTest
             // host util setup
             HostUtil.Instance.Host = MockHost.Object;
 
+            MockParatextUser = new Mock<Paratext.Data.Users.ParatextUser>("Admin", true);
+
             // create mock paratext project proxy & related
-            MockScrText = new Mock<ScrText>(MockBehavior.Strict);
+            MockScrText = new Mock<ScrText>(MockParatextUser.Object);
             MockScrText.Setup(textItem => textItem.Parser)
                 .Returns((ScrParser)null);
             // Note: ScrParser _may not_ be mocked due to internal ctor w/out modifying ParatextData:

@@ -2,6 +2,8 @@
  * A Class to handle the Global Constants.
  */
 
+using TvpMain.Check;
+
 namespace TvpMain.Util
 {
     /// <summary>
@@ -50,14 +52,14 @@ namespace TvpMain.Util
         public const string DEFAULT_REFERENCE_FINAL_PUNCTUATION = "";
 
         /// <summary>
-        /// Plugin data identifier for ignore list items.
+        /// The settings file for each project's default checks
         /// </summary>
-        public const string IGNORE_LIST_ITEMS_DATA_ID = "IgnoreListItems.json";
+        public const string CHECK_SETTINGS_DATA_ID = "CheckSettings.xml";
 
         /// <summary>
-        /// Plugin data identifier format for result items.
+        /// The settings file for each project's denied results
         /// </summary>
-        public const string RESULT_ITEMS_DATA_ID_FORMAT = "ResultItems-{0}.json";
+        public const string DENIED_RESULTS_DATA_ID = "DeniedResults.xml";
 
         /// <summary>
         /// Update rate for progress form and similar loops.
@@ -74,11 +76,6 @@ namespace TvpMain.Util
         /// Max threads to use for validation checks.
         /// </summary>
         public const int MAX_CHECK_THREADS = 4;
-
-        /// <summary>
-        /// Max threads to use for exporting files.
-        /// </summary>
-        public const int MAX_EXPORT_THREADS = 4;
 
         /// <summary>
         /// Max consecutive empty verses before chapter is considered empty.
@@ -101,9 +98,44 @@ namespace TvpMain.Util
         public const int RefPartRange = 1000;
 
         /// <summary>
+        /// A value used to create hashes.
+        /// </summary>
+        public const int HASH_PRIME = 397;
+
+        /// <summary>
+        /// The copyright for this plugin.
+        /// </summary>
+        public const string COPYRIGHT = "© 2021 Biblica, Inc.";
+
+        /// <summary>
+        /// The folder name where checks should be installed. Assumes that the plugin shortname is "TVP".
+        /// </summary>
+        public const string INSTALLED_CHECK_FOLDER_NAME = @"plugins\TVP\installed-checks";
+
+        /// <summary>
+        /// The folder name where checks should be installed. Assumes that the plugin shortname is "TVP".
+        /// </summary>
+        public const string LOCAL_CHECK_FOLDER_NAME = @"plugins\TVP\local-checks";
+
+        /// <summary>
+        /// The file extension used by checks.
+        /// </summary>
+        public const string CHECK_FILE_EXTENSION = "xml";
+
+        /// <summary>
+        /// The max size for displaying book names
+        /// </summary>
+        public const int MAX_BOOK_NAME_DISPLAY_LENGTH = 20;
+
+        /// <summary>
         /// Number of seconds to wait after changes to save result items.
         /// </summary>
         public const int RESULT_ITEM_SAVE_DELAY_IN_SEC = 5;
+
+        /// <summary>
+        /// Plugin data identifier format for result items.
+        /// </summary>
+        public const string RESULT_ITEMS_DATA_ID_FORMAT = "ResultItems-{0}.json";
 
         /// <summary>
         /// Number of seconds to wait before loading result items.
@@ -111,8 +143,21 @@ namespace TvpMain.Util
         public const int RESULT_ITEM_LOAD_DELAY_IN_SEC = 5;
 
         /// <summary>
-        /// A value used to create hashes
+        /// Paratext project settings filename.
         /// </summary>
-        public const int HASH_PRIME = 397;
+        public const string SETTINGS_FILE_PATH = "Settings.xml";
+
+        /// <summary>
+        /// This is the hardcoded id for the TVP V1 scripture reference checks. 
+        /// This value should not be changed unless the check is intended to do something completely different from initially implemented.
+        /// </summary>
+        public const string V1_SCRIPTURE_REFERENCE_CHECK_GUID = "7335bbdc-3a75-41dd-b21d-03c817907309";
+
+        /// <summary>
+        /// This is the hardcoded id for the TVP V1 missing punctuation checks. 
+        /// This value should not be changed unless the check is intended to do something completely different from initially implemented.
+        /// </summary>
+        public const string V1_PUNCTUATION_CHECK_GUID = "239ca2c4-98ee-11eb-a8b3-0242ac130003";
+
     }
 }

@@ -1,4 +1,6 @@
-﻿namespace TvpMain.Project
+﻿using TvpMain.Util;
+
+namespace TvpMain.Project
 {
     /// <summary>
     /// Model class for project-specific book names (abbreviation, short, and long).
@@ -58,7 +60,7 @@
             string abbreviation, string shortName,
             string longName)
         {
-            BookCode = bookCode != null ? bookCode : "";
+            BookCode = bookCode ?? "";
             BookNum = bookNum;
 
             Abbreviation = abbreviation?.Trim();
@@ -80,7 +82,7 @@
         {
             if (inputTypes == null)
             {
-                Util.HostUtil.Instance.LogLine("Instance types is null, responding with default book code", true);
+                HostUtil.Instance.LogLine("Instance types is null, responding with default book code", true);
                 return BookCode;
             }
 
@@ -111,6 +113,28 @@
                 }
             }
             return BookCode;
+        }
+
+        /// <summary>
+        /// Override of the default so that we can display the name
+        /// </summary>
+        /// <returns>The best name to display for the book in the list.</returns>
+        public override string ToString()
+        {
+            string displayName = GetAvailableName(BookNameType.LongName, BookNameType.ShortName, BookNameType.Abbreviation);
+            return Truncate(displayName, MainConsts.MAX_BOOK_NAME_DISPLAY_LENGTH);
+        }
+
+        /// <summary>
+        /// In some cases the default length is very-very long, need to truncate for display purposes.
+        /// </summary>
+        /// <param name="value"></param>
+        /// <param name="maxLength"></param>
+        /// <returns>A shorter, truncated version of a long name.</returns>
+        private static string Truncate(string value, int maxLength)
+        {
+            if (string.IsNullOrEmpty(value)) return value;
+            return value.Length <= maxLength ? value : value.Substring(0, maxLength);
         }
     }
 }
