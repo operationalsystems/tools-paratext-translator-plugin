@@ -147,6 +147,21 @@ namespace TvpMain.Project
         public BookNameType PassageNameType { get; private set; }
 
         /// <summary>
+        /// Language name (e.g., "english", "russian").
+        /// </summary>
+        public string Language { get; private set; }
+
+        /// <summary>
+        /// Language ISO code (e.g., "en::US:", "ru:::").
+        /// </summary>
+        public string LanguageIsoCode { get; private set; }
+
+        /// <summary>
+        /// True if the project is English-based (any locale -- US, UK, etc.), false otherwise.
+        /// </summary>
+        public bool IsEnglishProject { get; private set; }
+
+        /// <summary>
         /// Book names map, keyed by book number (1-based).
         /// </summary>
         public virtual IDictionary<int, BookNameItem> BookNamesByNum { get; private set; }
@@ -196,6 +211,20 @@ namespace TvpMain.Project
             ReadSeparators();
             ReadBookNames();
             CreateRegexes();
+            ReadLanguage();
+        }
+
+        /// <summary>
+        /// Read language codes from project settings.
+        /// </summary>
+        private void ReadLanguage()
+        {
+            Language = Host.GetProjectSetting(ProjectName, "Language");
+            Language = Language?.Trim().ToLower();
+            LanguageIsoCode = Host.GetProjectSetting(ProjectName, "LanguageIsoCode");
+            LanguageIsoCode = Language?.Trim().ToLower();
+            IsEnglishProject = (Language ?? string.Empty).Equals("english")
+                                 || (LanguageIsoCode ?? string.Empty).StartsWith("en::");
         }
 
         /// <summary>

@@ -63,5 +63,13 @@ namespace TvpMain.CheckManagement
         /// </summary>
         /// <returns>The local check folder path as a string for the editor to open files there</returns>
         public string GetLocalRepoDirectory();
+
+        /// <summary>
+        /// This method creates a filename for the provided <c>CheckAndFixItem</c>. 
+        /// </summary>
+        /// <param name="name">The <c>CheckAndFixItem</c> name</param>
+        /// <param name="version">The <c>CheckAndFixItem</c> version</param>
+        /// <returns>The filename produced for the provided <c>CheckAndFixItem</c>.</returns>
+        public string GetCheckAndFixItemFilename(string name, string version);
     }
 }

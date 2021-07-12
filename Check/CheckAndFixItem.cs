@@ -20,6 +20,23 @@ namespace TvpMain.Check
         }
 
         /// <summary>
+        /// Alternative constructor for the V1 TVP checks/fixes that allow for a fixed GUID and other paramters
+        /// </summary>
+        /// <param name="guid">The GUI to use instead of the default created one</param>
+        /// <param name="name">The name of the check/fix</param>
+        /// <param name="description">The description </param>
+        /// <param name="version">The version of the C/F</param>
+        /// <param name="scope">The scope for the C/F</param>
+        public CheckAndFixItem(string guid, string name, string description, string version, CheckScope scope)
+        {
+            Id = guid;
+            Name = name;
+            Description = description;
+            Version = version;
+            Scope = scope;
+        }
+
+        /// <summary>
         /// The internal GUID object for the ID.
         /// </summary>
         private Guid _id;
@@ -32,33 +49,27 @@ namespace TvpMain.Check
         /// <summary>
         /// The GUID for this Check and Fix.
         /// </summary>
-        public String Id
+        public string Id
         {
-            get { return _id.ToString(); }
-            set
-            {
-                _id = Guid.Parse(value);
-            }
+            get => _id.ToString();
+            set => _id = Guid.Parse(value);
         }
 
         /// <summary>
         /// The name of this Check and Fix item.
         /// </summary>
-        public String Name { get; set; }
+        public string Name { get; set; }
         /// <summary>
         /// The description of this Check and Fix item.
         /// </summary>
-        public String Description { get; set; }
+        public string Description { get; set; }
         /// <summary>
         /// The version of this Check and Fix item.
         /// </summary>
-        public String Version
+        public string Version
         {
-            get { return _version == null ? "0.0.0.0" : _version.ToString(); }
-            set
-            {
-                _version = new Version(value);
-            }
+            get => _version == null ? "0.0.0.0" : _version.ToString();
+            set => _version = new Version(value);
         }
         /// <summary>
         /// Enumeration for the scope of the check
@@ -77,38 +88,38 @@ namespace TvpMain.Check
         /// <summary>
         /// Used for a default value in the resulting check items if there isn't a specific one already provided
         /// </summary>
-        public String DefaultItemDescription { get; set; }
+        public string DefaultItemDescription { get; set; }
         /// <summary>
         /// The Check's regular expression. The check regex will be evaluated before the check script.
         /// </summary>
-        public String CheckRegex { get; set; }
+        public string CheckRegex { get; set; }
         /// <summary>
         /// The Fix's regular expression. The fix regex will be evaluated before the fix script, if present.
         /// </summary>
-        public String FixRegex { get; set; }
+        public string FixRegex { get; set; }
         /// <summary>
         /// The Check's javascript script content.
         /// </summary>
-        public String CheckScript { get; set; }
+        public string CheckScript { get; set; }
         /// <summary>
-        /// Set of Lanaguages this check/fix applies to. Empty = All
+        /// Set of Languages this check/fix applies to. Empty = All
         /// Use standard ISO language  codes ( https://www.andiamo.co.uk/resources/iso-language-codes/)
         /// </summary>
         [XmlArrayItem("Language", Type = typeof(string), IsNullable = false)]
         [XmlArray("Languages")]
-        public String[] Languages { get; set; }
+        public string[] Languages { get; set; }
         /// <summary>
         /// Set of Tags that define the limitations or project matching for this check/fix.
         /// Examples: RTL, LTR
         /// </summary>
         [XmlArrayItem("Tag", Type = typeof(string), IsNullable = false)]
         [XmlArray("Tags")]
-        public String[] Tags { get; set; }
+        public string[] Tags { get; set; }
 
         //////////////// Serialization and Deserialization functions ///////////////////////
 
         /// <summary>
-        /// Deserialize a <c>CheckAndFixItem</c> XML file into a corresonding object.
+        /// Deserialize a <c>CheckAndFixItem</c> XML file into a corresponding object.
         /// </summary>
         /// <param name="xmlFilePath">The absolute path of the <c>CheckAndFixItem</c> XML file. (required)</param>
         /// <returns>Corresponding <c>CheckAndFixItem</c> object.</returns>
@@ -126,7 +137,7 @@ namespace TvpMain.Check
         }
 
         /// <summary>
-        /// Deserialize <c>CheckAndFixItem</c> XML content into a corresonding object.
+        /// Deserialize <c>CheckAndFixItem</c> XML content into a corresponding object.
         /// </summary>
         /// <param name="xmlContent">A <c>Stream</c> representing a <c>CheckAndFixItem</c>. (required)</param>
         /// <returns>Corresponding <c>CheckAndFixItem</c> object.</returns>
@@ -137,13 +148,12 @@ namespace TvpMain.Check
 
             // deserialize the file into an object
             var serializer = new XmlSerializer(typeof(CheckAndFixItem));
-
-            CheckAndFixItem result = (CheckAndFixItem)serializer.Deserialize(xmlContent);
+            var result = (CheckAndFixItem)serializer.Deserialize(xmlContent);
             return result;
         }
 
         /// <summary>
-        /// Deserialize <c>CheckAndFixItem</c> XML content into a corresonding object.
+        /// Deserialize <c>CheckAndFixItem</c> XML content into a corresponding object.
         /// </summary>
         /// <param name="xmlContent">A string representing a <c>CheckAndFixItem</c>. (required)</param>
         /// <returns>Corresponding <c>CheckAndFixItem</c> object.</returns>
@@ -156,8 +166,7 @@ namespace TvpMain.Check
             var serializer = new XmlSerializer(typeof(CheckAndFixItem));
 
             using TextReader reader = new StringReader(xmlContent);
-            var testString = reader.ReadToEnd();
-            CheckAndFixItem result = (CheckAndFixItem)serializer.Deserialize(reader);
+            var result = (CheckAndFixItem)serializer.Deserialize(reader);
             return result;
         }
 
@@ -170,9 +179,8 @@ namespace TvpMain.Check
             // validate input
             _ = xmlFilePath ?? throw new ArgumentNullException(nameof(xmlFilePath));
 
-            XmlSerializer writer = new XmlSerializer(this.GetType());
-
-            using FileStream file = File.Create(xmlFilePath);
+            var writer = new XmlSerializer(this.GetType());
+            using var file = File.Create(xmlFilePath);
             writer.Serialize(file, this);
         }
 
@@ -182,9 +190,9 @@ namespace TvpMain.Check
         /// <returns>Corresponding <c>CheckAndFixItem</c> object as an XML <c>Stream</c>.</returns>
         public Stream WriteToXmlStream()
         {
-            XmlSerializer xmlSerializer = new XmlSerializer(this.GetType());
+            var xmlSerializer = new XmlSerializer(this.GetType());
 
-            MemoryStream stream = new MemoryStream();
+            var stream = new MemoryStream();
             xmlSerializer.Serialize(stream, this);
             return (Stream)stream;
         }
@@ -195,9 +203,9 @@ namespace TvpMain.Check
         /// <returns>Corresponding <c>CheckAndFixItem</c> object as an XML string.</returns>
         public string WriteToXmlString()
         {
-            XmlSerializer xmlSerializer = new XmlSerializer(this.GetType());
+            var xmlSerializer = new XmlSerializer(this.GetType());
 
-            using StringWriter textWriter = new StringWriter();
+            using var textWriter = new StringWriter();
             xmlSerializer.Serialize(textWriter, this);
             return textWriter.ToString();
         }
@@ -253,6 +261,5 @@ namespace TvpMain.Check
                 return hashCode;
             }
         }
-
     }
 }

@@ -1,16 +1,16 @@
 ﻿using AddInSideViews;
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Windows.Forms;
 using TvpMain.Check;
 using TvpMain.CheckManagement;
-using TvpMain.Import;
 using TvpMain.Project;
-using TvpMain.Properties;
 using TvpMain.Text;
 using TvpMain.Util;
 
@@ -62,7 +62,7 @@ namespace TvpMain.Forms
         /// <summary>
         /// Access to the checks themselves
         /// </summary>
-        ICheckManager _checkManager;
+        readonly ICheckManager _checkManager;
 
         /// <summary>
         /// The list of remote checks
@@ -86,6 +86,24 @@ namespace TvpMain.Forms
         List<DisplayItem> _displayItems;
 
         /// <summary>
+        /// This is a fixed CF for V1 TVP scripture reference checking
+        /// </summary>
+        readonly CheckAndFixItem _scriptureReferenceCf = new CheckAndFixItem(MainConsts.V1_SCRIPTURE_REFERENCE_CHECK_GUID,
+            "Scripture Reference Verifications",
+            "Scripture reference tag and formatting checks.",
+            "2.0.0.0",
+            CheckAndFixItem.CheckScope.VERSE);
+
+        /// <summary>
+        /// This is a fixed CF for V1 TVP missing punctuation checking
+        /// </summary>
+        readonly CheckAndFixItem _missingPunctuationCf = new CheckAndFixItem(MainConsts.V1_PUNCTUATION_CHECK_GUID,
+            "Missing Punctuation Verifications",
+            "Searches for missing punctuation.",
+            "2.0.0.0",
+            CheckAndFixItem.CheckScope.VERSE);
+
+        /// <summary>
         /// Standard constructor for kicking off main plugin dialog
         /// </summary>
         /// <param name="host">This is the iHost instance, the interface class to the Paratext Plugin API</param>
@@ -100,7 +118,7 @@ namespace TvpMain.Forms
             // set up the needed service dependencies
             _host = host ?? throw new ArgumentNullException(nameof(host));
 
-            setActiveProject(activeProjectName ?? throw new ArgumentNullException(nameof(activeProjectName)));
+            SetActiveProject(activeProjectName ?? throw new ArgumentNullException(nameof(activeProjectName)));
         }
 
         /// <summary>
@@ -108,13 +126,13 @@ namespace TvpMain.Forms
         /// does not allow for getting a list of projects.
         /// </summary>
         /// <param name="activeProjectName">Allows for setting the current project to work against</param>
-        private void setActiveProject(string activeProjectName)
+        private void SetActiveProject(string activeProjectName)
         {
             _activeProjectName = activeProjectName;
             _projectManager = new ProjectManager(_host, _activeProjectName);
             _projectCheckSettings = HostUtil.Instance.GetProjectCheckSettings(_activeProjectName);
 
-            setCurrentBookDefaults();
+            SetCurrentBookDefaults();
             checksList.ClearSelection();
         }
 
@@ -129,7 +147,7 @@ namespace TvpMain.Forms
             projectNameText.Text = _activeProjectName;
 
             // sets up for just the current book by default
-            setCurrentBook();
+            SetCurrentBook();
 
             // disable the ability to save the project check defaults if not an admin
             if (!HostUtil.Instance.isCurrentUserAdmin(_activeProjectName))
@@ -139,7 +157,7 @@ namespace TvpMain.Forms
             }
 
             // sets the chapter lengths and such for the current book
-            setCurrentBookDefaults();
+            SetCurrentBookDefaults();
 
             // set the copyright text
             Copyright.Text = MainConsts.COPYRIGHT;
@@ -147,7 +165,7 @@ namespace TvpMain.Forms
             // start the sync for the check/fixes
             _progressForm.Show(this);
 
-            this.Enabled = false;
+            Enabled = false;
             loadingWorker.RunWorkerAsync();
         }
 
@@ -156,7 +174,7 @@ namespace TvpMain.Forms
         /// </summary>
         /// <param name="sender">The control that sent this event</param>
         /// <param name="e">The event information that triggered this call</param>
-        private void loadingWorker_DoWork(object sender, DoWorkEventArgs e)
+        private void LoadingWorker_DoWork(object sender, DoWorkEventArgs e)
         {
             try
             {
@@ -166,7 +184,8 @@ namespace TvpMain.Forms
             catch
             {
                 // in case the user is off-line
-                MessageBox.Show("Could not synchronize with check/fix repo. You may only run checks with locally available set.", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(@"Could not synchronize with check/fix repo. You may only run checks with locally available set.",
+                    @"Warning", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -175,60 +194,106 @@ namespace TvpMain.Forms
         /// </summary>
         /// <param name="sender">The control that sent this event</param>
         /// <param name="e">The event information that triggered this call</param>
-        private void loadingWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        private void LoadingWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
-            checksList.Invoke(new MethodInvoker(delegate
-            {
-                this.updateDisplayItems();
-                this.updateDisplayGrid();
-            }));
+            checksList.Invoke(new MethodInvoker(UpdateDisplayItems));
             _progressForm.Close();
-            this.Enabled = true;
+
+            Enabled = true;
         }
 
         /// <summary>
         /// After doing async download of latest checks, update the list (must be run in main thread)
         /// </summary>
-        private void updateDisplayItems()
+        private void UpdateDisplayItems()
         {
             try
             {
+                // track display items that may already be selected,
+                // so they can stay selected
+                ISet<string> prevCheckedItems = (_displayItems == null
+                    ? Enumerable.Empty<string>()
+                    : _displayItems
+                        .Where(foundItem => foundItem.Selected)
+                        .Select(foundItem => foundItem.Name))
+                        .ToImmutableHashSet();
+
                 // load all the checks into the list
                 _remoteChecks = _checkManager.GetInstalledCheckAndFixItems();
                 _localChecks = _checkManager.GetSavedCheckAndFixItems();
-
                 _displayItems = new List<DisplayItem>();
 
+                // add the V1 defaults
+
+                // get if the check is available (item1), and if not, the text for the tooltip (item2)
+                var isCheckAvailableTupleRef = IsCheckAvailableForProject(_scriptureReferenceCf);
+                _displayItems.Add(new DisplayItem(
+                    prevCheckedItems.Contains(_scriptureReferenceCf.Name) || IsCheckDefaultForProject(_scriptureReferenceCf),
+                        _scriptureReferenceCf.Name,
+                        _scriptureReferenceCf.Description,
+                        _scriptureReferenceCf.Version,
+                        _scriptureReferenceCf.Languages != null && _scriptureReferenceCf.Languages.Length > 0 ? string.Join(", ", _scriptureReferenceCf.Languages) : "All",
+                        _scriptureReferenceCf.Tags != null ? string.Join(", ", _scriptureReferenceCf.Tags) : "",
+                        _scriptureReferenceCf.Id,
+                        isCheckAvailableTupleRef.Item1,
+                        isCheckAvailableTupleRef.Item2,
+                        _scriptureReferenceCf
+                    ));
+
+                var isCheckAvailableTuplePunc = IsCheckAvailableForProject(_missingPunctuationCf);
+                _displayItems.Add(new DisplayItem(
+                    prevCheckedItems.Contains(_missingPunctuationCf.Name) || IsCheckDefaultForProject(_missingPunctuationCf),
+                        _missingPunctuationCf.Name,
+                        _missingPunctuationCf.Description,
+                        _missingPunctuationCf.Version,
+                        _missingPunctuationCf.Languages != null && _missingPunctuationCf.Languages.Length > 0 ? string.Join(", ", _missingPunctuationCf.Languages) : "All",
+                        _missingPunctuationCf.Tags != null ? string.Join(", ", _missingPunctuationCf.Tags) : "",
+                        _missingPunctuationCf.Id,
+                        isCheckAvailableTuplePunc.Item1,
+                        isCheckAvailableTuplePunc.Item2,
+                        _missingPunctuationCf
+                    ));
+
+                // add all the known remote checks
                 foreach (var item in _remoteChecks)
                 {
+                    // get if the check is available (item1), and if not, the text for the tooltip (item2)
+                    var isCheckAvailableTuple = IsCheckAvailableForProject(item);
                     _displayItems.Add(new DisplayItem(
-                        isCheckDefaultForProject(item),
+                        prevCheckedItems.Contains(item.Name) || IsCheckDefaultForProject(item),
                         item.Name,
                         item.Description,
                         item.Version,
-                        item.Languages != null && item.Languages.Length > 0 ? String.Join(", ", item.Languages) : "All",
-                        item.Tags != null ? String.Join(", ", item.Tags) : "",
+                        item.Languages != null && item.Languages.Length > 0 ? string.Join(", ", item.Languages) : "All",
+                        item.Tags != null ? string.Join(", ", item.Tags) : "",
                         item.Id,
-                        isCheckAvailableForProject(item),
+                        isCheckAvailableTuple.Item1,
+                        isCheckAvailableTuple.Item2,
                         item
                         ));
                 }
 
+                // add all the local checks
                 foreach (var item in _localChecks)
                 {
+                    // get if the check is available (item1), and if not, the text for the tooltip (item2)
+                    var isCheckAvailableTuple = IsCheckAvailableForProject(item);
+                    var localName = "(Local) " + item.Name;
                     _displayItems.Add(new DisplayItem(
-                        false,
-                        "(Local) " + item.Name,
+                        prevCheckedItems.Contains(localName) || false,
+                        localName,
                         item.Description,
                         item.Version,
-                        item.Languages != null && item.Languages.Length > 0 ? String.Join(", ", item.Languages) : "All",
-                        item.Tags != null ? String.Join(", ", item.Tags) : "",
+                        item.Languages != null && item.Languages.Length > 0 ? string.Join(", ", item.Languages) : "All",
+                        item.Tags != null ? string.Join(", ", item.Tags) : "",
                         item.Id,
-                        isCheckAvailableForProject(item),
+                        isCheckAvailableTuple.Item1,
+                        isCheckAvailableTuple.Item2,
                         item
                         ));
                 }
 
+                UpdateDisplayGrid();
             }
             finally
             {
@@ -239,33 +304,65 @@ namespace TvpMain.Forms
         /// <summary>
         /// Update what is shown on the form, in the list of checks, filtering for the search if applicable
         /// </summary>
-        private void updateDisplayGrid()
+        private void UpdateDisplayGrid()
         {
             checksList.Enabled = false;
             checksList.Rows.Clear();
 
-            foreach (DisplayItem displayItem in _displayItems)
+            foreach (var displayItem in _displayItems)
             {
-                if (filterTextBox.Text.Length < MIN_SEARCH_CHARACTERS || displayItem.Name.IndexOf(filterTextBox.Text, StringComparison.OrdinalIgnoreCase) >= 0)
+                if (filterTextBox.Text.Length >= MIN_SEARCH_CHARACTERS &&
+                    displayItem.Name.IndexOf(filterTextBox.Text, StringComparison.OrdinalIgnoreCase) < 0)
                 {
-                    var rowIndex = checksList.Rows.Add(
-                        displayItem.Selected,
-                        displayItem.Name,
-                        displayItem.Version,
-                        displayItem.Languages,
-                        displayItem.Tags,
-                        displayItem.Id
-                        );
+                    continue;
+                }
 
-                    checksList.Rows[rowIndex].Tag = displayItem;
+                var rowIndex = checksList.Rows.Add(
+                    displayItem.Selected,
+                    displayItem.Name,
+                    displayItem.Version,
+                    displayItem.Languages,
+                    displayItem.Tags,
+                    displayItem.Id
+                );
 
-                    // disable row if it can't be used on this project
+                checksList.Rows[rowIndex].Tag = displayItem;
+
+                // Whether a check is local
+                var isLocal = displayItem.Name.StartsWith("(Local)");
+
+                // loop through all the cells in the row since tool tips can only be placed on the cell
+                for (var i = 0; i < checksList.Columns.Count; i++)
+                {
+                    checksList.Rows[rowIndex].Cells[i].ToolTipText = "";
+
+                    // Determines which tool tip to display on the cell
                     if (!displayItem.Active)
                     {
-                        checksList.Rows[rowIndex].DefaultCellStyle.BackColor = SystemColors.Control;
-                        checksList.Rows[rowIndex].DefaultCellStyle.ForeColor = SystemColors.GrayText;
+                        checksList.Rows[rowIndex].Cells[i].ToolTipText += displayItem.Tooltip;
+
+                        if (isLocal)
+                        {
+                            checksList.Rows[rowIndex].Cells[i].ToolTipText += Environment.NewLine + Environment.NewLine;
+                        }
                     }
+
+                    // Tooltip text for the local check
+                    if (isLocal)
+                    {
+                        checksList.Rows[rowIndex].Cells[i].ToolTipText += "Local checks can be edited by double-clicking on the name of the check.";
+                    }
+
                 }
+
+                // disable row if it can't be used on this project
+                if (displayItem.Active)
+                {
+                    continue;
+                }
+
+                checksList.Rows[rowIndex].DefaultCellStyle.BackColor = SystemColors.Control;
+                checksList.Rows[rowIndex].DefaultCellStyle.ForeColor = SystemColors.GrayText;
             }
 
             // deselect the first row
@@ -276,23 +373,21 @@ namespace TvpMain.Forms
         /// <summary>
         /// Sets the defaults for the current book, including the name and chapter counts
         /// </summary>
-        private void setCurrentBookDefaults()
+        private void SetCurrentBookDefaults()
         {
-            int _runBookNum, _runChapterNum, _runVerseNum;
-
             var versificationName = _host.GetProjectVersificationName(_activeProjectName);
             BookUtil.RefToBcv(_host.GetCurrentRef(versificationName),
-                out _runBookNum, out _runChapterNum, out _runVerseNum);
+                out var runBookNum, out _, out _);
 
-            _defaultCurrentBook = _runBookNum;
+            _defaultCurrentBook = runBookNum;
 
-            var lastChapter = _host.GetLastChapter(_runBookNum, versificationName);
+            var lastChapter = _host.GetLastChapter(runBookNum, versificationName);
 
             fromChapterDropDown.Items.Clear();
             toChapterDropDown.Items.Clear();
 
             // add items for all the chapters
-            for (int i = 0; i < lastChapter; i++)
+            for (var i = 0; i < lastChapter; i++)
             {
                 fromChapterDropDown.Items.Add(i.ToString());
                 toChapterDropDown.Items.Add(i.ToString());
@@ -306,8 +401,8 @@ namespace TvpMain.Forms
             currentBookRadioButton.Checked = true;
 
             // set the current book name
-            currentBookText.Text = _projectManager.BookNamesByNum[_runBookNum].GetAvailableName(BookNameType.LongName, BookNameType.ShortName, BookNameType.Abbreviation);
-            _selectedBooks = new BookNameItem[] { _projectManager.BookNamesByNum[_runBookNum] };
+            currentBookText.Text = _projectManager.BookNamesByNum[runBookNum].GetAvailableName(BookNameType.LongName, BookNameType.ShortName, BookNameType.Abbreviation);
+            _selectedBooks = new[] { _projectManager.BookNamesByNum[runBookNum] };
 
         }
 
@@ -316,7 +411,7 @@ namespace TvpMain.Forms
         /// </summary>
         /// <param name="sender">The control that sent this event</param>
         /// <param name="e">The event information that triggered this call</param>
-        private void exitToolStripMenuItem_Click(object sender, EventArgs e)
+        private void ExitToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Close();
         }
@@ -326,11 +421,10 @@ namespace TvpMain.Forms
         /// </summary>
         /// <param name="sender">The control that sent this event</param>
         /// <param name="e">The event information that triggered this call</param>
-        private void editorToolStripMenuItem_Click(object sender, EventArgs e)
+        private void EditorToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            CheckEditor checkEditor = new CheckEditor();
-            checkEditor.ShowDialog(this);
-
+            new CheckEditor().ShowDialog(this);
+            UpdateDisplayItems();
         }
 
         /// <summary>
@@ -339,7 +433,7 @@ namespace TvpMain.Forms
         /// </summary>
         /// <param name="sender">The control that sent this event</param>
         /// <param name="e">The event information that triggered this call</param>
-        private void licenseToolStripMenuItem_Click(object sender, EventArgs e)
+        private void LicenseToolStripMenuItem_Click(object sender, EventArgs e)
         {
             FormUtil.StartLicenseForm();
         }
@@ -349,15 +443,15 @@ namespace TvpMain.Forms
         /// </summary>
         /// <param name="sender">The control that sent this event</param>
         /// <param name="e">The event information that triggered this call</param>
-        private void runChecksButton_Click(object sender, EventArgs e)
+        private void RunChecksButton_Click(object sender, EventArgs e)
         {
             // grab the selected checks
             var selectedChecks = GetSelectedChecks();
             if (selectedChecks.Count == 0)
             {
                 MessageBox.Show(
-                    "No checks provided.",
-                    "Notice...", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    @"No checks provided.",
+                    @"Notice...", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
@@ -367,7 +461,7 @@ namespace TvpMain.Forms
 
             // prevent clicking the "Run Checks" button multiple times
             runChecksButton.Enabled = false;
-            
+
             // pass the checks and specification of what to check to the CheckResultsForm to perform the necessary search with.
             var checkResultsForm = new CheckResultsForm(
                 _host,
@@ -396,8 +490,8 @@ namespace TvpMain.Forms
             // grab the selected checks
             foreach (DataGridViewRow row in checksList.Rows)
             {
-                CheckAndFixItem item = (CheckAndFixItem) ((DisplayItem) row.Tag).Item;
-                if ((bool) row.Cells[0].Value)
+                var item = ((DisplayItem)row.Tag).Item;
+                if ((bool)row.Cells[0].Value)
                 {
                     selectedChecks.Add(item);
                 }
@@ -413,15 +507,13 @@ namespace TvpMain.Forms
         private CheckRunContext GetCheckRunContext()
         {
             // initialize the context with the project name.
-            var checkRunContext = new CheckRunContext()
+            var checkRunContext = new CheckRunContext
             {
                 Project = _activeProjectName,
-
+                Books = (BookNameItem[])_selectedBooks.Clone()
             };
 
             // track the selected books
-            checkRunContext.Books = (BookNameItem[])_selectedBooks.Clone();
-
             if (currentBookRadioButton.Checked)
             {
                 checkRunContext.CheckScope = CheckAndFixItem.CheckScope.CHAPTER;
@@ -441,7 +533,7 @@ namespace TvpMain.Forms
                 }
 
                 // add the chapters to check
-                for (int i = chapterStart; i <= chapterEnd; i++)
+                for (var i = chapterStart; i <= chapterEnd; i++)
                 {
                     checkRunContext.Chapters.Add(i);
                 }
@@ -459,7 +551,7 @@ namespace TvpMain.Forms
         /// </summary>
         /// <param name="sender">The control that sent this event</param>
         /// <param name="e">The event information that triggered this call</param>
-        private void chooseBooksButton_Click(object sender, EventArgs e)
+        private void ChooseBooksButton_Click(object sender, EventArgs e)
         {
             // bring up book selection dialog, use current selection to initialize
             using (var form = new BookSelection(_projectManager, _selectedBooks))
@@ -471,13 +563,13 @@ namespace TvpMain.Forms
                 {
                     // update which books were selected
                     _selectedBooks = form.GetSelected();
-                    string selectedBooksString = BookSelection.stringFromSelectedBooks(_selectedBooks);
+                    var selectedBooksString = BookSelection.stringFromSelectedBooks(_selectedBooks);
                     chooseBooksText.Text = selectedBooksString;
                 }
             }
 
             // set up UI
-            setChooseBooks();
+            SetChooseBooks();
         }
 
         /// <summary>
@@ -485,7 +577,7 @@ namespace TvpMain.Forms
         /// </summary>
         /// <param name="sender">The control that sent this event</param>
         /// <param name="e">The event information that triggered this call</param>
-        private void cancelButton_Click(object sender, EventArgs e)
+        private void CancelButton_Click(object sender, EventArgs e)
         {
             Close();
         }
@@ -495,13 +587,14 @@ namespace TvpMain.Forms
         /// </summary>
         /// <param name="sender">The control that sent this event</param>
         /// <param name="e">The event information that triggered this call</param>
-        private void chooseBooksRadioButton_Click(object sender, EventArgs e)
+        private void ChooseBooksRadioButton_Click(object sender, EventArgs e)
         {
-            setChooseBooks();
-            /// If switching from just one, show the selection dialog. Don't do that again if switching back-and-forth
+            SetChooseBooks();
+            // If switching from just one, show the selection dialog.
+            // Don't do that again if switching back-and-forth
             if (_selectedBooks.Length < 2)
             {
-                chooseBooksButton_Click(sender, e);
+                ChooseBooksButton_Click(sender, e);
             }
         }
 
@@ -510,15 +603,15 @@ namespace TvpMain.Forms
         /// </summary>
         /// <param name="sender">The control that sent this event</param>
         /// <param name="e">The event information that triggered this call</param>
-        private void currentBookRadioButton_Click(object sender, EventArgs e)
+        private void CurrentBookRadioButton_Click(object sender, EventArgs e)
         {
-            setCurrentBook();
+            SetCurrentBook();
         }
 
         /// <summary>
         /// Update the UI
         /// </summary>
-        private void setChooseBooks()
+        private void SetChooseBooks()
         {
             currentBookRadioButton.Checked = false;
             chooseBooksRadioButton.Checked = true;
@@ -529,14 +622,14 @@ namespace TvpMain.Forms
         /// <summary>
         /// Update the UI, and reset selected books list
         /// </summary>
-        private void setCurrentBook()
+        private void SetCurrentBook()
         {
             currentBookRadioButton.Checked = true;
             chooseBooksRadioButton.Checked = false;
             fromChapterDropDown.Enabled = true;
             toChapterDropDown.Enabled = true;
 
-            _selectedBooks = new BookNameItem[] { _projectManager.BookNamesByNum[_defaultCurrentBook] };
+            _selectedBooks = new[] { _projectManager.BookNamesByNum[_defaultCurrentBook] };
         }
 
         /// <summary>
@@ -544,15 +637,17 @@ namespace TvpMain.Forms
         /// </summary>
         /// <param name="sender">The control that sent this event</param>
         /// <param name="e">The event information that triggered this call</param>
-        private void setDefaultsToSelected_Click(object sender, EventArgs e)
+        private void SetDefaultsToSelected_Click(object sender, EventArgs e)
         {
-            DialogResult dialogResult = MessageBox.Show("Are you sure you wish to set the default checks/fixes for this project? ", "Verify Change", MessageBoxButtons.YesNo);
+            var dialogResult = MessageBox.Show(
+                @"Are you sure you wish to set the default checks/fixes for this project? ",
+                @"Verify Change", MessageBoxButtons.YesNo);
 
             if (dialogResult == DialogResult.Yes)
             {
                 foreach (DataGridViewRow row in checksList.Rows)
                 {
-                    DisplayItem item = (DisplayItem)checksList.Rows[row.Index].Tag;
+                    var item = (DisplayItem)checksList.Rows[row.Index].Tag;
 
                     if ((bool)row.Cells[0].Value)
                     {
@@ -575,7 +670,7 @@ namespace TvpMain.Forms
                 }
 
                 // save
-                Util.HostUtil.Instance.PutProjectCheckSettings(_activeProjectName, _projectCheckSettings);
+                HostUtil.Instance.PutProjectCheckSettings(_activeProjectName, _projectCheckSettings);
             }
         }
 
@@ -584,10 +679,9 @@ namespace TvpMain.Forms
         /// </summary>
         /// <param name="sender">The control that sent this event</param>
         /// <param name="e">The event information that triggered this call</param>
-        private void resetToProjectDefaults_Click(object sender, EventArgs e)
+        private void ResetToProjectDefaults_Click(object sender, EventArgs e)
         {
-            updateDisplayItems();
-            updateDisplayGrid();
+            UpdateDisplayItems();
         }
 
         /// <summary>
@@ -595,7 +689,7 @@ namespace TvpMain.Forms
         /// </summary>
         /// <param name="item"></param>
         /// <returns>if the given check/fix item is a default on the project</returns>
-        private bool isCheckDefaultForProject(CheckAndFixItem item)
+        private bool IsCheckDefaultForProject(CheckAndFixItem item)
         {
             return _projectCheckSettings.DefaultCheckIds.Contains(item.Id);
         }
@@ -604,19 +698,26 @@ namespace TvpMain.Forms
         /// Change the selected value for the check, if it's to be in the set
         /// </summary>
         /// <param name="sender">The control that sent this event</param>
-        /// <param name="e">The event information that triggered this call</param>
-        private void checksList_CellClick(object sender, DataGridViewCellEventArgs e)
+        /// <param name="eventArgs">The event information that triggered this call</param>
+        private void ChecksList_CellClick(object sender, DataGridViewCellEventArgs eventArgs)
         {
-            if (e.RowIndex >= 0)
+            if (eventArgs.RowIndex < 0
+                || eventArgs.ColumnIndex > 0)
             {
-                DisplayItem item = (DisplayItem)checksList.Rows[e.RowIndex].Tag;
-                if (item.Active)
-                {
-                    DataGridViewCheckBoxCell cell = (DataGridViewCheckBoxCell)checksList.Rows[e.RowIndex].Cells[0];
-                    cell.Value = !(bool)cell.Value;
-                    item.Selected = !item.Selected;
-                }
+                return;
             }
+
+            var displayItem = (DisplayItem)checksList.Rows[eventArgs.RowIndex].Tag;
+            if (!displayItem.Active)
+            {
+                return;
+            }
+
+            var checkCell = (DataGridViewCheckBoxCell)checksList.Rows[eventArgs.RowIndex].Cells[0];
+            var itemSelected = !(bool)checkCell.Value;
+
+            checkCell.Value = itemSelected;
+            displayItem.Selected = itemSelected;
         }
 
         /// <summary>
@@ -625,11 +726,11 @@ namespace TvpMain.Forms
         ///  Will filter out based on Tags, add additional tag support here
         /// </summary>
         /// <param name="item">The check/fix item to use to determine if it can be used against the current project</param>
-        /// <returns>If the given CFitem is available to be used with the project.</returns>
-        private Boolean isCheckAvailableForProject(CheckAndFixItem item)
+        /// <returns>If the given CFitem is available (item1) to be used with the project. If not, the tooltip to use for the disabled row (item2).</returns>
+        private Tuple<bool, string> IsCheckAvailableForProject(CheckAndFixItem item)
         {
             var languageId = _host.GetProjectLanguageId(_activeProjectName, "translation validation").ToUpper();
-            var projectRTL = _host.GetProjectRtoL(_activeProjectName);
+            var projectRtl = _host.GetProjectRtoL(_activeProjectName);
 
             // filter based on language
             var languageEnabled = item.Languages == null
@@ -639,16 +740,31 @@ namespace TvpMain.Forms
             // filter based on Tags
 
             // RTL Tag support
-            var itemRTL = item.Tags != null && item.Tags.Contains("RTL");
+            var itemRtl = (item.Tags != null) && (item.Tags.Contains("RTL"));
 
-            var rtlEnabled = (projectRTL && itemRTL)
-                || (!projectRTL && !itemRTL);
+            var rtlEnabled = (projectRtl && itemRtl)
+                || (!projectRtl && !itemRtl);
 
             Debug.WriteLine("Project Language: " + languageId);
-            Debug.WriteLine("Project RTL: " + projectRTL);
+            Debug.WriteLine("Project RTL: " + projectRtl);
             Debug.WriteLine("Item RTL: " + rtlEnabled);
 
-            return languageEnabled && rtlEnabled;
+            var response = "";
+
+            // set the response strings for the appropriate filter reason
+            if (!languageEnabled)
+            {
+                response = "This check doesn't support this project's language.";
+            }
+
+            if (!rtlEnabled)
+            {
+                response = projectRtl
+                    ? "This check does not support RTL languages."
+                    : "This check is for RTL languages only.";
+            }
+
+            return new Tuple<bool, string>(languageEnabled && rtlEnabled, response);
         }
 
         // 
@@ -662,24 +778,25 @@ namespace TvpMain.Forms
         /// </summary>
         /// <param name="sender">The control that sent this event</param>
         /// <param name="e">The event information that triggered this call</param>
-        private void checksList_CellMouseEnter(object sender, DataGridViewCellEventArgs e)
+        private void ChecksList_CellMouseEnter(object sender, DataGridViewCellEventArgs e)
         {
-            if (e.RowIndex > -1)
+            if (e.RowIndex <= -1)
             {
-                DisplayItem item = (DisplayItem)checksList.Rows[e.RowIndex].Tag;
-
-                helpTextBox.Clear();
-
-                if (!isCheckAvailableForProject(item.Item))
-                {
-                    helpTextBox.AppendText("NOTE: This check/fix is not selectedable for this project" + Environment.NewLine + Environment.NewLine);
-                }
-
-                helpTextBox.AppendText("Check/Fix: " + item.Name + Environment.NewLine);
-                helpTextBox.AppendText(item.Description);
-
-                checksList.Rows[e.RowIndex].Selected = false;
+                return;
             }
+
+            var item = (DisplayItem)checksList.Rows[e.RowIndex].Tag;
+            helpTextBox.Clear();
+
+            if (!IsCheckAvailableForProject(item.Item).Item1)
+            {
+                helpTextBox.AppendText("NOTE: This check/fix is not selectable for this project" + Environment.NewLine + Environment.NewLine);
+            }
+
+            helpTextBox.AppendText("Check/Fix: " + item.Name + Environment.NewLine);
+            helpTextBox.AppendText(item.Description);
+
+            checksList.Rows[e.RowIndex].Selected = false;
         }
 
         /// <summary>
@@ -687,9 +804,9 @@ namespace TvpMain.Forms
         /// </summary>
         /// <param name="sender">The control that sent this event</param>
         /// <param name="e">The event information that triggered this call</param>
-        private void chooseBooksRadioButton_MouseEnter(object sender, EventArgs e)
+        private void ChooseBooksRadioButton_MouseEnter(object sender, EventArgs e)
         {
-            helpTextBox.Text = "Select the set of books to be checked.";
+            helpTextBox.Text = @"Select the set of books to be checked.";
         }
 
         /// <summary>
@@ -697,9 +814,9 @@ namespace TvpMain.Forms
         /// </summary>
         /// <param name="sender">The control that sent this event</param>
         /// <param name="e">The event information that triggered this call</param>
-        private void chooseBooksText_MouseEnter(object sender, EventArgs e)
+        private void ChooseBooksText_MouseEnter(object sender, EventArgs e)
         {
-            helpTextBox.Text = "The set of books chosen to check.";
+            helpTextBox.Text = @"The set of books chosen to check.";
         }
 
         /// <summary>
@@ -707,9 +824,9 @@ namespace TvpMain.Forms
         /// </summary>
         /// <param name="sender">The control that sent this event</param>
         /// <param name="e">The event information that triggered this call</param>
-        private void currentBookRadioButton_MouseEnter(object sender, EventArgs e)
+        private void CurrentBookRadioButton_MouseEnter(object sender, EventArgs e)
         {
-            helpTextBox.Text = "Check the current book";
+            helpTextBox.Text = @"Check the current book";
         }
 
         /// <summary>
@@ -717,11 +834,11 @@ namespace TvpMain.Forms
         /// </summary>
         /// <param name="sender">The control that sent this event</param>
         /// <param name="e">The event information that triggered this call</param>
-        private void fromChapterDropDown_MouseEnter(object sender, EventArgs e)
+        private void FromChapterDropDown_MouseEnter(object sender, EventArgs e)
         {
             if (fromChapterDropDown.Enabled)
             {
-                helpTextBox.Text = "Select the starting chapter in the current book to begin the check.";
+                helpTextBox.Text = @"Select the starting chapter in the current book to begin the check.";
             }
         }
 
@@ -730,11 +847,11 @@ namespace TvpMain.Forms
         /// </summary>
         /// <param name="sender">The control that sent this event</param>
         /// <param name="e">The event information that triggered this call</param>
-        private void toChapterDropDown_MouseEnter(object sender, EventArgs e)
+        private void ToChapterDropDown_MouseEnter(object sender, EventArgs e)
         {
             if (fromChapterDropDown.Enabled)
             {
-                helpTextBox.Text = "Select the ending chapter in the current book to finish checking.";
+                helpTextBox.Text = @"Select the ending chapter in the current book to finish checking.";
             }
         }
 
@@ -743,10 +860,10 @@ namespace TvpMain.Forms
         /// </summary>
         /// <param name="sender">The control that sent this event</param>
         /// <param name="e">The event information that triggered this call</param>
-        private void resetToProjectDefaults_MouseEnter(object sender, EventArgs e)
+        private void ResetToProjectDefaults_MouseEnter(object sender, EventArgs e)
         {
-            helpTextBox.Text = "Sets the selected checks/fixes back to the project defaults, " +
-                "or if there are no defaults, deselects all.";
+            helpTextBox.Text = @"Sets the selected checks/fixes back to the project defaults, " +
+                @"or if there are no defaults, deselects all.";
         }
 
         /// <summary>
@@ -754,11 +871,11 @@ namespace TvpMain.Forms
         /// </summary>
         /// <param name="sender">The control that sent this event</param>
         /// <param name="e">The event information that triggered this call</param>
-        private void setDefaultsToSelected_MouseEnter(object sender, EventArgs e)
+        private void SetDefaultsToSelected_MouseEnter(object sender, EventArgs e)
         {
-            helpTextBox.Text = "Saves the currently selected checks/fixes as the default set " +
-                "for this project. This does not include local checks/fixes as they can not be " +
-                "set as defaults. This may only be performed by accounts with the sufficient privileges.";
+            helpTextBox.Text = @"Saves the currently selected checks/fixes as the default set " +
+                @"for this project. This does not include local checks/fixes as they can not be " +
+                @"set as defaults. This may only be performed by accounts with the sufficient privileges.";
         }
 
         /// <summary>
@@ -766,7 +883,7 @@ namespace TvpMain.Forms
         /// </summary>
         /// <param name="sender">The control that sent this event</param>
         /// <param name="e">The event information that triggered this call</param>
-        private void refreshButton_Click(object sender, EventArgs e)
+        private void RefreshButton_Click(object sender, EventArgs e)
         {
             // start the sync for the check/fixes
             _progressForm = new GenericProgressForm("Synchronizing Check/Fixes");
@@ -779,9 +896,34 @@ namespace TvpMain.Forms
         /// </summary>
         /// <param name="sender">The control that sent this event</param>
         /// <param name="e">The event information that triggered this call</param>
-        private void filterTextBox_TextChanged(object sender, EventArgs e)
+        private void FilterTextBox_TextChanged(object sender, EventArgs e)
         {
-            updateDisplayGrid();
+            UpdateDisplayGrid();
+        }
+
+        /// <summary>
+        /// Opens a local check in the editor from the RunChecks UI.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void ChecksList_EditCheck(object sender, DataGridViewCellEventArgs e)
+        {
+            // Gets the check that was clicked
+            var selectedCheck = _displayItems[e.RowIndex];
+
+            // Only local checks can be edited
+            if (!selectedCheck.Name.StartsWith("(Local)")) return;
+
+            // Gets the file location for the selected check
+            var fileName = _checkManager.GetCheckAndFixItemFilename(
+                selectedCheck.Name.Replace("(Local)", ""),
+                selectedCheck.Version);
+            var checkDir = _checkManager.GetLocalRepoDirectory();
+            var fullPath = Path.Combine(checkDir, fileName);
+
+            // Open the CheckEditor with the selected check
+            new CheckEditor(new FileInfo(fullPath)).ShowDialog(this);
+            UpdateDisplayItems();
         }
     }
 
@@ -793,16 +935,17 @@ namespace TvpMain.Forms
     public class DisplayItem
     {
         public bool Selected { get; set; }
-        public string Name { get; set; }
-        public string Description { get; set; }
-        public string Version { get; set; }
-        public string Languages { get; set; }
-        public string Tags { get; set; }
-        public string Id { get; set; }
-        public bool Active { get; set; }
-        public CheckAndFixItem Item { get; set; }
+        public string Name { get; }
+        public string Description { get; }
+        public string Version { get; }
+        public string Languages { get; }
+        public string Tags { get; }
+        public string Id { get; }
+        public bool Active { get; }
+        public string Tooltip { get; }
+        public CheckAndFixItem Item { get; }
 
-        public DisplayItem(bool selected, string name, string description, string version, string languages, string tags, string id, bool active, CheckAndFixItem item)
+        public DisplayItem(bool selected, string name, string description, string version, string languages, string tags, string id, bool active, string tooltip, CheckAndFixItem item)
         {
             Selected = selected;
             Name = name;
@@ -812,6 +955,7 @@ namespace TvpMain.Forms
             Tags = tags;
             Id = id;
             Active = active;
+            Tooltip = tooltip;
             Item = item;
         }
     }

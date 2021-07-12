@@ -4,6 +4,6 @@ namespace TvpMain.Check
 {
     interface ICheckAndFixRunner
     {
-        public List<CheckResultItem> ExecCheckAndFix(string text, CheckAndFixItem checkAndFixItem);
+        public List<CheckResultItem> ExecCheckAndFix(string inputText, CheckAndFixItem checkAndFixItem);
     }
 }

@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using System;
+using TvpMain.Text;
 using TvpMain.Util;
 
 namespace TvpMain.Check
@@ -61,7 +62,7 @@ namespace TvpMain.Check
 
         /// <summary>
         /// User-controlled result state.
-        /// TODO: Update this to account for the new possiblities
+        /// TODO: Update this to account for the new possibilities
         /// </summary>
         [JsonProperty]
         public CheckResultState ResultState { get; set; }
@@ -84,7 +85,7 @@ namespace TvpMain.Check
         public int Chapter { get; set; }
 
         /// <summary>
-        /// The verse number, 1-based index wehere the check result refers.
+        /// The verse number, 1-based index where the check result refers.
         /// For checks that do not have verse scope, this value will be -1.
         /// </summary>
         public int Verse { get; set; }
@@ -108,26 +109,7 @@ namespace TvpMain.Check
         : this(description,
             matchText, matchStart,
             "", checkType,
-            resultTypeCode, CheckResultState.Found)
-        { }
-
-        /// <summary>
-        /// Basic ctor.
-        /// </summary>
-        /// <param name="description">Description text (required).</param>
-        /// <param name="matchText">Match text (required).</param>
-        /// <param name="matchStart">Start of match text, relative to verse start (0-based).</param>
-        /// <param name="fixText">Suggested replacement text (optional, may be null).</param>
-        /// <param name="checkType">Check type (i.e., source).</param>
-        /// <param name="resultTypeCode">Result type code (i.e., a discrete error sub-type).</param>
-        public CheckResultItem(string description,
-            string matchText, int matchStart,
-            string fixText, CheckType checkType,
-            int resultTypeCode)
-        : this(description,
-            matchText, matchStart,
-            fixText, checkType,
-            resultTypeCode, CheckResultState.Found)
+            resultTypeCode)
         { }
 
         /// <summary>
@@ -141,22 +123,25 @@ namespace TvpMain.Check
         /// <param name="resultTypeCode">Result type code (i.e., a discrete error sub-type).</param>
         /// <param name="resultState">User-controlled result state.</param>
         public CheckResultItem(string description,
-            string matchText, int matchStart,
-            string fixText, CheckType checkType,
-            int resultTypeCode, CheckResultState resultState)
+            string matchText,
+            int matchStart,
+            string fixText,
+            CheckType checkType,
+            int resultTypeCode,
+            CheckResultState resultState = CheckResultState.Found)
         {
-            this.Description = description ?? throw new ArgumentNullException(nameof(description));
-            this.MatchText = matchText ?? throw new ArgumentNullException(nameof(matchText));
-            this.MatchStart = matchStart;
-            this.FixText = fixText;
-            this.CheckType = checkType;
-            this.ResultTypeCode = resultTypeCode;
-            this.ResultState = resultState;
+            Description = description ?? throw new ArgumentNullException(nameof(description));
+            MatchText = matchText ?? throw new ArgumentNullException(nameof(matchText));
+            MatchStart = matchStart;
+            FixText = fixText;
+            CheckType = checkType;
+            ResultTypeCode = resultTypeCode;
+            ResultState = resultState;
         }
 
         /// <summary>
-        /// Constructor that allows for passing in optional infomartion about where the 
-        /// result was found by projectname, book, chapter, verse
+        /// Constructor that allows for passing in optional information about where the 
+        /// result was found by project name, book, chapter, verse
         /// </summary>
         /// <param name="description">Description text (required).</param>
         /// <param name="matchText">Match text (required).</param>
@@ -177,7 +162,7 @@ namespace TvpMain.Check
         : this(description,
             matchText, matchStart,
             "", checkType,
-            resultTypeCode, CheckResultState.Found)
+            resultTypeCode)
         {
             ProjectName = projectName;
             Book = book;
@@ -208,7 +193,7 @@ namespace TvpMain.Check
         {
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != this.GetType()) return false;
+            if (obj.GetType() != GetType()) return false;
             return Equals((CheckResultItem)obj);
         }
 
@@ -241,6 +226,25 @@ namespace TvpMain.Check
         public override string ToString()
         {
             return JsonConvert.SerializeObject(this);
+        }
+
+        /// <summary>
+        /// Compare two result items by location alone, allowing for
+        /// possibly incomplete book, chapter, or verse elements.
+        /// </summary>
+        /// <param name="leftItem">Left result item to compare.</param>
+        /// <param name="rightItem">Right result item to compare.</param>
+        /// <returns></returns>
+        public static int CompareByLocation(CheckResultItem leftItem, CheckResultItem rightItem)
+        {
+            return BookUtil.BcvToRef(
+                    leftItem.Book < 1 ? 1 : leftItem.Book,
+                    leftItem.Chapter < 1 ? 1 : leftItem.Chapter,
+                    leftItem.Verse < 1 ? 1 : leftItem.Verse)
+                .CompareTo(BookUtil.BcvToRef(
+                    rightItem.Book < 1 ? 1 : rightItem.Book,
+                    rightItem.Chapter < 1 ? 1 : rightItem.Chapter,
+                    rightItem.Verse < 1 ? 1 : rightItem.Verse));
         }
     }
 }

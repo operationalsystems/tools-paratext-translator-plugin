@@ -8,6 +8,6 @@
   <DefaultItemDescription>Replace the Project \id with template text</DefaultItemDescription>
   <CheckRegex>(?&lt;=\\id\s\w{3,3}\s).*(\s+\\(rem|id)\s.*)*(?=\s)</CheckRegex>
   <FixRegex>- &lt;Name&gt;
-\rem Copyright &#169; &lt;Year&gt; by Biblica, Inc.&#x200e; </FixRegex>
+\\rem Copyright &#169; &lt;Year&gt; by Biblica, Inc.&#x200e; </FixRegex>
   <CheckScript></CheckScript>
 </CheckAndFixItem>

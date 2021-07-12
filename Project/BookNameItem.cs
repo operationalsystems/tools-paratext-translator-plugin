@@ -60,7 +60,7 @@ namespace TvpMain.Project
             string abbreviation, string shortName,
             string longName)
         {
-            BookCode = bookCode != null ? bookCode : "";
+            BookCode = bookCode ?? "";
             BookNum = bookNum;
 
             Abbreviation = abbreviation?.Trim();
@@ -82,7 +82,7 @@ namespace TvpMain.Project
         {
             if (inputTypes == null)
             {
-                Util.HostUtil.Instance.LogLine("Instance types is null, responding with default book code", true);
+                HostUtil.Instance.LogLine("Instance types is null, responding with default book code", true);
                 return BookCode;
             }
 
@@ -122,7 +122,7 @@ namespace TvpMain.Project
         public override string ToString()
         {
             string displayName = GetAvailableName(BookNameType.LongName, BookNameType.ShortName, BookNameType.Abbreviation);
-            return truncate(displayName, MainConsts.MAX_BOOK_NAME_DISPLAY_LENGTH);
+            return Truncate(displayName, MainConsts.MAX_BOOK_NAME_DISPLAY_LENGTH);
         }
 
         /// <summary>
@@ -131,7 +131,7 @@ namespace TvpMain.Project
         /// <param name="value"></param>
         /// <param name="maxLength"></param>
         /// <returns>A shorter, truncated version of a long name.</returns>
-        private string truncate(string value, int maxLength)
+        private static string Truncate(string value, int maxLength)
         {
             if (string.IsNullOrEmpty(value)) return value;
             return value.Length <= maxLength ? value : value.Substring(0, maxLength);

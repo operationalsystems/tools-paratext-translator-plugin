@@ -1,9 +1,8 @@
 ﻿using ScintillaNET;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Windows.Forms;
 using TvpMain.Check;
@@ -17,29 +16,26 @@ namespace TvpMain.Forms
     public partial class CheckEditor : Form
     {
         // Keep track when changes are made in the UI.
-        private bool _dirty = false;
+        private bool _dirty;
 
-        private ICheckManager _checkManager;
+        private readonly ICheckManager _checkManager;
 
         private CheckAndFixItem _checkAndFixItem;
 
         /// <summary>
         /// Max number of characters in a line number
         /// </summary>
-        private int maxLineNumberCharLength = 5;
+        private int _maxLineNumberCharLength = 5;
 
         /// <summary>
         /// a set of JavaScript keywords
         /// </summary>
-        private string jsKeywords = "break case catch class const continue debugger default delete do else export extends finally " +
-                "for function if import in instanceof new return super switch this throw try typeof var void while with yield " +
-                "enum implements interface let package private protected public static yield await abstract boolean byte char " +
-                "double final float goto int long native short synchronized throws transient volatile";
+        private const string JS_KEYWORDS = "break case catch class const continue debugger default delete do else export extends finally " + "for function if import in instanceof new return super switch this throw try typeof var void while with yield " + "enum implements interface let package private protected public static yield await abstract boolean byte char " + "double final float goto int long native short synchronized throws transient volatile";
 
         /// <summary>
         /// Simple progress bar form for when the checks are being synchronized
         /// </summary>
-        GenericProgressForm _progressForm;
+        private GenericProgressForm _progressForm;
 
         /// <summary>
         /// Default constructor
@@ -47,8 +43,19 @@ namespace TvpMain.Forms
         public CheckEditor()
         {
             InitializeComponent();
-
             _checkManager = new CheckManager();
+        }
+        /// <summary>
+        /// Constructor for opening with a specific check loaded
+        /// </summary>
+        /// <param name="checkAndFixFile"></param>
+        public CheckEditor(FileInfo checkAndFixFile)
+        {
+            InitializeComponent();
+            _checkManager = new CheckManager();
+
+            using var fileStream = checkAndFixFile.OpenRead();
+            _checkAndFixItem = CheckAndFixItem.LoadFromXmlContent(fileStream);
         }
 
         /// <summary>
@@ -58,8 +65,18 @@ namespace TvpMain.Forms
         /// <param name="e">The event information that triggered this call</param>
         private void CheckEditor_Load(object sender, EventArgs e)
         {
-            newToolStripMenuItem_Click(sender, e);
-            setScintillaRecipe();
+            if (_checkAndFixItem == null)
+            {
+                NewToolStripMenuItem_Click(sender, e);
+            }
+
+            UpdateUi();
+            _dirty = false;
+            saveIconToolStripMenuItem.Enabled = _dirty;
+            saveToolStripMenuItem.Enabled = _dirty;
+            publishToolStripMenuItem.Enabled = _dirty;
+
+            SetScintillaRecipe();
         }
 
         /// <summary>
@@ -67,13 +84,14 @@ namespace TvpMain.Forms
         /// </summary>
         /// <param name="sender">The control that sent this event</param>
         /// <param name="e">The event information that triggered this call</param>
-        private void newToolStripMenuItem_Click(object sender, EventArgs e)
+        private void NewToolStripMenuItem_Click(object sender, EventArgs e)
         {
             // prevent overwriting changes unless explicit
             if (_dirty)
             {
-                DialogResult dialogResult = MessageBox.Show("You have unsaved changes, are you sure you wish to proceed?", "Verify", MessageBoxButtons.YesNo);
-
+                var dialogResult = MessageBox.Show(
+                    @"You have unsaved changes, are you sure you wish to proceed?",
+                    @"Verify", MessageBoxButtons.YesNo);
                 if (dialogResult == DialogResult.No)
                 {
                     return;
@@ -81,20 +99,22 @@ namespace TvpMain.Forms
 
             }
 
-            _checkAndFixItem = new CheckAndFixItem();
-            _checkAndFixItem.CheckScript = @"function checkAndFix(checkResultItems) {
+            _checkAndFixItem = new CheckAndFixItem
+            {
+                CheckScript = @"function checkAndFix(checkResultItems) {
   return checkResultItems
 }
-";
-
-            _checkAndFixItem.Id = Guid.NewGuid().ToString();
-            updateUI();
-
+",
+                Scope = CheckAndFixItem.CheckScope.VERSE,
+                Id = Guid.NewGuid().ToString()
+            };
             checkFixIdLabel.Text = _checkAndFixItem.Id;
 
-            scopeCombo.SelectedItem = "CHAPTER";
+            UpdateUi();
             _dirty = false;
-
+            saveIconToolStripMenuItem.Enabled = _dirty;
+            saveToolStripMenuItem.Enabled = _dirty;
+            publishToolStripMenuItem.Enabled = _dirty;
         }
 
         /// <summary>
@@ -102,18 +122,40 @@ namespace TvpMain.Forms
         /// </summary>
         /// <param name="sender">The control that sent this event</param>
         /// <param name="e">The event information that triggered this call</param>
-        private void openToolStripMenuItem_Click(object sender, EventArgs e)
+        private void OpenToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            using OpenFileDialog openFileDialog = new OpenFileDialog();
-            openFileDialog.InitialDirectory = _checkManager.GetLocalRepoDirectory();
-            openFileDialog.Filter = "check/fix files (*.xml)|*.xml";
-
-            if (openFileDialog.ShowDialog() == DialogResult.OK)
+            // prevent overwriting changes unless explicit
+            if (_dirty)
             {
-                using var fileStream = openFileDialog.OpenFile();
-                _checkAndFixItem = CheckAndFixItem.LoadFromXmlContent(fileStream);
-                updateUI();
+                var dialogResult = MessageBox.Show(
+                    @"You have unsaved changes, are you sure you wish to proceed?",
+                    @"Verify", MessageBoxButtons.YesNo);
+                if (dialogResult == DialogResult.No)
+                {
+                    return;
+                }
+
             }
+
+            using var openFileDialog = new OpenFileDialog
+            {
+                InitialDirectory = _checkManager.GetLocalRepoDirectory(),
+                Filter = @"check/fix files (*.xml)|*.xml"
+            };
+
+            if (openFileDialog.ShowDialog() != DialogResult.OK)
+            {
+                return;
+            }
+
+            using var fileStream = openFileDialog.OpenFile();
+            _checkAndFixItem = CheckAndFixItem.LoadFromXmlContent(fileStream);
+
+            UpdateUi();
+            _dirty = false;
+            saveIconToolStripMenuItem.Enabled = _dirty;
+            saveToolStripMenuItem.Enabled = _dirty;
+            publishToolStripMenuItem.Enabled = _dirty;
         }
 
         /// <summary>
@@ -121,28 +163,34 @@ namespace TvpMain.Forms
         /// </summary>
         /// <param name="sender">The control that sent this event</param>
         /// <param name="e">The event information that triggered this call</param>
-        private void saveToolStripMenuItem_Click(object sender, EventArgs e)
+        private void SaveToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (_dirty)
+            if (!_dirty)
             {
-                updateCheckAndFix();
-
-                if (String.IsNullOrEmpty(_checkAndFixItem.Name.Trim()) ||
-                    String.IsNullOrEmpty(_checkAndFixItem.Version.Trim()) ||
-                    String.IsNullOrEmpty(_checkAndFixItem.DefaultItemDescription.Trim()) ||
-                    (String.IsNullOrEmpty(_checkAndFixItem.CheckRegex.Trim()) && String.IsNullOrEmpty(_checkAndFixItem.CheckScript.Trim()))
-                    )
-                {
-                    MessageBox.Show("Name, Version, Default Description, and either the Check Regex or the Check Script, must be entered.",
-                        "Warning", MessageBoxButtons.OK, MessageBoxIcon.Error);
-
-                    return;
-                }
-
-                _checkManager.SaveCheckAndFixItem(_checkAndFixItem);
-
-                _dirty = false;
+                return;
             }
+
+            UpdateCheckAndFix();
+
+            if (string.IsNullOrEmpty(_checkAndFixItem.Name.Trim()) ||
+                string.IsNullOrEmpty(_checkAndFixItem.Version.Trim()) ||
+                string.IsNullOrEmpty(_checkAndFixItem.DefaultItemDescription.Trim()) ||
+                (string.IsNullOrEmpty(_checkAndFixItem.CheckRegex.Trim())
+                 && string.IsNullOrEmpty(_checkAndFixItem.CheckScript.Trim()))
+            )
+            {
+                MessageBox.Show(
+                    @"Name, Version, Default Description, and either the Check Regex or the Check Script, must be entered.",
+                    @"Warning", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            _checkManager.SaveCheckAndFixItem(_checkAndFixItem);
+            _dirty = false;
+
+            saveIconToolStripMenuItem.Enabled = _dirty;
+            saveToolStripMenuItem.Enabled = _dirty;
+            publishToolStripMenuItem.Enabled = _dirty;
         }
 
         /// <summary>
@@ -150,21 +198,9 @@ namespace TvpMain.Forms
         /// </summary>
         /// <param name="sender">The control that sent this event</param>
         /// <param name="e">The event information that triggered this call</param>
-        private void exitToolStripMenuItem_Click(object sender, EventArgs e)
+        private void ExitToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (_dirty)
-            {
-                DialogResult dialogResult = MessageBox.Show("Are you sure you wish to exit without saving?", "Exit?", MessageBoxButtons.YesNo);
-
-                if (dialogResult == DialogResult.Yes)
-                {
-                    this.Close();
-                }
-            }
-            else
-            {
-                this.Close();
-            }
+            Close();
         }
 
         /// <summary>
@@ -172,19 +208,21 @@ namespace TvpMain.Forms
         /// </summary>
         /// <param name="sender">The control that sent this event</param>
         /// <param name="e">The event information that triggered this call</param>
-        private void publishToolStripMenuItem_Click(object sender, EventArgs e)
+        private void PublishToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            DialogResult dialogResult = MessageBox.Show("Are you sure you wish to save and publish this check/fix?", "Save and Publish?", MessageBoxButtons.YesNo);
-
-            if (dialogResult == DialogResult.Yes)
+            var dialogResult = MessageBox.Show(@"Are you sure you wish to save and publish this check/fix?",
+                @"Save and Publish?", MessageBoxButtons.YesNo);
+            if (dialogResult != DialogResult.Yes)
             {
-                saveToolStripMenuItem_Click(sender, e);
-
-                _progressForm = new GenericProgressForm("Publishing check/fix item...");
-                _progressForm.Show(this);
-
-                publishWorker.RunWorkerAsync();
+                return;
             }
+
+            SaveToolStripMenuItem_Click(sender, e);
+
+            _progressForm = new GenericProgressForm("Publishing check/fix item...");
+            _progressForm.Show(this);
+
+            publishWorker.RunWorkerAsync();
         }
 
         /// <summary>
@@ -192,25 +230,22 @@ namespace TvpMain.Forms
         /// </summary>
         /// <param name="sender">The control that sent this event</param>
         /// <param name="e">The event information that triggered this call</param>
-        private void publishWorker_DoWork(object sender, DoWorkEventArgs e)
+        private void PublishWorker_DoWork(object sender, DoWorkEventArgs e)
         {
             _checkManager.SynchronizeInstalledChecks();
-            List<CheckAndFixItem> remoteChecks = _checkManager.GetInstalledCheckAndFixItems();
-
+            var remoteChecks = _checkManager.GetInstalledCheckAndFixItems();
             var found = false;
 
-            foreach (CheckAndFixItem checkAndFixItem in remoteChecks)
+            foreach (var checkAndFixItem in remoteChecks.Where(checkAndFixItem =>
+                checkAndFixItem.Name.Equals(_checkAndFixItem.Name) && checkAndFixItem.Version.Equals(_checkAndFixItem.Version)))
             {
-                if (checkAndFixItem.Name.Equals(_checkAndFixItem.Name) && checkAndFixItem.Version.Equals(_checkAndFixItem.Version))
-                {
-                    found = true;
-                }
+                found = true;
             }
 
             if (found)
             {
-                MessageBox.Show("This version of the Check/Fix already exists in the repository, you must increment the version before trying to publish.",
-                    "Warning", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(@"This version of the Check/Fix already exists in the repository, you must increment the version before trying to publish.",
+                    @"Warning", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
             else
             {
@@ -223,7 +258,7 @@ namespace TvpMain.Forms
         /// </summary>
         /// <param name="sender">The control that sent this event</param>
         /// <param name="e">The event information that triggered this call</param>
-        private void publishWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        private void PublishWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
             _progressForm.Close();
         }
@@ -231,26 +266,32 @@ namespace TvpMain.Forms
         /// <summary>
         /// Update the UI when a CFitem is loaded
         /// </summary>
-        private void updateUI()
+        private void UpdateUi()
         {
-            checkFixIdLabel.Text = _checkAndFixItem.Id ?? "";
-            checkFixNameTextBox.Text = _checkAndFixItem.Name ?? "";
-            versionTextBox.Text = _checkAndFixItem.Version ?? "";
+            checkFixIdLabel.Text = _checkAndFixItem.Id ?? string.Empty;
+            checkFixNameTextBox.Text = _checkAndFixItem.Name ?? string.Empty;
+            versionTextBox.Text = _checkAndFixItem.Version ?? string.Empty;
             scopeCombo.SelectedItem = _checkAndFixItem.Scope.ToString();
-            defaultDescTextBox.Text = _checkAndFixItem.DefaultItemDescription ?? "";
-            languagesTextBox.Text = _checkAndFixItem.Languages == null ? "" : string.Join(", ", _checkAndFixItem.Languages);
-            tagsTextBox.Text = _checkAndFixItem.Tags == null ? "" : string.Join(", ", _checkAndFixItem.Tags);
+            defaultDescTextBox.Text = _checkAndFixItem.DefaultItemDescription ?? string.Empty;
+            languagesTextBox.Text = _checkAndFixItem.Languages == null
+                ? string.Empty
+                : string.Join(", ", _checkAndFixItem.Languages);
+            tagsTextBox.Text = _checkAndFixItem.Tags == null
+                ? string.Empty
+                : string.Join(", ", _checkAndFixItem.Tags);
             descriptionTextBox.Text = _checkAndFixItem.Description;
 
-            checkFindRegExTextBox.Text = _checkAndFixItem.CheckRegex ?? "";
-            fixRegExTextBox.Text = _checkAndFixItem.FixRegex ?? "";
-            jsEditor.Text = _checkAndFixItem.CheckScript == null ? "" : _checkAndFixItem.CheckScript.Replace("\n", Environment.NewLine);
+            checkFindRegExTextBox.Text = _checkAndFixItem.CheckRegex ?? string.Empty;
+            fixRegExTextBox.Text = _checkAndFixItem.FixRegex ?? string.Empty;
+            jsEditor.Text = _checkAndFixItem.CheckScript == null
+                ? string.Empty
+                : _checkAndFixItem.CheckScript.Replace("\n", Environment.NewLine);
         }
 
         /// <summary>
         /// Update the CFitem from the UI before saves
         /// </summary>
-        private void updateCheckAndFix()
+        private void UpdateCheckAndFix()
         {
             try
             {
@@ -273,8 +314,8 @@ namespace TvpMain.Forms
             }
             catch
             {
-                MessageBox.Show("Name, Version, Default Description, and either the Check Regex or the Check Script, must be entered.",
-                        "Warning", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(@"Name, Version, Default Description, and either the Check Regex or the Check Script, must be entered.",
+                        @"Warning", MessageBoxButtons.OK, MessageBoxIcon.Error);
 
             }
         }
@@ -284,9 +325,12 @@ namespace TvpMain.Forms
         /// </summary>
         /// <param name="sender">The control that sent this event</param>
         /// <param name="e">The event information that triggered this call</param>
-        private void content_TextChanged(object sender, EventArgs e)
+        private void Content_TextChanged(object sender, EventArgs e)
         {
             _dirty = true;
+            saveIconToolStripMenuItem.Enabled = _dirty;
+            saveToolStripMenuItem.Enabled = _dirty;
+            publishToolStripMenuItem.Enabled = _dirty;
         }
 
         /// <summary>
@@ -294,7 +338,7 @@ namespace TvpMain.Forms
         /// </summary>
         /// <param name="sender">The control that sent this event</param>
         /// <param name="e">The event information that triggered this call</param>
-        private void checkFindRegExTextBox_MouseEnter(object sender, EventArgs e)
+        private void CheckFindRegExTextBox_MouseEnter(object sender, EventArgs e)
         {
             helpTextBox.Clear();
             helpTextBox.AppendText("The regular expression to find issues. This value may be empty if the check/fix relies on JavaScript to perform modifications.");
@@ -316,7 +360,7 @@ namespace TvpMain.Forms
         /// </summary>
         /// <param name="sender">The control that sent this event</param>
         /// <param name="e">The event information that triggered this call</param>
-        private void checkFixIdLabel_MouseEnter(object sender, EventArgs e)
+        private void CheckFixIdLabel_MouseEnter(object sender, EventArgs e)
         {
             helpTextBox.Clear();
             helpTextBox.AppendText("The automatically assigned unique identifier.");
@@ -327,7 +371,7 @@ namespace TvpMain.Forms
         /// </summary>
         /// <param name="sender">The control that sent this event</param>
         /// <param name="e">The event information that triggered this call</param>
-        private void checkFixNameTextBox_MouseEnter(object sender, EventArgs e)
+        private void CheckFixNameTextBox_MouseEnter(object sender, EventArgs e)
         {
             helpTextBox.Clear();
             helpTextBox.AppendText("The name of your check/fix.");
@@ -338,7 +382,7 @@ namespace TvpMain.Forms
         /// </summary>
         /// <param name="sender">The control that sent this event</param>
         /// <param name="e">The event information that triggered this call</param>
-        private void versionTextBox_MouseEnter(object sender, EventArgs e)
+        private void VersionTextBox_MouseEnter(object sender, EventArgs e)
         {
             helpTextBox.Clear();
             helpTextBox.AppendText("The version of the check/fix. Increment each time you publish an update. Use semantic versioning scheme: https://semver.org/");
@@ -349,11 +393,11 @@ namespace TvpMain.Forms
         /// </summary>
         /// <param name="sender">The control that sent this event</param>
         /// <param name="e">The event information that triggered this call</param>
-        private void scopeCombo_MouseEnter(object sender, EventArgs e)
+        private void ScopeCombo_MouseEnter(object sender, EventArgs e)
         {
             helpTextBox.Clear();
             helpTextBox.AppendText("The text scope to run this check/fix at; PROJECT, BOOK, CHAPTER, VERSE" + Environment.NewLine);
-            helpTextBox.AppendText("Leave defaulted to CHAPTER if unsure.");
+            helpTextBox.AppendText("Leave defaulted to VERSE if unsure.");
         }
 
         /// <summary>
@@ -361,7 +405,7 @@ namespace TvpMain.Forms
         /// </summary>
         /// <param name="sender">The control that sent this event</param>
         /// <param name="e">The event information that triggered this call</param>
-        private void defaultDescTextBox_MouseEnter(object sender, EventArgs e)
+        private void DefaultDescTextBox_MouseEnter(object sender, EventArgs e)
         {
             helpTextBox.Clear();
             helpTextBox.AppendText("This is the default description associated with matched results.");
@@ -372,7 +416,7 @@ namespace TvpMain.Forms
         /// </summary>
         /// <param name="sender">The control that sent this event</param>
         /// <param name="e">The event information that triggered this call</param>
-        private void languagesTextBox_MouseEnter(object sender, EventArgs e)
+        private void LanguagesTextBox_MouseEnter(object sender, EventArgs e)
         {
             helpTextBox.Clear();
             helpTextBox.AppendText("Enter Languages associated with this check/fix. Separate lanugages by comma." + Environment.NewLine);
@@ -384,7 +428,7 @@ namespace TvpMain.Forms
         /// </summary>
         /// <param name="sender">The control that sent this event</param>
         /// <param name="e">The event information that triggered this call</param>
-        private void tagsTextBox_MouseEnter(object sender, EventArgs e)
+        private void TagsTextBox_MouseEnter(object sender, EventArgs e)
         {
             helpTextBox.Clear();
             helpTextBox.AppendText("Enter Tags associated with this check/fix. Separate tags by comma." + Environment.NewLine);
@@ -396,18 +440,17 @@ namespace TvpMain.Forms
         /// </summary>
         /// <param name="sender">The control that sent this event</param>
         /// <param name="e">The event information that triggered this call</param>
-        private void descriptionTextBox_MouseEnter(object sender, EventArgs e)
+        private void DescriptionTextBox_MouseEnter(object sender, EventArgs e)
         {
             helpTextBox.Clear();
-            helpTextBox.Text = "Enter the full description for this check/fix.";
+            helpTextBox.Text = @"Enter the full description for this check/fix.";
         }
 
         /// <summary>
         /// Creates and sets the style information and keywords for JavaScript
         /// </summary>
-        private void setScintillaRecipe()
+        private void SetScintillaRecipe()
         {
-
             // Configuring the default style with properties
             // we have common to every lexer style saves time.
             jsEditor.StyleResetDefault();
@@ -431,7 +474,7 @@ namespace TvpMain.Forms
             jsEditor.Styles[Style.Cpp.Preprocessor].ForeColor = Color.Maroon;
             jsEditor.Lexer = Lexer.Cpp;
 
-            jsEditor.SetKeywords(0, this.jsKeywords);
+            jsEditor.SetKeywords(0, JS_KEYWORDS);
         }
 
         /// <summary>
@@ -439,19 +482,19 @@ namespace TvpMain.Forms
         /// </summary>
         /// <param name="sender">The control that sent this event</param>
         /// <param name="e">The event information that triggered this call</param>
-        private void jsEditor_TextChanged(object sender, EventArgs e)
+        private void JsEditor_TextChanged(object sender, EventArgs e)
         {
             // Did the number of characters in the line number display change?
             // i.e. nnn VS nn, or nnnn VS nn, etc...
             var maxLineNumberCharLength = jsEditor.Lines.Count.ToString().Length;
-            if (maxLineNumberCharLength == this.maxLineNumberCharLength)
+            if (maxLineNumberCharLength == _maxLineNumberCharLength)
                 return;
 
             // Calculate the width required to display the last line number
             // and include some padding for good measure.
             const int padding = 2;
             jsEditor.Margins[0].Width = jsEditor.TextWidth(Style.LineNumber, new string('9', maxLineNumberCharLength + 1)) + padding;
-            this.maxLineNumberCharLength = maxLineNumberCharLength;
+            _maxLineNumberCharLength = maxLineNumberCharLength;
         }
 
         /// <summary>
@@ -459,18 +502,21 @@ namespace TvpMain.Forms
         /// </summary>
         /// <param name="sender">The control that sent this event</param>
         /// <param name="e">The event information that triggered this call</param>
-        private void jsEditor_CharAdded(object sender, CharAddedEventArgs e)
+        private void JsEditor_CharAdded(object sender, CharAddedEventArgs e)
         {
             // Find the word start
             var currentPos = jsEditor.CurrentPosition;
             var wordStartPos = jsEditor.WordStartPosition(currentPos, true);
 
-            // Display the autocompletion list
+            // Display the auto-completion list
             var lenEntered = currentPos - wordStartPos;
-            if (lenEntered > 0)
+            if (lenEntered <= 0)
             {
-                if (!jsEditor.AutoCActive)
-                    jsEditor.AutoCShow(lenEntered, this.jsKeywords);
+                return;
+            }
+            if (!jsEditor.AutoCActive)
+            {
+                jsEditor.AutoCShow(lenEntered, JS_KEYWORDS);
             }
         }
 
@@ -479,12 +525,32 @@ namespace TvpMain.Forms
         /// </summary>
         /// <param name="sender">The control that sent this event</param>
         /// <param name="e">The event information that triggered this call</param>
-        private void jsEditor_MouseEnter(object sender, EventArgs e)
+        private void JsEditor_MouseEnter(object sender, EventArgs e)
         {
             helpTextBox.Clear();
             helpTextBox.AppendText("JavaScript that can be called after the two regular expressions are run, if they are defined." + Environment.NewLine);
             helpTextBox.AppendText("This script MUST implement the function checkAndFix(checkResultItems). The CheckResultItems are the results" +
                 " found in the regular expression pass.");
+        }
+
+        /// <summary>
+        /// A callback for handling when a form is closing
+        /// </summary>
+        /// <param name="sender">The control that sent this event</param>
+        /// <param name="e">The event information that triggered this call</param>
+        private void OnFormClosing(object sender, FormClosingEventArgs e)
+        {
+            if (!_dirty)
+            {
+                return;
+            }
+
+            var dialogResult = MessageBox.Show(@"Are you sure you wish to exit without saving?",
+                @"Exit?", MessageBoxButtons.YesNo);
+            if (dialogResult == DialogResult.No)
+            {
+                e.Cancel = true;
+            }
         }
     }
 }
