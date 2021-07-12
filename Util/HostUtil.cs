@@ -8,6 +8,9 @@ using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Windows.Forms;
+using System.Xml.Serialization;
+using TvpMain.Check;
+using TvpMain.Project;
 using TvpMain.Result;
 using TvpMain.Text;
 
@@ -22,6 +25,8 @@ namespace TvpMain.Util
         /// Thread-safe singleton accessor.
         /// </summary>
         public static HostUtil Instance { get; } = new HostUtil();
+
+        private const string ADMIN_ROLE = "Administrator";
 
         /// <summary>
         /// Indicates whether ParatextData has been initialized.
@@ -193,73 +198,153 @@ namespace TvpMain.Util
         }
 
         /// <summary>
-        /// Retrieve the ignore list from the host's plugin data storage.
+        /// Loads the <c>ProjectCheckSettings</c> for the specified project.
         /// </summary>
-        /// <param name="projectName">Active project name (required).</param>
-        /// <returns>Ignore list.</returns>
-        public IList<IgnoreListItem> GetIgnoreList(string projectName)
+        /// <param name="projectName">The project name.</param>
+        /// <returns>The <c>ProjectCheckSettings</c>, or empty settings if none could be loaded.</returns>
+        public ProjectCheckSettings GetProjectCheckSettings(string projectName)
         {
-            if (projectName == null || projectName.Length == 0)
+            ProjectCheckSettings settings = new ProjectCheckSettings();
+
+            if (projectName == null || projectName.Length < 1)
             {
-                Util.HostUtil.Instance.LogLine("Project name is invalid, responding with default empty list", true);
-                return Enumerable.Empty<IgnoreListItem>().ToList();
+                throw new ArgumentNullException(nameof(projectName));
             }
 
             var inputData =
-                _host.GetPlugInData(_translationValidationPlugin,
-                    projectName, MainConsts.IGNORE_LIST_ITEMS_DATA_ID);
-            if (inputData == null)
+               _host.GetPlugInData(_translationValidationPlugin, projectName,
+                   MainConsts.CHECK_SETTINGS_DATA_ID);
+            if (inputData != null)
             {
-                return Enumerable.Empty<IgnoreListItem>().ToList();
+                settings = ProjectCheckSettings.LoadFromXmlContent(inputData);
             }
-            else
-            {
-                IList<IgnoreListItem> ignoreList = JsonConvert.DeserializeObject<List<IgnoreListItem>>(inputData);
-                return ignoreList;
-            }
+
+            return settings;
         }
 
         /// <summary>
-        /// Stores the ignore list to the host's plugin data storage.
+        /// Saves the project check settings for the given project
         /// </summary>
-        /// <param name="projectName">Active project name (required).</param>
-        /// <param name="outputItems">Ignore list.</param>
-        public void PutIgnoreList(string projectName, IEnumerable<IgnoreListItem> outputItems)
+        /// <param name="projectName">The name of the project to save the settings to</param>
+        /// <param name="settings">The check/fix settings to save. Right now, the default checks.</param>
+        public void PutProjectCheckSettings(string projectName, ProjectCheckSettings settings)
         {
             if (projectName == null || projectName.Length < 1)
             {
                 throw new ArgumentNullException(nameof(projectName));
             }
 
-            _host.PutPlugInData(_translationValidationPlugin,
-                projectName, MainConsts.IGNORE_LIST_ITEMS_DATA_ID,
-                JsonConvert.SerializeObject(outputItems));
+            if (settings == null)
+            {
+                throw new ArgumentNullException(nameof(settings));
+            }
+
+            _host.PutPlugInData(_translationValidationPlugin, projectName,
+                            MainConsts.CHECK_SETTINGS_DATA_ID,
+                            settings.WriteToXmlString());
         }
 
         /// <summary>
-        /// Retrieve the ignore list from the host's plugin data storage.
+        /// Gets the list of <c>CheckResultItem</c>s that have been denied for the project.
         /// </summary>
-        /// <param name="projectName">Active project name (required).</param>
-        /// <param name="bookId"></param>
-        /// <returns>Ignore list.</returns>
-        public IList<ResultItem> GetResultItems(string projectName, string bookId)
+        /// <param name="projectName">The name of the project to get the list for</param>
+        /// <returns>A list of hashes representing <c>CheckResultItem</c>s that have been denied.</returns>
+        public List<int> GetProjectDeniedResults(string projectName)
+        {
+            List<int> deniedResults = new List<int>();
+            
+            if (projectName == null || projectName.Length < 1)
+            {
+                throw new ArgumentNullException(nameof(projectName));
+            }
+
+            var inputData =
+               _host.GetPlugInData(_translationValidationPlugin, projectName,
+                   MainConsts.DENIED_RESULTS_DATA_ID);
+            if (inputData != null)
+            {
+                var serializer = new XmlSerializer(typeof(List<int>));
+                using TextReader reader = new StringReader(inputData);
+                deniedResults = (List<int>)serializer.Deserialize(reader);
+            }
+
+            return deniedResults;
+        }
+
+        /// <summary>
+        /// Saves a list of hashes representing <c>CheckResultItem</c>s that have been denied for the project.
+        /// </summary>
+        /// <param name="projectName">The name of the project to save the list for</param>
+        /// <param name="deniedResults">A list of hashes representing <c>CheckResultItem</c>s that have been denied.</param>
+        public void PutProjectDeniedResults(string projectName, List<int> deniedResults)
         {
             if (projectName == null || projectName.Length < 1)
             {
                 throw new ArgumentNullException(nameof(projectName));
             }
 
-            if (bookId == null || bookId.Length < 1)
+            if (deniedResults == null)
             {
-                throw new ArgumentNullException(nameof(bookId));
+                throw new ArgumentNullException(nameof(deniedResults));
             }
 
-            var inputData =
-                _host.GetPlugInData(_translationValidationPlugin, projectName,
-                    string.Format(MainConsts.RESULT_ITEMS_DATA_ID_FORMAT, bookId));
-            return inputData == null
-                ? Enumerable.Empty<ResultItem>().ToList()
-                : JsonConvert.DeserializeObject<List<ResultItem>>(inputData);
+            XmlSerializer xmlSerializer = new XmlSerializer(typeof(List<int>));
+            using StringWriter textWriter = new StringWriter();
+            xmlSerializer.Serialize(textWriter, deniedResults);
+            
+            _host.PutPlugInData(_translationValidationPlugin, projectName,
+                            MainConsts.DENIED_RESULTS_DATA_ID,
+                            textWriter.ToString());
+        }
+
+        /// <summary>
+        /// Method to determine if the current user is an administrator or not. This loads the ProjectUserAccess.xml file from 
+        /// the project and compares the users there against the current user name from IHost.
+        /// </summary>
+        /// <param name="projectName"></param>
+        /// <returns>True, if the current user is an Admin for the given project</returns>
+        public bool isCurrentUserAdmin(string projectName)
+        {
+            if (projectName == null || projectName.Length < 1)
+            {
+                throw new ArgumentNullException(nameof(projectName));
+            }
+
+            FileManager fileManager = new FileManager(_host, projectName);
+
+            using Stream reader = new FileStream(Path.Combine(fileManager.ProjectDir.FullName, "ProjectUserAccess.xml"), FileMode.Open);
+            ProjectUserAccess projectUserAccess = ProjectUserAccess.LoadFromXML(reader);
+
+            foreach (User user in projectUserAccess.Users)
+            {
+                if (user.UserName.Equals(_host.UserName) && user.Role.Equals(ADMIN_ROLE))
+                {
+                    // Bail as soon as we find a match
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// This function navigates to a specific project's BCV in the Paratext GUI.
+        /// 
+        /// <para>
+        /// Note: This isn't released yet for the stable Paratext client versions. Per Tim Steenwyk (Paratext software developer) 
+        /// "it will be a while before most users have the changes". For the meantime, the code will be commented out until it becomes
+        /// Mainstream.
+        /// </para><
+        /// </summary>
+        /// <param name="projectName">The Paratext project shortname. EG: "spaNVI15"</param>
+        /// <param name="book">The project's book 1-based index.</param>
+        /// <param name="chapter">The project's chapter 1-based index.</param>
+        /// <param name="verse">The project's verse 1-based index.</param>
+        public void GotoBcvInGui(string projectName, int book, int chapter, int verse)
+        {
+            var versificationName = _host.GetProjectVersificationName(projectName);
+            var bbbcccvvvReference = BookUtil.BcvToRef(book, chapter, verse);
+            // Not yet available in latest version
+            _host.GotoReference(bbbcccvvvReference, versificationName, projectName);
         }
 
         /// <summary>
@@ -288,24 +373,29 @@ namespace TvpMain.Util
         }
 
         /// <summary>
-        /// This function navigates to a specific project's BCV in the Paratext GUI.
-        /// 
-        /// <para>
-        /// Note: This isn't released yet for the stable Paratext client versions. Per Tim Steenwyk (Paratext software developer) 
-        /// "it will be a while before most users have the changes". For the meantime, the code will be commented out until it becomes
-        /// Mainstream.
-        /// </para><
+        /// Retrieve the ignore list from the host's plugin data storage.
         /// </summary>
-        /// <param name="projectName">The Paratext project shortname. EG: "spaNVI15"</param>
-        /// <param name="book">The project's book 1-based index.</param>
-        /// <param name="chapter">The project's chapter 1-based index.</param>
-        /// <param name="verse">The project's verse 1-based index.</param>
-        public void GotoBcvInGui(string projectName, int book, int chapter, int verse)
+        /// <param name="projectName">Active project name (required).</param>
+        /// <param name="bookId"></param>
+        /// <returns>Ignore list.</returns>
+        public IList<ResultItem> GetResultItems(string projectName, string bookId)
         {
-            var versificationName = _host.GetProjectVersificationName(projectName); ;
-            var bbbcccvvvReference = BookUtil.BcvToRef(book, chapter, verse);
-            // Not yet available in latest version
-            // _host.GotoReference(bbbcccvvvReference, versificationName, projectName);
+            if (projectName == null || projectName.Length < 1)
+            {
+                throw new ArgumentNullException(nameof(projectName));
+            }
+
+            if (bookId == null || bookId.Length < 1)
+            {
+                throw new ArgumentNullException(nameof(bookId));
+            }
+
+            var inputData =
+                _host.GetPlugInData(_translationValidationPlugin, projectName,
+                    string.Format(MainConsts.RESULT_ITEMS_DATA_ID_FORMAT, bookId));
+            return inputData == null
+                ? Enumerable.Empty<ResultItem>().ToList()
+                : JsonConvert.DeserializeObject<List<ResultItem>>(inputData);
         }
     }
 }

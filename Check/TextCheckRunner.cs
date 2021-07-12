@@ -186,6 +186,7 @@ namespace TvpMain.Check
             IEnumerable<ITextCheck> inputChecks,
             IEnumerable<PartContext> inputContexts,
             bool isSaveResults,
+            int overrideBookNum,
             out CheckResults outputResults)
         {
             if (inputChecks == null)
@@ -235,6 +236,10 @@ namespace TvpMain.Check
             else
             {
                 _runTotalBooks = 1;
+                if(overrideBookNum != -1)
+                {
+                    _runBookNum = overrideBookNum;
+                }
                 taskList.Add(RunBookTask(_runBookNum));
             }
 

@@ -35,12 +35,16 @@ namespace TvpMain.Text
 
             using var inputStream = executingAssembly.GetManifestResourceStream("TvpMain.Resources.book-ids-1.csv");
             using var streamReader = new StreamReader(inputStream);
-            using var csvReader = new CsvReader(streamReader, CultureInfo.CurrentCulture);
 
-            csvReader.Configuration.HasHeaderRecord = false;
-            csvReader.Configuration.IgnoreBlankLines = true;
-            csvReader.Configuration.TrimOptions = TrimOptions.Trim;
-            csvReader.Configuration.MissingFieldFound = null;
+            var config = new CsvConfiguration(CultureInfo.CurrentCulture)
+            {
+                HasHeaderRecord = false,
+                IgnoreBlankLines = true,
+                TrimOptions = TrimOptions.Trim,
+                MissingFieldFound = null
+            };
+
+            using var csvReader = new CsvReader(streamReader, config);
 
             BookIdList = csvReader.GetRecords<BookIdItem>().ToImmutableList();
             BookIdsByCode = BookIdList.ToImmutableDictionary(idItem => idItem.BookCode);

@@ -3,9 +3,10 @@ using System;
 using System.AddIn;
 using System.AddIn.Pipeline;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Threading;
 using System.Windows.Forms;
-using TvpMain.Form;
+using TvpMain.Forms;
 using TvpMain.Util;
 
 /*
@@ -16,7 +17,7 @@ namespace TvpMain
     /// <summary>
     /// Translation validation plugin entry point.
     /// </summary>
-    [AddIn("Translation Validation Plugin", Description = "Provides validation checks for translated text.", Version = "1.0", Publisher = "Biblica")]
+    [AddIn("Translation Validation Plugin", Description = "Provides validation checks for translated text.", Version = "2.0.0.5", Publisher = "Biblica")]
     [QualificationData(PluginMetaDataKeys.menuText, "Translation-Validation")]
     [QualificationData(PluginMetaDataKeys.insertAfterMenuName, "Tools|")]
     [QualificationData(PluginMetaDataKeys.enableWhen, WhenToEnable.anyProjectActive)]
@@ -56,7 +57,7 @@ namespace TvpMain
                         try
                         {
                             Application.EnableVisualStyles();
-                            Application.Run(new MainForm(host, activeProjectName));
+                            Application.Run(new RunChecks(host, activeProjectName));
                         }
                         catch (Exception ex)
                         {
@@ -100,8 +101,27 @@ namespace TvpMain
         }
 
         /// <summary>
-        /// Data file key spec accessor (no-op, not used by this plugin).
+        /// Get the default data key file specs
         /// </summary>
-        public Dictionary<string, IPluginDataFileMergeInfo> DataFileKeySpecifications => null;
+        public Dictionary<string, IPluginDataFileMergeInfo> _dataFileKeySpecifications = new Dictionary<string, IPluginDataFileMergeInfo>
+        {
+            [MainConsts.CHECK_SETTINGS_DATA_ID] = new PluginDataFileMergeInfo(
+                new MergeLevel("DefaultCheckIds", ".")
+            ),
+            [MainConsts.DENIED_RESULTS_DATA_ID] = new PluginDataFileMergeInfo(
+                new MergeLevel("ArrayOfInt", ".")
+            )
+        };
+
+        /// <summary>
+        /// Data file key spec accessor.
+        /// </summary>
+        public Dictionary<string, IPluginDataFileMergeInfo> DataFileKeySpecifications
+        {
+            get
+            {
+                return _dataFileKeySpecifications;
+            }
+        }
     }
 }

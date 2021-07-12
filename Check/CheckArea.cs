@@ -1,7 +1,7 @@
 ﻿namespace TvpMain.Check
 {
     /// <summary>
-    /// Check area (i.e., scope).
+    /// (Obsolete, TVP 1.0) Check area.
     /// </summary>
     public enum CheckArea
     {
