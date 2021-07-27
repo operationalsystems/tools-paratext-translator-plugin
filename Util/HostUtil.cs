@@ -6,10 +6,12 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Windows.Forms;
 using System.Xml.Serialization;
 using TvpMain.Check;
+using TvpMain.CheckManagement;
 using TvpMain.Project;
 using TvpMain.Result;
 using TvpMain.Text;
@@ -49,6 +51,11 @@ namespace TvpMain.Util
         /// Global reference to host interface, providing Paratext services including logging.
         /// </summary>
         private IHost _host;
+
+        /// <summary>
+        /// S3 service to retrieve permission information from the TVP repo.
+        /// </summary>
+        private S3Service _s3 { get; } = new S3Service();
 
         /// <summary>
         /// Property for assignment from plugin entry method.
@@ -298,32 +305,20 @@ namespace TvpMain.Util
         }
 
         /// <summary>
-        /// Method to determine if the current user is an administrator or not. This loads the ProjectUserAccess.xml file from 
-        /// the project and compares the users there against the current user name from IHost.
+        /// Method to determine if the user is a TVP administrator. Relies on a list of admins hosted on the TVP repo.
         /// </summary>
-        /// <param name="projectName"></param>
-        /// <returns>True, if the current user is an Admin for the given project</returns>
-        public bool isCurrentUserAdmin(string projectName)
+        /// <returns>True, if the current user is a TVP admin</returns>
+        public bool isCurrentUserAdmin()
         {
-            if (projectName == null || projectName.Length < 1)
-            {
-                throw new ArgumentNullException(nameof(projectName));
-            }
+            // TODO: Move to constants
+            var permissionsFileName = "permission_list.csv";
 
-            FileManager fileManager = new FileManager(_host, projectName);
-
-            using Stream reader = new FileStream(Path.Combine(fileManager.ProjectDir.FullName, "ProjectUserAccess.xml"), FileMode.Open);
-            ProjectUserAccess projectUserAccess = ProjectUserAccess.LoadFromXML(reader);
-
-            foreach (User user in projectUserAccess.Users)
-            {
-                if (user.UserName.Equals(_host.UserName) && user.Role.Equals(ADMIN_ROLE))
-                {
-                    // Bail as soon as we find a match
-                    return true;
-                }
-            }
-            return false;
+            // Fetch a CSV list of administrators and parse it into a simple array, omitting the header and common special characters
+            using var reader = new StreamReader(_s3.GetFileStream(permissionsFileName));
+            var permissionsList = Regex.Replace(reader.ReadToEnd(), @"\t|\n|\r", "");
+            var administrators = permissionsList.Split(',').Skip(1).ToArray();
+            
+            return administrators.Contains(_host.UserName);
         }
 
         /// <summary>

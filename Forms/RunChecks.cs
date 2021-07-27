@@ -143,14 +143,11 @@ namespace TvpMain.Forms
         /// <param name="e">The event information that triggered this call</param>
         private void RunChecks_Load(object sender, EventArgs e)
         {
-            // the project name text, will eventually be the selected current project from the list of projects
-            projectNameText.Text = _activeProjectName;
-
             // sets up for just the current book by default
             SetCurrentBook();
 
             // disable the ability to save the project check defaults if not an admin
-            if (!HostUtil.Instance.isCurrentUserAdmin(_activeProjectName))
+            if (!HostUtil.Instance.isCurrentUserAdmin())
             {
                 setDefaultsToSelected.Hide();
                 refreshButton.Hide();
