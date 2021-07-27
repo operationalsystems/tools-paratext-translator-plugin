@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using TvpMain.Check;
 
@@ -32,13 +33,17 @@ namespace TvpMain.CheckManagement
 
         public List<CheckAndFixItem> GetCheckAndFixItems()
         {
-            List<CheckAndFixItem> checkAndFixItems = new List<CheckAndFixItem>();
+            var checkAndFixItems = new List<CheckAndFixItem>();
 
-            List<String> filenames = Service.ListAllFiles();
-            foreach (string file in filenames)
+            // Whether the string represents an XML filename.
+            // This is a simple way to guard against non-check files in the repository.
+            static bool IsXmlFile(string filename) => filename.Trim().ToLowerInvariant().EndsWith(".xml");
+            
+            var filenames = Service.ListAllFiles().Where((Func<string,bool>) IsXmlFile).ToList();
+            foreach (var file in filenames)
             {
-                using Stream fileStream = Service.GetFileStream(file);
-                CheckAndFixItem checkAndFixItem = ReadCheckAndFixItemFromStream(fileStream);
+                using var fileStream = Service.GetFileStream(file);
+                var checkAndFixItem = ReadCheckAndFixItemFromStream(fileStream);
                 if (checkAndFixItem != null) checkAndFixItems.Add(checkAndFixItem);
             }
 
