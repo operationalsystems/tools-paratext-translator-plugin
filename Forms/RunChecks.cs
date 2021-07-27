@@ -24,6 +24,8 @@ namespace TvpMain.Forms
     /// </summary>
     public partial class RunChecks : Form
     {
+        private bool IsAdmin { get; } = HostUtil.Instance.isCurrentUserAdmin();
+        
         /// <summary>
         /// The minimum number of characters required to perform a search.
         /// </summary>
@@ -147,7 +149,7 @@ namespace TvpMain.Forms
             SetCurrentBook();
 
             // disable the ability to save the project check defaults if not an admin
-            if (!HostUtil.Instance.isCurrentUserAdmin())
+            if (!IsAdmin)
             {
                 setDefaultsToSelected.Hide();
                 refreshButton.Hide();
@@ -344,11 +346,7 @@ namespace TvpMain.Forms
                         }
                     }
 
-                    // Tooltip text for the local check
-                    if (isLocal)
-                    {
-                        checksList.Rows[rowIndex].Cells[i].ToolTipText += "Local checks can be edited by double-clicking on the name of the check.";
-                    }
+                    checksList.Rows[rowIndex].Cells[i].ToolTipText += "Checks can be edited by double-clicking on the name of the check.";
 
                 }
 
@@ -909,17 +907,31 @@ namespace TvpMain.Forms
             var selectedCheck = _displayItems[e.RowIndex];
 
             // Only local checks can be edited
-            if (!selectedCheck.Name.StartsWith("(Local)")) return;
+            if (selectedCheck.Name.StartsWith("(Local)"))
+            {
+                // Get the file location for the selected check
+                var fileName = _checkManager.GetCheckAndFixItemFilename(
+                    selectedCheck.Name.Replace("(Local)", ""),
+                    selectedCheck.Version);
+                var checkDir = _checkManager.GetLocalRepoDirectory();
+                var fullPath = Path.Combine(checkDir, fileName);
 
-            // Gets the file location for the selected check
-            var fileName = _checkManager.GetCheckAndFixItemFilename(
-                selectedCheck.Name.Replace("(Local)", ""),
-                selectedCheck.Version);
-            var checkDir = _checkManager.GetLocalRepoDirectory();
-            var fullPath = Path.Combine(checkDir, fileName);
+                // Open the CheckEditor with the selected check
+                new CheckEditor(new FileInfo(fullPath)).ShowDialog(this);
+            }
+            else
+            {
+                // Get the file location for the selected check
+                var fileName = _checkManager.GetCheckAndFixItemFilename(
+                    selectedCheck.Name,
+                    selectedCheck.Version);
+                var checkDir = _checkManager.GetInstalledChecksDirectory();
+                var fullPath = Path.Combine(checkDir, fileName);
 
-            // Open the CheckEditor with the selected check
-            new CheckEditor(new FileInfo(fullPath)).ShowDialog(this);
+                // Open the CheckEditor with the selected check
+                new CheckEditor(new FileInfo(fullPath), true).ShowDialog(this);
+            }
+
             UpdateDisplayItems();
         }
     }
