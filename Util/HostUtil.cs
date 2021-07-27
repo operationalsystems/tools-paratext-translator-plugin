@@ -163,21 +163,29 @@ namespace TvpMain.Util
         public void ReportError(string prefixText, bool includeStackTrace, Exception ex)
         {
             string messageText = null;
+            if (String.IsNullOrWhiteSpace(prefixText))
+            {
+                prefixText = "Error: Please contact support";
+            }
+
+            // Every time an error is reported it is also logged.
+            LogLine(prefixText + ex.ToString(), true);
+
             if (ex == null)
             {
-                messageText = (prefixText ?? "Error: Please contact support");
+                messageText = prefixText;
             }
             else
             {
                 if (includeStackTrace)
                 {
-                    messageText = (prefixText ?? "Error: Please contact support.")
+                    messageText = prefixText
                                   + Environment.NewLine + Environment.NewLine
                                   + "Details: " + ex.ToString() + Environment.NewLine;
                 }
                 else
                 {
-                    messageText = (prefixText ?? "Error: Please contact support")
+                    messageText = prefixText
                                   + $" (Details: {ex.Message}).";
                 }
             }
