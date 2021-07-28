@@ -196,26 +196,14 @@ namespace TvpMain.Forms
         /// <param name="e">The event information that triggered this call</param>
         private void SaveToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            // If the check represents a remote check, allow the user to save a copy locally
-            if (!_dirty && !IsRemote)
+            if (!UpdateCheckAndFix())
             {
                 return;
-            }
-
-            UpdateCheckAndFix();
-
-            if (string.IsNullOrEmpty(_checkAndFixItem.Name.Trim()) ||
-                string.IsNullOrEmpty(_checkAndFixItem.Version.Trim()) ||
-                string.IsNullOrEmpty(_checkAndFixItem.DefaultItemDescription.Trim()) ||
-                (string.IsNullOrEmpty(_checkAndFixItem.CheckRegex.Trim())
-                 && string.IsNullOrEmpty(_checkAndFixItem.CheckScript.Trim()))
-            )
+            };
+            if (!VerifyCheckAndFix())
             {
-                MessageBox.Show(
-                    @"Name, Version, Default Description, and either the Check Regex or the Check Script, must be entered.",
-                    @"Warning", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
-            }
+            };
 
             _checkManager.SaveCheckAndFixItem(_checkAndFixItem);
             IsRemote = false;
@@ -242,13 +230,34 @@ namespace TvpMain.Forms
         /// <param name="e">The event information that triggered this call</param>
         private void PublishToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            var dialogResult = MessageBox.Show(@"Are you sure you wish to publish this check/fix?",
+            if (!UpdateCheckAndFix())
+            {
+                return;
+            };
+            if (!VerifyCheckAndFix())
+            {
+                return;
+            };
+            
+            var publishResult = MessageBox.Show(@"Are you sure you wish to publish this check/fix?",
                 @"Publish?", MessageBoxButtons.YesNo);
-            if (dialogResult != DialogResult.Yes)
+            if (publishResult != DialogResult.Yes)
             {
                 return;
             }
-            
+
+            // It's expected that a remote check might be published without saving, but not a local check
+            if (_dirty && !IsRemote)
+            {
+                var changesResult = MessageBox.Show(
+                    @"You have unsaved changes. Would you like to save your changes before publishing?",
+                    @"Exit?", MessageBoxButtons.YesNo);
+                if (changesResult == DialogResult.Yes)
+                {
+                    SaveToolStripMenuItem_Click(sender, e);
+                }
+            }
+
             _progressForm = new GenericProgressForm("Publishing check/fix item...");
             _progressForm.Show(this);
 
@@ -317,11 +326,18 @@ namespace TvpMain.Forms
                 ? string.Empty
                 : _checkAndFixItem.CheckScript.Replace("\n", Environment.NewLine);
         }
+        
+        /// <summary>
+        /// An error dialog to show when a check is not well-formed
+        /// </summary>
+        private readonly Func<DialogResult> _verificationErrorDialog = () => MessageBox.Show(@"Name, Version, Default Description, and either the Check Regex or the Check Script, must be entered.",
+            @"Warning", MessageBoxButtons.OK, MessageBoxIcon.Error);
 
         /// <summary>
         /// Update the CFitem from the UI before saves
         /// </summary>
-        private void UpdateCheckAndFix()
+        /// <returns>Whether the update succeeded</returns>
+        private bool UpdateCheckAndFix()
         {
             try
             {
@@ -344,10 +360,29 @@ namespace TvpMain.Forms
             }
             catch
             {
-                MessageBox.Show(@"Name, Version, Default Description, and either the Check Regex or the Check Script, must be entered.",
-                        @"Warning", MessageBoxButtons.OK, MessageBoxIcon.Error);
-
+                _verificationErrorDialog();
+                return false;
             }
+
+            return true;
+        }
+
+        /// <summary>
+        /// Determines whether the current check is well-formed
+        /// </summary>
+        /// <returns>Whether the current check is well-formed</returns>
+        private bool VerifyCheckAndFix()
+        {
+            if (!string.IsNullOrEmpty(_checkAndFixItem.Name.Trim()) &&
+                !string.IsNullOrEmpty(_checkAndFixItem.Version.Trim()) &&
+                !string.IsNullOrEmpty(_checkAndFixItem.DefaultItemDescription.Trim()) &&
+                (!string.IsNullOrEmpty(_checkAndFixItem.CheckRegex.Trim()) ||
+                 !string.IsNullOrEmpty(_checkAndFixItem.CheckScript.Trim()))) return true;
+            
+            // Something isn't right--show an error and return false
+            _verificationErrorDialog();
+            return false;
+
         }
 
         /// <summary>
