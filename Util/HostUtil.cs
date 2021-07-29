@@ -53,11 +53,6 @@ namespace TvpMain.Util
         private IHost _host;
 
         /// <summary>
-        /// S3 service to retrieve permission information from the TVP repo.
-        /// </summary>
-        private S3Service _s3 { get; } = new S3Service();
-
-        /// <summary>
         /// Property for assignment from plugin entry method.
         /// </summary>
         public TranslationValidationPlugin TranslationValidationPlugin { set => _translationValidationPlugin = value; }
@@ -314,7 +309,7 @@ namespace TvpMain.Util
             var permissionsFileName = "permission_list.csv";
 
             // Fetch a CSV list of administrators and parse it into a simple array, omitting the header and common special characters
-            using var reader = new StreamReader(_s3.GetFileStream(permissionsFileName));
+            using var reader = new StreamReader(S3ServiceProvider.Instance.GetFileStream(permissionsFileName));
             var permissionsList = Regex.Replace(reader.ReadToEnd(), @"\t|\n|\r", "");
             var administrators = permissionsList.Split(',').Skip(1).ToArray();
             

@@ -15,7 +15,7 @@ namespace TvpMain.CheckManagement
         /// <summary>
         /// The service which interacts with S3.
         /// </summary>
-        public virtual IRemoteService Service { get; set; } = new S3Service();
+        protected virtual IRemoteService Service { get; } = S3ServiceProvider.Instance;
 
         public void AddCheckAndFixItem(string filename, CheckAndFixItem item)
         {

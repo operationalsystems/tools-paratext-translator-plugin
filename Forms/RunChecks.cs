@@ -24,7 +24,10 @@ namespace TvpMain.Forms
     /// </summary>
     public partial class RunChecks : Form
     {
-        private bool IsAdmin { get; } = HostUtil.Instance.isCurrentUserAdmin();
+        /// <summary>
+        /// Whether the current user is a TVP admin
+        /// </summary>
+        private bool IsTvpAdmin { get; } = HostUtil.Instance.isCurrentUserAdmin();
         
         /// <summary>
         /// The minimum number of characters required to perform a search.
@@ -152,7 +155,7 @@ namespace TvpMain.Forms
             SetCurrentBook();
 
             // disable the ability to save the project check defaults if not an admin
-            if (!IsAdmin)
+            if (!IsTvpAdmin)
             {
                 setDefaultsToSelected.Hide();
                 refreshButton.Hide();
