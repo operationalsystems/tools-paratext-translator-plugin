@@ -25,6 +25,11 @@ namespace TvpMain.Forms
     public partial class RunChecks : Form
     {
         /// <summary>
+        /// Whether the user is a TVP Admin
+        /// </summary>
+        private readonly bool _isCurrentUserTvpAdmin = HostUtil.Instance.IsCurrentUserTvpAdmin();
+        
+        /// <summary>
         /// The minimum number of characters required to perform a search.
         /// </summary>
         private const int MIN_SEARCH_CHARACTERS = 3;
@@ -150,9 +155,13 @@ namespace TvpMain.Forms
             SetCurrentBook();
 
             // disable the ability to save the project check defaults if not an admin
-            if (!HostUtil.Instance.IsCurrentUserAdmin())
+            if (!HostUtil.Instance.isCurrentUserAdmin(_activeProjectName))
             {
                 setDefaultsToSelected.Hide();
+            }
+
+            if (!_isCurrentUserTvpAdmin)
+            {
                 refreshButton.Hide();
             }
 
@@ -341,14 +350,17 @@ namespace TvpMain.Forms
                     {
                         checksList.Rows[rowIndex].Cells[i].ToolTipText += displayItem.Tooltip;
 
-                        if (isLocal)
+                        if (isLocal || _isCurrentUserTvpAdmin)
                         {
                             checksList.Rows[rowIndex].Cells[i].ToolTipText += Environment.NewLine + Environment.NewLine;
                         }
                     }
 
-                    checksList.Rows[rowIndex].Cells[i].ToolTipText += "Checks can be edited by double-clicking on the name of the check.";
-
+                    if (isLocal || _isCurrentUserTvpAdmin)
+                    {
+                        checksList.Rows[rowIndex].Cells[i].ToolTipText += string.Concat(_isCurrentUserTvpAdmin ? "C" : "Local c",
+                            "hecks can be edited by double-clicking on the name of the check.");
+                    }
                 }
 
                 // disable row if it can't be used on this project
@@ -909,14 +921,22 @@ namespace TvpMain.Forms
             // Get the check that was clicked
             var selectedCheck = _displayItems[e.RowIndex];
 
+            var isTvpAdmin = _isCurrentUserTvpAdmin;
             var isLocalCheck = selectedCheck.Name.StartsWith(localCheckPrefix);
+            
+            // Non-admins can only edit local checks
+            if (!isLocalCheck && !isTvpAdmin)
+            {
+                return;
+            }
+            
             var name = isLocalCheck ? selectedCheck.Name.Replace(localCheckPrefix, "") : selectedCheck.Name;
+            var checkDir = isLocalCheck ? _checkManager.GetLocalRepoDirectory() : _checkManager.GetInstalledChecksDirectory();
 
             // Get the file location for the selected check
             var fileName = _checkManager.GetCheckAndFixItemFilename(
                 name,
                 selectedCheck.Version);
-            var checkDir = _checkManager.GetLocalRepoDirectory();
             var fullPath = Path.Combine(checkDir, fileName);
 
             // Open the CheckEditor with the selected check

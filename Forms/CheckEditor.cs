@@ -7,6 +7,7 @@ using System.Linq;
 using System.Windows.Forms;
 using TvpMain.Check;
 using TvpMain.CheckManagement;
+using TvpMain.Util;
 
 namespace TvpMain.Forms
 {
@@ -104,6 +105,7 @@ namespace TvpMain.Forms
             UpdateUi();
             _dirty = false;
             
+            publishToolStripMenuItem.Visible = HostUtil.Instance.IsCurrentUserTvpAdmin();
             saveIconToolStripMenuItem.Enabled = IsRemote || _dirty;
             saveToolStripMenuItem.Enabled = IsRemote || _dirty;
 

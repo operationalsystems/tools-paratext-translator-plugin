@@ -300,10 +300,39 @@ namespace TvpMain.Util
         }
 
         /// <summary>
+        /// Method to determine if the current user is an administrator or not. This loads the ProjectUserAccess.xml file from 
+        /// the project and compares the users there against the current user name from IHost.
+        /// </summary>
+        /// <param name="projectName"></param>
+        /// <returns>True, if the current user is an Admin for the given project</returns>
+        public bool isCurrentUserAdmin(string projectName)
+        {
+            if (projectName == null || projectName.Length < 1)
+            {
+                throw new ArgumentNullException(nameof(projectName));
+            }
+
+            FileManager fileManager = new FileManager(_host, projectName);
+
+            using Stream reader = new FileStream(Path.Combine(fileManager.ProjectDir.FullName, "ProjectUserAccess.xml"), FileMode.Open);
+            ProjectUserAccess projectUserAccess = ProjectUserAccess.LoadFromXML(reader);
+
+            foreach (User user in projectUserAccess.Users)
+            {
+                if (user.UserName.Equals(_host.UserName) && user.Role.Equals(ADMIN_ROLE))
+                {
+                    // Bail as soon as we find a match
+                    return true;
+                }
+            }
+            return false;
+        }
+        
+        /// <summary>
         /// Method to determine if the user is a TVP administrator. Relies on a list of admins hosted on the TVP repo.
         /// </summary>
         /// <returns>True, if the current user is a TVP admin</returns>
-        public bool IsCurrentUserAdmin()
+        public bool IsCurrentUserTvpAdmin()
         {
             // Fetch a CSV list of administrators and parse it into a simple array, omitting the header and common special characters
             using var reader = new StreamReader(S3ServiceProvider.Instance.GetFileStream(MainConsts.PERMISSIONS_FILE_NAME));
