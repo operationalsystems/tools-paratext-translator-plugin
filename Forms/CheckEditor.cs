@@ -196,11 +196,7 @@ namespace TvpMain.Forms
         /// <param name="e">The event information that triggered this call</param>
         private void SaveToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (!UpdateCheckAndFix())
-            {
-                return;
-            };
-            if (!VerifyCheckAndFix())
+            if (!UpdateCheckAndFix() || !VerifyCheckAndFix())
             {
                 return;
             };
@@ -230,11 +226,7 @@ namespace TvpMain.Forms
         /// <param name="e">The event information that triggered this call</param>
         private void PublishToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (!UpdateCheckAndFix())
-            {
-                return;
-            };
-            if (!VerifyCheckAndFix())
+            if (!UpdateCheckAndFix() || !VerifyCheckAndFix())
             {
                 return;
             };
