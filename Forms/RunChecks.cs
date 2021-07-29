@@ -904,34 +904,23 @@ namespace TvpMain.Forms
         /// <param name="e"></param>
         private void ChecksList_EditCheck(object sender, DataGridViewCellEventArgs e)
         {
-            // Gets the check that was clicked
+            const string localCheckPrefix = "(Local)";
+            
+            // Get the check that was clicked
             var selectedCheck = _displayItems[e.RowIndex];
 
-            // Only local checks can be edited
-            if (selectedCheck.Name.StartsWith("(Local)"))
-            {
-                // Get the file location for the selected check
-                var fileName = _checkManager.GetCheckAndFixItemFilename(
-                    selectedCheck.Name.Replace("(Local)", ""),
-                    selectedCheck.Version);
-                var checkDir = _checkManager.GetLocalRepoDirectory();
-                var fullPath = Path.Combine(checkDir, fileName);
+            var isLocalCheck = selectedCheck.Name.StartsWith(localCheckPrefix);
+            var name = isLocalCheck ? selectedCheck.Name.Replace(localCheckPrefix, "") : selectedCheck.Name;
 
-                // Open the CheckEditor with the selected check
-                new CheckEditor(new FileInfo(fullPath)).ShowDialog(this);
-            }
-            else
-            {
-                // Get the file location for the selected check
-                var fileName = _checkManager.GetCheckAndFixItemFilename(
-                    selectedCheck.Name,
-                    selectedCheck.Version);
-                var checkDir = _checkManager.GetInstalledChecksDirectory();
-                var fullPath = Path.Combine(checkDir, fileName);
+            // Get the file location for the selected check
+            var fileName = _checkManager.GetCheckAndFixItemFilename(
+                name,
+                selectedCheck.Version);
+            var checkDir = _checkManager.GetLocalRepoDirectory();
+            var fullPath = Path.Combine(checkDir, fileName);
 
-                // Open the CheckEditor with the selected check
-                new CheckEditor(new FileInfo(fullPath), true).ShowDialog(this);
-            }
+            // Open the CheckEditor with the selected check
+            new CheckEditor(new FileInfo(fullPath), !isLocalCheck).ShowDialog(this);
 
             UpdateDisplayItems();
         }
