@@ -10,6 +10,8 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Windows.Forms;
 using System.Xml.Serialization;
+using Amazon.Runtime.Internal;
+using Amazon.S3;
 using TvpMain.Check;
 using TvpMain.CheckManagement;
 using TvpMain.Project;
@@ -334,12 +336,24 @@ namespace TvpMain.Util
         /// <returns>True, if the current user is a TVP admin</returns>
         public bool IsCurrentUserTvpAdmin()
         {
-            // Fetch a CSV list of administrators and parse it into a simple array, omitting the header and common special characters
-            using var reader = new StreamReader(S3ServiceProvider.Instance.GetFileStream(MainConsts.PERMISSIONS_FILE_NAME));
-            var permissionsList = Regex.Replace(reader.ReadToEnd(), @"\t|\n|\r", "");
-            var administrators = permissionsList.Split(',').Skip(1).ToArray();
+            var isAdmin = false;
             
-            return administrators.Contains(_host.UserName);
+            // Fetch a CSV list of administrators and parse it into a simple array, omitting the header and common special characters
+            try
+            {
+                var stream = S3ServiceProvider.Instance.GetFileStream(MainConsts.PERMISSIONS_FILE_NAME);
+                using var reader = new StreamReader(stream);
+                var permissionsList = Regex.Replace(reader.ReadToEnd(), @"\t|\n|\r", "");
+                var administrators = permissionsList.Split(',').Skip(1).ToArray();
+
+                isAdmin = administrators.Contains(_host.UserName);
+            }
+            catch (AmazonS3Exception exception)
+            {
+                Instance.LogLine($"Failed to fetch {MainConsts.PERMISSIONS_FILE_NAME} from S3: " + exception, false);
+            }
+
+            return isAdmin;
         }
 
         /// <summary>
