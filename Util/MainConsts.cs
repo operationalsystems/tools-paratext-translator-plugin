@@ -159,5 +159,6 @@ namespace TvpMain.Util
         /// </summary>
         public const string V1_PUNCTUATION_CHECK_GUID = "239ca2c4-98ee-11eb-a8b3-0242ac130003";
 
+        public const string PERMISSIONS_FILE_NAME = "permission_list.csv";
     }
 }

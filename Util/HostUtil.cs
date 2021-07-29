@@ -303,13 +303,10 @@ namespace TvpMain.Util
         /// Method to determine if the user is a TVP administrator. Relies on a list of admins hosted on the TVP repo.
         /// </summary>
         /// <returns>True, if the current user is a TVP admin</returns>
-        public bool isCurrentUserAdmin()
+        public bool IsCurrentUserAdmin()
         {
-            // TODO: Move to constants
-            var permissionsFileName = "permission_list.csv";
-
             // Fetch a CSV list of administrators and parse it into a simple array, omitting the header and common special characters
-            using var reader = new StreamReader(S3ServiceProvider.Instance.GetFileStream(permissionsFileName));
+            using var reader = new StreamReader(S3ServiceProvider.Instance.GetFileStream(MainConsts.PERMISSIONS_FILE_NAME));
             var permissionsList = Regex.Replace(reader.ReadToEnd(), @"\t|\n|\r", "");
             var administrators = permissionsList.Split(',').Skip(1).ToArray();
             
