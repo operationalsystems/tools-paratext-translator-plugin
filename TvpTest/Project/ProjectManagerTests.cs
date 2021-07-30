@@ -77,21 +77,9 @@ namespace TvpTest
         {
             var bookNamesByNum = _mockProjectManager.Object.BookNamesByNum;
             
-            
-
             // check generic assumptions
             Assert.IsNotNull(bookNamesByNum);
             Assert.IsTrue(bookNamesByNum.Count > 0);
-
-            // check that the correct books are returned by ID.
-            //Assert.AreEqual("GEN", bookNamesByNum[1].BookCode);
-            //Assert.AreEqual("JOB", bookNamesByNum[18].BookCode);
-            //Assert.AreEqual("MAT", bookNamesByNum[40].BookCode);
-            //Assert.AreEqual("COL", bookNamesByNum[51].BookCode);
-            //Assert.AreEqual("2JN", bookNamesByNum[63].BookCode);
-            //Assert.AreEqual("SUS", bookNamesByNum[75].BookCode);
-            //Assert.AreEqual("XXA", bookNamesByNum[93].BookCode);
-            //Assert.AreEqual("FRT", bookNamesByNum[100].BookCode);
 
             // establish what expected output book names are for input book codes for test project
             var expectedInputsVsOuputs = new Dictionary<string, int>()
