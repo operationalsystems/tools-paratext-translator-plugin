@@ -12,6 +12,11 @@ namespace TvpMain.Project
     public class FileManager
     {
         /// <summary>
+        /// Filename of the Paratext projet book names file.
+        /// </summary>
+        public const string BookNamesFilename = "BookNames.xml";
+
+        /// <summary>
         /// Paratext host interface.
         /// </summary>
         private readonly IHost _host;
@@ -62,7 +67,7 @@ namespace TvpMain.Project
                 return false;
             }
 
-            var fileInfo = new FileInfo(Path.Combine(ProjectDir.FullName, "BookNames.xml"));
+            var fileInfo = new FileInfo(Path.Combine(ProjectDir.FullName, BookNamesFilename));
             readOnlyStream = fileInfo.Exists ? fileInfo.OpenRead() : null;
 
             return readOnlyStream != null;
