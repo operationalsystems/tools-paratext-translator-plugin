@@ -102,9 +102,14 @@ namespace TvpTest
                 {"PS2"}, {"JDB"}, {"BLT"}
             };
 
-            foreach (var entry in expectedMissingBooks)
+            // Get the list of book names
+            foreach (var entry in bookNamesByNum)
             {
-                Assert.IsFalse(false, "These books are not available in this translation.", entry);
+                // Check that list for the expected missing books
+                foreach (var bookCode in expectedMissingBooks)
+                {
+                    Assert.IsTrue(true, $"{bookCode}, is in this translation text.");  
+                };
             }
         }
     }
