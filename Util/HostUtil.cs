@@ -6,10 +6,14 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Windows.Forms;
 using System.Xml.Serialization;
+using Amazon.Runtime.Internal;
+using Amazon.S3;
 using TvpMain.Check;
+using TvpMain.CheckManagement;
 using TvpMain.Project;
 using TvpMain.Result;
 using TvpMain.Text;
@@ -332,6 +336,32 @@ namespace TvpMain.Util
                 }
             }
             return false;
+        }
+        
+        /// <summary>
+        /// Method to determine if the user is a TVP administrator. Relies on a list of admins hosted on the TVP repo.
+        /// </summary>
+        /// <returns>True, if the current user is a TVP admin</returns>
+        public bool IsCurrentUserTvpAdmin()
+        {
+            var isAdmin = false;
+            
+            // Fetch a CSV list of administrators and parse it into a simple array, omitting the header and common special characters
+            try
+            {
+                var stream = S3ServiceProvider.Instance.GetFileStream(MainConsts.PERMISSIONS_FILE_NAME);
+                using var reader = new StreamReader(stream);
+                var permissionsList = Regex.Replace(reader.ReadToEnd(), @"\t|\n|\r", "");
+                var administrators = permissionsList.Split(',').Skip(1).ToArray();
+
+                isAdmin = administrators.Contains(_host.UserName);
+            }
+            catch (AmazonS3Exception exception)
+            {
+                Instance.LogLine($"Failed to fetch {MainConsts.PERMISSIONS_FILE_NAME} from S3: " + exception, false);
+            }
+
+            return isAdmin;
         }
 
         /// <summary>
