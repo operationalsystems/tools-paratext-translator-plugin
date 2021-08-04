@@ -60,9 +60,8 @@ namespace TvpMain
                             Application.Run(new RunChecks(host, activeProjectName));
                         }
                         catch (Exception ex)
-                        {
-                            // Do not report this as it's already been reported elsewhere.
-                            HostUtil.Instance.LogLine("Exception during run: " + ex.ToString(), true);
+                        { 
+                            HostUtil.Instance.ReportError(null, false, ex);
                         }
                         finally
                         {
@@ -76,8 +75,7 @@ namespace TvpMain
                 }
                 catch (Exception ex)
                 {
-                    HostUtil.Instance.ReportError(ex);
-                    throw;
+                    HostUtil.Instance.ReportError(null, false, ex);
                 }
             }
 
