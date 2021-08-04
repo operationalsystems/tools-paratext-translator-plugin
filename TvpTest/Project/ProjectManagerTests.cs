@@ -39,10 +39,6 @@ namespace TvpTest
         [TestInitialize]
         public void TestSetup()
         {
-            /*        public ProjectManager(
-            IHost host, string activeProjectName,
-            FileManager fileManager)*/
-
             // create mocks
 
             // mock: host util
@@ -79,7 +75,7 @@ namespace TvpTest
             
             // check generic assumptions
             Assert.IsNotNull(bookNamesByNum);
-            Assert.IsTrue(bookNamesByNum.Count > 0);
+            Assert.IsTrue(bookNamesByNum.Count > 0, "bookNamesByNum unexpectedly returned empty");
 
             // establish what expected output book names are for input book codes for test project
             var expectedInputsVsOuputs = new Dictionary<string, int>()
@@ -94,22 +90,18 @@ namespace TvpTest
                 Assert.AreEqual(entry.Key, bookNamesByNum[entry.Value].BookCode);
             }
 
-            // make sure that missing books aren't available
-            var expectedMissingBooks = new List<string>()
+            // make sure that books without attributes are not included in the books.xml
+            var expectedMissingBooks = new Dictionary<string,int>()
             {
-                {"NDX"}, {"TOB"}, {"WIS"}, 
-                {"LJE"}, {"SUS"}, {"3MA"}, 
-                {"PS2"}, {"JDB"}, {"BLT"}
+                {"NDX", 111}, {"TOB", 67}, {"WIS", 70}, 
+                {"LJE", 73}, {"SUS", 75}, {"3MA", 79}, 
+                {"PS2", 84}, {"JDB", 88}, {"BLT", 92}
             };
 
-            // Get the list of book names
-            foreach (var entry in bookNamesByNum)
+            // catches if an expected missing book is found in the books.xml
+            foreach (var entry in expectedMissingBooks)
             {
-                // Check that list for the expected missing books
-                foreach (var bookCode in expectedMissingBooks)
-                {
-                    Assert.IsTrue(true, $"{bookCode}, is in this translation text.");  
-                };
+                Assert.IsFalse(bookNamesByNum.ContainsKey(entry.Value), $"{entry.Key} unexpectedly appears in the book name list.");
             }
         }
     }

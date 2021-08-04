@@ -388,9 +388,6 @@ namespace TvpMain.Project
                         }
                     }
                 }
-            } else
-            {
-                throw new FileNotFoundException($"Unable to find {FileManager.BookNamesFilename}");
             }
 
             BookNamesByNum = tempBookNamesByNum.ToImmutableDictionary();
