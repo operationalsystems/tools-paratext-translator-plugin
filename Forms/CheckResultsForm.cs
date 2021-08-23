@@ -3,6 +3,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Runtime.Serialization;
@@ -1191,6 +1192,29 @@ namespace TvpMain.Forms
             SetSelectedBooks();
 
             RunChecks();
+        }
+
+        /// <summary>
+        /// Opens a link to the support URL from the plugin
+        /// </summary>
+        /// <param name="sender">The control that sent this event</param>
+        /// <param name="e">The event information that triggered this call</param>
+        private void contactSupportToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            //Call the Process.Start method to open the default browser
+            //with a URL:
+            Process.Start(MainConsts.SUPPORT_URL);
+        }
+
+        /// <summary>
+        /// Default, show the EULA for the project.
+        /// License from menu
+        /// </summary>
+        /// <param name="sender">The control that sent this event</param>
+        /// <param name="e">The event information that triggered this call</param>
+        private void LicenseToolStripMenuItem_Click1(object sender, EventArgs e)
+        {
+            FormUtil.StartLicenseForm();
         }
     }
 
