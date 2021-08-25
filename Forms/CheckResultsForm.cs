@@ -1207,8 +1207,7 @@ namespace TvpMain.Forms
         }
 
         /// <summary>
-        /// Default, show the EULA for the project.
-        /// License from menu
+        /// Default, show the EULA for the plugin.
         /// </summary>
         /// <param name="sender">The control that sent this event</param>
         /// <param name="e">The event information that triggered this call</param>
