@@ -163,5 +163,10 @@ namespace TvpMain.Util
         /// The file name to look for in the TVP repo which contains a list of users that are TVP administrators.
         /// </summary>
         public const string PERMISSIONS_FILE_NAME = "permission_list.csv";
+
+        /// <summary>
+        /// This is the URL to get support for the plugin.
+        /// </summary>
+        public const string SUPPORT_URL = "https://translationtools.biblica.com/en/support/home";
     }
 }

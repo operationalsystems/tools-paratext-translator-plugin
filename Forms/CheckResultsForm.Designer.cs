@@ -31,16 +31,17 @@ namespace TvpMain.Forms
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(CheckResultsForm));
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
             this.DenyButton = new System.Windows.Forms.Button();
             this.ShowDeniedCheckbox = new System.Windows.Forms.CheckBox();
             this.cancel = new System.Windows.Forms.Button();
             this.menuStrip = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.editToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.LicenseToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.contactSupportToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.topPanel = new System.Windows.Forms.Panel();
             this.bookFilterLabel = new System.Windows.Forms.Label();
             this.clearCheckFilterButton = new System.Windows.Forms.Button();
@@ -56,15 +57,16 @@ namespace TvpMain.Forms
             this.CountColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.ActionsColumn = new System.Windows.Forms.DataGridViewButtonColumn();
             this.IssuesDataGridView = new System.Windows.Forms.DataGridView();
+            this.statusIconColumn = new System.Windows.Forms.DataGridViewImageColumn();
+            this.ReferenceColumnProject = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.ReferenceColumnEng = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.MatchTextColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.imageList1 = new System.Windows.Forms.ImageList(this.components);
             this.fixTextBox = new TvpCustomControls.RichTextBox50();
             this.matchTextBox = new TvpCustomControls.RichTextBox50();
-            this.statusIconColumn = new System.Windows.Forms.DataGridViewImageColumn();
-            this.ReferenceColumnProject = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.ReferenceColumnEng = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.MatchTextColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.licenseToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip.SuspendLayout();
             this.topPanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.ChecksDataGridView)).BeginInit();
@@ -112,7 +114,7 @@ namespace TvpMain.Forms
             this.menuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.fileToolStripMenuItem,
             this.editToolStripMenuItem,
-            this.LicenseToolStripMenuItem});
+            this.helpToolStripMenuItem});
             this.menuStrip.Location = new System.Drawing.Point(0, 0);
             this.menuStrip.Name = "menuStrip";
             this.menuStrip.Size = new System.Drawing.Size(987, 24);
@@ -131,12 +133,21 @@ namespace TvpMain.Forms
             this.editToolStripMenuItem.Size = new System.Drawing.Size(39, 20);
             this.editToolStripMenuItem.Text = "Edit";
             // 
-            // LicenseToolStripMenuItem
+            // helpToolStripMenuItem
             // 
-            this.LicenseToolStripMenuItem.Name = "LicenseToolStripMenuItem";
-            this.LicenseToolStripMenuItem.Size = new System.Drawing.Size(58, 20);
-            this.LicenseToolStripMenuItem.Text = "License";
-            this.LicenseToolStripMenuItem.Click += new System.EventHandler(this.LicenseToolStripMenuItem_Click);
+            this.helpToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.contactSupportToolStripMenuItem,
+            this.licenseToolStripMenuItem1});
+            this.helpToolStripMenuItem.Name = "helpToolStripMenuItem";
+            this.helpToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
+            this.helpToolStripMenuItem.Text = "Help";
+            // 
+            // contactSupportToolStripMenuItem
+            // 
+            this.contactSupportToolStripMenuItem.Name = "contactSupportToolStripMenuItem";
+            this.contactSupportToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.contactSupportToolStripMenuItem.Text = "Contact Support";
+            this.contactSupportToolStripMenuItem.Click += new System.EventHandler(this.contactSupportToolStripMenuItem_Click);
             // 
             // topPanel
             // 
@@ -261,7 +272,6 @@ namespace TvpMain.Forms
             this.SelectedColumn.ReadOnly = true;
             this.SelectedColumn.Resizable = System.Windows.Forms.DataGridViewTriState.True;
             this.SelectedColumn.Visible = false;
-            this.SelectedColumn.Width = 70;
             // 
             // CategoryColumn
             // 
@@ -326,6 +336,42 @@ namespace TvpMain.Forms
             this.IssuesDataGridView.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.IssuesDataGridView_CellContentDoubleClick);
             this.IssuesDataGridView.SelectionChanged += new System.EventHandler(this.IssuesDataGridView_SelectionChanged);
             // 
+            // statusIconColumn
+            // 
+            this.statusIconColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
+            this.statusIconColumn.FillWeight = 60F;
+            this.statusIconColumn.HeaderText = "Status";
+            this.statusIconColumn.Name = "statusIconColumn";
+            this.statusIconColumn.ReadOnly = true;
+            this.statusIconColumn.Width = 43;
+            // 
+            // ReferenceColumnProject
+            // 
+            this.ReferenceColumnProject.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
+            dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.ReferenceColumnProject.DefaultCellStyle = dataGridViewCellStyle3;
+            this.ReferenceColumnProject.HeaderText = "Ref";
+            this.ReferenceColumnProject.Name = "ReferenceColumnProject";
+            this.ReferenceColumnProject.ReadOnly = true;
+            this.ReferenceColumnProject.Width = 49;
+            // 
+            // ReferenceColumnEng
+            // 
+            this.ReferenceColumnEng.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
+            dataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.ReferenceColumnEng.DefaultCellStyle = dataGridViewCellStyle4;
+            this.ReferenceColumnEng.HeaderText = "Ref";
+            this.ReferenceColumnEng.Name = "ReferenceColumnEng";
+            this.ReferenceColumnEng.ReadOnly = true;
+            this.ReferenceColumnEng.Width = 49;
+            // 
+            // MatchTextColumn
+            // 
+            this.MatchTextColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.MatchTextColumn.HeaderText = "Match Text";
+            this.MatchTextColumn.Name = "MatchTextColumn";
+            this.MatchTextColumn.ReadOnly = true;
+            // 
             // label1
             // 
             this.label1.AutoSize = true;
@@ -376,41 +422,12 @@ namespace TvpMain.Forms
             this.matchTextBox.TabIndex = 4;
             this.matchTextBox.Text = "";
             // 
-            // statusIconColumn
+            // licenseToolStripMenuItem1
             // 
-            this.statusIconColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
-            this.statusIconColumn.FillWeight = 60F;
-            this.statusIconColumn.HeaderText = "Status";
-            this.statusIconColumn.Name = "statusIconColumn";
-            this.statusIconColumn.ReadOnly = true;
-            this.statusIconColumn.Width = 43;
-            // 
-            // ReferenceColumnProject
-            // 
-            this.ReferenceColumnProject.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
-            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.ReferenceColumnProject.DefaultCellStyle = dataGridViewCellStyle1;
-            this.ReferenceColumnProject.HeaderText = "Ref";
-            this.ReferenceColumnProject.Name = "ReferenceColumnProject";
-            this.ReferenceColumnProject.ReadOnly = true;
-            this.ReferenceColumnProject.Width = 49;
-            // 
-            // ReferenceColumnEng
-            // 
-            this.ReferenceColumnEng.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
-            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.ReferenceColumnEng.DefaultCellStyle = dataGridViewCellStyle2;
-            this.ReferenceColumnEng.HeaderText = "Ref";
-            this.ReferenceColumnEng.Name = "ReferenceColumnEng";
-            this.ReferenceColumnEng.ReadOnly = true;
-            this.ReferenceColumnEng.Width = 49;
-            // 
-            // MatchTextColumn
-            // 
-            this.MatchTextColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.MatchTextColumn.HeaderText = "Match Text";
-            this.MatchTextColumn.Name = "MatchTextColumn";
-            this.MatchTextColumn.ReadOnly = true;
+            this.licenseToolStripMenuItem1.Name = "licenseToolStripMenuItem1";
+            this.licenseToolStripMenuItem1.Size = new System.Drawing.Size(180, 22);
+            this.licenseToolStripMenuItem1.Text = "License";
+            this.licenseToolStripMenuItem1.Click += new System.EventHandler(this.LicenseToolStripMenuItem_Click1);
             // 
             // CheckResultsForm
             // 
@@ -452,7 +469,6 @@ namespace TvpMain.Forms
         private System.Windows.Forms.ToolStripMenuItem fileToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem editToolStripMenuItem;
         private System.Windows.Forms.Panel topPanel;
-        private System.Windows.Forms.ToolStripMenuItem LicenseToolStripMenuItem;
         private System.Windows.Forms.DataGridView ChecksDataGridView;
         private System.Windows.Forms.Label bookFilterLabel;
         private System.Windows.Forms.Button clearCheckFilterButton;
@@ -476,5 +492,8 @@ namespace TvpMain.Forms
         private System.Windows.Forms.DataGridViewTextBoxColumn ReferenceColumnProject;
         private System.Windows.Forms.DataGridViewTextBoxColumn ReferenceColumnEng;
         private System.Windows.Forms.DataGridViewTextBoxColumn MatchTextColumn;
+        private System.Windows.Forms.ToolStripMenuItem helpToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem contactSupportToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem licenseToolStripMenuItem1;
     }
 }
