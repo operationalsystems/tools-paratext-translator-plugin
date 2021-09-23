@@ -7,7 +7,7 @@ namespace TvpTest
 {
     public class TestS3Repository : S3Repository
     {
-        public override IRemoteService Service { get; set; } = new TestS3Service();
+        protected override IRemoteService Service { get; } = new TestS3Service();
     }
 
     [TestCategory("IgnoreOnBuild")]

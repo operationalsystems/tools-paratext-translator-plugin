@@ -25,6 +25,11 @@ namespace TvpMain.Forms
     public partial class RunChecks : Form
     {
         /// <summary>
+        /// Whether the user is a TVP Admin
+        /// </summary>
+        private readonly bool _isCurrentUserTvpAdmin = HostUtil.Instance.IsCurrentUserTvpAdmin();
+        
+        /// <summary>
         /// The minimum number of characters required to perform a search.
         /// </summary>
         private const int MIN_SEARCH_CHARACTERS = 3;
@@ -145,7 +150,7 @@ namespace TvpMain.Forms
         {
             // the project name text, will eventually be the selected current project from the list of projects
             projectNameText.Text = _activeProjectName;
-
+            
             // sets up for just the current book by default
             SetCurrentBook();
 
@@ -153,6 +158,10 @@ namespace TvpMain.Forms
             if (!HostUtil.Instance.isCurrentUserAdmin(_activeProjectName))
             {
                 setDefaultsToSelected.Hide();
+            }
+
+            if (!_isCurrentUserTvpAdmin)
+            {
                 refreshButton.Hide();
             }
 
@@ -341,18 +350,17 @@ namespace TvpMain.Forms
                     {
                         checksList.Rows[rowIndex].Cells[i].ToolTipText += displayItem.Tooltip;
 
-                        if (isLocal)
+                        if (isLocal || _isCurrentUserTvpAdmin)
                         {
                             checksList.Rows[rowIndex].Cells[i].ToolTipText += Environment.NewLine + Environment.NewLine;
                         }
                     }
 
-                    // Tooltip text for the local check
-                    if (isLocal)
+                    if (isLocal || _isCurrentUserTvpAdmin)
                     {
-                        checksList.Rows[rowIndex].Cells[i].ToolTipText += "Local checks can be edited by double-clicking on the name of the check.";
+                        checksList.Rows[rowIndex].Cells[i].ToolTipText += string.Concat(_isCurrentUserTvpAdmin ? "C" : "Local c",
+                            "hecks can be edited by double-clicking on the name of the check.");
                     }
-
                 }
 
                 // disable row if it can't be used on this project
@@ -428,8 +436,7 @@ namespace TvpMain.Forms
         }
 
         /// <summary>
-        /// Default, show the EULA for the project.
-        /// License from menu
+        /// Display the EULA for the plugin.
         /// </summary>
         /// <param name="sender">The control that sent this event</param>
         /// <param name="e">The event information that triggered this call</param>
@@ -908,22 +915,56 @@ namespace TvpMain.Forms
         /// <param name="e"></param>
         private void ChecksList_EditCheck(object sender, DataGridViewCellEventArgs e)
         {
-            // Gets the check that was clicked
+            const string localCheckPrefix = "(Local)";
+            
+            // Get the check that was clicked
             var selectedCheck = _displayItems[e.RowIndex];
 
-            // Only local checks can be edited
-            if (!selectedCheck.Name.StartsWith("(Local)")) return;
+            var isTvpAdmin = _isCurrentUserTvpAdmin;
+            var isLocalCheck = selectedCheck.Name.StartsWith(localCheckPrefix);
+            
+            // Non-admins can only edit local checks
+            if (!isLocalCheck && !isTvpAdmin)
+            {
+                return;
+            }
+            
+            var name = isLocalCheck ? selectedCheck.Name.Replace(localCheckPrefix, "") : selectedCheck.Name;
+            var checkDir = isLocalCheck ? _checkManager.GetLocalRepoDirectory() : _checkManager.GetInstalledChecksDirectory();
 
-            // Gets the file location for the selected check
+            // Get the file location for the selected check
             var fileName = _checkManager.GetCheckAndFixItemFilename(
-                selectedCheck.Name.Replace("(Local)", ""),
+                name,
                 selectedCheck.Version);
-            var checkDir = _checkManager.GetLocalRepoDirectory();
             var fullPath = Path.Combine(checkDir, fileName);
 
             // Open the CheckEditor with the selected check
-            new CheckEditor(new FileInfo(fullPath)).ShowDialog(this);
+            new CheckEditor(new FileInfo(fullPath), !isLocalCheck).ShowDialog(this);
+
             UpdateDisplayItems();
+        }
+
+        /// <summary>
+        /// Opens a link to the support URL from the plugin
+        /// </summary>
+        /// <param name="sender">The control that sent this event</param>
+        /// <param name="e">The event information that triggered this call</param>
+        private void contactSupportToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            //Call the Process.Start method to open the default browser
+            //with a URL:
+            Process.Start(MainConsts.SUPPORT_URL);
+        }
+
+        /// <summary>
+        /// Default, show the EULA for the project.
+        /// License from menu
+        /// </summary>
+        /// <param name="sender">The control that sent this event</param>
+        /// <param name="e">The event information that triggered this call</param>
+        private void LicenseToolStripMenuItem_Click_1(object sender, EventArgs e)
+        {
+            FormUtil.StartLicenseForm();
         }
     }
 

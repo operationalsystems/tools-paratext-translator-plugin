@@ -1,0 +1,126 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<BookNames>
+  <book code="GEN" abbr="Нач." short="Начало" long="Начало" />
+  <book code="EXO" abbr="Исх." short="Исход" long="Исход" />
+  <book code="LEV" abbr="Лев." short="Левит" long="Левит" />
+  <book code="NUM" abbr="Чис." short="Числа" long="Числа" />
+  <book code="DEU" abbr="Втор." short="Второзаконие" long="Второзаконие" />
+  <book code="JOS" abbr="Иеш." short="Иешуа" long="Иешуа, сын Нуна" />
+  <book code="JDG" abbr="Суд." short="Судьи" long="Судьи" />
+  <book code="RUT" abbr="Руфь" short="Руфь" long="Руфь" />
+  <book code="1SA" abbr="1 Цар." short="1 Царств" long="Первая хроника царств" />
+  <book code="2SA" abbr="2 Цар." short="2 Царств" long="Вторая хроника царств" />
+  <book code="1KI" abbr="3 Цар." short="3 Царств" long="Третья хроника царств" />
+  <book code="2KI" abbr="4 Цар." short="4 Царств" long="Четвёртая хроника царств" />
+  <book code="1CH" abbr="1 Лет." short="1 Летопись" long="Первая летопись" />
+  <book code="2CH" abbr="2 Лет." short="2 Летопись" long="Вторая летопись" />
+  <book code="EZR" abbr="Узайр" short="Узайр" long="Узайр" />
+  <book code="NEH" abbr="Неем." short="Неемия" long="Неемия" />
+  <book code="EST" abbr="Есф." short="Есфирь" long="Есфирь" />
+  <book code="JOB" abbr="Аюб" short="Аюб" long="Аюб" />
+  <book code="PSA" abbr="Заб." short="Забур" long="Забур" />
+  <book code="PRO" abbr="Мудр." short="Мудрые изречения" long="Мудрые изречения Сулеймана" />
+  <book code="ECC" abbr="Разм." short="Размышления" long="Размышления Сулеймана" />
+  <book code="SNG" abbr="Песн." short="Песнь Сулеймана" long="Песнь Сулеймана" />
+  <book code="ISA" abbr="Ис." short="Исаия" long="Пророк Исаия" />
+  <book code="JER" abbr="Иер." short="Иеремия" long="Пророк Иеремия" />
+  <book code="LAM" abbr="Плач" short="Плач" long="Плач об Иерусалиме" />
+  <book code="EZK" abbr="Езек." short="Езекиил" long="Пророк Езекиил" />
+  <book code="DAN" abbr="Дан." short="Даниял" long="Пророк Даниял" />
+  <book code="HOS" abbr="Ос." short="Осия" long="Пророк Осия" />
+  <book code="JOL" abbr="Иоиль" short="Иоиль" long="Пророк Иоиль" />
+  <book code="AMO" abbr="Ам." short="Амос" long="Пророк Амос" />
+  <book code="OBA" abbr="Авд." short="Авдий" long="Пророк Авдий" />
+  <book code="JON" abbr="Юнус" short="Юнус" long="Пророк Юнус" />
+  <book code="MIC" abbr="Мих." short="Михей" long="Пророк Михей" />
+  <book code="NAM" abbr="Наум" short="Наум" long="Пророк Наум" />
+  <book code="HAB" abbr="Авв." short="Аввакум" long="Пророк Аввакум" />
+  <book code="ZEP" abbr="Соф." short="Софония" long="Пророк Софония" />
+  <book code="HAG" abbr="Агг." short="Аггей" long="Пророк Аггей" />
+  <book code="ZEC" abbr="Зак." short="Закария" long="Пророк Закария" />
+  <book code="MAL" abbr="Мал." short="Малахия" long="Пророк Малахия" />
+  <book code="MAT" abbr="Мат." short="Матай" long="Радостная Весть Исы Масиха в изложении Матая" />
+  <book code="MRK" abbr="Мк." short="Марк" long="Радостная Весть Исы Масиха в изложении Марка" />
+  <book code="LUK" abbr="Лк." short="Лука" long="Радостная Весть Исы Масиха в изложении Луки" />
+  <book code="JHN" abbr="Ин." short="Иохан" long="Радостная Весть Исы Масиха в изложении Иохана" />
+  <book code="ACT" abbr="Деян." short="Деяния" long="Деяния посланников Масиха" />
+  <book code="ROM" abbr="Рим." short="Римлянам" long="Послание Паула верующим в Риме" />
+  <book code="1CO" abbr="1 Кор." short="1 Коринфянам" long="Первое послание Паула верующим в Коринфе" />
+  <book code="2CO" abbr="2 Кор." short="2 Коринфянам" long="Второе послание Паула верующим в Коринфе" />
+  <book code="GAL" abbr="Гал." short="Галатам" long="Послание Паула верующим в Галатии" />
+  <book code="EPH" abbr="Эф." short="Эфесянам" long="Послание Паула верующим в Эфесе" />
+  <book code="PHP" abbr="Флп." short="Филиппийцам" long="Послание Паула верующим в Филиппах" />
+  <book code="COL" abbr="Кол." short="Колоссянам" long="Послание Паула верующим в Колоссах" />
+  <book code="1TH" abbr="1 Фес." short="1 Фессалоникийцам" long="Первое послание Паула верующим в Фессалониках" />
+  <book code="2TH" abbr="2 Фес." short="2 Фессалоникийцам" long="Второе послание Паула верующим в Фессалониках" />
+  <book code="1TI" abbr="1 Тим." short="1 Тиметею" long="Первое послание Паула Тиметею" />
+  <book code="2TI" abbr="2 Тим." short="2 Тиметею" long="Второе послание Паула Тиметею" />
+  <book code="TIT" abbr="Тит" short="Титу" long="Послание Паула Титу" />
+  <book code="PHM" abbr="Флм." short="Филимону" long="Послание Паула Филимону" />
+  <book code="HEB" abbr="Евр." short="Евреям" long="Послание евреям, верующим в Ису Масиха" />
+  <book code="JAS" abbr="Якуб" short="Якуб" long="Послание Якуба, брата Исы Масиха" />
+  <book code="1PE" abbr="1 Пет." short="1 Петира" long="Первое послание Петира" />
+  <book code="2PE" abbr="2 Пет." short="2 Петира" long="Второе послание Петира" />
+  <book code="1JN" abbr="1 Ин." short="1 Иохана" long="Первое послание Иохана" />
+  <book code="2JN" abbr="2 Ин." short="2 Иохана" long="Второе послание Иохана" />
+  <book code="3JN" abbr="3 Ин." short="3 Иохана" long="Третье послание Иохана" />
+  <book code="JUD" abbr="Иуда" short="Иуда" long="Послание Иуды, брата Исы Масиха" />
+  <book code="REV" abbr="Отк." short="Откровение" long="Откровение Исы Масиха Иохану" />
+  <book code="XXA" abbr="Прил. I" short="Приложение I" long="Приложение I: Перевод Священного Писания" />
+  <book code="XXB" abbr="Прил. II" short="Приложение II" long="Приложение II: Достоверность Священного Писания" />
+  <book code="XXC" abbr="Прил. III" short="Приложение III" long="Приложение III: Толкование и перевод термина «Сын Всевышнего»" />
+  <book code="XXD" abbr="Прил. IV" short="Приложение IV" long="Приложение IV: Происхождение и употребление слова «Аллах»" />
+  <book code="XXE" abbr="Прил. V" short="Приложение V" long="Приложение V: Перевод ключевых терминов" />
+  <book code="XXF" abbr="Прил. VI" short="Приложение VI" long="Приложение VI: Технические моменты" />
+  <book code="XXG" abbr="Прил. VII" short="Приложение VII" long="Приложение VII: Связи Кавказа и Центральной Азии со Священным Писанием" />
+  <book code="FRT" abbr="" short="" long="Предисловие к восточному переводу Стихи священного писания на каждый день" />
+  <book code="BAK" abbr="" short="" long="Таблица 1: Хронология событий Таблица 2: ЖЕРТВОПРИНОШЕНИЯ В ИСРАИЛЕ Таблица 3: ПРАЗДНИКИ В ИСРАИЛЕ Таблица 4: ЦАРИ И ПРОРОКИ Таблица 5: ЕВРЕЙСКИЙ КАЛЕНДАРЬ Таблица 6: МЕРЫ И ДЕНЬГИВ СВЯЩЕННОМ ПИСАНИИ" />
+  <book code="INT" abbr="" short="" long="Таурат Книга Пророков (Часть I) Сборник Забур Книга Пророков (Часть II) Инджил" />
+  <book code="GLO" abbr="Слов" short="Словарь" long="Пояснительный словарь" />
+  <book code="TOB" abbr="" short="" long="" />
+  <book code="JDT" abbr="" short="" long="" />
+  <book code="ESG" abbr="" short="" long="" />
+  <book code="WIS" abbr="" short="" long="" />
+  <book code="SIR" abbr="" short="" long="" />
+  <book code="BAR" abbr="" short="" long="" />
+  <book code="LJE" abbr="" short="" long="" />
+  <book code="S3Y" abbr="" short="" long="" />
+  <book code="SUS" abbr="" short="" long="" />
+  <book code="BEL" abbr="" short="" long="" />
+  <book code="1MA" abbr="" short="" long="" />
+  <book code="2MA" abbr="" short="" long="" />
+  <book code="3MA" abbr="" short="" long="" />
+  <book code="4MA" abbr="" short="" long="" />
+  <book code="1ES" abbr="" short="" long="" />
+  <book code="2ES" abbr="" short="" long="" />
+  <book code="MAN" abbr="" short="" long="" />
+  <book code="PS2" abbr="" short="" long="" />
+  <book code="ODA" abbr="" short="" long="" />
+  <book code="PSS" abbr="" short="" long="" />
+  <book code="JSA" abbr="" short="" long="" />
+  <book code="JDB" abbr="" short="" long="" />
+  <book code="TBS" abbr="" short="" long="" />
+  <book code="SST" abbr="" short="" long="" />
+  <book code="DNT" abbr="" short="" long="" />
+  <book code="BLT" abbr="" short="" long="" />
+  <book code="3ES" abbr="" short="" long="" />
+  <book code="EZA" abbr="" short="" long="" />
+  <book code="5EZ" abbr="" short="" long="" />
+  <book code="6EZ" abbr="" short="" long="" />
+  <book code="DAG" abbr="" short="" long="" />
+  <book code="PS3" abbr="" short="" long="" />
+  <book code="2BA" abbr="" short="" long="" />
+  <book code="LBA" abbr="" short="" long="" />
+  <book code="JUB" abbr="" short="" long="" />
+  <book code="ENO" abbr="" short="" long="" />
+  <book code="1MQ" abbr="" short="" long="" />
+  <book code="2MQ" abbr="" short="" long="" />
+  <book code="3MQ" abbr="" short="" long="" />
+  <book code="REP" abbr="" short="" long="" />
+  <book code="4BA" abbr="" short="" long="" />
+  <book code="LAO" abbr="" short="" long="" />
+  <book code="OTH" abbr="" short="" long="Священное Писание Восточный перевод" />
+  <book code="CNC" abbr="" short="" long="" />
+  <book code="TDX" abbr="" short="" long="" />
+  <book code="NDX" abbr="" short="" long="" />
+</BookNames>

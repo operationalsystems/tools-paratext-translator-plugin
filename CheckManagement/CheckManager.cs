@@ -265,5 +265,14 @@ namespace TvpMain.CheckManagement
         {
             return Path.Combine(Directory.GetCurrentDirectory(), MainConsts.LOCAL_CHECK_FOLDER_NAME);
         }
+        
+        /// <summary>
+        /// Get the path to the folder where remote checks are installed.
+        /// </summary>
+        /// <returns>The path to the folder where remote checks are installed.</returns>
+        public string GetInstalledChecksDirectory()
+        {
+            return Path.Combine(Directory.GetCurrentDirectory(), MainConsts.INSTALLED_CHECK_FOLDER_NAME);
+        }
     }
 }

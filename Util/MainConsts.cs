@@ -159,5 +159,14 @@ namespace TvpMain.Util
         /// </summary>
         public const string V1_PUNCTUATION_CHECK_GUID = "239ca2c4-98ee-11eb-a8b3-0242ac130003";
 
+        /// <summary>
+        /// The file name to look for in the TVP repo which contains a list of users that are TVP administrators.
+        /// </summary>
+        public const string PERMISSIONS_FILE_NAME = "permission_list.csv";
+
+        /// <summary>
+        /// This is the URL to get support for the plugin.
+        /// </summary>
+        public const string SUPPORT_URL = "https://translationtools.biblica.com/en/support/home";
     }
 }

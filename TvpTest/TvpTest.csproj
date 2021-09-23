@@ -306,6 +306,7 @@
     <Compile Include="CheckManagement\S3ServiceTests.cs" />
     <Compile Include="LocalCheckAndFixManagerTests.cs" />
     <Compile Include="CheckAndFixTests.cs" />
+    <Compile Include="Project\ProjectManagerTests.cs" />
     <Compile Include="Project\ProjectCheckSettingsTests.cs" />
     <Compile Include="ScriptureReferenceCheckTests.cs" />
     <Compile Include="ScriptureReferenceParserTests.cs" />
@@ -314,43 +315,7 @@
     <Compile Include="TextCheckRunnerTests.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Resources\checkFixes\AddIETag.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Resources\checkFixes\AddSpaceBetweenVerseTagAndNumber.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Resources\checkFixes\AlternateSeparationCharacterForVerseSpans.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Resources\checkFixes\AddPoTagFollowingBTags.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Resources\checkFixes\EscapeCodeCheck.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Resources\checkFixes\ReplaceIorTag.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Resources\checkFixes\ReplaceToc2WithHContent.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Resources\formatter-results-1.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Resources\parser-results-1.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Resources\reference-results-1.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Resources\scripture-test-1.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Resources\test-usfm-1.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Resources\test-verses-1.txt">
+    <Content Include="Resources\**">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="x86\CC32.dll" />
@@ -360,55 +325,6 @@
     <Content Include="x86\TECkit_x86.dll" />
     <None Include="app.config" />
     <None Include="packages.config" />
-    <Content Include="Resources\checkFixes\checkFixExample.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Resources\checkFixes\RTLReplaceIdCheck2.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Resources\checkFixes\ThaiBurmeseLaoFinalizationCheck1.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Resources\checkFixes\BlankLineCleanupCheck1.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Resources\checkFixes\FinalizationCheck3.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Resources\checkFixes\PoetryQuoteCheck.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Resources\checkFixes\RTLAddMissingSpacesAfterFootnotes.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Resources\checkFixPrototype.js" />
-    <Content Include="Resources\checkFixes\FinalizationCheck1.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Resources\checkFixes\InFootnotes.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <None Include="Resources\testReferences\EscapeCodeMatch.sfm">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Resources\testReferences\Rom1.sfm">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Resources\testReferences\Mat17.sfm">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Resources\testReferences\Dan6_PoetryQuoteMatch.sfm">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Resources\testReferences\Dan6_PoetryNoQuoteMatch.sfm">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Resources\testReferences\Jer1_Intro.sfm">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Resources\testReferences\Jhn1_Intro.sfm">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\TvpMain.csproj">
@@ -419,6 +335,7 @@
   <ItemGroup>
     <Analyzer Include="..\packages\AWSSDK.S3.3.5.7.12\analyzers\dotnet\cs\AWSSDK.S3.CodeAnalysis.dll" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
