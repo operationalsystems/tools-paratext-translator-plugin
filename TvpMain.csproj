@@ -391,6 +391,7 @@
     <Compile Include="CheckManagement\LocalRepository.cs" />
     <Compile Include="CheckManagement\S3Service.cs" />
     <Compile Include="CheckManagement\S3Repository.cs" />
+    <Compile Include="CheckManagement\S3ServiceProvider.cs" />
     <Compile Include="Check\CheckAndFixItem.cs" />
     <Compile Include="Check\CheckAndFixRunner.cs" />
     <Compile Include="Check\CheckArea.cs" />

@@ -65,6 +65,12 @@ namespace TvpMain.CheckManagement
         public string GetLocalRepoDirectory();
 
         /// <summary>
+        /// Get the path to the folder where remote checks are installed.
+        /// </summary>
+        /// <returns>The path to the folder where remote checks are installed.</returns>
+        public string GetInstalledChecksDirectory();
+
+        /// <summary>
         /// This method creates a filename for the provided <c>CheckAndFixItem</c>. 
         /// </summary>
         /// <param name="name">The <c>CheckAndFixItem</c> name</param>

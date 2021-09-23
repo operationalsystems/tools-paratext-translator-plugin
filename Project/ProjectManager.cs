@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Xml;
@@ -352,35 +353,43 @@ namespace TvpMain.Project
                         {
                             // no attributes or no/unusuable code = unusable
                             var codeAttrib = nodeItem.Attributes?["code"]?.Value?.Trim();
-                            if (string.IsNullOrWhiteSpace(codeAttrib)
-                                || !BookUtil.BookIdsByCode.TryGetValue(codeAttrib, out var bookId))
+                            if (string.IsNullOrWhiteSpace(codeAttrib))
                             {
                                 continue;
-                            }
-
-                            var abbrAttrib = nodeItem.Attributes["abbr"]?.Value?.Trim();
-                            var shortAttrib = nodeItem.Attributes["short"]?.Value?.Trim();
-                            var longAttrib = nodeItem.Attributes["long"]?.Value?.Trim();
-
-                            // no value attribs = unusable
-                            if (string.IsNullOrWhiteSpace(abbrAttrib)
-                                && string.IsNullOrWhiteSpace(shortAttrib)
-                                && string.IsNullOrWhiteSpace(longAttrib))
+                            } 
+                            else if (!BookUtil.BookIdsByCode.TryGetValue(codeAttrib, out var bookId))
                             {
+                                HostUtil.Instance.LogLine($"No book ID found for {codeAttrib}", false);
                                 continue;
                             }
+                            else 
+                            { 
+                                var abbrAttrib = nodeItem.Attributes["abbr"]?.Value?.Trim();
+                                var shortAttrib = nodeItem.Attributes["short"]?.Value?.Trim();
+                                var longAttrib = nodeItem.Attributes["long"]?.Value?.Trim();
 
-                            tempBookNamesByNum[bookId.BookNum]
-                                = new BookNameItem(
-                                    codeAttrib,
-                                    bookId.BookNum,
-                                    abbrAttrib,
-                                    shortAttrib,
-                                    longAttrib);
+                                // no value attribs = unusable
+                                if (string.IsNullOrWhiteSpace(abbrAttrib)
+                                    && string.IsNullOrWhiteSpace(shortAttrib)
+                                    && string.IsNullOrWhiteSpace(longAttrib))
+                                {
+                                    HostUtil.Instance.LogLine($"No value attributes found for {codeAttrib}", false);
+                                    continue;
+                                }
+
+                                tempBookNamesByNum[bookId.BookNum]
+                                    = new BookNameItem(
+                                        codeAttrib,
+                                        bookId.BookNum,
+                                        abbrAttrib,
+                                        shortAttrib,
+                                        longAttrib);
+                            }
                         }
                     }
                 }
             }
+
             BookNamesByNum = tempBookNamesByNum.ToImmutableDictionary();
 
             var tempBookNamesByAllNames = new Dictionary<string, BookNameItem>();
