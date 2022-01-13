@@ -532,6 +532,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="LICENSE.txt" />
     <EmbeddedResource Include="Resources\biblica-16x16.ico" />
     <EmbeddedResource Include="Resources\biblica-32x32.ico" />
     <Content Include="Resources\biblica-96x96.ico" />
