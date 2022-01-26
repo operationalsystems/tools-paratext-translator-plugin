@@ -242,7 +242,6 @@ namespace TvpMain.Forms
                 _displayItems = new List<DisplayItem>();
 
                 // add the V1 defaults
-
                 // get if the check is available (item1), and if not, the text for the tooltip (item2)
                 var isCheckAvailableTupleRef = IsCheckAvailableForProject(_scriptureReferenceCf);
                 _displayItems.Add(new DisplayItem(
@@ -354,7 +353,7 @@ namespace TvpMain.Forms
                 {
                     checksList.Rows[rowIndex].Cells[i].ToolTipText = "";
 
-                    // Determines which tool tip to display on the cell
+                    // Determines which tooltip to display on the cell
                     if (!displayItem.Active)
                     {
                         checksList.Rows[rowIndex].Cells[i].ToolTipText += displayItem.Tooltip;
@@ -368,7 +367,7 @@ namespace TvpMain.Forms
                     if (isLocal || _isCurrentUserTvpAdmin)
                     {
                         checksList.Rows[rowIndex].Cells[i].ToolTipText += string.Concat(_isCurrentUserTvpAdmin ? "C" : "Local c",
-                            "hecks can be edited by double-clicking on the name of the check.");
+                            "checks can be edited by double-clicking on the name of the check.");
                     }
                 }
 
