@@ -103,7 +103,7 @@ namespace TvpMain.Forms
         /// This is a fixed CF for V1 TVP scripture reference checking
         /// </summary>
         readonly CheckAndFixItem _scriptureReferenceCf = new CheckAndFixItem(MainConsts.V1_SCRIPTURE_REFERENCE_CHECK_GUID,
-            "Scripture Reference Verifications",
+            "(Built-in) Scripture Reference Verifications",
             "Scripture reference tag and formatting checks.",
             "2.0.0.0",
             CheckAndFixItem.CheckScope.VERSE);
@@ -112,7 +112,7 @@ namespace TvpMain.Forms
         /// This is a fixed CF for V1 TVP missing punctuation checking
         /// </summary>
         readonly CheckAndFixItem _missingPunctuationCf = new CheckAndFixItem(MainConsts.V1_PUNCTUATION_CHECK_GUID,
-            "Missing Punctuation Verifications",
+            "(Built-in) Missing Punctuation Verifications",
             "Searches for missing punctuation.",
             "2.0.0.0",
             CheckAndFixItem.CheckScope.VERSE);
