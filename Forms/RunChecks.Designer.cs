@@ -258,7 +258,6 @@ namespace TvpMain.Forms
             this.checksList.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.ChecksList_CellClick);
             this.checksList.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.ChecksList_EditCheck);
             this.checksList.CellMouseEnter += new System.Windows.Forms.DataGridViewCellEventHandler(this.ChecksList_CellMouseEnter);
-            this.checksList.DoubleClick += new System.EventHandler(this.EditorToolStripMenuItem_Click);
             // 
             // CFSelected
             // 

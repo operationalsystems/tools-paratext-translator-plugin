@@ -16,6 +16,7 @@ using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Windows.Forms;
 using TvpMain.Check;
 using TvpMain.CheckManagement;
@@ -42,6 +43,16 @@ namespace TvpMain.Forms
         /// The minimum number of characters required to perform a search.
         /// </summary>
         private const int MIN_SEARCH_CHARACTERS = 3;
+
+        /// <summary>
+        /// Prefix for local checks constant.
+        /// </summary>
+        private const string LOCAL_CHECKS_PREFIX = "(Local)";
+
+        /// <summary>
+        /// Prefix for local checks constant.
+        /// </summary>
+        private const string BUILTIN_CHECKS_PREFIX = "(Built-in)";
 
         /// <summary>
         /// Paratext host interface.
@@ -346,29 +357,23 @@ namespace TvpMain.Forms
                 checksList.Rows[rowIndex].Tag = displayItem;
 
                 // Whether a check is local
-                var isLocal = displayItem.Name.StartsWith("(Local)");
+                var isLocal = displayItem.Name.StartsWith(LOCAL_CHECKS_PREFIX);
+                var isBuiltin = displayItem.Name.StartsWith(BUILTIN_CHECKS_PREFIX);
 
                 // loop through all the cells in the row since tool tips can only be placed on the cell
                 for (var i = 0; i < checksList.Columns.Count; i++)
                 {
-                    checksList.Rows[rowIndex].Cells[i].ToolTipText = "";
+                    var toolTipBuilder = new StringBuilder(displayItem.Tooltip);
 
-                    // Determines which tooltip to display on the cell
-                    if (!displayItem.Active)
+                    if (!isBuiltin && (isLocal || _isCurrentUserTvpAdmin))
                     {
-                        checksList.Rows[rowIndex].Cells[i].ToolTipText += displayItem.Tooltip;
-
-                        if (isLocal || _isCurrentUserTvpAdmin)
-                        {
-                            checksList.Rows[rowIndex].Cells[i].ToolTipText += Environment.NewLine + Environment.NewLine;
-                        }
+                        toolTipBuilder.Append(Environment.NewLine);
+                        toolTipBuilder.Append(Environment.NewLine);
+                        toolTipBuilder.Append(_isCurrentUserTvpAdmin ? "C" : "Local c");
+                        toolTipBuilder.Append("hecks can be edited by double-clicking on the name of the check.");
                     }
 
-                    if (isLocal || _isCurrentUserTvpAdmin)
-                    {
-                        checksList.Rows[rowIndex].Cells[i].ToolTipText += string.Concat(_isCurrentUserTvpAdmin ? "C" : "Local c",
-                            "checks can be edited by double-clicking on the name of the check.");
-                    }
+                    checksList.Rows[rowIndex].Cells[i].ToolTipText = toolTipBuilder.ToString().Trim();
                 }
 
                 // disable row if it can't be used on this project
@@ -746,6 +751,7 @@ namespace TvpMain.Forms
         {
             var languageId = _host.GetProjectLanguageId(_activeProjectName, "translation validation").ToUpper();
             var projectRtl = _host.GetProjectRtoL(_activeProjectName);
+            var builtInCheck = item.Name.StartsWith(BUILTIN_CHECKS_PREFIX);
 
             // filter based on language
             var languageEnabled = item.Languages == null
@@ -764,21 +770,29 @@ namespace TvpMain.Forms
             Debug.WriteLine("Project RTL: " + projectRtl);
             Debug.WriteLine("Item RTL: " + rtlEnabled);
 
-            var response = "";
+            var filterReasons = new List<string>();
+
 
             // set the response strings for the appropriate filter reason
+            if (builtInCheck)
+            {
+                filterReasons.Add("This check is built-in and cannot be edited.");
+            }
+
             if (!languageEnabled)
             {
-                response = "This check doesn't support this project's language.";
+                filterReasons.Add("This check doesn't support this project's language.");
             }
 
             if (!rtlEnabled)
             {
-                response = projectRtl
+                var rtlReason = projectRtl
                     ? "This check does not support RTL languages."
                     : "This check is for RTL languages only.";
+                filterReasons.Add(rtlReason);
             }
 
+            var response = String.Join("\n", filterReasons);
             return new Tuple<bool, string>(languageEnabled && rtlEnabled, response);
         }
 
@@ -924,19 +938,33 @@ namespace TvpMain.Forms
         private void ChecksList_EditCheck(object sender, DataGridViewCellEventArgs e)
         {
             const string localCheckPrefix = "(Local)";
+            const string builtInCheckPrefix = "(Built-in)";
             
             // Get the check that was clicked
             var selectedCheck = _displayItems[e.RowIndex];
 
             var isTvpAdmin = _isCurrentUserTvpAdmin;
             var isLocalCheck = selectedCheck.Name.StartsWith(localCheckPrefix);
-            
+            var builtInCheck = selectedCheck.Name.StartsWith(builtInCheckPrefix);
+
+            // Messages based on what check is selected to edited by the user
+            string editWarningMessage = "Only administrators can edit non-local checks.";
+            string builtInWarningMessage = "Built-in checks are not able to be edited.";
+
             // Non-admins can only edit local checks
-            if (!isLocalCheck && !isTvpAdmin)
+            if (builtInCheck)
             {
+                // Dialog box that shows if attempts to edit a built-in check
+                MessageBox.Show(builtInWarningMessage, "Warning");
                 return;
             }
-            
+            else if (!isLocalCheck && !isTvpAdmin)
+            {
+                // Dialog box that shows if a user attempts to edit a check as a non-admin
+                MessageBox.Show(editWarningMessage, "Warning");
+                return;
+            }
+
             var name = isLocalCheck ? selectedCheck.Name.Replace(localCheckPrefix, "") : selectedCheck.Name;
             var checkDir = isLocalCheck ? _checkManager.GetLocalRepoDirectory() : _checkManager.GetInstalledChecksDirectory();
 
