@@ -786,10 +786,9 @@ namespace TvpMain.Forms
 
             if (!rtlEnabled)
             {
-                var rtlReason = projectRtl
+                filterReasons.Add(projectRtl
                     ? "This check does not support RTL languages."
-                    : "This check is for RTL languages only.";
-                filterReasons.Add(rtlReason);
+                    : "This check is for RTL languages only.");
             }
 
             var response = String.Join("\n", filterReasons);
@@ -947,21 +946,17 @@ namespace TvpMain.Forms
             var isLocalCheck = selectedCheck.Name.StartsWith(localCheckPrefix);
             var builtInCheck = selectedCheck.Name.StartsWith(builtInCheckPrefix);
 
-            // Messages based on what check is selected to edited by the user
-            string editWarningMessage = "Only administrators can edit non-local checks.";
-            string builtInWarningMessage = "Built-in checks are not able to be edited.";
-
             // Non-admins can only edit local checks
             if (builtInCheck)
             {
                 // Dialog box that shows if attempts to edit a built-in check
-                MessageBox.Show(builtInWarningMessage, "Warning");
+                MessageBox.Show("Built-in checks are not able to be edited.", "Warning");
                 return;
             }
             else if (!isLocalCheck && !isTvpAdmin)
             {
                 // Dialog box that shows if a user attempts to edit a check as a non-admin
-                MessageBox.Show(editWarningMessage, "Warning");
+                MessageBox.Show("Only administrators can edit non-local checks.", "Warning");
                 return;
             }
 
