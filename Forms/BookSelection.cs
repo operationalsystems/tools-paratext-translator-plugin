@@ -49,11 +49,11 @@ namespace TvpMain.Forms
             InitializeComponent();
             _projectManager = projectManager;
 
-            bookList.Items.AddRange(projectManager.BookNamesByNum.Values.ToArray());
+            bookList.Items.AddRange(projectManager.BookNamesByNum.Values.Select(item => item.BookCode).ToArray());
 
             foreach (BookNameItem bookNameItem in selectedBooks)
             {
-                int idx = bookList.FindString(bookNameItem.ToString());
+                int idx = bookList.FindString(bookNameItem.BookCode);
                 bookList.SetSelected(idx, true);
             }
         }
