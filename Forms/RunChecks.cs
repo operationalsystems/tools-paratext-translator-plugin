@@ -763,8 +763,8 @@ namespace TvpMain.Forms
             // RTL Tag support
             var itemRtl = (item.Tags != null) && (item.Tags.Contains("RTL"));
 
-            var rtlEnabled = (projectRtl && itemRtl)
-                || (!projectRtl && !itemRtl);
+            var rtlEnabled = (!projectRtl && !itemRtl)
+                || (projectRtl || !itemRtl);
 
             Debug.WriteLine("Project Language: " + languageId);
             Debug.WriteLine("Project RTL: " + projectRtl);
@@ -786,9 +786,7 @@ namespace TvpMain.Forms
 
             if (!rtlEnabled)
             {
-                filterReasons.Add(projectRtl
-                    ? "This check does not support RTL languages."
-                    : "This check is for RTL languages only.");
+                filterReasons.Add("This check is for RTL languages only.");
             }
 
             var response = String.Join("\n", filterReasons);
