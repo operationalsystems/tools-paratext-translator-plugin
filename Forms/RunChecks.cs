@@ -475,6 +475,31 @@ namespace TvpMain.Forms
                 return;
             }
 
+            // Provides warning when running non-RTL checks on an RTL project
+            var projectRtoL = _host.GetProjectRtoL(_activeProjectName);
+            if (projectRtoL)
+            {
+                // Track list of incompatible checks
+                var cautionaryItems = new List<String>();
+
+                foreach (var item in selectedChecks)
+                {
+                    
+                    if (item.Tags == null || !item.Tags.Contains("RTL"))
+                    {
+                        cautionaryItems.Add(item.Name);
+                    }                   
+                }
+                if (cautionaryItems.Count > 0)
+                {
+                    MessageBox.Show($"The following checks have not been confirmed to work on a RTL language. Use with caution.\n• {String.Join("\n• ", cautionaryItems)}", 
+                        "Warning", 
+                        MessageBoxButtons.OK, 
+                        MessageBoxIcon.Warning);
+                }
+                
+            }
+
             // grab the check run context
             var checkContext = GetCheckRunContext();
             checkContext.Validate();
