@@ -65,8 +65,9 @@ namespace TvpMain.Forms
         /// <returns>The list of selected books by <see cref="BookNameItem"/></returns>
         public BookNameItem[] GetSelected()
         {
-
-            return bookList.SelectedItems.Cast<String>().Select(item => _projectManager.BookNamesByNum[BookUtil.BookIdsByCode[item].BookNum]).ToArray();
+            // Return a BookNameItem based on the BookCode strings passed in from the BookSelection
+            return bookList.SelectedItems.Cast<String>().Select(item => 
+            _projectManager.BookNamesByNum[BookUtil.BookIdsByCode[item].BookNum]).ToArray();
         }
 
         /// <summary>
