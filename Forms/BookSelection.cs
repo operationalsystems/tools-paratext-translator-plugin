@@ -12,6 +12,7 @@ using System.Data;
 using System.Linq;
 using System.Windows.Forms;
 using TvpMain.Project;
+using TvpMain.Text;
 
 namespace TvpMain.Forms
 {
@@ -65,7 +66,7 @@ namespace TvpMain.Forms
         public BookNameItem[] GetSelected()
         {
 
-            return bookList.SelectedItems.Cast<BookNameItem>().ToArray();
+            return bookList.SelectedItems.Cast<String>().Select(item => _projectManager.BookNamesByNum[BookUtil.BookIdsByCode[item].BookNum]).ToArray();
         }
 
         /// <summary>
