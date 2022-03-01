@@ -788,8 +788,7 @@ namespace TvpMain.Forms
             // RTL Tag support
             var itemRtl = (item.Tags != null) && (item.Tags.Contains("RTL"));
 
-            var rtlEnabled = (!projectRtl && !itemRtl)
-                || (projectRtl || !itemRtl);
+            var rtlEnabled = !(itemRtl && !projectRtl);
 
             Debug.WriteLine("Project Language: " + languageId);
             Debug.WriteLine("Project RTL: " + projectRtl);
