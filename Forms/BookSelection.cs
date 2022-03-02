@@ -156,13 +156,18 @@ namespace TvpMain.Forms
         {
             string names = "";
 
-            if (selectedBooks.Length > 4)
+            if (selectedBooks.Length > 5)
             {
-                names = selectedBooks[0].ToString() + ", " + selectedBooks[1].ToString() + ", ..., " + selectedBooks[selectedBooks.Length - 1].ToString();
+                names = selectedBooks[0].BookCode.ToString() 
+                    + ", " + selectedBooks[1].BookCode.ToString()  
+                    + ", " + selectedBooks[2].BookCode.ToString()  
+                    + ", " + selectedBooks[3].BookCode.ToString()
+                    + ", ..., " 
+                    + selectedBooks[selectedBooks.Length - 1].BookCode.ToString();
             }
             else
             {
-                names = string.Join(", ", Array.ConvertAll<BookNameItem, string>(selectedBooks, bni => bni.ToString()));
+                names = string.Join(", ", Array.ConvertAll<BookNameItem, string>(selectedBooks, bni => bni.BookCode.ToString()));
             }
 
             return names;
