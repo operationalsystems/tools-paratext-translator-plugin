@@ -475,6 +475,31 @@ namespace TvpMain.Forms
                 return;
             }
 
+            // Provides warning when running non-RTL checks on an RTL project
+            var projectRtoL = _host.GetProjectRtoL(_activeProjectName);
+            if (projectRtoL)
+            {
+                // Track list of incompatible checks
+                var cautionaryItems = new List<String>();
+
+                foreach (var item in selectedChecks)
+                {
+                    
+                    if (item.Tags == null || !item.Tags.Contains("RTL"))
+                    {
+                        cautionaryItems.Add(item.Name);
+                    }                   
+                }
+                if (cautionaryItems.Count > 0)
+                {
+                    MessageBox.Show($"The following checks have not been confirmed to work on a RTL language. Use with caution.\n• {String.Join("\n• ", cautionaryItems)}", 
+                        "Warning", 
+                        MessageBoxButtons.OK, 
+                        MessageBoxIcon.Warning);
+                }
+                
+            }
+
             // grab the check run context
             var checkContext = GetCheckRunContext();
             checkContext.Validate();
@@ -763,8 +788,7 @@ namespace TvpMain.Forms
             // RTL Tag support
             var itemRtl = (item.Tags != null) && (item.Tags.Contains("RTL"));
 
-            var rtlEnabled = (projectRtl && itemRtl)
-                || (!projectRtl && !itemRtl);
+            var rtlEnabled = !(itemRtl && !projectRtl);
 
             Debug.WriteLine("Project Language: " + languageId);
             Debug.WriteLine("Project RTL: " + projectRtl);
@@ -786,9 +810,7 @@ namespace TvpMain.Forms
 
             if (!rtlEnabled)
             {
-                filterReasons.Add(projectRtl
-                    ? "This check does not support RTL languages."
-                    : "This check is for RTL languages only.");
+                filterReasons.Add("This check is for RTL languages only.");
             }
 
             var response = String.Join("\n", filterReasons);
