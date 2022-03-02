@@ -422,7 +422,7 @@ namespace TvpMain.Forms
             currentBookRadioButton.Checked = true;
 
             // set the current book name
-            currentBookText.Text = _projectManager.BookNamesByNum[runBookNum].GetAvailableName(BookNameType.LongName, BookNameType.ShortName, BookNameType.Abbreviation);
+            currentBookText.Text = _projectManager.BookNamesByNum[runBookNum].BookCode;
             _selectedBooks = new[] { _projectManager.BookNamesByNum[runBookNum] };
 
         }
