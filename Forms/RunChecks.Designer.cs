@@ -1,4 +1,13 @@
-﻿
+﻿/*
+Copyright © 2021 by Biblica, Inc.
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+*/
+
 namespace TvpMain.Forms
 {
     partial class RunChecks
@@ -37,6 +46,7 @@ namespace TvpMain.Forms
             this.editorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.contactSupportToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.licenseToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.projectLabel = new System.Windows.Forms.Label();
             this.checksGroupBox = new System.Windows.Forms.GroupBox();
             this.filterLabel = new System.Windows.Forms.Label();
@@ -67,7 +77,6 @@ namespace TvpMain.Forms
             this.helpTextBox = new System.Windows.Forms.TextBox();
             this.projectNameText = new System.Windows.Forms.Label();
             this.loadingWorker = new System.ComponentModel.BackgroundWorker();
-            this.licenseToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.runChecksMenu.SuspendLayout();
             this.checksGroupBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.checksList)).BeginInit();
@@ -97,7 +106,7 @@ namespace TvpMain.Forms
             // exitToolStripMenuItem
             // 
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(93, 22);
             this.exitToolStripMenuItem.Text = "E&xit";
             this.exitToolStripMenuItem.Click += new System.EventHandler(this.ExitToolStripMenuItem_Click);
             // 
@@ -120,9 +129,16 @@ namespace TvpMain.Forms
             // contactSupportToolStripMenuItem
             // 
             this.contactSupportToolStripMenuItem.Name = "contactSupportToolStripMenuItem";
-            this.contactSupportToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.contactSupportToolStripMenuItem.Size = new System.Drawing.Size(161, 22);
             this.contactSupportToolStripMenuItem.Text = "Contact Support";
             this.contactSupportToolStripMenuItem.Click += new System.EventHandler(this.contactSupportToolStripMenuItem_Click);
+            // 
+            // licenseToolStripMenuItem
+            // 
+            this.licenseToolStripMenuItem.Name = "licenseToolStripMenuItem";
+            this.licenseToolStripMenuItem.Size = new System.Drawing.Size(161, 22);
+            this.licenseToolStripMenuItem.Text = "License";
+            this.licenseToolStripMenuItem.Click += new System.EventHandler(this.LicenseToolStripMenuItem_Click);
             // 
             // projectLabel
             // 
@@ -486,13 +502,6 @@ namespace TvpMain.Forms
             this.loadingWorker.WorkerReportsProgress = true;
             this.loadingWorker.DoWork += new System.ComponentModel.DoWorkEventHandler(this.LoadingWorker_DoWork);
             this.loadingWorker.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.LoadingWorker_RunWorkerCompleted);
-            // 
-            // licenseToolStripMenuItem
-            // 
-            this.licenseToolStripMenuItem.Name = "licenseToolStripMenuItem";
-            this.licenseToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.licenseToolStripMenuItem.Text = "License";
-            this.licenseToolStripMenuItem.Click += new System.EventHandler(this.LicenseToolStripMenuItem_Click);
             // 
             // RunChecks
             // 
