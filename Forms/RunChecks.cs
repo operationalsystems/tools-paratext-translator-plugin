@@ -421,6 +421,15 @@ namespace TvpMain.Forms
             // by default, use the current book
             currentBookRadioButton.Checked = true;
 
+            // check that the current book by ID is available first
+            if (!_projectManager.BookNamesByNum.ContainsKey(runBookNum))
+            {
+                var currentBook = BookUtil.BookIdsByNum[runBookNum];
+
+                // let the user know they have not set the book's abbreviation, shortname, or longname
+                throw new Exception($"The Book '{currentBook.BookCode}' has not had its Book Names set: abbreviation, short name, or long name. Please set these before continuing.");
+            }
+
             // set the current book name
             currentBookText.Text = _projectManager.BookNamesByNum[runBookNum].BookCode;
             _selectedBooks = new[] { _projectManager.BookNamesByNum[runBookNum] };
