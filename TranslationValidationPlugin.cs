@@ -26,7 +26,7 @@ namespace TvpMain
     /// <summary>
     /// Translation validation plugin entry point.
     /// </summary>
-    [AddIn("Translation Validation Plugin", Description = "Provides validation checks for translated text.", Version = "2.0.0.6", Publisher = "Biblica")]
+    [AddIn("Translation Validation Plugin", Description = "Provides validation checks for translated text.", Version = "2.0.0.7", Publisher = "Biblica")]
     [QualificationData(PluginMetaDataKeys.menuText, "Translation-Validation")]
     [QualificationData(PluginMetaDataKeys.insertAfterMenuName, "Tools|")]
     [QualificationData(PluginMetaDataKeys.enableWhen, WhenToEnable.anyProjectActive)]
