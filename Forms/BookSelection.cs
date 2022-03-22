@@ -12,6 +12,7 @@ using System.Data;
 using System.Linq;
 using System.Windows.Forms;
 using TvpMain.Project;
+using TvpMain.Text;
 
 namespace TvpMain.Forms
 {
@@ -49,11 +50,11 @@ namespace TvpMain.Forms
             InitializeComponent();
             _projectManager = projectManager;
 
-            bookList.Items.AddRange(projectManager.BookNamesByNum.Values.ToArray());
+            bookList.Items.AddRange(projectManager.BookNamesByNum.Values.Select(item => item.BookCode).ToArray());
 
             foreach (BookNameItem bookNameItem in selectedBooks)
             {
-                int idx = bookList.FindString(bookNameItem.ToString());
+                int idx = bookList.FindString(bookNameItem.BookCode);
                 bookList.SetSelected(idx, true);
             }
         }
@@ -64,8 +65,9 @@ namespace TvpMain.Forms
         /// <returns>The list of selected books by <see cref="BookNameItem"/></returns>
         public BookNameItem[] GetSelected()
         {
-
-            return bookList.SelectedItems.Cast<BookNameItem>().ToArray();
+            // Return a BookNameItem based on the BookCode strings passed in from the BookSelection
+            return bookList.SelectedItems.Cast<String>().Select(item => 
+            _projectManager.BookNamesByNum[BookUtil.BookIdsByCode[item].BookNum]).ToArray();
         }
 
         /// <summary>
@@ -154,13 +156,18 @@ namespace TvpMain.Forms
         {
             string names = "";
 
-            if (selectedBooks.Length > 4)
+            if (selectedBooks.Length > 5)
             {
-                names = selectedBooks[0].ToString() + ", " + selectedBooks[1].ToString() + ", ..., " + selectedBooks[selectedBooks.Length - 1].ToString();
+                names = selectedBooks[0].BookCode.ToString() 
+                    + ", " + selectedBooks[1].BookCode.ToString()  
+                    + ", " + selectedBooks[2].BookCode.ToString()  
+                    + ", " + selectedBooks[3].BookCode.ToString()
+                    + ", ..., " 
+                    + selectedBooks[selectedBooks.Length - 1].BookCode.ToString();
             }
             else
             {
-                names = string.Join(", ", Array.ConvertAll<BookNameItem, string>(selectedBooks, bni => bni.ToString()));
+                names = string.Join(", ", Array.ConvertAll<BookNameItem, string>(selectedBooks, bni => bni.BookCode.ToString()));
             }
 
             return names;
