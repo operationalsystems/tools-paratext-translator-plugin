@@ -178,7 +178,7 @@ namespace TvpMain.Util
             string messageText = null;
             if (String.IsNullOrWhiteSpace(prefixText))
             {
-                prefixText = "Error: Please contact support";
+                prefixText = "Error: Please contact support/admin";
             }
 
             // Every time an error is reported it is also logged.
@@ -333,16 +333,22 @@ namespace TvpMain.Util
 
             FileManager fileManager = new FileManager(_host, projectName);
 
-            using Stream reader = new FileStream(Path.Combine(fileManager.ProjectDir.FullName, "ProjectUserAccess.xml"), FileMode.Open);
-            ProjectUserAccess projectUserAccess = ProjectUserAccess.LoadFromXML(reader);
-
-            foreach (User user in projectUserAccess.Users)
+            try
             {
-                if (user.UserName.Equals(_host.UserName) && user.Role.Equals(ADMIN_ROLE))
+                using Stream reader = new FileStream(Path.Combine(fileManager.ProjectDir.FullName, "ProjectUserAccess.xml"), FileMode.Open);
+                ProjectUserAccess projectUserAccess = ProjectUserAccess.LoadFromXML(reader);
+
+                foreach (User user in projectUserAccess.Users)
                 {
-                    // Bail as soon as we find a match
-                    return true;
+                    if (user.UserName.Equals(_host.UserName) && user.Role.Equals(ADMIN_ROLE))
+                    {
+                        // Bail as soon as we find a match
+                        return true;
+                    }
                 }
+            } catch (FileNotFoundException ex)
+            {
+                MessageBox.Show(ex.Message +"\n\nContinuing as non-admin.", "Notice...", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
             return false;
         }
