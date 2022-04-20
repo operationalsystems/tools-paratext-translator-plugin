@@ -194,8 +194,9 @@ namespace TvpMain.Forms
             // start the sync for the check/fixes
             _progressForm.Show(this);
 
-            Enabled = false;
             loadingWorker.RunWorkerAsync();
+            
+            UpdateDisplayItems();
         }
 
         /// <summary>
@@ -227,8 +228,6 @@ namespace TvpMain.Forms
         {
             checksList.Invoke(new MethodInvoker(UpdateDisplayItems));
             _progressForm.Close();
-
-            Enabled = true;
         }
 
         /// <summary>
