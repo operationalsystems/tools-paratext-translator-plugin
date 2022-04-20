@@ -180,11 +180,6 @@ namespace TvpMain.Forms
                 setDefaultsToSelected.Hide();
             }
 
-            if (!_isCurrentUserTvpAdmin)
-            {
-                refreshButton.Hide();
-            }
-
             // sets the chapter lengths and such for the current book
             SetCurrentBookDefaults();
 
@@ -208,13 +203,15 @@ namespace TvpMain.Forms
         {
             try
             {
+                refreshButton.Enabled = false;
                 // sync with repo
                 _checkManager.SynchronizeInstalledChecks();
             }
             catch
             {
                 // in case the user is off-line
-                MessageBox.Show(@"Could not synchronize with check/fix repo. You may only run checks with locally available set.",
+                MessageBox.Show(
+                    @"Could not synchronize with check/fix repo. You may only run checks with locally available set.",
                     @"Warning", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
@@ -228,6 +225,7 @@ namespace TvpMain.Forms
         {
             checksList.Invoke(new MethodInvoker(UpdateDisplayItems));
             _progressForm.Close();
+            refreshButton.Enabled = true;
         }
 
         /// <summary>
