@@ -186,11 +186,16 @@ namespace TvpMain.Forms
             // set the copyright text
             Copyright.Text = MainConsts.COPYRIGHT;
 
-            // start the sync for the check/fixes
-            _progressForm.Show(this);
+            if (!CheckManager.HasSyncRun)
+            {
+                // start the sync for the check/fixes
+                _progressForm.Show(this);
 
-            loadingWorker.RunWorkerAsync();
-            
+                CheckManager.HasSyncRun = true;
+                
+                loadingWorker.RunWorkerAsync();
+            }
+
             UpdateDisplayItems();
         }
 

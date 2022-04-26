@@ -12,6 +12,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Web.UI;
 using TvpMain.Check;
 using TvpMain.Util;
 
@@ -25,6 +26,29 @@ namespace TvpMain.CheckManagement
         private readonly IRepository _installedChecksRepository;
         private readonly IRepository _locallyDevelopedChecksRepository;
         private readonly IRepository _s3Repository;
+
+        /// <summary>
+        /// Keeps track of whether a sync has run during this ParaText session.
+        /// </summary>
+        public static bool HasSyncRun
+        {
+            get
+            {
+                var fileName = $"{Directory.GetCurrentDirectory()}\\{MainConsts.TVP_FOLDER_NAME}\\{MainConsts.LAST_SYNC_FILE_NAME}";
+                var foundText = "";
+                if (File.Exists(fileName))
+                {
+                    foundText = File.ReadAllLines(fileName)[0];
+                }
+
+                return string.Equals(foundText,System.Diagnostics.Process.GetProcessesByName("Paratext")[0].Id.ToString());
+            }
+            set
+            {
+                var output = value ? System.Diagnostics.Process.GetProcessesByName("Paratext")[0].Id.ToString() : "";
+                File.WriteAllLines($"{Directory.GetCurrentDirectory()}\\{MainConsts.TVP_FOLDER_NAME}\\{MainConsts.LAST_SYNC_FILE_NAME}", new []{output});
+            }
+        }
 
         /// <summary>
         /// Default constructor for CheckManager
