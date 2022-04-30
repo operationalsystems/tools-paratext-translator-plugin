@@ -34,10 +34,32 @@ namespace TvpMain.Forms
     /// </summary>
     public partial class RunChecks : Form
     {
+
+        /***
+         * Check if the system is able to reach the internet and update.
+         */
+        private void TryGoOnline()
+        {
+            var result = HostUtil.Instance.TryGoOnline();
+
+            if (result)
+            {
+                IsCurrentUserTvpAdmin = HostUtil.Instance.IsCurrentUserTvpAdmin();
+                Text = Text.Split('(')[0]; // Remove the "(offline)" flag.
+            }
+            else
+            {
+                Text = $@"{Name} (offline)";
+            }
+
+            tryToReconnectToolStripMenuItem.Visible = !result;
+            refreshButton.Enabled = result;
+        }
+
         /// <summary>
         /// Whether the user is a TVP Admin
         /// </summary>
-        private readonly bool _isCurrentUserTvpAdmin = HostUtil.Instance.IsCurrentUserTvpAdmin();
+        private bool IsCurrentUserTvpAdmin;
         
         /// <summary>
         /// The minimum number of characters required to perform a search.
@@ -136,7 +158,7 @@ namespace TvpMain.Forms
         public RunChecks(IHost host, string activeProjectName)
         {
             InitializeComponent();
-
+            TryGoOnline();
             _progressForm = new GenericProgressForm("Synchronizing Check/Fixes");
             _checkManager = new CheckManager();
 
@@ -173,7 +195,7 @@ namespace TvpMain.Forms
             
             // sets up for just the current book by default
             SetCurrentBook();
-
+            
             // disable the ability to save the project check defaults if not an admin
             if (!HostUtil.Instance.isCurrentUserAdmin(_activeProjectName))
             {
@@ -186,7 +208,7 @@ namespace TvpMain.Forms
             // set the copyright text
             Copyright.Text = MainConsts.COPYRIGHT;
 
-            if (!CheckManager.HasSyncRun)
+            if (HostUtil.Instance.IsOnline && !CheckManager.HasSyncRun)
             {
                 // start the sync for the check/fixes
                 _progressForm.Show(this);
@@ -367,11 +389,11 @@ namespace TvpMain.Forms
                 {
                     var toolTipBuilder = new StringBuilder(displayItem.Tooltip);
 
-                    if (!isBuiltin && (isLocal || _isCurrentUserTvpAdmin))
+                    if (!isBuiltin && (isLocal || IsCurrentUserTvpAdmin))
                     {
                         toolTipBuilder.Append(Environment.NewLine);
                         toolTipBuilder.Append(Environment.NewLine);
-                        toolTipBuilder.Append(_isCurrentUserTvpAdmin ? "C" : "Local c");
+                        toolTipBuilder.Append(IsCurrentUserTvpAdmin ? "C" : "Local c");
                         toolTipBuilder.Append("hecks can be edited by double-clicking on the name of the check.");
                     }
 
@@ -975,7 +997,7 @@ namespace TvpMain.Forms
             // Get the check that was clicked
             var selectedCheck = _displayItems[e.RowIndex];
 
-            var isTvpAdmin = _isCurrentUserTvpAdmin;
+            var isTvpAdmin = IsCurrentUserTvpAdmin;
             var isLocalCheck = selectedCheck.Name.StartsWith(localCheckPrefix);
             var builtInCheck = selectedCheck.Name.StartsWith(builtInCheckPrefix);
 
@@ -1029,6 +1051,19 @@ namespace TvpMain.Forms
         private void LicenseToolStripMenuItem_Click_1(object sender, EventArgs e)
         {
             FormUtil.StartLicenseForm();
+        }
+
+        /// <summary>
+        /// Attempts to reconnect to the internet.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void tryToReconnectToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var progress = new GenericProgressForm("Checking Connection ...");
+            progress.Show();
+            TryGoOnline();
+            progress.Hide();
         }
     }
 

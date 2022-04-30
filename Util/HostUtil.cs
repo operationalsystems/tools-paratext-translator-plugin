@@ -7,6 +7,7 @@ The above copyright notice and this permission notice shall be included in all c
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
+
 using AddInSideViews;
 using Newtonsoft.Json;
 using Paratext.Data;
@@ -14,14 +15,12 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Windows.Forms;
 using System.Xml.Serialization;
-using Amazon.Runtime.Internal;
-using Amazon.S3;
-using TvpMain.Check;
 using TvpMain.CheckManagement;
 using TvpMain.Project;
 using TvpMain.Result;
@@ -66,12 +65,18 @@ namespace TvpMain.Util
         /// <summary>
         /// Property for assignment from plugin entry method.
         /// </summary>
-        public TranslationValidationPlugin TranslationValidationPlugin { set => _translationValidationPlugin = value; }
+        public TranslationValidationPlugin TranslationValidationPlugin
+        {
+            set => _translationValidationPlugin = value;
+        }
 
         /// <summary>
         /// Property for assignment from plugin entry method.
         /// </summary>
-        public IHost Host { set => _host = value; }
+        public IHost Host
+        {
+            set => _host = value;
+        }
 
         /// <summary>
         /// Reports exception to log and message box w/o prefix text.
@@ -128,7 +133,8 @@ namespace TvpMain.Util
                         var paratextDir = assemblyDir.Parent.Parent;
                         PtxUtils.Platform.BaseDirectory =
                             File.Exists(Path.Combine(paratextDir.FullName, "Paratext.exe"))
-                                ? paratextDir.FullName : assemblyPath;
+                                ? paratextDir.FullName
+                                : assemblyPath;
                         ParatextData.Initialize();
 
 #if DEBUG
@@ -158,7 +164,8 @@ namespace TvpMain.Util
         public void ReportNonFatalParatextDataErrors()
         {
             var errorText = string.Join(Environment.NewLine,
-                ScrTextCollection.ErrorMessages.Select(messageItem => $"Project: {messageItem.ProjectName}, type: {messageItem.ProjecType}, reason: {messageItem.Reason}, exception: {messageItem.Exception}."));
+                ScrTextCollection.ErrorMessages.Select(messageItem =>
+                    $"Project: {messageItem.ProjectName}, type: {messageItem.ProjecType}, reason: {messageItem.Reason}, exception: {messageItem.Exception}."));
             if (!string.IsNullOrWhiteSpace(errorText))
             {
                 ReportError("There were non-fatal initialization errors (performance may be impacted)."
@@ -233,8 +240,8 @@ namespace TvpMain.Util
             }
 
             var inputData =
-               _host.GetPlugInData(_translationValidationPlugin, projectName,
-                   MainConsts.CHECK_SETTINGS_DATA_ID);
+                _host.GetPlugInData(_translationValidationPlugin, projectName,
+                    MainConsts.CHECK_SETTINGS_DATA_ID);
             if (inputData != null)
             {
                 settings = ProjectCheckSettings.LoadFromXmlContent(inputData);
@@ -261,8 +268,8 @@ namespace TvpMain.Util
             }
 
             _host.PutPlugInData(_translationValidationPlugin, projectName,
-                            MainConsts.CHECK_SETTINGS_DATA_ID,
-                            settings.WriteToXmlString());
+                MainConsts.CHECK_SETTINGS_DATA_ID,
+                settings.WriteToXmlString());
         }
 
         /// <summary>
@@ -273,20 +280,20 @@ namespace TvpMain.Util
         public List<int> GetProjectDeniedResults(string projectName)
         {
             List<int> deniedResults = new List<int>();
-            
+
             if (projectName == null || projectName.Length < 1)
             {
                 throw new ArgumentNullException(nameof(projectName));
             }
 
             var inputData =
-               _host.GetPlugInData(_translationValidationPlugin, projectName,
-                   MainConsts.DENIED_RESULTS_DATA_ID);
+                _host.GetPlugInData(_translationValidationPlugin, projectName,
+                    MainConsts.DENIED_RESULTS_DATA_ID);
             if (inputData != null)
             {
                 var serializer = new XmlSerializer(typeof(List<int>));
                 using TextReader reader = new StringReader(inputData);
-                deniedResults = (List<int>)serializer.Deserialize(reader);
+                deniedResults = (List<int>) serializer.Deserialize(reader);
             }
 
             return deniedResults;
@@ -312,10 +319,10 @@ namespace TvpMain.Util
             XmlSerializer xmlSerializer = new XmlSerializer(typeof(List<int>));
             using StringWriter textWriter = new StringWriter();
             xmlSerializer.Serialize(textWriter, deniedResults);
-            
+
             _host.PutPlugInData(_translationValidationPlugin, projectName,
-                            MainConsts.DENIED_RESULTS_DATA_ID,
-                            textWriter.ToString());
+                MainConsts.DENIED_RESULTS_DATA_ID,
+                textWriter.ToString());
         }
 
         /// <summary>
@@ -335,7 +342,9 @@ namespace TvpMain.Util
 
             try
             {
-                using Stream reader = new FileStream(Path.Combine(fileManager.ProjectDir.FullName, "ProjectUserAccess.xml"), FileMode.Open);
+                using Stream reader =
+                    new FileStream(Path.Combine(fileManager.ProjectDir.FullName, "ProjectUserAccess.xml"),
+                        FileMode.Open);
                 ProjectUserAccess projectUserAccess = ProjectUserAccess.LoadFromXML(reader);
 
                 foreach (User user in projectUserAccess.Users)
@@ -346,13 +355,45 @@ namespace TvpMain.Util
                         return true;
                     }
                 }
-            } catch (FileNotFoundException ex)
-            {
-                MessageBox.Show(ex.Message +"\n\nContinuing as non-admin.", "Notice...", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
+            catch (FileNotFoundException ex)
+            {
+                MessageBox.Show(ex.Message + "\n\nContinuing as non-admin.", "Notice...", MessageBoxButtons.OK,
+                    MessageBoxIcon.Warning);
+            }
+
             return false;
         }
-        
+
+        /// <summary>
+        /// Attempts to connect to the internet.
+        /// </summary>
+        /// <returns>Whether the connection was successful.</returns>
+        public bool TryGoOnline()
+        {
+            const string host = @"https://aws.amazon.com";
+            var result = false;
+            var request = (HttpWebRequest) WebRequest.Create(host);
+            request.Method = "HEAD"; // Don't expect a body.
+            try
+            {
+                var response = (HttpWebResponse) request.GetResponse();
+                result = response.StatusCode == HttpStatusCode.OK;
+            }
+            catch (WebException ex)
+            {
+                Instance.LogLine("There was a problem reaching S3: " + ex, false);
+            }
+
+            IsOnline = result;
+            return result;
+        }
+
+        /// <summary>
+        /// Whether or not the system is online.
+        /// </summary>
+        public bool IsOnline;
+
         /// <summary>
         /// Method to determine if the user is a TVP administrator. Relies on a list of admins hosted on the TVP repo.
         /// </summary>
@@ -360,7 +401,7 @@ namespace TvpMain.Util
         public bool IsCurrentUserTvpAdmin()
         {
             var isAdmin = false;
-            
+
             // Fetch a CSV list of administrators and parse it into a simple array, omitting the header and common special characters
             try
             {
@@ -371,7 +412,7 @@ namespace TvpMain.Util
 
                 isAdmin = administrators.Contains(_host.UserName);
             }
-            catch (AmazonS3Exception exception)
+            catch (Exception exception)
             {
                 Instance.LogLine($"Failed to fetch {MainConsts.PERMISSIONS_FILE_NAME} from S3: " + exception, false);
             }

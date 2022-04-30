@@ -43,10 +43,12 @@ namespace TvpMain.Forms
             this.runChecksMenu = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.goOnlineToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.editorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.contactSupportToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.licenseToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.tryToReconnectToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.projectLabel = new System.Windows.Forms.Label();
             this.checksGroupBox = new System.Windows.Forms.GroupBox();
             this.filterLabel = new System.Windows.Forms.Label();
@@ -79,16 +81,13 @@ namespace TvpMain.Forms
             this.loadingWorker = new System.ComponentModel.BackgroundWorker();
             this.runChecksMenu.SuspendLayout();
             this.checksGroupBox.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.checksList)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize) (this.checksList)).BeginInit();
             this.contextGroupBox.SuspendLayout();
             this.SuspendLayout();
             // 
             // runChecksMenu
             // 
-            this.runChecksMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.fileToolStripMenuItem,
-            this.editorToolStripMenuItem,
-            this.helpToolStripMenuItem});
+            this.runChecksMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {this.fileToolStripMenuItem, this.editorToolStripMenuItem, this.helpToolStripMenuItem, this.tryToReconnectToolStripMenuItem});
             this.runChecksMenu.Location = new System.Drawing.Point(10, 10);
             this.runChecksMenu.Name = "runChecksMenu";
             this.runChecksMenu.Size = new System.Drawing.Size(892, 24);
@@ -97,8 +96,7 @@ namespace TvpMain.Forms
             // 
             // fileToolStripMenuItem
             // 
-            this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.exitToolStripMenuItem});
+            this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {this.exitToolStripMenuItem, this.goOnlineToolStripMenuItem});
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
             this.fileToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
             this.fileToolStripMenuItem.Text = "File";
@@ -106,9 +104,15 @@ namespace TvpMain.Forms
             // exitToolStripMenuItem
             // 
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(93, 22);
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(127, 22);
             this.exitToolStripMenuItem.Text = "E&xit";
             this.exitToolStripMenuItem.Click += new System.EventHandler(this.ExitToolStripMenuItem_Click);
+            // 
+            // goOnlineToolStripMenuItem
+            // 
+            this.goOnlineToolStripMenuItem.Name = "goOnlineToolStripMenuItem";
+            this.goOnlineToolStripMenuItem.Size = new System.Drawing.Size(127, 22);
+            this.goOnlineToolStripMenuItem.Text = "Go Online";
             // 
             // editorToolStripMenuItem
             // 
@@ -119,9 +123,7 @@ namespace TvpMain.Forms
             // 
             // helpToolStripMenuItem
             // 
-            this.helpToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.contactSupportToolStripMenuItem,
-            this.licenseToolStripMenuItem});
+            this.helpToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {this.contactSupportToolStripMenuItem, this.licenseToolStripMenuItem});
             this.helpToolStripMenuItem.Name = "helpToolStripMenuItem";
             this.helpToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
             this.helpToolStripMenuItem.Text = "Help";
@@ -140,6 +142,13 @@ namespace TvpMain.Forms
             this.licenseToolStripMenuItem.Text = "License";
             this.licenseToolStripMenuItem.Click += new System.EventHandler(this.LicenseToolStripMenuItem_Click);
             // 
+            // tryToReconnectToolStripMenuItem
+            // 
+            this.tryToReconnectToolStripMenuItem.Name = "tryToReconnectToolStripMenuItem";
+            this.tryToReconnectToolStripMenuItem.Size = new System.Drawing.Size(96, 20);
+            this.tryToReconnectToolStripMenuItem.Text = "Try to Connect";
+            this.tryToReconnectToolStripMenuItem.Click += new System.EventHandler(this.tryToReconnectToolStripMenuItem_Click);
+            // 
             // projectLabel
             // 
             this.projectLabel.AutoSize = true;
@@ -151,9 +160,7 @@ namespace TvpMain.Forms
             // 
             // checksGroupBox
             // 
-            this.checksGroupBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+            this.checksGroupBox.Anchor = ((System.Windows.Forms.AnchorStyles) ((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) | System.Windows.Forms.AnchorStyles.Left) | System.Windows.Forms.AnchorStyles.Right)));
             this.checksGroupBox.Controls.Add(this.filterLabel);
             this.checksGroupBox.Controls.Add(this.filterTextBox);
             this.checksGroupBox.Controls.Add(this.refreshButton);
@@ -178,8 +185,7 @@ namespace TvpMain.Forms
             // 
             // filterTextBox
             // 
-            this.filterTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+            this.filterTextBox.Anchor = ((System.Windows.Forms.AnchorStyles) (((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) | System.Windows.Forms.AnchorStyles.Right)));
             this.filterTextBox.Location = new System.Drawing.Point(548, 20);
             this.filterTextBox.Name = "filterTextBox";
             this.filterTextBox.Size = new System.Drawing.Size(332, 20);
@@ -188,7 +194,7 @@ namespace TvpMain.Forms
             // 
             // refreshButton
             // 
-            this.refreshButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.refreshButton.Anchor = ((System.Windows.Forms.AnchorStyles) ((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.refreshButton.Location = new System.Drawing.Point(6, 18);
             this.refreshButton.Name = "refreshButton";
             this.refreshButton.Size = new System.Drawing.Size(98, 23);
@@ -199,7 +205,7 @@ namespace TvpMain.Forms
             // 
             // setDefaultsToSelected
             // 
-            this.setDefaultsToSelected.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.setDefaultsToSelected.Anchor = ((System.Windows.Forms.AnchorStyles) ((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.setDefaultsToSelected.Location = new System.Drawing.Point(6, 398);
             this.setDefaultsToSelected.Name = "setDefaultsToSelected";
             this.setDefaultsToSelected.Size = new System.Drawing.Size(257, 23);
@@ -211,7 +217,7 @@ namespace TvpMain.Forms
             // 
             // resetToProjectDefaultsButton
             // 
-            this.resetToProjectDefaultsButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.resetToProjectDefaultsButton.Anchor = ((System.Windows.Forms.AnchorStyles) ((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.resetToProjectDefaultsButton.Location = new System.Drawing.Point(738, 398);
             this.resetToProjectDefaultsButton.Name = "resetToProjectDefaultsButton";
             this.resetToProjectDefaultsButton.Size = new System.Drawing.Size(142, 23);
@@ -226,26 +232,18 @@ namespace TvpMain.Forms
             this.checksList.AllowUserToAddRows = false;
             this.checksList.AllowUserToDeleteRows = false;
             this.checksList.AllowUserToResizeRows = false;
-            this.checksList.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+            this.checksList.Anchor = ((System.Windows.Forms.AnchorStyles) ((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) | System.Windows.Forms.AnchorStyles.Left) | System.Windows.Forms.AnchorStyles.Right)));
             this.checksList.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
             dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
             dataGridViewCellStyle1.BackColor = System.Drawing.SystemColors.Control;
-            dataGridViewCellStyle1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte) (0)));
             dataGridViewCellStyle1.ForeColor = System.Drawing.SystemColors.WindowText;
             dataGridViewCellStyle1.SelectionBackColor = System.Drawing.SystemColors.Highlight;
             dataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
             dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
             this.checksList.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
             this.checksList.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.checksList.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
-            this.CFSelected,
-            this.CFName,
-            this.Version,
-            this.CFLanguages,
-            this.CFTags,
-            this.Id});
+            this.checksList.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {this.CFSelected, this.CFName, this.Version, this.CFLanguages, this.CFTags, this.Id});
             this.checksList.Location = new System.Drawing.Point(6, 46);
             this.checksList.MultiSelect = false;
             this.checksList.Name = "checksList";
@@ -318,8 +316,7 @@ namespace TvpMain.Forms
             // 
             // contextGroupBox
             // 
-            this.contextGroupBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+            this.contextGroupBox.Anchor = ((System.Windows.Forms.AnchorStyles) (((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) | System.Windows.Forms.AnchorStyles.Right)));
             this.contextGroupBox.Controls.Add(this.toChapterLabel);
             this.contextGroupBox.Controls.Add(this.chapterLabel);
             this.contextGroupBox.Controls.Add(this.chooseBooksButton);
@@ -337,7 +334,7 @@ namespace TvpMain.Forms
             // 
             // toChapterLabel
             // 
-            this.toChapterLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.toChapterLabel.Anchor = ((System.Windows.Forms.AnchorStyles) ((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.toChapterLabel.AutoSize = true;
             this.toChapterLabel.Location = new System.Drawing.Point(783, 21);
             this.toChapterLabel.Name = "toChapterLabel";
@@ -347,7 +344,7 @@ namespace TvpMain.Forms
             // 
             // chapterLabel
             // 
-            this.chapterLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.chapterLabel.Anchor = ((System.Windows.Forms.AnchorStyles) ((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.chapterLabel.AutoSize = true;
             this.chapterLabel.Location = new System.Drawing.Point(647, 21);
             this.chapterLabel.Name = "chapterLabel";
@@ -357,7 +354,7 @@ namespace TvpMain.Forms
             // 
             // chooseBooksButton
             // 
-            this.chooseBooksButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.chooseBooksButton.Anchor = ((System.Windows.Forms.AnchorStyles) ((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.chooseBooksButton.Location = new System.Drawing.Point(805, 46);
             this.chooseBooksButton.Name = "chooseBooksButton";
             this.chooseBooksButton.Size = new System.Drawing.Size(75, 23);
@@ -369,7 +366,7 @@ namespace TvpMain.Forms
             // 
             // toChapterDropDown
             // 
-            this.toChapterDropDown.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.toChapterDropDown.Anchor = ((System.Windows.Forms.AnchorStyles) ((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.toChapterDropDown.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.toChapterDropDown.FormattingEnabled = true;
             this.toChapterDropDown.Location = new System.Drawing.Point(805, 19);
@@ -380,7 +377,7 @@ namespace TvpMain.Forms
             // 
             // fromChapterDropDown
             // 
-            this.fromChapterDropDown.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.fromChapterDropDown.Anchor = ((System.Windows.Forms.AnchorStyles) ((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.fromChapterDropDown.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.fromChapterDropDown.FormattingEnabled = true;
             this.fromChapterDropDown.Location = new System.Drawing.Point(702, 18);
@@ -391,8 +388,7 @@ namespace TvpMain.Forms
             // 
             // currentBookText
             // 
-            this.currentBookText.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+            this.currentBookText.Anchor = ((System.Windows.Forms.AnchorStyles) (((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) | System.Windows.Forms.AnchorStyles.Right)));
             this.currentBookText.Location = new System.Drawing.Point(100, 19);
             this.currentBookText.Name = "currentBookText";
             this.currentBookText.ReadOnly = true;
@@ -402,8 +398,7 @@ namespace TvpMain.Forms
             // 
             // chooseBooksText
             // 
-            this.chooseBooksText.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+            this.chooseBooksText.Anchor = ((System.Windows.Forms.AnchorStyles) (((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) | System.Windows.Forms.AnchorStyles.Right)));
             this.chooseBooksText.Location = new System.Drawing.Point(100, 48);
             this.chooseBooksText.Name = "chooseBooksText";
             this.chooseBooksText.ReadOnly = true;
@@ -414,7 +409,7 @@ namespace TvpMain.Forms
             // 
             // chooseBooksRadioButton
             // 
-            this.chooseBooksRadioButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.chooseBooksRadioButton.Anchor = ((System.Windows.Forms.AnchorStyles) ((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.chooseBooksRadioButton.AutoSize = true;
             this.chooseBooksRadioButton.Location = new System.Drawing.Point(6, 49);
             this.chooseBooksRadioButton.Name = "chooseBooksRadioButton";
@@ -428,7 +423,7 @@ namespace TvpMain.Forms
             // 
             // currentBookRadioButton
             // 
-            this.currentBookRadioButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.currentBookRadioButton.Anchor = ((System.Windows.Forms.AnchorStyles) ((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.currentBookRadioButton.AutoSize = true;
             this.currentBookRadioButton.Location = new System.Drawing.Point(7, 19);
             this.currentBookRadioButton.Name = "currentBookRadioButton";
@@ -442,7 +437,7 @@ namespace TvpMain.Forms
             // 
             // Copyright
             // 
-            this.Copyright.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.Copyright.Anchor = ((System.Windows.Forms.AnchorStyles) ((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.Copyright.AutoSize = true;
             this.Copyright.Location = new System.Drawing.Point(17, 700);
             this.Copyright.Name = "Copyright";
@@ -452,7 +447,7 @@ namespace TvpMain.Forms
             // 
             // runChecksButton
             // 
-            this.runChecksButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.runChecksButton.Anchor = ((System.Windows.Forms.AnchorStyles) ((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.runChecksButton.Location = new System.Drawing.Point(818, 695);
             this.runChecksButton.Name = "runChecksButton";
             this.runChecksButton.Size = new System.Drawing.Size(75, 23);
@@ -463,7 +458,7 @@ namespace TvpMain.Forms
             // 
             // cancelButton
             // 
-            this.cancelButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.cancelButton.Anchor = ((System.Windows.Forms.AnchorStyles) ((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.cancelButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
             this.cancelButton.Location = new System.Drawing.Point(737, 695);
             this.cancelButton.Name = "cancelButton";
@@ -475,8 +470,7 @@ namespace TvpMain.Forms
             // 
             // helpTextBox
             // 
-            this.helpTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+            this.helpTextBox.Anchor = ((System.Windows.Forms.AnchorStyles) (((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) | System.Windows.Forms.AnchorStyles.Right)));
             this.helpTextBox.BackColor = System.Drawing.Color.PaleGoldenrod;
             this.helpTextBox.Location = new System.Drawing.Point(13, 585);
             this.helpTextBox.Multiline = true;
@@ -487,8 +481,7 @@ namespace TvpMain.Forms
             // 
             // projectNameText
             // 
-            this.projectNameText.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+            this.projectNameText.Anchor = ((System.Windows.Forms.AnchorStyles) (((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) | System.Windows.Forms.AnchorStyles.Right)));
             this.projectNameText.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.projectNameText.Location = new System.Drawing.Point(60, 40);
             this.projectNameText.Name = "projectNameText";
@@ -518,7 +511,7 @@ namespace TvpMain.Forms
             this.Controls.Add(this.checksGroupBox);
             this.Controls.Add(this.projectLabel);
             this.Controls.Add(this.runChecksMenu);
-            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.Icon = ((System.Drawing.Icon) (resources.GetObject("$this.Icon")));
             this.MainMenuStrip = this.runChecksMenu;
             this.MaximizeBox = false;
             this.MinimizeBox = false;
@@ -531,13 +524,15 @@ namespace TvpMain.Forms
             this.runChecksMenu.PerformLayout();
             this.checksGroupBox.ResumeLayout(false);
             this.checksGroupBox.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.checksList)).EndInit();
+            ((System.ComponentModel.ISupportInitialize) (this.checksList)).EndInit();
             this.contextGroupBox.ResumeLayout(false);
             this.contextGroupBox.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
-
         }
+
+        private System.Windows.Forms.ToolStripMenuItem goOnlineToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem tryToReconnectToolStripMenuItem;
 
         #endregion
 
