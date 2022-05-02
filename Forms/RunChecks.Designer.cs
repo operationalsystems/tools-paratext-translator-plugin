@@ -79,6 +79,7 @@ namespace TvpMain.Forms
             this.helpTextBox = new System.Windows.Forms.TextBox();
             this.projectNameText = new System.Windows.Forms.Label();
             this.loadingWorker = new System.ComponentModel.BackgroundWorker();
+            this.connectWorker = new System.ComponentModel.BackgroundWorker();
             this.runChecksMenu.SuspendLayout();
             this.checksGroupBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize) (this.checksList)).BeginInit();
@@ -496,6 +497,11 @@ namespace TvpMain.Forms
             this.loadingWorker.DoWork += new System.ComponentModel.DoWorkEventHandler(this.LoadingWorker_DoWork);
             this.loadingWorker.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.LoadingWorker_RunWorkerCompleted);
             // 
+            // connectWorker
+            // 
+            this.connectWorker.DoWork += new System.ComponentModel.DoWorkEventHandler(this.connectWorker_DoWork);
+            this.connectWorker.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.connectWorker_RunWorkerCompleted);
+            // 
             // RunChecks
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -530,6 +536,8 @@ namespace TvpMain.Forms
             this.ResumeLayout(false);
             this.PerformLayout();
         }
+
+        private System.ComponentModel.BackgroundWorker connectWorker;
 
         private System.Windows.Forms.ToolStripMenuItem goOnlineToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem tryToReconnectToolStripMenuItem;

@@ -125,6 +125,11 @@ namespace TvpMain.Forms
         /// Simple progress bar form for when the checks are being synchronized
         /// </summary>
         GenericProgressForm _progressForm;
+        
+        /// <summary>
+        /// Simple progress bar form for when the plugin is attempting to connect to the internet
+        /// </summary>
+        GenericProgressForm _connectForm;
 
         /// <summary>
         /// This is a separate list of items to display within the grid. This allows
@@ -1060,10 +1065,29 @@ namespace TvpMain.Forms
         /// <param name="e"></param>
         private void tryToReconnectToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            var progress = new GenericProgressForm("Checking Connection ...");
-            progress.Show();
+            _connectForm = new GenericProgressForm("Checking Connection ...");
+            _connectForm.Show();
+            connectWorker.RunWorkerAsync();
+        }
+
+        /// <summary>
+        /// Handles checking for an internet connection in the background.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void connectWorker_DoWork(object sender, DoWorkEventArgs e)
+        {
             TryGoOnline();
-            progress.Hide();
+        }
+
+        /// <summary>
+        /// Handles closing the internet connection progress form.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void connectWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            _connectForm.Hide();
         }
     }
 
