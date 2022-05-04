@@ -17,10 +17,10 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Reflection;
-using System.Text.RegularExpressions;
 using System.Threading;
 using System.Windows.Forms;
 using System.Xml.Serialization;
+using PtxUtils;
 using TvpMain.CheckManagement;
 using TvpMain.Project;
 using TvpMain.Result;
@@ -407,10 +407,9 @@ namespace TvpMain.Util
             {
                 var stream = S3ServiceProvider.Instance.GetFileStream(MainConsts.PERMISSIONS_FILE_NAME);
                 using var reader = new StreamReader(stream);
-                var permissionsList = Regex.Replace(reader.ReadToEnd(), @"\t|\n|\r", "");
-                var administrators = permissionsList.Split(',').Skip(1).ToArray();
-
-                isAdmin = administrators.Contains(_host.UserName);
+                var lines = CSVFile.Read(reader);
+                var admin = lines.ToList().SelectMany(item => item).ToArray(); // Flatten the CSV lines
+                isAdmin = admin.Contains(_host.UserName);
             }
             catch (Exception exception)
             {

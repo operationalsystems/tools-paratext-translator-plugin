@@ -146,6 +146,8 @@ namespace TvpMain.Forms
             _progressForm = new GenericProgressForm("Synchronizing Check/Fixes");
             _connectForm = new GenericProgressForm("Checking Connection ...");
             _checkManager = new CheckManager();
+            // Ensure that the user is online so that permissions and synchronization work as expected.
+            TryGoOnline();
 
             // set up the needed service dependencies
             _host = host ?? throw new ArgumentNullException(nameof(host));
@@ -175,9 +177,6 @@ namespace TvpMain.Forms
         /// <param name="e">The event information that triggered this call</param>
         private void RunChecks_Load(object sender, EventArgs e)
         {
-            // Ensure that the user is online so that permissions and synchronization work as expected.
-            TryGoOnline();
-
             // the project name text, will eventually be the selected current project from the list of projects
             projectNameText.Text = _activeProjectName;
 
