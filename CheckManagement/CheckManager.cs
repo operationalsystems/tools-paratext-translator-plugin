@@ -10,6 +10,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 using PtxUtils;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Web.UI;
@@ -26,6 +27,7 @@ namespace TvpMain.CheckManagement
         private readonly IRepository _installedChecksRepository;
         private readonly IRepository _locallyDevelopedChecksRepository;
         private readonly IRepository _s3Repository;
+        private static readonly string SyncStatusFileName = $"{Directory.GetCurrentDirectory()}\\{MainConsts.TVP_FOLDER_NAME}\\{MainConsts.LAST_SYNC_FILE_NAME}";
 
         /// <summary>
         /// Keeps track of whether a sync has run during this ParaText session.
@@ -34,19 +36,37 @@ namespace TvpMain.CheckManagement
         {
             get
             {
-                var fileName = $"{Directory.GetCurrentDirectory()}\\{MainConsts.TVP_FOLDER_NAME}\\{MainConsts.LAST_SYNC_FILE_NAME}";
                 var foundText = "";
-                if (File.Exists(fileName))
+                if (File.Exists(SyncStatusFileName))
                 {
-                    foundText = File.ReadAllLines(fileName)[0];
+                    foundText = File.ReadAllLines(SyncStatusFileName)[0];
                 }
 
                 return string.Equals(foundText,System.Diagnostics.Process.GetProcessesByName("Paratext")[0].Id.ToString());
             }
             set
             {
-                var output = value ? System.Diagnostics.Process.GetProcessesByName("Paratext")[0].Id.ToString() : "";
-                File.WriteAllLines($"{Directory.GetCurrentDirectory()}\\{MainConsts.TVP_FOLDER_NAME}\\{MainConsts.LAST_SYNC_FILE_NAME}", new []{output});
+                var output = value ? new []
+                {
+                    System.Diagnostics.Process.GetProcessesByName("Paratext")[0].Id.ToString(), DateTime.Now.ToString(CultureInfo.CurrentCulture)
+                } : new string[]{};
+                File.WriteAllLines(SyncStatusFileName, output);
+            }
+        }
+
+        /// <summary>
+        /// The last time synchronization completed.
+        /// </summary>
+        public static DateTime? LastSyncTime
+        {
+            get
+            {
+                if (!File.Exists(SyncStatusFileName)) return null;
+                var syncStatus = File.ReadAllLines(SyncStatusFileName);
+                if (syncStatus.Length < 2) return null; 
+                DateTime.TryParse(syncStatus[1], out var lastRunDate);
+
+                return lastRunDate;
             }
         }
 

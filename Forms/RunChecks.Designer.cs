@@ -38,12 +38,12 @@ namespace TvpMain.Forms
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(RunChecks));
             this.runChecksMenu = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.goOnlineToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.editorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.contactSupportToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -80,6 +80,7 @@ namespace TvpMain.Forms
             this.projectNameText = new System.Windows.Forms.Label();
             this.loadingWorker = new System.ComponentModel.BackgroundWorker();
             this.connectWorker = new System.ComponentModel.BackgroundWorker();
+            this.runChecksTooltip = new System.Windows.Forms.ToolTip(this.components);
             this.runChecksMenu.SuspendLayout();
             this.checksGroupBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize) (this.checksList)).BeginInit();
@@ -97,7 +98,7 @@ namespace TvpMain.Forms
             // 
             // fileToolStripMenuItem
             // 
-            this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {this.exitToolStripMenuItem, this.goOnlineToolStripMenuItem});
+            this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {this.exitToolStripMenuItem});
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
             this.fileToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
             this.fileToolStripMenuItem.Text = "File";
@@ -105,15 +106,9 @@ namespace TvpMain.Forms
             // exitToolStripMenuItem
             // 
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(127, 22);
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(93, 22);
             this.exitToolStripMenuItem.Text = "E&xit";
             this.exitToolStripMenuItem.Click += new System.EventHandler(this.ExitToolStripMenuItem_Click);
-            // 
-            // goOnlineToolStripMenuItem
-            // 
-            this.goOnlineToolStripMenuItem.Name = "goOnlineToolStripMenuItem";
-            this.goOnlineToolStripMenuItem.Size = new System.Drawing.Size(127, 22);
-            this.goOnlineToolStripMenuItem.Text = "Go Online";
             // 
             // editorToolStripMenuItem
             // 
@@ -145,6 +140,7 @@ namespace TvpMain.Forms
             // 
             // tryToReconnectToolStripMenuItem
             // 
+            this.tryToReconnectToolStripMenuItem.AutoToolTip = true;
             this.tryToReconnectToolStripMenuItem.Name = "tryToReconnectToolStripMenuItem";
             this.tryToReconnectToolStripMenuItem.Size = new System.Drawing.Size(96, 20);
             this.tryToReconnectToolStripMenuItem.Text = "Try to Connect";
@@ -502,6 +498,10 @@ namespace TvpMain.Forms
             this.connectWorker.DoWork += new System.ComponentModel.DoWorkEventHandler(this.connectWorker_DoWork);
             this.connectWorker.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.connectWorker_RunWorkerCompleted);
             // 
+            // runChecksTooltip
+            // 
+            this.runChecksTooltip.ShowAlways = true;
+            // 
             // RunChecks
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -537,9 +537,12 @@ namespace TvpMain.Forms
             this.PerformLayout();
         }
 
+        private System.Windows.Forms.ToolTip runChecksTooltip;
+
+        private System.Windows.Forms.ToolTip fetchUpdatesTooltip;
+
         private System.ComponentModel.BackgroundWorker connectWorker;
 
-        private System.Windows.Forms.ToolStripMenuItem goOnlineToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem tryToReconnectToolStripMenuItem;
 
         #endregion
