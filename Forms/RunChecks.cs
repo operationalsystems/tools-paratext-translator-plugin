@@ -1118,14 +1118,18 @@ namespace TvpMain.Forms
         /// </summary>
         private void UpdateOnlineStatus()
         {
+            
+            var onlineWindowLabel = Name;
+            var offlineWindowLabel = $@"{Name} (offline)";
+
             if (HostUtil.Instance.IsOnline)
             {
                 _isCurrentUserTvpAdmin = HostUtil.Instance.IsCurrentUserTvpAdmin();
-                Text = Text.Split('(')[0]; // Remove the "(offline)" flag.
+                Text = onlineWindowLabel;
             }
             else
             {
-                Text = $@"{Name} (offline)";
+                Text = offlineWindowLabel;
                 MessageBox.Show(
                     @"You appear to be offline, which may limit your ability to edit checks. Use the 'Try to Connect' button to try again.",
                     @"Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
