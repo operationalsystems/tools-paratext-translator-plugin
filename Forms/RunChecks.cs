@@ -1078,7 +1078,7 @@ namespace TvpMain.Forms
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void tryToReconnectToolStripMenuItem_Click(object sender, EventArgs e)
+        private void tryToReconnectButton_Click(object sender, EventArgs e)
         {
             TryGoOnline();
         }
@@ -1135,7 +1135,7 @@ namespace TvpMain.Forms
                     @"Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
 
-            tryToReconnectToolStripMenuItem.Visible = !HostUtil.Instance.IsOnline;
+            tryToConnectButton.Visible = !HostUtil.Instance.IsOnline;
             refreshButton.Enabled = HostUtil.Instance.IsOnline;
         }
     }

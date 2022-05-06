@@ -48,9 +48,9 @@ namespace TvpMain.Forms
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.contactSupportToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.licenseToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.tryToReconnectToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.projectLabel = new System.Windows.Forms.Label();
             this.checksGroupBox = new System.Windows.Forms.GroupBox();
+            this.tryToConnectButton = new System.Windows.Forms.Button();
             this.filterLabel = new System.Windows.Forms.Label();
             this.filterTextBox = new System.Windows.Forms.TextBox();
             this.refreshButton = new System.Windows.Forms.Button();
@@ -89,7 +89,7 @@ namespace TvpMain.Forms
             // 
             // runChecksMenu
             // 
-            this.runChecksMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {this.fileToolStripMenuItem, this.editorToolStripMenuItem, this.helpToolStripMenuItem, this.tryToReconnectToolStripMenuItem});
+            this.runChecksMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {this.fileToolStripMenuItem, this.editorToolStripMenuItem, this.helpToolStripMenuItem});
             this.runChecksMenu.Location = new System.Drawing.Point(10, 10);
             this.runChecksMenu.Name = "runChecksMenu";
             this.runChecksMenu.Size = new System.Drawing.Size(892, 24);
@@ -138,14 +138,6 @@ namespace TvpMain.Forms
             this.licenseToolStripMenuItem.Text = "License";
             this.licenseToolStripMenuItem.Click += new System.EventHandler(this.LicenseToolStripMenuItem_Click);
             // 
-            // tryToReconnectToolStripMenuItem
-            // 
-            this.tryToReconnectToolStripMenuItem.AutoToolTip = true;
-            this.tryToReconnectToolStripMenuItem.Name = "tryToReconnectToolStripMenuItem";
-            this.tryToReconnectToolStripMenuItem.Size = new System.Drawing.Size(96, 20);
-            this.tryToReconnectToolStripMenuItem.Text = "Try to Connect";
-            this.tryToReconnectToolStripMenuItem.Click += new System.EventHandler(this.tryToReconnectToolStripMenuItem_Click);
-            // 
             // projectLabel
             // 
             this.projectLabel.AutoSize = true;
@@ -158,6 +150,7 @@ namespace TvpMain.Forms
             // checksGroupBox
             // 
             this.checksGroupBox.Anchor = ((System.Windows.Forms.AnchorStyles) ((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) | System.Windows.Forms.AnchorStyles.Left) | System.Windows.Forms.AnchorStyles.Right)));
+            this.checksGroupBox.Controls.Add(this.tryToConnectButton);
             this.checksGroupBox.Controls.Add(this.filterLabel);
             this.checksGroupBox.Controls.Add(this.filterTextBox);
             this.checksGroupBox.Controls.Add(this.refreshButton);
@@ -170,6 +163,17 @@ namespace TvpMain.Forms
             this.checksGroupBox.TabIndex = 3;
             this.checksGroupBox.TabStop = false;
             this.checksGroupBox.Text = "Checks";
+            // 
+            // tryToConnectButton
+            // 
+            this.tryToConnectButton.Anchor = ((System.Windows.Forms.AnchorStyles) ((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.tryToConnectButton.Location = new System.Drawing.Point(110, 18);
+            this.tryToConnectButton.Name = "tryToConnectButton";
+            this.tryToConnectButton.Size = new System.Drawing.Size(98, 23);
+            this.tryToConnectButton.TabIndex = 6;
+            this.tryToConnectButton.Text = "Try to Connect";
+            this.tryToConnectButton.UseVisualStyleBackColor = true;
+            this.tryToConnectButton.Click += new System.EventHandler(this.tryToReconnectButton_Click);
             // 
             // filterLabel
             // 
@@ -537,13 +541,11 @@ namespace TvpMain.Forms
             this.PerformLayout();
         }
 
+        private System.Windows.Forms.Button tryToConnectButton;
+
         private System.Windows.Forms.ToolTip runChecksTooltip;
 
-        private System.Windows.Forms.ToolTip fetchUpdatesTooltip;
-
         private System.ComponentModel.BackgroundWorker connectWorker;
-
-        private System.Windows.Forms.ToolStripMenuItem tryToReconnectToolStripMenuItem;
 
         #endregion
 
