@@ -378,11 +378,11 @@ namespace TvpMain.Util
             try
             {
                 var response = (HttpWebResponse) request.GetResponse();
-                result = response.StatusCode == HttpStatusCode.OK;
+                result = (int) response.StatusCode < 400;
             }
             catch (WebException ex)
             {
-                Instance.LogLine("There was a problem reaching S3: " + ex, false);
+                Instance.LogLine("There was a problem reaching AWS: " + ex, false);
             }
 
             IsOnline = result;
