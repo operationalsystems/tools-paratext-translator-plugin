@@ -213,6 +213,7 @@ namespace TvpMain.Forms
             _progressForm.Show();
 
             refreshButton.Enabled = false;
+            Enabled = false;
 
             loadingWorker.RunWorkerAsync();
         }
@@ -222,6 +223,7 @@ namespace TvpMain.Forms
         /// </summary>
         private void EndCheckSynchronization()
         {
+            Enabled = true;
             _progressForm.Hide();
         }
 
@@ -1090,6 +1092,7 @@ namespace TvpMain.Forms
         /// <param name="e"></param>
         private void connectWorker_DoWork(object sender, DoWorkEventArgs e)
         {
+            Enabled = false;
             HostUtil.Instance.TryGoOnline();
         }
 
@@ -1100,6 +1103,7 @@ namespace TvpMain.Forms
         /// <param name="e"></param>
         private void connectWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
+            Enabled = true;
             _connectForm.Hide();
             UpdateOnlineStatus();
         }
