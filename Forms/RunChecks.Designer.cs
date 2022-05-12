@@ -78,8 +78,6 @@ namespace TvpMain.Forms
             this.cancelButton = new System.Windows.Forms.Button();
             this.helpTextBox = new System.Windows.Forms.TextBox();
             this.projectNameText = new System.Windows.Forms.Label();
-            this.loadingWorker = new System.ComponentModel.BackgroundWorker();
-            this.connectWorker = new System.ComponentModel.BackgroundWorker();
             this.runChecksTooltip = new System.Windows.Forms.ToolTip(this.components);
             this.runChecksMenu.SuspendLayout();
             this.checksGroupBox.SuspendLayout();
@@ -173,6 +171,7 @@ namespace TvpMain.Forms
             this.tryToConnectButton.TabIndex = 6;
             this.tryToConnectButton.Text = "Try to Connect";
             this.tryToConnectButton.UseVisualStyleBackColor = true;
+            this.tryToConnectButton.Visible = false;
             this.tryToConnectButton.Click += new System.EventHandler(this.tryToReconnectButton_Click);
             // 
             // filterLabel
@@ -491,17 +490,6 @@ namespace TvpMain.Forms
             this.projectNameText.Text = "Project Name";
             this.projectNameText.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
-            // loadingWorker
-            // 
-            this.loadingWorker.WorkerReportsProgress = true;
-            this.loadingWorker.DoWork += new System.ComponentModel.DoWorkEventHandler(this.LoadingWorker_DoWork);
-            this.loadingWorker.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.LoadingWorker_RunWorkerCompleted);
-            // 
-            // connectWorker
-            // 
-            this.connectWorker.DoWork += new System.ComponentModel.DoWorkEventHandler(this.connectWorker_DoWork);
-            this.connectWorker.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.connectWorker_RunWorkerCompleted);
-            // 
             // runChecksTooltip
             // 
             this.runChecksTooltip.ShowAlways = true;
@@ -545,8 +533,6 @@ namespace TvpMain.Forms
 
         private System.Windows.Forms.ToolTip runChecksTooltip;
 
-        private System.ComponentModel.BackgroundWorker connectWorker;
-
         #endregion
 
         private System.Windows.Forms.MenuStrip runChecksMenu;
@@ -573,7 +559,6 @@ namespace TvpMain.Forms
         private System.Windows.Forms.TextBox helpTextBox;
         private System.Windows.Forms.ToolStripMenuItem exitToolStripMenuItem;
         private System.Windows.Forms.Label projectNameText;
-        private System.ComponentModel.BackgroundWorker loadingWorker;
         private System.Windows.Forms.Button refreshButton;
         private System.Windows.Forms.Label filterLabel;
         private System.Windows.Forms.TextBox filterTextBox;

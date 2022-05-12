@@ -146,8 +146,6 @@ namespace TvpMain.Forms
             _progressForm = new GenericProgressForm("Synchronizing Check/Fixes");
             _connectForm = new GenericProgressForm("Checking Connection ...");
             _checkManager = new CheckManager();
-            // Ensure that the user is online so that permissions and synchronization work as expected.
-            TryGoOnline();
 
             // set up the needed service dependencies
             _host = host ?? throw new ArgumentNullException(nameof(host));
@@ -179,7 +177,7 @@ namespace TvpMain.Forms
         {
             // the project name text, will eventually be the selected current project from the list of projects
             projectNameText.Text = _activeProjectName;
-
+            
             // sets up for just the current book by default
             SetCurrentBook();
 
@@ -194,37 +192,14 @@ namespace TvpMain.Forms
 
             // set the copyright text
             Copyright.Text = MainConsts.COPYRIGHT;
-
-            if (HostUtil.Instance.IsOnline && !CheckManager.HasSyncRun)
-            {
-                StartCheckSynchronization();
-            }
-
-            UpdateRefreshTooltip(null);
+            
             UpdateDisplayItems();
-        }
 
-        /// <summary>
-        /// Handle starting the synchronization process.
-        /// </summary>
-        private void StartCheckSynchronization()
-        {
-            // start the sync for the check/fixes
-            _progressForm.Show();
-
-            refreshButton.Enabled = false;
-            Enabled = false;
-
-            loadingWorker.RunWorkerAsync();
-        }
-
-        /// <summary>
-        /// Handle ending the synchronization process.
-        /// </summary>
-        private void EndCheckSynchronization()
-        {
-            Enabled = true;
-            _progressForm.Hide();
+            // Ensure that the user is online so that permissions and synchronization work as expected.
+            ConnectAndSync();
+            
+            // Update with the last-known refresh time.
+            UpdateRefreshTooltip(null); 
         }
 
         /// <summary>
@@ -235,39 +210,6 @@ namespace TvpMain.Forms
         {
             runChecksTooltip.SetToolTip(refreshButton,
                 $"Click to check for updates. \n(last updated: {syncTime ?? CheckManager.LastSyncTime})");
-        }
-
-        /// <summary>
-        /// Async method for synchronizing the check/fixes for the project and selecting the defaults
-        /// </summary>
-        /// <param name="sender">The control that sent this event</param>
-        /// <param name="e">The event information that triggered this call</param>
-        private void LoadingWorker_DoWork(object sender, DoWorkEventArgs e)
-        {
-            try
-            {
-                // sync with repo
-                _checkManager.SynchronizeInstalledChecks();
-                UpdateRefreshTooltip(DateTime.Now);
-                CheckManager.HasSyncRun = true;
-                refreshButton.Enabled = true;
-            }
-            catch (AmazonServiceException)
-            {
-                HostUtil.Instance.IsOnline = false;
-                UpdateOnlineStatus();
-            }
-        }
-
-        /// <summary>
-        /// Close the progress form when complete
-        /// </summary>
-        /// <param name="sender">The control that sent this event</param>
-        /// <param name="e">The event information that triggered this call</param>
-        private void LoadingWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
-        {
-            checksList.Invoke(new MethodInvoker(UpdateDisplayItems));
-            EndCheckSynchronization();
         }
 
         /// <summary>
@@ -991,7 +933,18 @@ namespace TvpMain.Forms
         /// <param name="e">The event information that triggered this call</param>
         private void RefreshButton_Click(object sender, EventArgs e)
         {
-            StartCheckSynchronization();
+            PrepForSync(); // Update the UI immediately so that it doesn't appear to hang during connection check.
+            ConnectAndSync(true);
+        }
+        
+        /// <summary>
+        /// Handles UI updates prior to starting synchronization.
+        /// </summary>
+        private void PrepForSync()
+        {
+            _progressForm.Show();
+            refreshButton.Enabled = false;
+            Enabled = false;
         }
 
         /// <summary>
@@ -1082,7 +1035,30 @@ namespace TvpMain.Forms
         /// <param name="e"></param>
         private void tryToReconnectButton_Click(object sender, EventArgs e)
         {
-            TryGoOnline();
+            _connectForm.Show();
+            ConnectAndSync();
+        }
+
+        /// <summary>
+        /// Verifies internet connection and synchronizes checks.
+        /// </summary>
+        /// <param name="forceSync"></param>
+        private void ConnectAndSync(bool forceSync = false)
+        {
+            var worker = new BackgroundWorker();
+            worker.DoWork += connectWorker_DoWork;
+            worker.RunWorkerCompleted += connectWorker_RunWorkerCompleted;
+            worker.RunWorkerCompleted += (o, args) =>
+            {
+                if (!HostUtil.Instance.IsOnline || (!forceSync && CheckManager.HasSyncRun))
+                {
+                    _progressForm.Hide(); // Ensure that the synchronization form is hidden if it was shown elsewhere.
+                    return;
+                };
+                PrepForSync();
+                StartCheckSynchronization();
+            };
+            worker.RunWorkerAsync();
         }
 
         /// <summary>
@@ -1103,18 +1079,62 @@ namespace TvpMain.Forms
         /// <param name="e"></param>
         private void connectWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
+            UpdateOnlineStatus();
             Enabled = true;
             _connectForm.Hide();
-            UpdateOnlineStatus();
+        }
+        
+        /// <summary>
+        /// Handle starting the synchronization process.
+        /// </summary>
+        private void StartCheckSynchronization()
+        {
+            var worker = new BackgroundWorker();
+            worker.DoWork += SynchronizationWorker_DoWork;
+            worker.RunWorkerCompleted += SynchronizationWorker_RunWorkerCompleted;
+            worker.RunWorkerAsync();
+        }
+        
+        /// <summary>
+        /// Handle ending the synchronization process.
+        /// </summary>
+        private void EndCheckSynchronization()
+        {
+            Enabled = true;
+            _progressForm.Hide();
         }
 
         /// <summary>
-        /// Check if the system is able to reach the internet and update.
+        /// Async method for synchronizing the check/fixes for the project and selecting the defaults
         /// </summary>
-        private void TryGoOnline()
+        /// <param name="sender">The control that sent this event</param>
+        /// <param name="e">The event information that triggered this call</param>
+        private void SynchronizationWorker_DoWork(object sender, DoWorkEventArgs e)
         {
-            _connectForm.Show();
-            connectWorker.RunWorkerAsync();
+            try
+            {
+                // sync with repo
+                _checkManager.SynchronizeInstalledChecks();
+                UpdateRefreshTooltip(DateTime.Now);
+                CheckManager.HasSyncRun = true;
+                refreshButton.Enabled = true;
+            }
+            catch (AmazonServiceException)
+            {
+                HostUtil.Instance.IsOnline = false;
+                UpdateOnlineStatus();
+            }
+        }
+
+        /// <summary>
+        /// Close the progress form when complete
+        /// </summary>
+        /// <param name="sender">The control that sent this event</param>
+        /// <param name="e">The event information that triggered this call</param>
+        private void SynchronizationWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            checksList.Invoke(new MethodInvoker(UpdateDisplayItems));
+            EndCheckSynchronization();
         }
 
         /// <summary>
@@ -1122,7 +1142,6 @@ namespace TvpMain.Forms
         /// </summary>
         private void UpdateOnlineStatus()
         {
-            
             var onlineWindowLabel = Name;
             var offlineWindowLabel = $@"{Name} (offline)";
 
