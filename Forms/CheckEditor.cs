@@ -115,7 +115,7 @@ namespace TvpMain.Forms
             UpdateUi();
             _dirty = false;
             
-            publishToolStripMenuItem.Visible = HostUtil.Instance.IsCurrentUserTvpAdmin();
+            publishToolStripMenuItem.Visible = HostUtil.Instance.IsOnline && HostUtil.Instance.IsCurrentUserTvpAdmin();
             saveIconToolStripMenuItem.Enabled = IsRemote || _dirty;
             saveToolStripMenuItem.Enabled = IsRemote || _dirty;
 

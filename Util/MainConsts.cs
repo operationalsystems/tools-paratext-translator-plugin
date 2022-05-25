@@ -117,6 +117,16 @@ namespace TvpMain.Util
         public const string COPYRIGHT = "© 2021 Biblica, Inc.";
 
         /// <summary>
+        /// The name of the file used to keep track of the last synchronization run.
+        /// </summary>
+        public const string LAST_SYNC_FILE_NAME = "lastSync";
+        
+        /// <summary>
+        /// The TVP folder path. (assuming the PT9 directory as the base)
+        /// </summary>
+        public const string TVP_FOLDER_NAME = @"plugins\TVP";
+
+        /// <summary>
         /// The folder name where checks should be installed. Assumes that the plugin shortname is "TVP".
         /// </summary>
         public const string INSTALLED_CHECK_FOLDER_NAME = @"plugins\TVP\installed-checks";
