@@ -40,12 +40,26 @@ namespace TvpMain.Text
 
         static BookUtil()
         {
+            // ready in our book integer ID to canonincal ID map
             var executingAssembly = Assembly.GetExecutingAssembly();
-
             using var inputStream = executingAssembly.GetManifestResourceStream("TvpMain.Resources.book-ids-1.csv");
             using var streamReader = new StreamReader(inputStream);
+            using var csvReader = GetCsvReader(streamReader);
 
-            var config = new CsvConfiguration(CultureInfo.CurrentCulture)
+            BookIdList = csvReader.GetRecords<BookIdItem>().ToImmutableList();
+            BookIdsByCode = BookIdList.ToImmutableDictionary(idItem => idItem.BookCode);
+            BookIdsByNum = BookIdList.ToImmutableDictionary(idItem => idItem.BookNum);
+        }
+
+        /// <summary>
+        /// Helper function for creating a CSV reader with a Culture Invariant configuration and settings.
+        /// </summary>
+        /// <param name="inputStream">Stream of the CSV file to read</param>
+        /// <returns>Configured CsvReader for provided stream</returns>
+        public static CsvReader GetCsvReader(StreamReader streamReader)
+        {
+            /// We require <code>Invariant Culture</code> otherwise the <code>CsvReader</code> will fail when the user uses an unexpected Operating System language/locale/culture...
+            var config = new CsvConfiguration(CultureInfo.InvariantCulture)
             {
                 HasHeaderRecord = false,
                 IgnoreBlankLines = true,
@@ -53,11 +67,7 @@ namespace TvpMain.Text
                 MissingFieldFound = null
             };
 
-            using var csvReader = new CsvReader(streamReader, config);
-
-            BookIdList = csvReader.GetRecords<BookIdItem>().ToImmutableList();
-            BookIdsByCode = BookIdList.ToImmutableDictionary(idItem => idItem.BookCode);
-            BookIdsByNum = BookIdList.ToImmutableDictionary(idItem => idItem.BookNum);
+           return new CsvReader(streamReader, config);
         }
 
         /// <summary>

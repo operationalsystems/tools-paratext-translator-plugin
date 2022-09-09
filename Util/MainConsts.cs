@@ -179,6 +179,11 @@ namespace TvpMain.Util
         public const string V1_PUNCTUATION_CHECK_GUID = "239ca2c4-98ee-11eb-a8b3-0242ac130003";
 
         /// <summary>
+        /// Array to track all V1 TVP checks
+        /// </summary>
+        public static readonly string[] V1_CHECKS = { V1_SCRIPTURE_REFERENCE_CHECK_GUID, V1_PUNCTUATION_CHECK_GUID };
+
+        /// <summary>
         /// The file name to look for in the TVP repo which contains a list of users that are TVP administrators.
         /// </summary>
         public const string PERMISSIONS_FILE_NAME = "permission_list.csv";

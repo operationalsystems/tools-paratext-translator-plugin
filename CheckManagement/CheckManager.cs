@@ -50,7 +50,7 @@ namespace TvpMain.CheckManagement
                     ? new[]
                     {
                         System.Diagnostics.Process.GetProcessesByName("Paratext")[0].Id.ToString(),
-                        DateTime.Now.ToString(CultureInfo.CurrentCulture)
+                        DateTime.Now.ToString(CultureInfo.InvariantCulture)
                     }
                     : new string[] { };
                 File.WriteAllLines(SyncStatusFileName, output);

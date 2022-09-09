@@ -44,6 +44,12 @@ namespace TvpMain.Check
         /// <returns>The list of check result items. This includes the suggested fixes if they are available.</returns>
         public List<CheckResultItem> ExecCheckAndFix(string inputText, CheckAndFixItem checkAndFixItem)
         {
+            // Ensure item has required regular expression for performing the check.
+            if(string.IsNullOrEmpty(checkAndFixItem.CheckRegex))
+            {
+                throw new CheckAndFixException("Missing expected Check regular expression", checkAndFixItem);
+            }
+
             // First, run the check regex, looking for matches
             var checkRegex = new Regex(checkAndFixItem.CheckRegex, DEFAULT_REGEX_OPTIONS);
             var fixRegex = EscapeCodeRegex.Replace(checkAndFixItem.FixRegex ?? string.Empty,

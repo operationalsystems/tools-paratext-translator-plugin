@@ -13,6 +13,7 @@ using System.AddIn;
 using System.AddIn.Pipeline;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.Threading;
 using System.Windows.Forms;
 using TvpMain.Forms;
@@ -65,6 +66,11 @@ namespace TvpMain
                     {
                         try
                         {
+                            //CultureInfo englishUSCulture = new CultureInfo("en-US");
+                            //CultureInfo.DefaultThreadCurrentCulture = englishUSCulture;
+                            //Thread.CurrentThread.CurrentCulture = englishUSCulture;
+                            //Thread.CurrentThread.CurrentUICulture = englishUSCulture;
+
                             Application.EnableVisualStyles();
                             Application.Run(new RunChecks(host, activeProjectName));
                         }
