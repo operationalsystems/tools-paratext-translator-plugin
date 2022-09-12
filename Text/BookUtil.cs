@@ -40,7 +40,7 @@ namespace TvpMain.Text
 
         static BookUtil()
         {
-            // ready in our book integer ID to canonincal ID map
+            // ready in our book integer ID to canonical ID map
             var executingAssembly = Assembly.GetExecutingAssembly();
             using var inputStream = executingAssembly.GetManifestResourceStream("TvpMain.Resources.book-ids-1.csv");
             using var streamReader = new StreamReader(inputStream);

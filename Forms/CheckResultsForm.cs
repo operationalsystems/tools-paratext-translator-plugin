@@ -652,8 +652,6 @@ namespace TvpMain.Forms
                             {
                                 // arg exceptions occur when verses are missing,
                                 // which they can be for given translations (ignore and move on)
-                                // TODO spit out warning
-                                Console.WriteLine(ae);
                             }
                         }
 

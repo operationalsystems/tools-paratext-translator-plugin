@@ -66,11 +66,6 @@ namespace TvpMain
                     {
                         try
                         {
-                            //CultureInfo englishUSCulture = new CultureInfo("en-US");
-                            //CultureInfo.DefaultThreadCurrentCulture = englishUSCulture;
-                            //Thread.CurrentThread.CurrentCulture = englishUSCulture;
-                            //Thread.CurrentThread.CurrentUICulture = englishUSCulture;
-
                             Application.EnableVisualStyles();
                             Application.Run(new RunChecks(host, activeProjectName));
                         }
