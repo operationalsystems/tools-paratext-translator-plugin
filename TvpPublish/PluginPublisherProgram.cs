@@ -7,6 +7,7 @@ The above copyright notice and this permission notice shall be included in all c
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
+
 using Amazon;
 using Amazon.Runtime;
 using Amazon.S3;
@@ -28,39 +29,43 @@ namespace TvpPublish
     class PluginPublisherProgram
     {
         // File extension constants
-        const string JsonExtension = "json";
-        const string DllExtension = "dll";
-        const string ZipExtension = "zip";
+        private const string JsonExtension = "json";
+
+        private const string DllExtension = "dll";
+        private const string ZipExtension = "zip";
 
         /// <summary>
         /// The normalized Target plugin filename.
         /// </summary>
-        const string PluginTargetFilename = "TranslationValidationPlugin";
-
+        private const string PluginTargetFilename = "TranslationValidationPlugin";
 
         /// <summary>
         /// The plugin's solution root directory path from the application's build directory..
         /// </summary>
-        static readonly string SolutionRootPath = Path.Combine(GetExecutingDirectory().FullName, "..", "..", "..", "..");
+        private static readonly string SolutionRootPath = Path.Combine(GetExecutingDirectory().FullName, "..", "..", "..", "..");
 
         // The source file's filenames and paths.
-        static readonly string PluginManifestFilename = $"{PluginTargetFilename}.{JsonExtension}";
-        static readonly string PluginLibraryFilename = $"{PluginTargetFilename}.{DllExtension}";
-        static readonly string PluginArchiveFilename = $"{PluginTargetFilename}.{ZipExtension}";
-        static readonly string PluginManifestPath = Path.Combine(SolutionRootPath, PluginManifestFilename);
-        static readonly string PluginLibraryPath = Path.Combine(SolutionRootPath, "bin", "x64", "Release", PluginLibraryFilename);
-        static readonly string PluginArchivePath = Path.Combine(SolutionRootPath, "bin", "x64", PluginArchiveFilename);
+        private static readonly string PluginManifestFilename = $"{PluginTargetFilename}.{JsonExtension}";
+
+        private static readonly string PluginLibraryFilename = $"{PluginTargetFilename}.{DllExtension}";
+        private static readonly string PluginArchiveFilename = $"{PluginTargetFilename}.{ZipExtension}";
+        private static readonly string PluginManifestPath = Path.Combine(SolutionRootPath, PluginManifestFilename);
+        private static readonly string PluginLibraryPath = Path.Combine(SolutionRootPath, "bin", "x64", "Release", PluginLibraryFilename);
+        private static readonly string PluginArchivePath = Path.Combine(SolutionRootPath, "bin", "x64", PluginArchiveFilename);
 
         // The PPM S3 repository information we use to deploy the plugin and manifest files.
-        static RegionEndpoint Region { get; } = RegionEndpoint.USEast1;
-        const String BucketName = "biblica-ppm-plugin-repo";
+        private static RegionEndpoint Region { get; } = RegionEndpoint.USEast1;
+
+        private static readonly string BucketName = Environment.GetEnvironmentVariable("TVP_DEPLOY_PPM_REPO_BUCKET") ?? "biblica-ppm-plugin-repo";
 
         /// <summary>
         /// The Plugin publisher application entry point.
         /// </summary>
         /// <param name="args">The application arguments. (none)</param>
-        static void Main(string[] args)
+        private static void Main(string[] args)
         {
+            Console.WriteLine($"Target PPM repo deployment bucket for TVP '{BucketName}'");
+
             // pull in the plugin's PPM manifest
             var pluginDescription = PluginDescription.FromFile(PluginManifestPath);
 
