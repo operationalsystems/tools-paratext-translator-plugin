@@ -24,7 +24,7 @@ namespace TvpMain.Util
         /// <summary>
         /// The plugin's versions
         /// </summary>
-        public const string VERSION = "2.0.0.6";
+        public const string VERSION = "2.0.0.8";
 
         /// <summary>
         /// Default separator for a sequence of book names.

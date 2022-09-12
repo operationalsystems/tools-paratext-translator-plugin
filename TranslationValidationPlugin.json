@@ -1,7 +1,7 @@
 {
   "name": "Translation Validation Plugin",
   "shortName": "tvp",
-  "version": "2.0.0.6",
+  "version": "2.0.0.8",
   "description": "This plugin provides the ability to create and share validation checks and fixes for Paratext translations.",
   "versionDescription": "",
   "ptVersions": [
