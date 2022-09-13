@@ -5,6 +5,9 @@ SET SCRIPT_ROOT=%~dp0
 SET SOLUTON_ROOT=%SCRIPT_ROOT%..
 
 REM Run the publish executable
-cd %SOLUTON_ROOT%\TvpPublish\
+pushd %SOLUTON_ROOT%\TvpPublish\
 dotnet clean
 dotnet run
+
+REM return to starting directory
+popd

@@ -1,5 +1,5 @@
 ﻿/*
-Copyright © 2021 by Biblica, Inc.
+Copyright © 2022 by Biblica, Inc.
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
@@ -7,11 +7,14 @@ The above copyright notice and this permission notice shall be included in all c
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
+
 using PtxUtils;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Web.UI;
 using TvpMain.Check;
 using TvpMain.Util;
 
@@ -26,13 +29,62 @@ namespace TvpMain.CheckManagement
         private readonly IRepository _locallyDevelopedChecksRepository;
         private readonly IRepository _s3Repository;
 
+        private static readonly string SyncStatusFileName =
+            $"{Directory.GetCurrentDirectory()}\\{MainConsts.TVP_FOLDER_NAME}\\{MainConsts.LAST_SYNC_FILE_NAME}";
+
+        /// <summary>
+        /// Keeps track of whether a sync has run during this ParaText session.
+        /// </summary>
+        public static bool HasSyncRun
+        {
+            get
+            {
+                var foundText = File.Exists(SyncStatusFileName) ? File.ReadAllLines(SyncStatusFileName)[0] : "";
+
+                return string.Equals(foundText,
+                    System.Diagnostics.Process.GetProcessesByName("Paratext")[0].Id.ToString());
+            }
+            set
+            {
+                var output = value
+                    ? new[]
+                    {
+                        System.Diagnostics.Process.GetProcessesByName("Paratext")[0].Id.ToString(),
+                        DateTime.Now.ToString(CultureInfo.InvariantCulture)
+                    }
+                    : new string[] { };
+                File.WriteAllLines(SyncStatusFileName, output);
+            }
+        }
+
+        /// <summary>
+        /// The last time synchronization completed.
+        /// </summary>
+        public static DateTime? LastSyncTime
+        {
+            get
+            {
+                if (!File.Exists(SyncStatusFileName))
+                {
+                    return null;
+                }
+                var syncStatus = File.ReadAllLines(SyncStatusFileName);
+                if (syncStatus.Length < 2) return null;
+                DateTime.TryParse(syncStatus[1], out var lastRunDate);
+
+                return lastRunDate;
+            }
+        }
+
         /// <summary>
         /// Default constructor for CheckManager
         /// </summary>
         public CheckManager()
         {
-            _installedChecksRepository = new LocalRepository(Path.Combine(Directory.GetCurrentDirectory(), MainConsts.INSTALLED_CHECK_FOLDER_NAME));
-            _locallyDevelopedChecksRepository = new LocalRepository(Path.Combine(Directory.GetCurrentDirectory(), MainConsts.LOCAL_CHECK_FOLDER_NAME));
+            _installedChecksRepository = new LocalRepository(Path.Combine(Directory.GetCurrentDirectory(),
+                MainConsts.INSTALLED_CHECK_FOLDER_NAME));
+            _locallyDevelopedChecksRepository = new LocalRepository(Path.Combine(Directory.GetCurrentDirectory(),
+                MainConsts.LOCAL_CHECK_FOLDER_NAME));
             _s3Repository = new S3Repository();
         }
 
@@ -41,7 +93,8 @@ namespace TvpMain.CheckManagement
         /// </summary>
         /// <param name="dryRun">(optional) If true, returns the result of the operation without applying it.</param>
         /// <returns>A key/value pair mapping of the result, with <c>CheckAndFixItem</c>s grouped by enumerated values.</returns>
-        public virtual Dictionary<SynchronizationResultType, List<CheckAndFixItem>> SynchronizeInstalledChecks(bool dryRun = false)
+        public virtual Dictionary<SynchronizationResultType, List<CheckAndFixItem>> SynchronizeInstalledChecks(
+            bool dryRun = false)
         {
             var newCheckAndFixItems = GetNewCheckAndFixItems();
             var outdatedCheckAndFixItems = GetOutdatedCheckAndFixItems();
@@ -70,10 +123,12 @@ namespace TvpMain.CheckManagement
             {
                 InstallCheckAndFixItem(check);
             }
+
             foreach (var check in outdatedCheckAndFixItems.Keys)
             {
                 UninstallCheckAndFixItem(check);
             }
+
             foreach (var check in outdatedCheckAndFixItems.Values)
             {
                 InstallCheckAndFixItem(check);
@@ -96,13 +151,13 @@ namespace TvpMain.CheckManagement
         {
             var availableChecks = GetAvailableCheckAndFixItems();
             var localChecks = from local in GetInstalledCheckAndFixItems()
-                              select new
-                              {
-                                  local.Name
-                              };
+                select new
+                {
+                    local.Name
+                };
             var newChecks = availableChecks.Where(check =>
             {
-                var installed = new { check.Name };
+                var installed = new {check.Name};
                 return !localChecks.Contains(installed);
             }).ToList();
             return newChecks;
@@ -116,13 +171,13 @@ namespace TvpMain.CheckManagement
         {
             var installedChecks = GetInstalledCheckAndFixItems();
             var remoteChecks = from remote in GetAvailableCheckAndFixItems()
-                               select new
-                               {
-                                   remote.Name
-                               };
+                select new
+                {
+                    remote.Name
+                };
             var deprecated = installedChecks.Where(check =>
             {
-                var installed = new { check.Name };
+                var installed = new {check.Name};
                 return !remoteChecks.Contains(installed);
             }).ToList();
             return deprecated;
@@ -263,7 +318,7 @@ namespace TvpMain.CheckManagement
         internal virtual bool IsNewVersion(CheckAndFixItem original, CheckAndFixItem candidate)
         {
             return string.Equals(candidate.Name, original.Name) &&
-                    Version.Parse(candidate.Version) > Version.Parse(original.Version);
+                   Version.Parse(candidate.Version) > Version.Parse(original.Version);
         }
 
         /// <summary>
@@ -274,7 +329,7 @@ namespace TvpMain.CheckManagement
         {
             return Path.Combine(Directory.GetCurrentDirectory(), MainConsts.LOCAL_CHECK_FOLDER_NAME);
         }
-        
+
         /// <summary>
         /// Get the path to the folder where remote checks are installed.
         /// </summary>

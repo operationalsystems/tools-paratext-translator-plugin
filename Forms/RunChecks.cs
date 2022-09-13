@@ -1,5 +1,5 @@
 ﻿/*
-Copyright © 2021 by Biblica, Inc.
+Copyright © 2022 by Biblica, Inc.
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
@@ -7,6 +7,7 @@ The above copyright notice and this permission notice shall be included in all c
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
+
 using AddInSideViews;
 using System;
 using System.Collections.Generic;
@@ -18,6 +19,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
+using Amazon.Runtime;
 using TvpMain.Check;
 using TvpMain.CheckManagement;
 using TvpMain.Project;
@@ -26,7 +28,6 @@ using TvpMain.Util;
 
 namespace TvpMain.Forms
 {
-
     /// <summary>
     /// The new main dialog for TVP. This dialog allows users
     /// to select which check/fixes to run against the current project
@@ -37,8 +38,8 @@ namespace TvpMain.Forms
         /// <summary>
         /// Whether the user is a TVP Admin
         /// </summary>
-        private readonly bool _isCurrentUserTvpAdmin = HostUtil.Instance.IsCurrentUserTvpAdmin();
-        
+        private bool _isCurrentUserTvpAdmin;
+
         /// <summary>
         /// The minimum number of characters required to perform a search.
         /// </summary>
@@ -105,6 +106,11 @@ namespace TvpMain.Forms
         GenericProgressForm _progressForm;
 
         /// <summary>
+        /// Simple progress bar form for when the plugin is attempting to connect to the internet
+        /// </summary>
+        GenericProgressForm _connectForm;
+
+        /// <summary>
         /// This is a separate list of items to display within the grid. This allows
         /// for tracking state during filtering.
         /// </summary>
@@ -113,7 +119,8 @@ namespace TvpMain.Forms
         /// <summary>
         /// This is a fixed CF for V1 TVP scripture reference checking
         /// </summary>
-        readonly CheckAndFixItem _scriptureReferenceCf = new CheckAndFixItem(MainConsts.V1_SCRIPTURE_REFERENCE_CHECK_GUID,
+        readonly CheckAndFixItem _scriptureReferenceCf = new CheckAndFixItem(
+            MainConsts.V1_SCRIPTURE_REFERENCE_CHECK_GUID,
             "(Built-in) Scripture Reference Verifications",
             "Scripture reference tag and formatting checks.",
             "2.0.0.0",
@@ -136,8 +143,8 @@ namespace TvpMain.Forms
         public RunChecks(IHost host, string activeProjectName)
         {
             InitializeComponent();
-
             _progressForm = new GenericProgressForm("Synchronizing Check/Fixes");
+            _connectForm = new GenericProgressForm("Checking Connection ...");
             _checkManager = new CheckManager();
 
             // set up the needed service dependencies
@@ -180,55 +187,29 @@ namespace TvpMain.Forms
                 setDefaultsToSelected.Hide();
             }
 
-            if (!_isCurrentUserTvpAdmin)
-            {
-                refreshButton.Hide();
-            }
-
             // sets the chapter lengths and such for the current book
             SetCurrentBookDefaults();
 
             // set the copyright text
             Copyright.Text = MainConsts.COPYRIGHT;
+            
+            UpdateDisplayItems();
 
-            // start the sync for the check/fixes
-            _progressForm.Show(this);
-
-            Enabled = false;
-            loadingWorker.RunWorkerAsync();
+            // Ensure that the user is online so that permissions and synchronization work as expected.
+            ConnectAndSync();
+            
+            // Update with the last-known refresh time.
+            UpdateRefreshTooltip(null); 
         }
 
         /// <summary>
-        /// Async method for synchronizing the check/fixes for the project and selecting the defaults
+        /// Update the refresh button tooltip with a last synchronized time.
         /// </summary>
-        /// <param name="sender">The control that sent this event</param>
-        /// <param name="e">The event information that triggered this call</param>
-        private void LoadingWorker_DoWork(object sender, DoWorkEventArgs e)
+        /// <param name="syncTime">The time of the last sync. Overrides the value captured by the CheckManager. (optional)</param>
+        private void UpdateRefreshTooltip(DateTime? syncTime)
         {
-            try
-            {
-                // sync with repo
-                _checkManager.SynchronizeInstalledChecks();
-            }
-            catch
-            {
-                // in case the user is off-line
-                MessageBox.Show(@"Could not synchronize with check/fix repo. You may only run checks with locally available set.",
-                    @"Warning", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-        }
-
-        /// <summary>
-        /// Close the progress form when complete
-        /// </summary>
-        /// <param name="sender">The control that sent this event</param>
-        /// <param name="e">The event information that triggered this call</param>
-        private void LoadingWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
-        {
-            checksList.Invoke(new MethodInvoker(UpdateDisplayItems));
-            _progressForm.Close();
-
-            Enabled = true;
+            runChecksTooltip.SetToolTip(refreshButton,
+                $"Click to check for updates. \n(last updated: {syncTime ?? CheckManager.LastSyncTime})");
         }
 
         /// <summary>
@@ -241,11 +222,11 @@ namespace TvpMain.Forms
                 // track display items that may already be selected,
                 // so they can stay selected
                 ISet<string> prevCheckedItems = (_displayItems == null
-                    ? Enumerable.Empty<string>()
-                    : _displayItems
-                        .Where(foundItem => foundItem.Selected)
-                        .Select(foundItem => foundItem.Name))
-                        .ToImmutableHashSet();
+                        ? Enumerable.Empty<string>()
+                        : _displayItems
+                            .Where(foundItem => foundItem.Selected)
+                            .Select(foundItem => foundItem.Name))
+                    .ToImmutableHashSet();
 
                 // load all the checks into the list
                 _remoteChecks = _checkManager.GetInstalledCheckAndFixItems();
@@ -256,31 +237,37 @@ namespace TvpMain.Forms
                 // get if the check is available (item1), and if not, the text for the tooltip (item2)
                 var isCheckAvailableTupleRef = IsCheckAvailableForProject(_scriptureReferenceCf);
                 _displayItems.Add(new DisplayItem(
-                    prevCheckedItems.Contains(_scriptureReferenceCf.Name) || IsCheckDefaultForProject(_scriptureReferenceCf),
-                        _scriptureReferenceCf.Name,
-                        _scriptureReferenceCf.Description,
-                        _scriptureReferenceCf.Version,
-                        _scriptureReferenceCf.Languages != null && _scriptureReferenceCf.Languages.Length > 0 ? string.Join(", ", _scriptureReferenceCf.Languages) : "All",
-                        _scriptureReferenceCf.Tags != null ? string.Join(", ", _scriptureReferenceCf.Tags) : "",
-                        _scriptureReferenceCf.Id,
-                        isCheckAvailableTupleRef.Item1,
-                        isCheckAvailableTupleRef.Item2,
-                        _scriptureReferenceCf
-                    ));
+                    prevCheckedItems.Contains(_scriptureReferenceCf.Name) ||
+                    IsCheckDefaultForProject(_scriptureReferenceCf),
+                    _scriptureReferenceCf.Name,
+                    _scriptureReferenceCf.Description,
+                    _scriptureReferenceCf.Version,
+                    _scriptureReferenceCf.Languages != null && _scriptureReferenceCf.Languages.Length > 0
+                        ? string.Join(", ", _scriptureReferenceCf.Languages)
+                        : "All",
+                    _scriptureReferenceCf.Tags != null ? string.Join(", ", _scriptureReferenceCf.Tags) : "",
+                    _scriptureReferenceCf.Id,
+                    isCheckAvailableTupleRef.Item1,
+                    isCheckAvailableTupleRef.Item2,
+                    _scriptureReferenceCf
+                ));
 
                 var isCheckAvailableTuplePunc = IsCheckAvailableForProject(_missingPunctuationCf);
                 _displayItems.Add(new DisplayItem(
-                    prevCheckedItems.Contains(_missingPunctuationCf.Name) || IsCheckDefaultForProject(_missingPunctuationCf),
-                        _missingPunctuationCf.Name,
-                        _missingPunctuationCf.Description,
-                        _missingPunctuationCf.Version,
-                        _missingPunctuationCf.Languages != null && _missingPunctuationCf.Languages.Length > 0 ? string.Join(", ", _missingPunctuationCf.Languages) : "All",
-                        _missingPunctuationCf.Tags != null ? string.Join(", ", _missingPunctuationCf.Tags) : "",
-                        _missingPunctuationCf.Id,
-                        isCheckAvailableTuplePunc.Item1,
-                        isCheckAvailableTuplePunc.Item2,
-                        _missingPunctuationCf
-                    ));
+                    prevCheckedItems.Contains(_missingPunctuationCf.Name) ||
+                    IsCheckDefaultForProject(_missingPunctuationCf),
+                    _missingPunctuationCf.Name,
+                    _missingPunctuationCf.Description,
+                    _missingPunctuationCf.Version,
+                    _missingPunctuationCf.Languages != null && _missingPunctuationCf.Languages.Length > 0
+                        ? string.Join(", ", _missingPunctuationCf.Languages)
+                        : "All",
+                    _missingPunctuationCf.Tags != null ? string.Join(", ", _missingPunctuationCf.Tags) : "",
+                    _missingPunctuationCf.Id,
+                    isCheckAvailableTuplePunc.Item1,
+                    isCheckAvailableTuplePunc.Item2,
+                    _missingPunctuationCf
+                ));
 
                 // add all the known remote checks
                 foreach (var item in _remoteChecks)
@@ -298,7 +285,7 @@ namespace TvpMain.Forms
                         isCheckAvailableTuple.Item1,
                         isCheckAvailableTuple.Item2,
                         item
-                        ));
+                    ));
                 }
 
                 // add all the local checks
@@ -318,7 +305,7 @@ namespace TvpMain.Forms
                         isCheckAvailableTuple.Item1,
                         isCheckAvailableTuple.Item2,
                         item
-                        ));
+                    ));
                 }
 
                 UpdateDisplayGrid();
@@ -427,13 +414,13 @@ namespace TvpMain.Forms
                 var currentBook = BookUtil.BookIdsByNum[runBookNum];
 
                 // let the user know they have not set the book's abbreviation, shortname, or longname
-                throw new Exception($"The Book '{currentBook.BookCode}' has not had its Book Names set: abbreviation, short name, or long name. Please set these before continuing.");
+                throw new Exception(
+                    $"The Book '{currentBook.BookCode}' has not had its Book Names set: abbreviation, short name, or long name. Please set these before continuing.");
             }
 
             // set the current book name
             currentBookText.Text = _projectManager.BookNamesByNum[runBookNum].BookCode;
-            _selectedBooks = new[] { _projectManager.BookNamesByNum[runBookNum] };
-
+            _selectedBooks = new[] {_projectManager.BookNamesByNum[runBookNum]};
         }
 
         /// <summary>
@@ -493,20 +480,20 @@ namespace TvpMain.Forms
 
                 foreach (var item in selectedChecks)
                 {
-                    
                     if (item.Tags == null || !item.Tags.Contains("RTL"))
                     {
                         cautionaryItems.Add(item.Name);
-                    }                   
+                    }
                 }
+
                 if (cautionaryItems.Count > 0)
                 {
-                    MessageBox.Show($"The following checks have not been confirmed to work on a RTL language. Use with caution.\n• {String.Join("\n• ", cautionaryItems)}", 
-                        "Warning", 
-                        MessageBoxButtons.OK, 
+                    MessageBox.Show(
+                        $"The following checks have not been confirmed to work on a RTL language. Use with caution.\n• {String.Join("\n• ", cautionaryItems)}",
+                        "Warning",
+                        MessageBoxButtons.OK,
                         MessageBoxIcon.Warning);
                 }
-                
             }
 
             // grab the check run context
@@ -524,7 +511,7 @@ namespace TvpMain.Forms
                 _selectedBooks,
                 selectedChecks,
                 checkContext
-                );
+            );
 
             checkResultsForm.BringToFront();
             checkResultsForm.ShowDialog(this);
@@ -544,8 +531,8 @@ namespace TvpMain.Forms
             // grab the selected checks
             foreach (DataGridViewRow row in checksList.Rows)
             {
-                var item = ((DisplayItem)row.Tag).Item;
-                if ((bool)row.Cells[0].Value)
+                var item = ((DisplayItem) row.Tag).Item;
+                if ((bool) row.Cells[0].Value)
                 {
                     selectedChecks.Add(item);
                 }
@@ -564,7 +551,7 @@ namespace TvpMain.Forms
             var checkRunContext = new CheckRunContext
             {
                 Project = _activeProjectName,
-                Books = (BookNameItem[])_selectedBooks.Clone()
+                Books = (BookNameItem[]) _selectedBooks.Clone()
             };
 
             // track the selected books
@@ -683,7 +670,7 @@ namespace TvpMain.Forms
             fromChapterDropDown.Enabled = true;
             toChapterDropDown.Enabled = true;
 
-            _selectedBooks = new[] { _projectManager.BookNamesByNum[_defaultCurrentBook] };
+            _selectedBooks = new[] {_projectManager.BookNamesByNum[_defaultCurrentBook]};
         }
 
         /// <summary>
@@ -701,9 +688,9 @@ namespace TvpMain.Forms
             {
                 foreach (DataGridViewRow row in checksList.Rows)
                 {
-                    var item = (DisplayItem)checksList.Rows[row.Index].Tag;
+                    var item = (DisplayItem) checksList.Rows[row.Index].Tag;
 
-                    if ((bool)row.Cells[0].Value)
+                    if ((bool) row.Cells[0].Value)
                     {
                         if (!_projectCheckSettings.DefaultCheckIds.Contains(item.Id))
                         {
@@ -761,14 +748,14 @@ namespace TvpMain.Forms
                 return;
             }
 
-            var displayItem = (DisplayItem)checksList.Rows[eventArgs.RowIndex].Tag;
+            var displayItem = (DisplayItem) checksList.Rows[eventArgs.RowIndex].Tag;
             if (!displayItem.Active)
             {
                 return;
             }
 
-            var checkCell = (DataGridViewCheckBoxCell)checksList.Rows[eventArgs.RowIndex].Cells[0];
-            var itemSelected = !(bool)checkCell.Value;
+            var checkCell = (DataGridViewCheckBoxCell) checksList.Rows[eventArgs.RowIndex].Cells[0];
+            var itemSelected = !(bool) checkCell.Value;
 
             checkCell.Value = itemSelected;
             displayItem.Selected = itemSelected;
@@ -789,8 +776,9 @@ namespace TvpMain.Forms
 
             // filter based on language
             var languageEnabled = item.Languages == null
-                       || (item.Languages != null && item.Languages.Length == 0)
-                       || (item.Languages != null && item.Languages.Length > 0 && item.Languages.Contains(languageId, StringComparer.OrdinalIgnoreCase));
+                                  || (item.Languages != null && item.Languages.Length == 0)
+                                  || (item.Languages != null && item.Languages.Length > 0 &&
+                                      item.Languages.Contains(languageId, StringComparer.OrdinalIgnoreCase));
 
             // filter based on Tags
 
@@ -844,12 +832,13 @@ namespace TvpMain.Forms
                 return;
             }
 
-            var item = (DisplayItem)checksList.Rows[e.RowIndex].Tag;
+            var item = (DisplayItem) checksList.Rows[e.RowIndex].Tag;
             helpTextBox.Clear();
 
             if (!IsCheckAvailableForProject(item.Item).Item1)
             {
-                helpTextBox.AppendText("NOTE: This check/fix is not selectable for this project" + Environment.NewLine + Environment.NewLine);
+                helpTextBox.AppendText("NOTE: This check/fix is not selectable for this project" + Environment.NewLine +
+                                       Environment.NewLine);
             }
 
             helpTextBox.AppendText("Check/Fix: " + item.Name + Environment.NewLine);
@@ -922,7 +911,7 @@ namespace TvpMain.Forms
         private void ResetToProjectDefaults_MouseEnter(object sender, EventArgs e)
         {
             helpTextBox.Text = @"Sets the selected checks/fixes back to the project defaults, " +
-                @"or if there are no defaults, deselects all.";
+                               @"or if there are no defaults, deselects all.";
         }
 
         /// <summary>
@@ -933,8 +922,8 @@ namespace TvpMain.Forms
         private void SetDefaultsToSelected_MouseEnter(object sender, EventArgs e)
         {
             helpTextBox.Text = @"Saves the currently selected checks/fixes as the default set " +
-                @"for this project. This does not include local checks/fixes as they can not be " +
-                @"set as defaults. This may only be performed by accounts with the sufficient privileges.";
+                               @"for this project. This does not include local checks/fixes as they can not be " +
+                               @"set as defaults. This may only be performed by accounts with the sufficient privileges.";
         }
 
         /// <summary>
@@ -944,10 +933,18 @@ namespace TvpMain.Forms
         /// <param name="e">The event information that triggered this call</param>
         private void RefreshButton_Click(object sender, EventArgs e)
         {
-            // start the sync for the check/fixes
-            _progressForm = new GenericProgressForm("Synchronizing Check/Fixes");
-            _progressForm.Show(this);
-            loadingWorker.RunWorkerAsync();
+            PrepForSync(); // Update the UI immediately so that it doesn't appear to hang during connection check.
+            ConnectAndSync(true);
+        }
+        
+        /// <summary>
+        /// Handles UI updates prior to starting synchronization.
+        /// </summary>
+        private void PrepForSync()
+        {
+            _progressForm.Show();
+            refreshButton.Enabled = false;
+            Enabled = false;
         }
 
         /// <summary>
@@ -969,7 +966,7 @@ namespace TvpMain.Forms
         {
             const string localCheckPrefix = "(Local)";
             const string builtInCheckPrefix = "(Built-in)";
-            
+
             // Get the check that was clicked
             var selectedCheck = _displayItems[e.RowIndex];
 
@@ -992,7 +989,9 @@ namespace TvpMain.Forms
             }
 
             var name = isLocalCheck ? selectedCheck.Name.Replace(localCheckPrefix, "") : selectedCheck.Name;
-            var checkDir = isLocalCheck ? _checkManager.GetLocalRepoDirectory() : _checkManager.GetInstalledChecksDirectory();
+            var checkDir = isLocalCheck
+                ? _checkManager.GetLocalRepoDirectory()
+                : _checkManager.GetInstalledChecksDirectory();
 
             // Get the file location for the selected check
             var fileName = _checkManager.GetCheckAndFixItemFilename(
@@ -1028,6 +1027,140 @@ namespace TvpMain.Forms
         {
             FormUtil.StartLicenseForm();
         }
+
+        /// <summary>
+        /// Attempts to reconnect to the internet.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void tryToReconnectButton_Click(object sender, EventArgs e)
+        {
+            _connectForm.Show();
+            ConnectAndSync();
+        }
+
+        /// <summary>
+        /// Verifies internet connection and synchronizes checks.
+        /// </summary>
+        /// <param name="forceSync"></param>
+        private void ConnectAndSync(bool forceSync = false)
+        {
+            var worker = new BackgroundWorker();
+            worker.DoWork += connectWorker_DoWork;
+            worker.RunWorkerCompleted += connectWorker_RunWorkerCompleted;
+            worker.RunWorkerCompleted += (o, args) =>
+            {
+                if (!HostUtil.Instance.IsOnline || (!forceSync && CheckManager.HasSyncRun))
+                {
+                    _progressForm.Hide(); // Ensure that the synchronization form is hidden if it was shown elsewhere.
+                    return;
+                };
+                PrepForSync();
+                StartCheckSynchronization();
+            };
+            worker.RunWorkerAsync();
+        }
+
+        /// <summary>
+        /// Handles checking for an internet connection in the background.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void connectWorker_DoWork(object sender, DoWorkEventArgs e)
+        {
+            Enabled = false;
+            HostUtil.Instance.TryGoOnline();
+        }
+
+        /// <summary>
+        /// Handles closing the internet connection progress form.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void connectWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            UpdateOnlineStatus();
+            Enabled = true;
+            _connectForm.Hide();
+        }
+        
+        /// <summary>
+        /// Handle starting the synchronization process.
+        /// </summary>
+        private void StartCheckSynchronization()
+        {
+            var worker = new BackgroundWorker();
+            worker.DoWork += SynchronizationWorker_DoWork;
+            worker.RunWorkerCompleted += SynchronizationWorker_RunWorkerCompleted;
+            worker.RunWorkerAsync();
+        }
+        
+        /// <summary>
+        /// Handle ending the synchronization process.
+        /// </summary>
+        private void EndCheckSynchronization()
+        {
+            Enabled = true;
+            _progressForm.Hide();
+        }
+
+        /// <summary>
+        /// Async method for synchronizing the check/fixes for the project and selecting the defaults
+        /// </summary>
+        /// <param name="sender">The control that sent this event</param>
+        /// <param name="e">The event information that triggered this call</param>
+        private void SynchronizationWorker_DoWork(object sender, DoWorkEventArgs e)
+        {
+            try
+            {
+                // sync with repo
+                _checkManager.SynchronizeInstalledChecks();
+                UpdateRefreshTooltip(DateTime.Now);
+                CheckManager.HasSyncRun = true;
+                refreshButton.Enabled = true;
+            }
+            catch (AmazonServiceException)
+            {
+                HostUtil.Instance.IsOnline = false;
+                UpdateOnlineStatus();
+            }
+        }
+
+        /// <summary>
+        /// Close the progress form when complete
+        /// </summary>
+        /// <param name="sender">The control that sent this event</param>
+        /// <param name="e">The event information that triggered this call</param>
+        private void SynchronizationWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            checksList.Invoke(new MethodInvoker(UpdateDisplayItems));
+            EndCheckSynchronization();
+        }
+
+        /// <summary>
+        /// Handle UI updates that reflect the current online status.
+        /// </summary>
+        private void UpdateOnlineStatus()
+        {
+            var onlineWindowLabel = Name;
+            var offlineWindowLabel = $@"{Name} (offline)";
+
+            if (HostUtil.Instance.IsOnline)
+            {
+                _isCurrentUserTvpAdmin = HostUtil.Instance.IsCurrentUserTvpAdmin();
+                Text = onlineWindowLabel;
+            }
+            else
+            {
+                Text = offlineWindowLabel;
+                MessageBox.Show(
+                    @"You appear to be offline, which may limit your ability to edit checks. Use the 'Try to Connect' button to try again.",
+                    @"Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+
+            tryToConnectButton.Visible = !HostUtil.Instance.IsOnline;
+            refreshButton.Enabled = HostUtil.Instance.IsOnline;
+        }
     }
 
     /// <summary>
@@ -1048,7 +1181,8 @@ namespace TvpMain.Forms
         public string Tooltip { get; }
         public CheckAndFixItem Item { get; }
 
-        public DisplayItem(bool selected, string name, string description, string version, string languages, string tags, string id, bool active, string tooltip, CheckAndFixItem item)
+        public DisplayItem(bool selected, string name, string description, string version, string languages,
+            string tags, string id, bool active, string tooltip, CheckAndFixItem item)
         {
             Selected = selected;
             Name = name;
@@ -1062,5 +1196,4 @@ namespace TvpMain.Forms
             Item = item;
         }
     }
-
 }
