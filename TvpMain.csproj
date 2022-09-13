@@ -406,6 +406,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
     <Compile Include="Check\CheckArea.cs" />
     <Compile Include="Check\CheckResultItem.cs" />
     <Compile Include="Check\CheckRunContext.cs" />
+    <Compile Include="Check\CheckAndFixException.cs" />
     <Compile Include="Check\ICheckAndFixRunner.cs" />
     <Compile Include="Check\ITextCheck.cs" />
     <Compile Include="Check\LocalCheckAndFixManager.cs" />

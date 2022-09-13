@@ -1,5 +1,5 @@
 ﻿/*
-Copyright © 2021 by Biblica, Inc.
+Copyright © 2022 by Biblica, Inc.
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
@@ -7,11 +7,7 @@ The above copyright notice and this permission notice shall be included in all c
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
-/*
- * A Class to handle the Global Constants.
- */
 
-using TvpMain.Check;
 
 namespace TvpMain.Util
 {
@@ -20,6 +16,16 @@ namespace TvpMain.Util
     /// </summary>
     public static class MainConsts
     {
+        /// <summary>
+        /// The copyright for this plugin.
+        /// </summary>
+        public const string COPYRIGHT = "© 2020-2022 Biblica, Inc.";
+
+        /// <summary>
+        /// The plugin's versions
+        /// </summary>
+        public const string VERSION = "2.0.0.8";
+
         /// <summary>
         /// Default separator for a sequence of book names.
         /// </summary>
@@ -112,11 +118,6 @@ namespace TvpMain.Util
         public const int HASH_PRIME = 397;
 
         /// <summary>
-        /// The copyright for this plugin.
-        /// </summary>
-        public const string COPYRIGHT = "© 2021 Biblica, Inc.";
-
-        /// <summary>
         /// The name of the file used to keep track of the last synchronization run.
         /// </summary>
         public const string LAST_SYNC_FILE_NAME = "lastSync";
@@ -177,6 +178,11 @@ namespace TvpMain.Util
         /// This value should not be changed unless the check is intended to do something completely different from initially implemented.
         /// </summary>
         public const string V1_PUNCTUATION_CHECK_GUID = "239ca2c4-98ee-11eb-a8b3-0242ac130003";
+
+        /// <summary>
+        /// Array to track all V1 TVP checks
+        /// </summary>
+        public static readonly string[] V1_CHECKS = { V1_SCRIPTURE_REFERENCE_CHECK_GUID, V1_PUNCTUATION_CHECK_GUID };
 
         /// <summary>
         /// The file name to look for in the TVP repo which contains a list of users that are TVP administrators.

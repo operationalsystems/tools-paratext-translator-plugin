@@ -1,5 +1,5 @@
 ﻿/*
-Copyright © 2021 by Biblica, Inc.
+Copyright © 2022 by Biblica, Inc.
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
@@ -44,6 +44,12 @@ namespace TvpMain.Check
         /// <returns>The list of check result items. This includes the suggested fixes if they are available.</returns>
         public List<CheckResultItem> ExecCheckAndFix(string inputText, CheckAndFixItem checkAndFixItem)
         {
+            // Ensure item has required regular expression for performing the check.
+            if(string.IsNullOrEmpty(checkAndFixItem.CheckRegex))
+            {
+                throw new CheckAndFixException("Missing expected Check regular expression", checkAndFixItem);
+            }
+
             // First, run the check regex, looking for matches
             var checkRegex = new Regex(checkAndFixItem.CheckRegex, DEFAULT_REGEX_OPTIONS);
             var fixRegex = EscapeCodeRegex.Replace(checkAndFixItem.FixRegex ?? string.Empty,
