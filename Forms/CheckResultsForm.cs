@@ -1,5 +1,5 @@
 ﻿/*
-Copyright © 2021 by Biblica, Inc.
+Copyright © 2022 by Biblica, Inc.
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
@@ -7,6 +7,8 @@ The above copyright notice and this permission notice shall be included in all c
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
+
+using AddInSideViews;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -20,7 +22,6 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using AddInSideViews;
 using TvpMain.Check;
 using TvpMain.Import;
 using TvpMain.Project;
@@ -131,6 +132,11 @@ namespace TvpMain.Forms
         /// The collection of <c>CheckResultItem</c>s mapped by the associated <c>CheckAndFixItem</c>.
         /// </summary>
         private Dictionary<CheckAndFixItem, List<CheckResultItem>> CheckResults { get; } = new Dictionary<CheckAndFixItem, List<CheckResultItem>>();
+
+        /// <summary>
+        /// The collection of <c>CheckAndFixItem</c>s that are marked broken and shouldn't keep attempting to execute<c>CheckAndFixItem</c>.
+        /// </summary>
+        private List<CheckAndFixItem> BrokenChecks { get; } = new List<CheckAndFixItem>();
 
         /// <summary>
         /// The collection for holding project content in the correct book order.
@@ -368,7 +374,6 @@ namespace TvpMain.Forms
 
             try
             {
-
                 var workThread = new Thread(() =>
                 {
                     try
@@ -439,27 +444,43 @@ namespace TvpMain.Forms
             // check the content with every specified check
             checksToRun.ForEach(check =>
             {
-                var results = CheckRunner.ExecCheckAndFix(content, check);
-
-                foreach (var item in results)
+                // this function only supports the v2 javascript/regex checks
+                // we also skip checks that are deemed broken
+                if (IsV1Check(check) || BrokenChecks.Contains(check))
                 {
-                    item.Book = book;
-                    item.Chapter = chapter;
-                    item.Verse = verse;
-                    item.Reference = content;
+                    return;
                 }
 
-                lock (_checkResultslock)
+                try
                 {
-                    // add or append results
-                    if (CheckResults.ContainsKey(check))
+                    var results = CheckRunner.ExecCheckAndFix(content, check);
+
+                    foreach (var item in results)
                     {
-                        CheckResults[check].AddRange(results);
+                        item.Book = book;
+                        item.Chapter = chapter;
+                        item.Verse = verse;
+                        item.Reference = content;
                     }
-                    else
+
+                    lock (_checkResultslock)
                     {
-                        CheckResults.Add(check, results);
+                        // add or append results
+                        if (CheckResults.ContainsKey(check))
+                        {
+                            CheckResults[check].AddRange(results);
+                        }
+                        else
+                        {
+                            CheckResults.Add(check, results);
+                        }
                     }
+                }
+                catch (CheckAndFixException checkEx)
+                {
+                    // report and track broken checks
+                    HostUtil.Instance.LogLine(checkEx.Message, true);
+                    BrokenChecks.Add(check);
                 }
             });
         }
@@ -532,6 +553,16 @@ namespace TvpMain.Forms
                     CheckResults.Add(checkItem, results);
                 }
             }
+        }
+
+        /// <summary>
+        /// Helper function for detererming if a check is a legacy V1 TVP check
+        /// </summary>
+        /// <param name="check">Check to assess</param>
+        /// <returns>true, if a v1 check; false, otherwise.</returns>
+        private bool IsV1Check(CheckAndFixItem check)
+        {
+            return MainConsts.V1_CHECKS.Contains(check.Id);
         }
 
         /// <summary>
@@ -617,11 +648,10 @@ namespace TvpMain.Forms
                                 // check the verse with verse checks
                                 ExecuteChecksAndStoreResults(verseText, ChecksByScope[CheckScope.VERSE], currBookNum, currChapterNum, currVerseNum);
                             }
-                            catch (ArgumentException)
+                            catch (ArgumentException ae)
                             {
-                                // arg exceptions occur when verses are missing, 
+                                // arg exceptions occur when verses are missing,
                                 // which they can be for given translations (ignore and move on)
-                                // TODO spit out warning
                             }
                         }
 
@@ -666,7 +696,7 @@ namespace TvpMain.Forms
             });
         }
 
-        public new virtual void Dispose()
+        public virtual new void Dispose()
         {
             RecycleRunEntities(false);
             base.Dispose();
@@ -709,7 +739,6 @@ namespace TvpMain.Forms
             // itself until the UI thread has actually updated the control and the event has been triggered.
             // However, we can't rely on that event to update the issues list because it dosn't trigger in every case.
             PopulateIssuesDataGridView(currentSelectedRowIndex);
-
         }
 
         /// <summary>
@@ -1140,7 +1169,6 @@ namespace TvpMain.Forms
                     fixTextBox.Refresh();
                     fixTextBox.Enabled = false;
                 }
-
             }
             else
             {
